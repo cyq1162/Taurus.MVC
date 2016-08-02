@@ -36,31 +36,63 @@ namespace Taurus.Core
                 if (view.Load(path, XmlCacheLevel.Hour, true))
                 {
                     //处理Shared目录下的节点替换。
-                    XmlNodeList list = view.GetList("*", "itemref");
-                    if (list != null && list.Count > 0)
-                    {
-                        for (int i = 0; i < list.Count; i++)
-                        {
-                            string[] items = list[i].Attributes["itemref"].Value.Split('.');
-                            if (items.Length == 2)
-                            {
-                                XHtmlAction sharedView = GetSharedView(items[0]);
-                                if (sharedView != null)
-                                {
-                                    XmlNode xNode = sharedView.Get(items[1]);
-                                    if (xNode != null)
-                                    {
-                                        view.ReplaceNode(xNode, list[i]);
-                                    }
-                                }
-
-                            }
-                        }
-                    }
+                    ReplaceItemRef(view, view.GetList("*", "itemref"), 0);
                 }
                 return view;
             }
             return null;
+        }
+        private static void ReplaceItemRef(XHtmlAction view, XmlNodeList list, int loopCount)
+        {
+
+            //处理Shared目录下的节点替换。
+            if (list != null && list.Count > 0)
+            {
+                if (loopCount > 5)
+                {
+                    throw new Exception("Reference loop : " + list[0].InnerXml);
+                }
+                string itemref="itemref";
+                for (int i = 0; i < list.Count; i++)
+                {
+                    string itemRef = list[i].Attributes[itemref].Value;
+                    if (!string.IsNullOrEmpty(itemRef))
+                    {
+                        bool isOK = false;
+                        string[] items = itemRef.Split('.');
+                        if (items.Length == 1)// 只一个节点，从当前节点寻找。
+                        {
+                            XmlNode xNode = view.Get(items[0]);
+                            if (xNode != null)
+                            {
+                                view.ReplaceNode(xNode, list[i]);
+                                view.Remove(xNode);
+                                isOK = true;
+                            }
+                        }
+                        else
+                        {
+                            XHtmlAction sharedView = GetSharedView(items[0]);
+                            if (sharedView != null)
+                            {
+                                XmlNode xNode = sharedView.Get(items[1]);
+                                if (xNode != null)
+                                {
+                                    view.ReplaceNode(xNode, list[i]);
+                                    isOK = true;
+                                }
+                            }
+
+                        }
+                        if (!isOK)
+                        {
+                            view.RemoveAttr(list[i], itemref);
+                        }
+                    }
+                }
+                loopCount++;
+                ReplaceItemRef(view, view.GetList("*", "itemref"), loopCount);
+            }
         }
 
         #region 处理Shared模板View
