@@ -1,0 +1,19 @@
+<?xml version="1.0" standalone="yes"?>
+<UserType>
+  <UserType>
+    <ID>1</ID>
+    <TypeName>Type1</TypeName>
+  </UserType>
+  <UserType>
+    <ID>2</ID>
+    <TypeName>Type2</TypeName>
+  </UserType>
+  <UserType>
+    <ID>3</ID>
+    <TypeName>Type3</TypeName>
+  </UserType>
+  <UserType>
+    <ID>4</ID>
+    <TypeName>Type4</TypeName>
+  </UserType>
+</UserType>

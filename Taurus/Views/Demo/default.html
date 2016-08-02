@@ -1,0 +1,137 @@
+﻿<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+    <title>Title ：${Name}</title>
+</head>
+<body>
+<div>
+Start Url：/demo/show<hr />
+    <div title="Data Bind">
+        Data SetToAll：<hr />
+        <form method="post" enctype="multipart/form-data">
+            <table border="2">
+                <tr>
+                    <td style="width: 100px">
+        
+            ID:</td>
+                    <td style="width: 245px">
+                        <input name="txtID" type="text" value="" /></td>
+                    <td style="width: 164px">
+                        <input type="button" name="btnFill" value="Fill" style="width: 100px" onclick="fillClick()" />
+                        <script>
+                        function fillClick()
+                        {
+                            var index=location.href.indexOf("?");
+                            var url=location.href.substring(0,index);
+                            location.href=url+"?id="+document.getElementsByName("txtID")[0].value;
+                        }
+                        </script>
+                        </td>
+                    <td style="width: 164px">
+                        &nbsp;Show Label Value</td>
+                </tr>
+                <tr>
+                    <td style="width: 100px">
+            Name:</td>
+                    <td style="width: 245px">
+            <input name="txtName" type="text" value="" /></td>
+                    <td style="width: 164px">
+                        </td>
+                    <td style="width: 164px">
+                        ${Name}</td>
+                </tr>
+                <tr>
+                    <td style="width: 100px">
+            IsEnabled:</td>
+                    <td style="width: 245px">
+            <input name="IsEnabled" type="checkbox"/>
+            <input type="hidden" name="chbIsEnabled" value="0" /><!--隐藏域，在不打勾的时候有用 -->
+            </td>
+                    <td style="width: 164px">
+                        </td>
+                    <td style="width: 164px">
+                        ${IsEnabled}</td>
+                </tr>
+                <tr>
+                    <td style="width: 100px">
+                        Sex</td>
+                    <td style="width: 245px">
+                        <input name="Sex" type="radio" value="0" checked="checked" /> Girl
+                        <input name="Sex" type="radio" value="1" /> Boy</td>
+                    <td style="width: 164px">
+                        </td>
+                    <td style="width: 164px">
+                        ${Sex}</td>
+                </tr>
+                <tr>
+                    <td style="width: 100px">
+                        HeadImgUrl</td>
+                    <td style="width: 245px">
+                        <input name="fuHeadImgUrl" type="file" /></td>
+                    <td style="width: 164px">
+                        <img id="headImgUrl" src="" width="100" height="50" border="1" /></td>
+                    <td style="width: 164px">
+                        ${HeadImgUrl}</td>
+                </tr>
+                <tr>
+                    <td style="width: 100px">
+                        UserType</td>
+                    <td style="width: 245px">
+                        <select name="ddlUserType" style="width: 114px">
+                          
+                        </select>
+                    </td>
+                    <td style="width: 164px">
+                        </td>
+                    <td style="width: 164px">
+                        ${UserType}</td>
+                </tr>
+                <tr>
+                    <td style="width: 100px; height: 26px">
+            CreateTime：</td>
+                    <td style="width: 245px; height: 26px">
+                        <input name="CreateTime" type="text" /></td>
+                    <td style="width: 164px; height: 26px">
+                    </td>
+                    <td style="width: 164px; height: 26px">
+                        ${CreateTime}</td>
+                </tr>
+                <tr>
+                    <td style="width: 100px">
+                        <input type="submit" value="Add" style="width: 100px" name="btnAdd" /></td>
+                    <td style="width: 245px">
+                        <input  type="submit" value="Update" style="width: 100px" name="btnUpdate" />
+                        |
+                        <input type="submit" value="Delete" style="width: 100px" name="btnDelete" onclick="return confirm('Sure to delete?');" /></td>
+                    <td style="width: 164px">
+                    </td>
+                    <td style="width: 164px">
+                    </td>
+                </tr>
+            </table>
+            <br />
+            &nbsp;<br />
+            <br />
+            <br />
+        </form>
+    </div>
+    <hr />
+    <div id="usersView" title="[Users] Table" style="border:solid 1 red" clearflag="1">
+   <!-- ${ID} - ${Name} - {3} - ${CreateTime}<br />-->
+    </div>
+    <hr />
+    <div id="defaultView" title="[UserType] Table">
+        {0} - {1}
+        <br />
+    </div>
+    <hr />
+    <div itemref="master.foot">
+    </div>
+
+    <script>
+        var json = "aaa";
+        //alert(json);
+    </script>
+</div>
+</body>
+</html>
