@@ -7,7 +7,7 @@ using System.Text;
 namespace Taurus.Core
 {
     /// <summary>
-    /// 反射Logic类
+    /// 反射Controller类
     /// </summary>
     static class InvokeLogic
     {

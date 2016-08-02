@@ -36,7 +36,7 @@ namespace Taurus.Core
                 if (view.Load(path, XmlCacheLevel.Hour, true))
                 {
                     //处理Shared目录下的节点替换。
-                    XmlNodeList list = view.GetList("div", "itemref");
+                    XmlNodeList list = view.GetList("*", "itemref");
                     if (list != null && list.Count > 0)
                     {
                         for (int i = 0; i < list.Count; i++)
