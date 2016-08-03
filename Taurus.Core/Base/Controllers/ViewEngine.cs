@@ -18,7 +18,7 @@ namespace Taurus.Core
         public static XHtmlAction Create(string controlName, string actionName)
         {
             string path = AppConfig.GetApp("Views", "Views") + "/"
-                          + controlName.Replace(InvokeLogic.ViewController, "").Replace(InvokeLogic.Controller, "")
+                          + controlName.Replace(InvokeLogic.Controller, "")
                           + "/" + actionName + ".html";
             return Create(path);
         }
