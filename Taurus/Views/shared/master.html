@@ -1,9 +1,9 @@
 ﻿<!DOCTYPE html>
 <html xmlns="http://www.w3.org/1999/xhtml">
-<head id="hd">
-    <title></title>
+<head>
+    <title itemref="title"></title>
     <!-- 新 Bootstrap 核心 CSS 文件 -->
-    <link rel="stylesheet" href="//cdn.bootcss.com/bootstrap/3.3.5/css/bootstrap.min.css" id="btcss" />
+    <link rel="stylesheet" href="//cdn.bootcss.com/bootstrap/3.3.5/css/bootstrap.min.css" />
 
     <!-- 可选的Bootstrap主题文件（一般不用引入） -->
     <link rel="stylesheet" href="//cdn.bootcss.com/bootstrap/3.3.5/css/bootstrap-theme.min.css" />
@@ -14,8 +14,8 @@
     <!-- 最新的 Bootstrap 核心 JavaScript 文件 -->
     <script src="//cdn.bootcss.com/bootstrap/3.3.5/js/bootstrap.min.js"></script>
     <script src="/Scripts/master.js"></script>
-
-    <style type="text/css" id="btcss_extend">
+    <style itemref="style"></style>
+    <style type="text/css">
         /* header styles-------------------------------------------------- */
         body {
             padding-top: 50px;
@@ -58,7 +58,6 @@
     </style>
 </head>
 <body>
-    <div id="body">
         <nav class="navbar navbar-inverse navbar-fixed-top" id="header">
             <div class="container">
                 <div class="navbar-header">
@@ -73,9 +72,9 @@
                 <div id="navbar" class="collapse navbar-collapse">
                     <ul class="nav navbar-nav">
                         <li><a href="/home/index">Home</a></li>
-                        <li><a href="/Demo/default">Demo</a></li>
                         <li><a href="/home/about">About</a></li>
                         <li><a href="/home/contact">Contact</a></li>
+                        <li><a href="/demo/default?id=1">Demo</a></li>
                     </ul>
                 </div>
                 <!--/.nav-collapse -->
@@ -93,7 +92,6 @@
                 <p class="text-muted">Author : 路过秋天 Copyright © 2016-2096 Powered by Aster All Rights Reserved.</p>
             </div>
         </footer>
-    </div>
 
 </body>
 </html>
