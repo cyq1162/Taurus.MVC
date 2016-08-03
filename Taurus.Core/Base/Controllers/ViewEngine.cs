@@ -36,49 +36,58 @@ namespace Taurus.Core
                 if (view.Load(path, XmlCacheLevel.Hour, true))
                 {
                     //处理Shared目录下的节点替换。
-                    ReplaceItemRef(view, view.GetList("*", "itemref"), 0);
+                    ReplaceItemRef(view, view.GetList("*", "itemref"), false, 0);
                 }
                 return view;
             }
             return null;
         }
-        private static void ReplaceItemRef(XHtmlAction view, XmlNodeList list, int loopCount)
+        private static void ReplaceItemRef(XHtmlAction view, XmlNodeList list, bool isBreak, int loopCount)
         {
 
             //处理Shared目录下的节点替换。
             if (list != null && list.Count > 0)
             {
-                if (loopCount > 5)
+                if (loopCount > 50)
                 {
                     throw new Exception("Reference loop : " + list[0].InnerXml);
                 }
-                string itemref="itemref";
+                string itemref = "itemref";
                 for (int i = 0; i < list.Count; i++)
                 {
-                    string itemRef = list[i].Attributes[itemref].Value;
-                    if (!string.IsNullOrEmpty(itemRef))
+                    string itemValue = list[i].Attributes[itemref].Value;
+                    if (!string.IsNullOrEmpty(itemValue))
                     {
                         bool isOK = false;
-                        string[] items = itemRef.Split('.');
+                        string[] items = itemValue.Split('.');
                         if (items.Length == 1)// 只一个节点，从当前节点寻找。
                         {
                             XmlNode xNode = view.Get(items[0]);
                             if (xNode != null)
                             {
                                 view.ReplaceNode(xNode, list[i]);
-                                view.Remove(xNode);
+                                view.Remove(xNode);//从自己拿节点的，需要移除
                                 isOK = true;
                             }
                         }
                         else
                         {
-                            XHtmlAction sharedView = GetSharedView(items[0]);
+                            XHtmlAction sharedView = GetSharedView(items[0]);//找到masterView
                             if (sharedView != null)
                             {
-                                XmlNode xNode = sharedView.Get(items[1]);
+                                XmlNode xNode = sharedView.Get(items[1]);//找到被替换的节点
+
+
                                 if (xNode != null)
                                 {
-                                    view.ReplaceNode(xNode, list[i]);
+                                    view.InsertAfter(xNode, list[i]);//先插入节点。
+                                    XmlNodeList childNodeList = view.GetList("*", itemref, list[i].NextSibling);//检测内部是否有引用指向外部。
+                                    if (childNodeList != null && childNodeList.Count > 0)
+                                    {
+                                        loopCount++;
+                                        ReplaceItemRef(view, childNodeList, true, loopCount);//下次跳出，避免死循环。
+                                    }
+                                    view.Remove(list[i]);//移除节点
                                     isOK = true;
                                 }
                             }
@@ -91,7 +100,10 @@ namespace Taurus.Core
                     }
                 }
                 loopCount++;
-                ReplaceItemRef(view, view.GetList("*", "itemref"), loopCount);
+                if (!isBreak)//避免死循环。
+                {
+                    ReplaceItemRef(view, view.GetList("*", itemref), isBreak, loopCount);
+                }
             }
         }
 
