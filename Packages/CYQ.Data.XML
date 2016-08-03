@@ -91,11 +91,6 @@
             Xml.MutilLanguage 语言切换设置时Cookie所需要的网站主域名[不带www]
             </summary>
         </member>
-        <member name="P:CYQ.Data.AppConfig.XHtml.UseFileLoadXml">
-            <summary>
-            Xml.XHtmlHelper 操作Html时，配置此项使用File加载Xml[便可在IIS7以上非信任主机机制下使用]
-            </summary>
-        </member>
         <member name="P:CYQ.Data.AppConfig.XHtml.SysLangKey">
             <summary>
             Xml.MutilLanguage 类的默认语言Key，默认值：Chinese
@@ -5603,6 +5598,11 @@
             从绝对路径中获得文件名做为Key值
             </summary>
         </member>
+        <member name="F:CYQ.Data.Xml.XHtmlBase.docTypeHtml">
+            <summary>
+            docTypeHtml是一样的。
+            </summary>
+        </member>
         <member name="M:CYQ.Data.Xml.XHtmlBase.LoadXml(System.String)">
             <summary>
             从xml字符串加载
@@ -5643,7 +5643,7 @@
         </member>
         <member name="M:CYQ.Data.Xml.XHtmlBase.LoadFromFile(System.String,System.Boolean)">
             <summary>
-            从文件加载XML
+            从文件加载XML （最终调用的方法）
             </summary>
         </member>
         <member name="M:CYQ.Data.Xml.XHtmlBase.SaveToCache(System.String,System.Boolean)">
@@ -5692,7 +5692,7 @@
         </member>
         <member name="M:CYQ.Data.Xml.XHtmlBase.Filter(System.String)">
             <summary>
-            过滤XML(十六进制值 0x1D)无效的字符
+            过滤XML(十六进制值 0x1D)无效的字符（同时替换&gt;符号）
             </summary>
         </member>
         <member name="M:CYQ.Data.Xml.XHtmlBase.Dispose">
