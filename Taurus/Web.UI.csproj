@@ -53,21 +53,21 @@
     <Reference Include="System.Web.Mobile" />
   </ItemGroup>
   <ItemGroup>
-    <Content Include="Scripts\master.js" />
-    <Content Include="Views\Demo\show.html" />
+    <Content Include="ReadMe.txt" />
+    <Content Include="style\js\master.js" />
+    <Content Include="Views\Demo\default.html" />
     <Content Include="Views\Home\about.html" />
     <Content Include="Views\Home\contact.html" />
     <Content Include="Views\Home\index.html" />
     <Content Include="Views\shared\master.html" />
-    <Content Include="Views\Demo\default.html" />
     <Content Include="Web.config" />
   </ItemGroup>
   <ItemGroup>
     <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>
   <ItemGroup>
-    <ProjectReference Include="..\..\cyqopen\CYQ.Data.csproj">
-      <Project>{bd5ccc87-278f-4feb-ad23-157fcba9ffa1}</Project>
+    <ProjectReference Include="..\..\..\MySpace\CYQ.Data\CYQ.Data.csproj">
+      <Project>{BD5CCC87-278F-4FEB-AD23-157FCBA9FFA1}</Project>
       <Name>CYQ.Data</Name>
     </ProjectReference>
     <ProjectReference Include="..\Taurus.Controllers\Taurus.Controllers.csproj">
@@ -78,10 +78,6 @@
       <Project>{ADF7675F-36F0-4AD5-8D20-83AE72BB4C99}</Project>
       <Name>Taurus.Core</Name>
     </ProjectReference>
-  </ItemGroup>
-  <ItemGroup>
-    <Folder Include="CSS\" />
-    <Folder Include="Plugins\" />
   </ItemGroup>
   <PropertyGroup>
     <VisualStudioVersion Condition="'$(VisualStudioVersion)' == ''">10.0</VisualStudioVersion>
