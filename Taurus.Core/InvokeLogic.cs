@@ -11,13 +11,9 @@ namespace Taurus.Core
     /// </summary>
     static class InvokeLogic
     {
-        internal const string Controller = "Controller";
         internal const string Default = "Default";
+        internal const string Controller = "Controller";
         internal const string DefaultController = "DefaultController";
-        internal const string AjaxController = "AjaxController";
-        internal const string ViewController = "ViewController";
-        internal const string DefaultAjaxController = "DefaultAjaxController";
-        internal const string DefaultViewController = "DefaultViewController";
 
         #region GetAssembly
         private static string _DllName;
@@ -56,140 +52,49 @@ namespace Taurus.Core
 
         #region GetControllers
 
-        private static Dictionary<string, Type> _ViewControllers = new Dictionary<string, Type>(StringComparer.OrdinalIgnoreCase);
-        private static Dictionary<string, Type> _AjaxControllers = new Dictionary<string, Type>(StringComparer.OrdinalIgnoreCase);
+        private static Dictionary<string, Type> _Controllers = new Dictionary<string, Type>(StringComparer.OrdinalIgnoreCase);
         private static readonly object objLock = new object();
         /// <summary>
         /// 获取控制器
         /// </summary>
         /// <param name="typeFlag">0：Ajax控制器；1：View控制器</param>
         /// <returns></returns>
-        private static Dictionary<string, Type> GetControllers(int typeFlag)
+        private static Dictionary<string, Type> GetControllers()
         {
-            if (_AjaxControllers.Count == 0 && _ViewControllers.Count == 0)
+            if (_Controllers.Count == 0)
             {
                 lock (objLock)
                 {
-                    if (_AjaxControllers.Count == 0 && _ViewControllers.Count == 0)
+                    if (_Controllers.Count == 0)
                     {
                         Assembly ass = GetAssembly();
                         Type[] typeList = ass.GetExportedTypes();
                         foreach (Type type in typeList)
                         {
-                            if (type.BaseType != null)
+                            if (type.BaseType != null && type.BaseType.Name == Controller)
                             {
-                                bool isDefaultController = type.Name == DefaultAjaxController || type.Name == DefaultViewController;
-                                if (isDefaultController)
-                                {
-                                    if (type.BaseType.Name == AjaxController)
-                                    {
-                                        _AjaxControllers.Add(DefaultController, type);
-                                    }
-                                    else
-                                    {
-                                        _ViewControllers.Add(DefaultController, type);
-                                    }
-
-                                }
-                                else
-                                {
-                                    string[] names = type.FullName.ToLower().Split('.');
-                                    if (names.Length > 1)
-                                    {
-                                        string className = names[names.Length - 1];
-                                        string key = Controller.ToLower();
-                                        if (className.EndsWith(key))
-                                        {
-                                            int subLen = key.Length;
-                                            if (className.EndsWith(AjaxController.ToLower()) || className.EndsWith(ViewController.ToLower()))
-                                            {
-                                                subLen = key.Length + 4;
-                                            }
-                                            className = className.Substring(0, className.Length - subLen);//不存Controller
-                                        }
-                                        if (type.BaseType.Name == AjaxController)
-                                        {
-                                            _AjaxControllers.Add(names[names.Length - 2] + "." + className, type);
-                                        }
-                                        else
-                                        {
-                                            _ViewControllers.Add(names[names.Length - 2] + "." + className, type);
-                                        }
-
-                                    }
-                                }
+                                _Controllers.Add(type.Name.Replace(Controller, ""), type);
                             }
-
                         }
                     }
                 }
             }
-            return typeFlag == 0 ? _AjaxControllers : _ViewControllers;
+            return _Controllers;
         }
         /// <summary>
-        /// 通过XXX.className类名获得对应的Controller类
+        /// 通过className类名获得对应的Controller类
         /// </summary>
-        /// <param name="className"></param>
-        /// <param name="typeFlag">0：Ajax控制器；1：View控制器</param>
         /// <returns></returns>
-        public static Type GetType(string className, int typeFlag)
+        public static Type GetType(string className)
         {
-            Dictionary<string, Type> controllers = GetControllers(typeFlag);
-            if (controllers.ContainsKey(className)) //1：完整匹配【名称空间.类名】
+            Dictionary<string, Type> controllers = GetControllers();
+            if (!string.IsNullOrEmpty(className) && controllers.ContainsKey(className)) //1：完整匹配【名称空间.类名】
             {
                 return controllers[className];
             }
-            else
+            if (controllers.ContainsKey(Default))
             {
-                string[] items = className.Split('.');
-                if (typeFlag == 0)
-                {
-                    #region Ajax映射处理
-                    className = items[items.Length - 1];
-                    string okKey = string.Empty;
-                    className = "." + className;
-                    string path = "." + items[0];
-                    foreach (string key in controllers.Keys) //2：部分匹配【.类名】
-                    {
-                        if (key.EndsWith(className))
-                        {
-                            return controllers[key];
-                        }
-                        else if (key.EndsWith(path))//匹配 目录
-                        {
-                            okKey = key;
-                        }
-                    }
-                    if (!string.IsNullOrEmpty(okKey))//3：匹配 目录
-                    {
-                        return controllers[okKey];
-                    }
-                    #endregion
-                }
-                else if (typeFlag == 1)
-                {
-                    className = "." + items[0];
-                    foreach (string key in controllers.Keys) //2：部分匹配【.类名】
-                    {
-                        if (key.EndsWith(className))
-                        {
-                            return controllers[key];
-                        }
-                    }
-                }
-            }
-            if (controllers.ContainsKey(DefaultController))
-            {
-                return controllers[DefaultController];
-            }
-            return null;
-        }
-        public static Type GetDefaultType(int typeFlag)
-        {
-            Dictionary<string, Type> controllers = GetControllers(typeFlag);
-            if (controllers.ContainsKey(DefaultController))
-            {
-                return controllers[DefaultController];
+                return controllers[Default];
             }
             return null;
         }
@@ -226,6 +131,10 @@ namespace Taurus.Core
             if (dic.ContainsKey(methodName))
             {
                 return dic[methodName];
+            }
+            if (dic.ContainsKey(Default))
+            {
+                return dic[Default];
             }
             return null;
         }

@@ -16,7 +16,7 @@ namespace Taurus.Core
         HttpContext Context { get; }
         bool IsHttpGet { get; }
         bool IsHttpPost { get; }
-        Type Controller { get; }
+        Type ControllerType { get; }
         string Action { get; }
         string Para { get; }
     }

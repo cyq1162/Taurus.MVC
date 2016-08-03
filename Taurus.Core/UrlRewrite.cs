@@ -40,7 +40,7 @@ namespace Taurus.Core
             InvokeClass();
         }
 
-     
+
 
         #region 替换输出，仅对子目录部署时有效
         void ReplaceOutput()
@@ -60,46 +60,16 @@ namespace Taurus.Core
         {
             string localPath = context.Request.Url.LocalPath;
             Type t = null;
-            bool needInvoke = false;
-            if (localPath.EndsWith("/ajax.html")) // 反射Url启动
+            if (localPath.IndexOf(".") == -1) // 处理Mvc请求
             {
-                #region 处理Ajax请求
-                //从Url来源页找
-                if (context.Request.UrlReferrer == null)
-                {
-                    WriteError("非法请求!");
-                }
-                //AjaxController是由页面的后两个路径决定了。
-                string[] items = context.Request.UrlReferrer.LocalPath.Split('/');
-                string className = Path.GetFileNameWithoutExtension(items[items.Length - 1].ToLower());
-                //从来源页获取className 可能是/aaa/bbb.shtml 先找aaa.bbb看看有木有，如果没有再找bbb
-                if (items.Length > 1)
-                {
-                    t = InvokeLogic.GetType(items[items.Length - 2].ToLower() + "." + className, 0);
-                }
-                else
-                {
-                    t = InvokeLogic.GetDefaultType(0);
-                }
-                needInvoke = true;
-                #endregion
-            }
-            else if (localPath.IndexOf(".") == -1) // 处理Mvc请求
-            {
-                needInvoke = true;
                 //ViewController是由页面的前两个路径决定了。
                 string[] items = localPath.Trim('/').Split('/');
-                if (items.Length > 1 && items[0] != "")
+                string className = items[0];
+                if (RouteConfig.RouteMode == 2)
                 {
-                    t = InvokeLogic.GetType(items[0].ToLower() + "." + items[1].ToLower(), 1);
+                    className = items.Length > 1 ? items[1] : "";
                 }
-                else
-                {
-                    t = InvokeLogic.GetDefaultType(1);
-                }
-            }
-            if (needInvoke)
-            {
+                t = InvokeLogic.GetType(className);
                 if (t == null)
                 {
                     WriteError("Can't find the controller!");

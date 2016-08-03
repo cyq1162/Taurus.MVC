@@ -7,15 +7,15 @@ using CYQ.Data.Xml;
 
 namespace Taurus.Core
 {
-    public abstract partial class ViewLogicBase : IViewBase
+    public abstract partial class LogicBase : IViewBase
     {
         IViewBase _ICommon;
 
-        public ViewLogicBase(IViewBase custom)
+        public LogicBase(IViewBase custom)
         {
             _ICommon = custom;
         }
-        private ViewLogicBase()
+        private LogicBase()
         {
 
         }
@@ -82,9 +82,9 @@ namespace Taurus.Core
         #endregion
 
 
-        public Type Controller
+        public Type ControllerType
         {
-            get { return _ICommon.Controller; }
+            get { return _ICommon.ControllerType; }
         }
 
         public string Action
