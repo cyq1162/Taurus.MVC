@@ -7,7 +7,7 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Taurus.Core", "Taurus.Core\
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Taurus.Controllers", "Taurus.Controllers\Taurus.Controllers.csproj", "{88DDFD7A-926F-4D20-BA8E-997DEA886FD5}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "CYQ.Data", "..\cyqopen\CYQ.Data.csproj", "{BD5CCC87-278F-4FEB-AD23-157FCBA9FFA1}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "CYQ.Data", "..\..\MySpace\CYQ.Data\CYQ.Data.csproj", "{BD5CCC87-278F-4FEB-AD23-157FCBA9FFA1}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
