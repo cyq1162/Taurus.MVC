@@ -1,154 +1,143 @@
 ﻿<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
 <html xmlns="http://www.w3.org/1999/xhtml">
-<head>
+<head itemref="master.head">
     <title>Title ：${Name}</title>
     <link itemref="master.btcss"></link>
     <link itemref="master.btcss_extend"></link>
     <style type="text/css">
         .table-bordered td {
-            text-align:left;
+            text-align: left;
         }
-        .btn{
-            height:26px; line-height:26px; padding:initial;
+
+        .btn {
+            height: 26px;
+            line-height: 26px;
+            padding: initial;
         }
     </style>
 </head>
-<body>
-    <div itemref="master.body"></div>
-<div id="container">
-    Start Url：/demo/show<hr />
-    <div title="Data Bind">
-        Data SetToAll：<hr />
-        <form method="post" enctype="multipart/form-data">
-            <table class="table table-bordered">
-                <tr>
-                    <td style="width: 100px">
-        
-            ID:</td>
-                    <td style="width: 245px">
-                        <input name="txtID" type="text" value="" /></td>
-                    <td style="width: 164px">
-                        <input type="button" name="btnFill" value="Fill" style="width: 100px" class="btn btn-success" onclick="fillClick()" />
-                        <script>
-                        function fillClick()
-                        {
-                            var index=location.href.indexOf("?");
-                            var url=location.href.substring(0,index);
-                            location.href=url+"?id="+document.getElementsByName("txtID")[0].value;
-                        }
-                        </script>
+<body itemref="master.body">
+    <div id="container">
+        <div title="Data Bind">
+            Data SetToAll：<hr />
+            <form id="myForm" method="post" enctype="multipart/form-data">
+                <table class="table table-bordered">
+                    <tr>
+                        <td style="width: 100px">ID:</td>
+                        <td style="width: 245px">
+                            <input name="txtID" type="text" value="" /></td>
+                        <td style="width: 164px">
+                            <input type="button" name="btnFill" value="Fill" style="width: 100px" class="btn btn-success" onclick="fillClick()" />
+                            <script>
+                                function fillClick() {
+                                    var index = location.href.indexOf("?");
+                                    var url = location.href.substring(0, index);
+                                    location.href = url + "?id=" + document.getElementsByName("txtID")[0].value;
+                                }
+                            </script>
                         </td>
-                    <td style="width: 164px">
-                        &nbsp;Show Label Value</td>
-                </tr>
-                <tr>
-                    <td style="width: 100px">
-            Name:</td>
-                    <td style="width: 245px">
-            <input name="txtName" type="text" value="" /></td>
-                    <td style="width: 164px">
+                        <td style="width: 164px">&nbsp;Show Label Value</td>
+                    </tr>
+                    <tr>
+                        <td style="width: 100px">Name:</td>
+                        <td style="width: 245px">
+                            <input name="txtName" type="text" value="" /></td>
+                        <td style="width: 164px"></td>
+                        <td style="width: 164px">${Name}</td>
+                    </tr>
+                    <tr>
+                        <td style="width: 100px">IsEnabled:</td>
+                        <td style="width: 245px">
+                            <input name="IsEnabled" type="checkbox" />
+                            <input type="hidden" name="chbIsEnabled" value="0" /><!--隐藏域，在不打勾的时候有用 -->
                         </td>
-                    <td style="width: 164px">
-                        ${Name}</td>
-                </tr>
-                <tr>
-                    <td style="width: 100px">
-            IsEnabled:</td>
-                    <td style="width: 245px">
-            <input name="IsEnabled" type="checkbox"/>
-            <input type="hidden" name="chbIsEnabled" value="0" /><!--隐藏域，在不打勾的时候有用 -->
-            </td>
-                    <td style="width: 164px">
+                        <td style="width: 164px"></td>
+                        <td style="width: 164px">${IsEnabled}</td>
+                    </tr>
+                    <tr>
+                        <td style="width: 100px">Sex</td>
+                        <td style="width: 245px">
+                            <input name="Sex" type="radio" value="0" checked="checked" />
+                            Girl
+                        <input name="Sex" type="radio" value="1" />
+                            Boy</td>
+                        <td style="width: 164px"></td>
+                        <td style="width: 164px">${Sex}</td>
+                    </tr>
+                    <tr>
+                        <td style="width: 100px">HeadImgUrl</td>
+                        <td style="width: 245px">
+                            <input name="fuHeadImgUrl" type="file" /></td>
+                        <td style="width: 164px">
+                            <img id="headImgUrl" src="" width="100" height="50" border="1" /></td>
+                        <td style="width: 164px">${HeadImgUrl}</td>
+                    </tr>
+                    <tr>
+                        <td style="width: 100px">UserType</td>
+                        <td style="width: 245px">
+                            <select name="ddlUserType" style="width: 114px">
+                            </select>
                         </td>
-                    <td style="width: 164px">
-                        ${IsEnabled}</td>
-                </tr>
-                <tr>
-                    <td style="width: 100px">
-                        Sex</td>
-                    <td style="width: 245px">
-                        <input name="Sex" type="radio" value="0" checked="checked" /> Girl
-                        <input name="Sex" type="radio" value="1" /> Boy</td>
-                    <td style="width: 164px">
-                        </td>
-                    <td style="width: 164px">
-                        ${Sex}</td>
-                </tr>
-                <tr>
-                    <td style="width: 100px">
-                        HeadImgUrl</td>
-                    <td style="width: 245px">
-                        <input name="fuHeadImgUrl" type="file" /></td>
-                    <td style="width: 164px">
-                        <img id="headImgUrl" src="" width="100" height="50" border="1" /></td>
-                    <td style="width: 164px">
-                        ${HeadImgUrl}</td>
-                </tr>
-                <tr>
-                    <td style="width: 100px">
-                        UserType</td>
-                    <td style="width: 245px">
-                        <select name="ddlUserType" style="width: 114px">
-                          
-                        </select>
-                    </td>
-                    <td style="width: 164px">
-                        </td>
-                    <td style="width: 164px">
-                        ${UserType}</td>
-                </tr>
-                <tr>
-                    <td style="width: 100px; height: 26px">
-            CreateTime：</td>
-                    <td style="width: 245px; height: 26px">
-                        <input name="CreateTime" type="text" /></td>
-                    <td style="width: 164px; height: 26px">
-                    </td>
-                    <td style="width: 164px; height: 26px">
-                        ${CreateTime}</td>
-                </tr>
-                <tr>
-                    <td style="width: 100px">
-                        <input type="submit" value="Add" class="btn btn-primary" style="width: 100px" name="btnAdd" /></td>
-                    <td style="width: 245px">
-                        <input  type="submit" value="Update" class="btn btn-success" style="width: 100px" name="btnUpdate" />
-                        |
-                        <input type="submit" value="Delete" class="btn btn-danger" style="width: 100px" name="btnDelete" onclick="return confirm('Sure to delete?');" /></td>
-                    <td style="width: 164px">
-                    </td>
-                    <td style="width: 164px">
-                    </td>
-                </tr>
-            </table>
-            <br />
-            &nbsp;<br />
-            <br />
-            <br />
-        </form>
-    </div>
-    <hr />
-    <table class="table table-striped" id="usersView" title="[Users] Table" clearflag="1">
-        <tr>
-            <td>${ID}</td>
-            <td>${Name}</td>
-            <td>{3}</td>
-            <td>${CreateTime}</td>
-        </tr>
-    </table>
+                        <td style="width: 164px"></td>
+                        <td style="width: 164px">${UserType}</td>
+                    </tr>
+                    <tr>
+                        <td style="width: 100px; height: 26px">CreateTime：</td>
+                        <td style="width: 245px; height: 26px">
+                            <input name="CreateTime" type="text" /></td>
+                        <td style="width: 164px; height: 26px"></td>
+                        <td style="width: 164px; height: 26px">${CreateTime}</td>
+                    </tr>
+                    <tr>
+                        <td style="width: 100px">
+                            <input type="submit" value="Add" class="btn btn-primary" style="width: 100px" name="btnAdd" /></td>
+                        <td style="width: 245px">
+                            <input type="submit" value="Update" class="btn btn-success" style="width: 100px" name="btnUpdate" />
+                            |
+                        <input type="submit" value="Delete" class="btn btn-danger" style="width: 100px" name="btnDelete" onclick="return del();" />
+                            <script>
+                                function del() {
+                                    if (confirm('Sure to delete?')) {
+                                        var index = location.href.indexOf("?");
+                                        var url = location.href.substring(0, index);
+                                        document.getElementById("myForm").action = url + "?id=" + document.getElementsByName("txtID")[0].value;
+                                    }
+                                }
+                            </script>
 
-    <hr />
-    <div id="defaultView" title="[UserType] Table">
+                        </td>
+                        <td style="width: 164px"></td>
+                        <td style="width: 164px"></td>
+                    </tr>
+                </table>
+                <br />
+                &nbsp;<br />
+                <br />
+                <br />
+            </form>
+        </div>
+        <hr />
+        <table class="table table-striped" title="[Users] Table">
+            <tr>
+                <td>ID</td>
+                <td>Name</td>
+                <td>第4列</td>
+                <td>CreateTime</td>
+            </tr>
+            <tbody id="usersView" clearflag="1">
+                <tr>
+                    <td>${ID}</td>
+                    <td>${Name}</td>
+                    <td>{3}</td>
+                    <td>${CreateTime}</td>
+                </tr>
+            </tbody>
+        </table>
+
+        <!--   <div id="defaultView" title="[UserType] Table">
         {0} - {1}
         <br />
+    </div>-->
     </div>
-    <hr />
-    <div itemref="master.foot">
-    </div>
-
-    <script>
-        var json = "aaa";
-        //alert(json);
-    </script>
-</div>
 </body>
 </html>
