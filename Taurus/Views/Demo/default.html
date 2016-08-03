@@ -4,6 +4,14 @@
     <title>Title ：${Name}</title>
     <link itemref="master.btcss"></link>
     <link itemref="master.btcss_extend"></link>
+    <style type="text/css">
+        .table-bordered td {
+            text-align:left;
+        }
+        .btn{
+            height:26px; line-height:26px; padding:initial;
+        }
+    </style>
 </head>
 <body>
     <div itemref="master.body"></div>
@@ -12,7 +20,7 @@
     <div title="Data Bind">
         Data SetToAll：<hr />
         <form method="post" enctype="multipart/form-data">
-            <table border="2">
+            <table class="table table-bordered">
                 <tr>
                     <td style="width: 100px">
         
@@ -20,7 +28,7 @@
                     <td style="width: 245px">
                         <input name="txtID" type="text" value="" /></td>
                     <td style="width: 164px">
-                        <input type="button" name="btnFill" value="Fill" style="width: 100px" onclick="fillClick()" />
+                        <input type="button" name="btnFill" value="Fill" style="width: 100px" class="btn btn-success" onclick="fillClick()" />
                         <script>
                         function fillClick()
                         {
@@ -101,11 +109,11 @@
                 </tr>
                 <tr>
                     <td style="width: 100px">
-                        <input type="submit" value="Add" style="width: 100px" name="btnAdd" /></td>
+                        <input type="submit" value="Add" class="btn btn-primary" style="width: 100px" name="btnAdd" /></td>
                     <td style="width: 245px">
-                        <input  type="submit" value="Update" style="width: 100px" name="btnUpdate" />
+                        <input  type="submit" value="Update" class="btn btn-success" style="width: 100px" name="btnUpdate" />
                         |
-                        <input type="submit" value="Delete" style="width: 100px" name="btnDelete" onclick="return confirm('Sure to delete?');" /></td>
+                        <input type="submit" value="Delete" class="btn btn-danger" style="width: 100px" name="btnDelete" onclick="return confirm('Sure to delete?');" /></td>
                     <td style="width: 164px">
                     </td>
                     <td style="width: 164px">
@@ -119,9 +127,15 @@
         </form>
     </div>
     <hr />
-    <div id="usersView" title="[Users] Table" style="border:solid 1 red" clearflag="1">
-   <!-- ${ID} - ${Name} - {3} - ${CreateTime}<br />-->
-    </div>
+    <table class="table table-striped" id="usersView" title="[Users] Table" clearflag="1">
+        <tr>
+            <td>${ID}</td>
+            <td>${Name}</td>
+            <td>{3}</td>
+            <td>${CreateTime}</td>
+        </tr>
+    </table>
+
     <hr />
     <div id="defaultView" title="[UserType] Table">
         {0} - {1}
