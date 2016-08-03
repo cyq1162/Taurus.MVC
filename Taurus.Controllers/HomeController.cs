@@ -5,8 +5,12 @@ using Taurus.Core;
 
 namespace Taurus.Controllers
 {
-    public class HomeViewController : ViewController
+    public class HomeController : Controller
     {
+        public override void Default()
+        {
+            Context.Response.Redirect("/home/index");
+        }
         public void Index()
         {
         }

@@ -96,7 +96,7 @@ namespace Taurus.Controllers
 
     #endregion
 
-    public class DemoViewController : ViewController
+    public class DemoController : Controller
     {
         #region Controller方法
         public override void Default()
@@ -110,7 +110,7 @@ namespace Taurus.Controllers
                 {
                     utTable = ut.Select();
                 }
-                View.OnForeach += new XHtmlAction.SetForeachEventHandler(View_OnForeach);
+                // View.OnForeach += new XHtmlAction.SetForeachEventHandler(View_OnForeach);
                 utTable.Bind(View);//取usertypeView或defaultView节点。
 
                 utTable.Bind(View, "ddl" + utTable.TableName);//绑定下拉框，指定节点名称。
@@ -127,7 +127,7 @@ namespace Taurus.Controllers
                     }
                     dt = demo.Select();
                 }
-                View.OnForeach += new XHtmlAction.SetForeachEventHandler(View_OnForeach);
+                // View.OnForeach += new XHtmlAction.SetForeachEventHandler(View_OnForeach);
                 dt.Bind(View);//取UsersView或defaultView节点。
 
             }
@@ -150,6 +150,10 @@ namespace Taurus.Controllers
 
 
         }
+        public void Show()
+        {
+
+        }
         #endregion
 
         #region 其它过程方法
@@ -169,12 +173,12 @@ namespace Taurus.Controllers
                 }
             }
         }
-        
-        private void Reflesh()
+
+        private void Reflesh(int id)
         {
-            Context.Response.Redirect(Context.Request.Url.ToString(), true);
+            Context.Response.Redirect(Context.Request.Url.LocalPath + "?id=" + id, true);
         }
-      
+
 
         private string SavePic()
         {
@@ -204,8 +208,10 @@ namespace Taurus.Controllers
                     {
                         u.HeadImgUrl = path;
                     }
-                    u.Insert(true);
-                    Reflesh();
+                    if (u.Insert(true))
+                    {
+                        Reflesh(u.ID);
+                    }
                 }
             }
             if (IsClick("btnUpdate"))
@@ -217,8 +223,10 @@ namespace Taurus.Controllers
                     {
                         u.HeadImgUrl = path;
                     }
-                    u.Update(null, true);
-                    Reflesh();
+                    if (u.Update(null, true))
+                    {
+                        Reflesh(u.ID);
+                    }
                 }
             }
             else if (IsClick("btnDelete"))
@@ -226,15 +234,15 @@ namespace Taurus.Controllers
                 using (Users u = new Users())
                 {
                     u.Delete();
-                    Reflesh();
+                    Reflesh(1);
                 }
             }
         }
 
-        string View_OnForeach(string text, object[] values, int rowIndex)
-        {
-            return "行号：" + text;
-        }
+        //string View_OnForeach(string text, object[] values, int rowIndex)
+        //{
+        //    return "行号：" + text;
+        //}
         #endregion
     }
 }

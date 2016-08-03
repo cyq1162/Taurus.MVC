@@ -56,14 +56,14 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="DefaultViewController.cs" />
-    <Compile Include="DemoViewController.cs" />
-    <Compile Include="HomeViewController.cs" />
+    <Compile Include="DefaultController.cs" />
+    <Compile Include="DemoController.cs" />
+    <Compile Include="HomeController.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>
   <ItemGroup>
-    <ProjectReference Include="..\..\cyqopen\CYQ.Data.csproj">
-      <Project>{bd5ccc87-278f-4feb-ad23-157fcba9ffa1}</Project>
+    <ProjectReference Include="..\..\..\MySpace\CYQ.Data\CYQ.Data.csproj">
+      <Project>{BD5CCC87-278F-4FEB-AD23-157FCBA9FFA1}</Project>
       <Name>CYQ.Data</Name>
     </ProjectReference>
     <ProjectReference Include="..\Taurus.Core\Taurus.Core.csproj">
