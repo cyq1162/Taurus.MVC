@@ -13,12 +13,17 @@ using Taurus.Logic;
 namespace Taurus.Controllers
 {
     #region CodeFirst的数据表
-
+    public class Connection
+    {
+        public const string TxtConn = "txt path={0}App_Data";
+        public const string XmlConn = "xml path={0}App_Data";
+    }
+   
     public class Users : CYQ.Data.Orm.OrmBase
     {
         public Users()
         {
-            base.SetInit(this, "Users", "txt path={0}App_Data");
+            base.SetInit(this, "Users", Connection.TxtConn);
         }
         private int _ID;
 
@@ -76,7 +81,7 @@ namespace Taurus.Controllers
     {
         public UserType()
         {
-            base.SetInit(this, "UserType", "xml path={0}App_Data");
+            base.SetInit(this, "UserType", Connection.XmlConn);
         }
         private int _ID;
 
@@ -112,7 +117,7 @@ namespace Taurus.Controllers
                     utTable = ut.Select();
                 }
                 // View.OnForeach += new XHtmlAction.SetForeachEventHandler(View_OnForeach);
-                utTable.Bind(View);//取usertypeView或defaultView节点。
+               // utTable.Bind(View);//取usertypeView或defaultView节点。
 
                 utTable.Bind(View, "ddl" + utTable.TableName);//绑定下拉框，指定节点名称。（用表名，是为了不写死ddlUserType）
 
@@ -130,7 +135,12 @@ namespace Taurus.Controllers
                     dt = demo.Select(pager.PageIndex, pager.PageSize);
                     pager.Bind(dt.RecordsAffected);//绑定分页控件。
                 }
-                // View.OnForeach += new XHtmlAction.SetForeachEventHandler(View_OnForeach);
+                #region 表关联
+                dt.JoinOnName = "UserType";
+                dt.Conn = Connection.XmlConn;//这里玩的花了一点（Users表是txt数据库，UserType是xml数据库）
+                dt = dt.Join("UserType", "ID", "TypeName");
+                #endregion
+                View.OnForeach += new XHtmlAction.SetForeachEventHandler(View_OnForeach);//formater
                 dt.Bind(View);//取UsersView或defaultView节点。
 
             }
@@ -242,10 +252,11 @@ namespace Taurus.Controllers
             }
         }
 
-        //string View_OnForeach(string text, object[] values, int rowIndex)
-        //{
-        //    return "行号：" + text;
-        //}
+        string View_OnForeach(string text, object[] values, int rowIndex)
+        {
+            values[3] = Convert.ToString(values[3]) == "1" ? "Boy" : "Girl";
+            return text;
+        }
         #endregion
     }
 }
