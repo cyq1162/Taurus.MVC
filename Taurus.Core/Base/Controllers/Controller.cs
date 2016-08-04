@@ -193,7 +193,7 @@ namespace Taurus.Core
         {
             get
             {
-                return Query<int>("page");
+                return Query<int>("page", 1);
             }
         }
         /// <summary>
@@ -203,7 +203,7 @@ namespace Taurus.Core
         {
             get
             {
-                return Query<int>("rows");
+                return Query<int>("rows", 10);
             }
         }
 
