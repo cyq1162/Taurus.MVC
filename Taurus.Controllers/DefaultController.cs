@@ -12,7 +12,7 @@ namespace Taurus.Controllers
     {
         public override void Default()
         {
-            Context.Response.Write("Hell Taurus.MVC! <a href=\"/home\">Go To Home</a>");
+            
         }
     }
 }
