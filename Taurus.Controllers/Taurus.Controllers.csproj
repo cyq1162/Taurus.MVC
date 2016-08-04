@@ -50,6 +50,9 @@
     <WarningLevel>4</WarningLevel>
   </PropertyGroup>
   <ItemGroup>
+    <Reference Include="CYQ.Data">
+      <HintPath>..\Packages\CYQ.Data.dll</HintPath>
+    </Reference>
     <Reference Include="System" />
     <Reference Include="System.Data" />
     <Reference Include="System.Web" />
@@ -63,10 +66,6 @@
     <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>
   <ItemGroup>
-    <ProjectReference Include="..\..\..\MySpace\CYQ.Data\CYQ.Data.csproj">
-      <Project>{BD5CCC87-278F-4FEB-AD23-157FCBA9FFA1}</Project>
-      <Name>CYQ.Data</Name>
-    </ProjectReference>
     <ProjectReference Include="..\Taurus.Core\Taurus.Core.csproj">
       <Project>{ADF7675F-36F0-4AD5-8D20-83AE72BB4C99}</Project>
       <Name>Taurus.Core</Name>

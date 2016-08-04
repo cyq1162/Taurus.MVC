@@ -42,6 +42,10 @@
     <WarningLevel>4</WarningLevel>
   </PropertyGroup>
   <ItemGroup>
+    <Reference Include="CYQ.Data, Version=5.6.3.7, Culture=neutral, processorArchitecture=MSIL">
+      <SpecificVersion>False</SpecificVersion>
+      <HintPath>..\Packages\CYQ.Data.dll</HintPath>
+    </Reference>
     <Reference Include="System" />
     <Reference Include="System.Data" />
     <Reference Include="System.Drawing" />
@@ -66,10 +70,6 @@
     <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>
   <ItemGroup>
-    <ProjectReference Include="..\..\..\MySpace\CYQ.Data\CYQ.Data.csproj">
-      <Project>{BD5CCC87-278F-4FEB-AD23-157FCBA9FFA1}</Project>
-      <Name>CYQ.Data</Name>
-    </ProjectReference>
     <ProjectReference Include="..\Taurus.Controllers\Taurus.Controllers.csproj">
       <Project>{88DDFD7A-926F-4D20-BA8E-997DEA886FD5}</Project>
       <Name>Taurus.Controllers</Name>
