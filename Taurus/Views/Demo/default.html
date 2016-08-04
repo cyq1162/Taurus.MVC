@@ -14,6 +14,11 @@
             line-height: 26px;
             padding: initial;
         }
+        .pager { font-size: 12px; margin: 25px 0; text-align: center; color: #2E6AB1; line-height: 200%; }
+        .pager a, .pager span a { margin-right: 4px; padding: 2px 5px; text-decoration: none; }
+        .pager a:hover { background: #2E6AB1; }
+        .pager .current { background-color: #2E6AB1; border: solid 1px while; font-weight: bold; margin-right: 4px; }
+        .pager .current a { color: White; }
     </style>
 </head>
 <body itemref="master.body">
@@ -90,8 +95,10 @@
                     </tr>
                     <tr>
                         <td style="width: 100px">
-                            <input type="submit" value="Add" class="btn btn-primary" style="width: 100px" name="btnAdd" /></td>
+                           </td>
                         <td style="width: 245px">
+                             <input type="submit" value="Add" class="btn btn-primary" style="width: 100px" name="btnAdd" />
+                             | 
                             <input type="submit" value="Update" class="btn btn-success" style="width: 100px" name="btnUpdate" />
                             |
                         <input type="submit" value="Delete" class="btn btn-danger" style="width: 100px" name="btnDelete" onclick="return del();" />
@@ -133,7 +140,7 @@
                 </tr>
             </tbody>
         </table>
-
+        <div id="pager"></div>
         <!--   <div id="defaultView" title="[UserType] Table">
         {0} - {1}
         <br />
