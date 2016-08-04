@@ -59,6 +59,7 @@
     <Compile Include="DefaultController.cs" />
     <Compile Include="DemoController.cs" />
     <Compile Include="HomeController.cs" />
+    <Compile Include="Pager.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>
   <ItemGroup>

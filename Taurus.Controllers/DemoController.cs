@@ -8,6 +8,7 @@ using CYQ.Data.Xml;
 using CYQ.Data.Tool;
 using System.Web;
 using System.IO;
+using Taurus.Logic;
 
 namespace Taurus.Controllers
 {
@@ -113,7 +114,7 @@ namespace Taurus.Controllers
                 // View.OnForeach += new XHtmlAction.SetForeachEventHandler(View_OnForeach);
                 utTable.Bind(View);//取usertypeView或defaultView节点。
 
-                utTable.Bind(View, "ddl" + utTable.TableName);//绑定下拉框，指定节点名称。
+                utTable.Bind(View, "ddl" + utTable.TableName);//绑定下拉框，指定节点名称。（用表名，是为了不写死ddlUserType）
 
 
                 MDataTable dt;
@@ -125,7 +126,9 @@ namespace Taurus.Controllers
                         demo.UI.SetToAll(View);
                         View.LoadData(demo.RawData, "");
                     }
-                    dt = demo.Select();
+                    Pager pager = new Pager(View);
+                    dt = demo.Select(pager.PageIndex, pager.PageSize);
+                    pager.Bind(dt.RecordsAffected);//绑定分页控件。
                 }
                 // View.OnForeach += new XHtmlAction.SetForeachEventHandler(View_OnForeach);
                 dt.Bind(View);//取UsersView或defaultView节点。
