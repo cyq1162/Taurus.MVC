@@ -3,7 +3,7 @@ using System;
 using System.Web;
 namespace Taurus.Core
 {
-    public interface IViewBase
+    public interface IController
     {
         int PageIndex { get; }
         int PageSize { get; }
@@ -19,5 +19,6 @@ namespace Taurus.Core
         Type ControllerType { get; }
         string Action { get; }
         string Para { get; }
+        string AjaxResult { get; set; }
     }
 }

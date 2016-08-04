@@ -25,7 +25,7 @@ namespace Taurus.Core
 
         void context_Error(object sender, EventArgs e)
         {
-            if (IsEndWithPage(HttpContext.Current.Request.Url))
+            if (HttpContext.Current.Request.Url.LocalPath.IndexOf('.') == -1)//无后缀的请求。
             {
                 Log.WriteLogToTxt(HttpContext.Current.Error);
             }
@@ -45,12 +45,13 @@ namespace Taurus.Core
         #region 替换输出，仅对子目录部署时有效
         void ReplaceOutput()
         {
-            string ui = AppConfig.GetApp("UI", "").ToLower();
-            string url = context.Request.Url.LocalPath.ToLower();
-            if (ui != "" && url.StartsWith(ui) && IsEndWithPage(context.Request.Url, false))
+            if (QueryTool.IsUseUISite)
             {
-                //如果项目需要部署成子应用程序，则开启，否则不需要开启（可注释掉下面一行代码）
-                context.Response.Filter = new HttpResponseFilter(context.Response.Filter);
+                if (context.Request.Url.LocalPath.IndexOf('.') == -1) // 只处理无后缀请求。
+                {
+                    //如果项目需要部署成子应用程序，则开启，否则不需要开启（可注释掉下面一行代码）
+                    context.Response.Filter = new HttpResponseFilter(context.Response.Filter);
+                }
             }
         }
         #endregion
@@ -81,6 +82,7 @@ namespace Taurus.Core
                 }
                 catch (ThreadAbortException e)
                 {
+                    //ASP.NET 的机制就是通过异常退出线程（不要觉的奇怪）
                 }
                 catch (Exception err)
                 {
@@ -94,18 +96,5 @@ namespace Taurus.Core
             context.Response.End();
         }
         #endregion
-
-        #region 共用类
-        private bool IsEndWithPage(Uri uri)
-        {
-            return IsEndWithPage(uri, true);
-        }
-        private bool IsEndWithPage(Uri uri, bool ashx)
-        {
-            string localPath = uri.LocalPath.ToLower();
-            return localPath.EndsWith(".html") || localPath.EndsWith(".aspx") || (ashx && localPath.EndsWith(".ashx"));
-        }
-        #endregion
-
     }
 }

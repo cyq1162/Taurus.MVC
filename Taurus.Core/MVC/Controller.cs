@@ -84,6 +84,10 @@ namespace Taurus.Core
                     {
                         context.Response.Write(View.OutXml);
                     }
+                    else if (!string.IsNullOrEmpty(ajaxResult))
+                    {
+                        context.Response.Write(ajaxResult);
+                    }
                 }
             }
             catch (System.Threading.ThreadAbortException)
@@ -124,7 +128,7 @@ namespace Taurus.Core
             return Query<string>(btnName) != null;
         }
     }
-    public abstract partial class Controller : IViewBase
+    public abstract partial class Controller : IController
     {
         private XHtmlAction _View;
         /// <summary>
@@ -254,6 +258,22 @@ namespace Taurus.Core
         public T Query<T>(string key, T defaultValue)
         {
             return QueryTool.Query<T>(key, defaultValue, false);
+        }
+
+        protected string ajaxResult = string.Empty;
+        /// <summary>
+        /// Ajax发起的请求，需要返回值时，对此赋值即可。
+        /// </summary>
+        public string AjaxResult
+        {
+            get
+            {
+                return ajaxResult;
+            }
+            set
+            {
+                ajaxResult = value;
+            }
         }
     }
 }

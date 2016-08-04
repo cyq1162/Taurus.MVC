@@ -56,11 +56,11 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="Base\Controllers\RouteConfig.cs" />
-    <Compile Include="Base\Controllers\Controller.cs" />
-    <Compile Include="Base\Controllers\ViewEngine.cs" />
-    <Compile Include="Base\IViewBase.cs" />
-    <Compile Include="Base\Logic\LogicBase.cs" />
+    <Compile Include="MVC\RouteConfig.cs" />
+    <Compile Include="MVC\Controller.cs" />
+    <Compile Include="MVC\ViewEngine.cs" />
+    <Compile Include="MVC\IController.cs" />
+    <Compile Include="MVC\LogicBase.cs" />
     <Compile Include="HttpResponseFilter.cs" />
     <Compile Include="InvokeLogic.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />

@@ -6,11 +6,29 @@ using System.IO;
 using System.Web.UI;
 using System.Net;
 using System.Data;
+using CYQ.Data;
 
 namespace Taurus.Core
 {
     internal static class QueryTool
     {
+        /// <summary>
+        /// 是否使用子目录部署网站
+        /// </summary>
+        public static bool IsUseUISite
+        {
+            get
+            {
+                string ui = AppConfig.GetApp("UI", string.Empty).ToLower();
+                if (ui != string.Empty)
+                {
+                    ui = ui.Trim('/');
+                    string localPath = HttpContext.Current.Request.Url.LocalPath.Trim('/').ToLower();
+                    return localPath == ui || localPath.StartsWith(ui + "/");
+                }
+                return false;
+            }
+        }
         public static T Query<T>(string key)
         {
             return Query<T>(key, default(T), false);
