@@ -75,6 +75,18 @@ namespace Taurus.Core
                     if (!CancelInvoke)
                     {
                         method.Invoke(this, null);
+                        if (IsHttpPost)
+                        {
+                            string name = GetBtnName();
+                            if (!string.IsNullOrEmpty(name))
+                            {
+                                MethodInfo postBtnMethod = InvokeLogic.GetMethod(t, name);
+                                if (postBtnMethod != null && postBtnMethod.Name != InvokeLogic.Default)
+                                {
+                                    postBtnMethod.Invoke(this, null);
+                                }
+                            }
+                        }
                         if (!CancelInvoke)
                         {
                             EndInvoke(method.Name);
@@ -126,6 +138,24 @@ namespace Taurus.Core
         protected bool IsClick(string btnName)
         {
             return Query<string>(btnName) != null;
+        }
+        private string GetBtnName()
+        {
+            foreach (string name in Context.Request.QueryString)
+            {
+                if (name.ToLower().StartsWith("btn"))
+                {
+                    return name;
+                }
+            }
+            foreach (string name in Context.Request.Form)
+            {
+                if (name.ToLower().StartsWith("btn"))
+                {
+                    return name;
+                }
+            }
+            return null;
         }
     }
     public abstract partial class Controller : IController

@@ -59,6 +59,7 @@
   <ItemGroup>
     <Content Include="ReadMe.txt" />
     <Content Include="style\js\master.js" />
+    <Content Include="Views\Default\default.html" />
     <Content Include="Views\Demo\default.html" />
     <Content Include="Views\Home\about.html" />
     <Content Include="Views\Home\contact.html" />

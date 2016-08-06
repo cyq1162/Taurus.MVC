@@ -144,10 +144,10 @@ namespace Taurus.Controllers
                 dt.Bind(View);//取UsersView或defaultView节点。
 
             }
-            if (IsHttpPost)
-            {
-                BtnEvent();
-            }
+            //if (IsHttpPost)
+            //{
+            //    BtnEvent();
+            //}
 
             //View 操作 UI
             //View.LoadData(ut.Select<UserType>());
@@ -167,6 +167,46 @@ namespace Taurus.Controllers
         {
 
         }
+        #region 按钮事件
+        public void BtnAdd()
+        {
+            using (Users u = new Users())
+            {
+                string path = SavePic();
+                if (path != null)
+                {
+                    u.HeadImgUrl = path;
+                }
+                if (u.Insert(true))
+                {
+                    Reflesh(u.ID);
+                }
+            }
+        }
+        public void BtnUpdate()
+        {
+            using (Users u = new Users())
+            {
+                string path = SavePic();
+                if (path != null)
+                {
+                    u.HeadImgUrl = path;
+                }
+                if (u.Update(null, true))
+                {
+                    Reflesh(u.ID);
+                }
+            }
+        }
+        public void BtnDelete()
+        {
+            using (Users u = new Users())
+            {
+                u.Delete();
+                Reflesh(1);
+            }
+        }
+        #endregion
         #endregion
 
         #region 其它过程方法
@@ -210,47 +250,47 @@ namespace Taurus.Controllers
             return null;
         }
 
-        private void BtnEvent()
-        {
-            if (IsClick("btnAdd"))
-            {
-                using (Users u = new Users())
-                {
-                    string path = SavePic();
-                    if (path != null)
-                    {
-                        u.HeadImgUrl = path;
-                    }
-                    if (u.Insert(true))
-                    {
-                        Reflesh(u.ID);
-                    }
-                }
-            }
-            if (IsClick("btnUpdate"))
-            {
-                using (Users u = new Users())
-                {
-                    string path = SavePic();
-                    if (path != null)
-                    {
-                        u.HeadImgUrl = path;
-                    }
-                    if (u.Update(null, true))
-                    {
-                        Reflesh(u.ID);
-                    }
-                }
-            }
-            else if (IsClick("btnDelete"))
-            {
-                using (Users u = new Users())
-                {
-                    u.Delete();
-                    Reflesh(1);
-                }
-            }
-        }
+        //private void BtnEvent()
+        //{
+        //    if (IsClick("btnAdd"))
+        //    {
+        //        using (Users u = new Users())
+        //        {
+        //            string path = SavePic();
+        //            if (path != null)
+        //            {
+        //                u.HeadImgUrl = path;
+        //            }
+        //            if (u.Insert(true))
+        //            {
+        //                Reflesh(u.ID);
+        //            }
+        //        }
+        //    }
+        //    if (IsClick("btnUpdate"))
+        //    {
+        //        using (Users u = new Users())
+        //        {
+        //            string path = SavePic();
+        //            if (path != null)
+        //            {
+        //                u.HeadImgUrl = path;
+        //            }
+        //            if (u.Update(null, true))
+        //            {
+        //                Reflesh(u.ID);
+        //            }
+        //        }
+        //    }
+        //    else if (IsClick("btnDelete"))
+        //    {
+        //        using (Users u = new Users())
+        //        {
+        //            u.Delete();
+        //            Reflesh(1);
+        //        }
+        //    }
+        //}
 
         string View_OnForeach(string text, object[] values, int rowIndex)
         {
