@@ -39,6 +39,9 @@ namespace Taurus.Core
                 string methodName = string.Empty;
                 switch (RouteConfig.RouteMode)
                 {
+                    case 0:
+                        methodName = items[0];
+                        break;
                     case 1:
                         if (items.Length > 1)
                         {

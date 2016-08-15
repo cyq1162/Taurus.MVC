@@ -292,9 +292,9 @@ namespace Taurus.Controllers
         //    }
         //}
 
-        string View_OnForeach(string text, object[] values, int rowIndex)
+        string View_OnForeach(string text, Dictionary<string,string> values, int rowIndex)
         {
-            values[3] = Convert.ToString(values[3]) == "1" ? "Boy" : "Girl";
+            values["Sex"] = values["Sex"] == "1" ? "Boy" : "Girl";
             return text;
         }
         #endregion

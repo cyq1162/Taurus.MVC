@@ -65,15 +65,19 @@ namespace Taurus.Core
             {
                 //ViewController是由页面的前两个路径决定了。
                 string[] items = localPath.Trim('/').Split('/');
-                string className = items[0];
-                if (RouteConfig.RouteMode == 2)
+                string className = InvokeLogic.Default;
+                if (RouteConfig.RouteMode == 1)
+                {
+                    className = items[0];
+                }
+                else if (RouteConfig.RouteMode == 2)
                 {
                     className = items.Length > 1 ? items[1] : "";
                 }
                 t = InvokeLogic.GetType(className);
                 if (t == null)
                 {
-                    WriteError("Can't find the controller!");
+                    WriteError("You need a controller for coding!");
                 }
                 try
                 {

@@ -66,6 +66,11 @@
             获取当前Dll的版本号
             </summary>
         </member>
+        <member name="P:CYQ.Data.AppConfig.RunPath">
+            <summary>
+            框架的运行路径（Bin目录）
+            </summary>
+        </member>
         <member name="T:CYQ.Data.AppConfig.XHtml">
             <summary>
             XHtml 相关的配置
@@ -183,6 +188,11 @@
         <member name="P:CYQ.Data.AppConfig.Cache.IsAutoCache">
             <summary>
             是否智能缓存数据（默认开启）
+            </summary>
+        </member>
+        <member name="P:CYQ.Data.AppConfig.Cache.NoCacheTables">
+            <summary>
+            AutoCache开启时，可以设置不缓存的Table，多个用逗号分隔
             </summary>
         </member>
         <member name="T:CYQ.Data.AppConfig.Log">
@@ -800,6 +810,12 @@
             <param name="paraName">参数名称</param>
             <param name="paraType">参数类型</param>
             <param name="value">参数值</param>
+        </member>
+        <member name="M:CYQ.Data.MProc.SetCustom(System.Object,CYQ.Data.ParaType,System.Object,System.String)">
+            <summary>
+            设置特殊自定义参数
+            </summary>
+            <param name="typeName">MSSQL的用户定义表类型的名称</param>
         </member>
         <member name="M:CYQ.Data.MProc.Clear">
             <summary>
@@ -1995,6 +2011,11 @@
         <member name="F:CYQ.Data.ParaType.NCLOB">
             <summary>
              Oracle NCLOB类型
+            </summary>
+        </member>
+        <member name="F:CYQ.Data.ParaType.Structured">
+            <summary>
+             MSSQL 用户定义表类型
             </summary>
         </member>
         <member name="T:CYQ.Data.DbResetResult">

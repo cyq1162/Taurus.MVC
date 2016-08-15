@@ -11,7 +11,8 @@ namespace Taurus.Core
     public static class RouteConfig
     {
         /// <summary>
-        /// 配置模式【值为1或2】
+        /// 配置模式【值为0,1或2】[默认为1]
+        /// 值为0：匹配{Action}/{Para}
         /// 值为1：匹配{Controller}/{Action}/{Para}
         /// 值为2：匹配{Module}/{Controller}/{Action}/{Para}
         /// </summary>

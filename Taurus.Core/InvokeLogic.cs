@@ -114,7 +114,7 @@ namespace Taurus.Core
                 {
                     if (!typeMethods.ContainsKey(key))
                     {
-                        MethodInfo[] items = t.GetMethods();
+                        MethodInfo[] items = t.GetMethods(BindingFlags.Instance | BindingFlags.Public | BindingFlags.DeclaredOnly);
                         dic = new Dictionary<string, MethodInfo>(StringComparer.OrdinalIgnoreCase);
                         foreach (MethodInfo item in items)
                         {
