@@ -1,4 +1,5 @@
 ﻿using CYQ.Data;
+using CYQ.Data.Tool;
 using System;
 using System.Collections.Generic;
 using System.IO;
@@ -25,7 +26,7 @@ namespace Taurus.Core
 
         void context_Error(object sender, EventArgs e)
         {
-            if (HttpContext.Current.Request.Url.LocalPath.IndexOf('.') == -1)//无后缀的请求。
+            if (QueryTool.IsTaurusSuffix())//无后缀的请求。
             {
                 Log.WriteLogToTxt(HttpContext.Current.Error);
             }
@@ -47,7 +48,7 @@ namespace Taurus.Core
         {
             if (QueryTool.IsUseUISite)
             {
-                if (context.Request.Url.LocalPath.IndexOf('.') == -1) // 只处理无后缀请求。
+                if (QueryTool.IsTaurusSuffix()) // 只处理无后缀请求。
                 {
                     //如果项目需要部署成子应用程序，则开启，否则不需要开启（可注释掉下面一行代码）
                     context.Response.Filter = new HttpResponseFilter(context.Response.Filter);
@@ -59,12 +60,11 @@ namespace Taurus.Core
         #region 逻辑反射调用Controlls的方法
         private void InvokeClass()
         {
-            string localPath = context.Request.Url.LocalPath;
-            Type t = null;
-            if (localPath.IndexOf(".") == -1) // 处理Mvc请求
+            if (QueryTool.IsTaurusSuffix()) // 处理Mvc请求
             {
+                Type t = null;
                 //ViewController是由页面的前两个路径决定了。
-                string[] items = localPath.Trim('/').Split('/');
+                string[] items = QueryTool.GetLocalPath().Trim('/').Split('/');
                 string className = InvokeLogic.Default;
                 if (RouteConfig.RouteMode == 1)
                 {
@@ -96,9 +96,11 @@ namespace Taurus.Core
         }
         private void WriteError(string tip)
         {
-            context.Response.Write(tip);
+            context.Response.Write(JsonHelper.OutResult(false, tip));
             context.Response.End();
         }
         #endregion
+
+      
     }
 }

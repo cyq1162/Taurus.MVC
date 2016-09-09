@@ -35,7 +35,7 @@ namespace Taurus.Core
             try
             {
                 Type t = _ControllerType = this.GetType();
-                string[] items = context.Request.Url.LocalPath.Trim('/').Split('/');
+                string[] items = QueryTool.GetLocalPath().Trim('/').Split('/');
                 string methodName = string.Empty;
                 switch (RouteConfig.RouteMode)
                 {
@@ -202,7 +202,7 @@ namespace Taurus.Core
                 if (_Para == null)
                 {
                     _Para = "";
-                    string[] items = Context.Request.Url.LocalPath.Trim('/').Split('/');
+                    string[] items = QueryTool.GetLocalPath().Trim('/').Split('/');
                     switch (RouteConfig.RouteMode)
                     {
                         case 1:

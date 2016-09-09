@@ -12,6 +12,29 @@ namespace Taurus.Core
 {
     internal static class QueryTool
     {
+        #region 增加扩展后缀支持
+
+        public static string GetLocalPath()
+        {
+            string localPath = HttpContext.Current.Request.Url.LocalPath;
+            string suffix = AppConfig.GetApp("Taurus.Suffix", "");
+            if (suffix != "" && localPath.EndsWith(suffix))
+            {
+                return localPath.Replace(suffix, "");
+            }
+            return localPath;
+        }
+        public static bool IsTaurusSuffix()
+        {
+            string localPath = HttpContext.Current.Request.Url.LocalPath;
+            string suffix = AppConfig.GetApp("Taurus.Suffix", "");
+            if (suffix != "" && localPath.EndsWith(suffix))
+            {
+                return true;
+            }
+            return localPath.IndexOf('.') == -1;
+        }
+        #endregion
         /// <summary>
         /// 是否使用子目录部署网站
         /// </summary>
