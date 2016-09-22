@@ -33,14 +33,14 @@ namespace Taurus.Core
         {
             if (_Assembly == null)
             {
-                try
-                {
-                    _Assembly = Assembly.Load(DllName);
-                }
-                catch (Exception err)
-                {
-                    Log.WriteLogToTxt(err);
-                }
+                //try
+                //{
+                    _Assembly = Assembly.Load(DllName); // 可直接抛异常。
+                //}
+                //catch (Exception err)
+                //{
+                //    Log.WriteLogToTxt(err);
+                //}
             }
             return _Assembly;
         }
@@ -57,8 +57,6 @@ namespace Taurus.Core
         /// <summary>
         /// 获取控制器
         /// </summary>
-        /// <param name="typeFlag">0：Ajax控制器；1：View控制器</param>
-        /// <returns></returns>
         private static Dictionary<string, Type> GetControllers()
         {
             if (_Controllers.Count == 0)
@@ -68,6 +66,10 @@ namespace Taurus.Core
                     if (_Controllers.Count == 0)
                     {
                         Assembly ass = GetAssembly();
+                        if (ass == null)
+                        {
+                            throw new Exception("Please make sure web.config'appSetting <add key=\"Taurus.Controllers\" value=\"YourControllerProjectName\") is right!");
+                        }
                         Type[] typeList = ass.GetExportedTypes();
                         foreach (Type type in typeList)
                         {
@@ -103,14 +105,14 @@ namespace Taurus.Core
 
         #region GetMethods
         static Dictionary<string, Dictionary<string, MethodInfo>> typeMethods = new Dictionary<string, Dictionary<string, MethodInfo>>();
-        static readonly object objlockMethod = new object();
+        static readonly object methodObj = new object();
         internal static MethodInfo GetMethod(Type t, string methodName)
         {
             string key = t.FullName;
             Dictionary<string, MethodInfo> dic = null;
             if (!typeMethods.ContainsKey(key))
             {
-                lock (objlockMethod)
+                lock (methodObj)
                 {
                     if (!typeMethods.ContainsKey(key))
                     {
