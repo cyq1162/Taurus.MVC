@@ -187,6 +187,9 @@ namespace Taurus.Controllers
         {
             using (Users u = new Users())
             {
+                u.LoadFrom(true);
+                //Users u2 = u.RawData.ToEntity<Users>();
+                string name = u.Name;
                 string path = SavePic();
                 if (path != null)
                 {

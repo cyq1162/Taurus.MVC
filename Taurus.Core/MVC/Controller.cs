@@ -8,6 +8,7 @@ using CYQ.Data.Xml;
 using CYQ.Data;
 using System.IO;
 using System.Xml;
+using CYQ.Data.Tool;
 namespace Taurus.Core
 {
     /// <summary>
@@ -15,6 +16,7 @@ namespace Taurus.Core
     /// </summary>
     public abstract partial class Controller : IHttpHandler, IRequiresSessionState
     {
+        private StringBuilder apiResult = new StringBuilder();
         /// <summary>
         /// 取消继续调用事件（可以在重载BeforeInvoke方法内使用）
         /// </summary>
@@ -99,9 +101,9 @@ namespace Taurus.Core
                     {
                         context.Response.Write(View.OutXml);
                     }
-                    else if (!string.IsNullOrEmpty(ajaxResult))
+                    else if (apiResult.Length > 0)
                     {
-                        context.Response.Write(ajaxResult);
+                        context.Response.Write(apiResult.ToString());
                     }
                 }
             }
@@ -292,21 +294,22 @@ namespace Taurus.Core
         {
             return QueryTool.Query<T>(key, defaultValue, false);
         }
-
-        protected string ajaxResult = string.Empty;
         /// <summary>
-        /// Ajax发起的请求，需要返回值时，对此赋值即可。
+        /// 输出Ajax或API的请求数据
         /// </summary>
-        public string AjaxResult
+        /// <param name="msg">消息内容</param>
+        public void Write(string msg)
         {
-            get
-            {
-                return ajaxResult;
-            }
-            set
-            {
-                ajaxResult = value;
-            }
+            apiResult.Append(msg);
+        }
+        /// <summary>
+        /// 输出Ajax或API的请求数据（Json格式）
+        /// </summary>
+        /// <param name="msg">消息内容</param>
+        /// <param name="isSuccess">成功或失败</param>
+        public void Write(string msg, bool isSuccess)
+        {
+            apiResult.Append(JsonHelper.OutResult(isSuccess, msg));
         }
     }
 }

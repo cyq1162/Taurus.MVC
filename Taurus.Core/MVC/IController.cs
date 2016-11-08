@@ -19,6 +19,7 @@ namespace Taurus.Core
         Type ControllerType { get; }
         string Action { get; }
         string Para { get; }
-        string AjaxResult { get; set; }
+        void Write(string msg);
+        void Write(string msg, bool isSuccess);
     }
 }

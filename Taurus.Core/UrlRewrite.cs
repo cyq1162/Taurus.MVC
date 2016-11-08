@@ -36,6 +36,7 @@ namespace Taurus.Core
         HttpContext context;
         void context_BeginRequest(object sender, EventArgs e)
         {
+            
             if (QueryTool.IsTaurusSuffix())
             {
                 HttpApplication app = (HttpApplication)sender;

@@ -14,6 +14,7 @@ namespace Taurus.Core
         internal const string Default = "Default";
         internal const string Controller = "Controller";
         internal const string DefaultController = "DefaultController";
+        internal const string TaurusController = "Taurus.Core.Controller";
 
         #region GetAssembly
         private static string _DllName;
@@ -73,9 +74,12 @@ namespace Taurus.Core
                         Type[] typeList = ass.GetExportedTypes();
                         foreach (Type type in typeList)
                         {
-                            if (type.BaseType != null && type.BaseType.Name == Controller)
+                            if (type.Name.EndsWith(Controller))
                             {
-                                _Controllers.Add(type.Name.Replace(Controller, ""), type);
+                                if (type.BaseType != null && type.BaseType.FullName == TaurusController)
+                                {
+                                    _Controllers.Add(type.Name.Replace(Controller, ""), type);
+                                }
                             }
                         }
                     }

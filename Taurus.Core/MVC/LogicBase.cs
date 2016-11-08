@@ -9,11 +9,11 @@ namespace Taurus.Core
 {
     public abstract partial class LogicBase : IController
     {
-        IController _IViewBase;
+        IController _IController;
 
         public LogicBase(IController controller)
         {
-            _IViewBase = controller;
+            _IController = controller;
         }
         private LogicBase()
         {
@@ -23,60 +23,60 @@ namespace Taurus.Core
         #region _ICommon
         public string Order
         {
-            get { return _IViewBase.Order; }
+            get { return _IController.Order; }
         }
         public string Sort
         {
-            get { return _IViewBase.Sort; }
+            get { return _IController.Sort; }
         }
         public int PageIndex
         {
-            get { return _IViewBase.PageIndex; }
+            get { return _IController.PageIndex; }
         }
 
         public int PageSize
         {
-            get { return _IViewBase.PageSize; }
+            get { return _IController.PageSize; }
         }
         public T Query<T>(Enum key)
         {
-            return _IViewBase.Query<T>(key);
+            return _IController.Query<T>(key);
         }
         public T Query<T>(string key)
         {
-            return _IViewBase.Query<T>(key);
+            return _IController.Query<T>(key);
         }
 
         public T Query<T>(string key, T defaultValue)
         {
-            return _IViewBase.Query<T>(key, defaultValue);
+            return _IController.Query<T>(key, defaultValue);
         }
         public HttpContext Context
         {
             get
             {
-                return _IViewBase.Context;
+                return _IController.Context;
             }
         }
         public bool IsHttpGet
         {
-            get { return _IViewBase.IsHttpGet; }
+            get { return _IController.IsHttpGet; }
         }
 
         public bool IsHttpPost
         {
-            get { return _IViewBase.IsHttpPost; }
+            get { return _IController.IsHttpPost; }
         }
 
         public XHtmlAction View
         {
             get
             {
-                return _IViewBase.View;
+                return _IController.View;
             }
             set
             {
-                _IViewBase.View = value;
+                _IController.View = value;
             }
         }
         #endregion
@@ -84,30 +84,27 @@ namespace Taurus.Core
 
         public Type ControllerType
         {
-            get { return _IViewBase.ControllerType; }
+            get { return _IController.ControllerType; }
         }
 
         public string Action
         {
-            get { return _IViewBase.Action; }
+            get { return _IController.Action; }
         }
 
         public string Para
         {
-            get { return _IViewBase.Para; }
+            get { return _IController.Para; }
         }
 
-
-        public string AjaxResult
+        public void Write(string msg)
         {
-            get
-            {
-                return _IViewBase.AjaxResult;
-            }
-            set
-            {
-                _IViewBase.AjaxResult = value; ;
-            }
+            _IController.Write(msg);
+        }
+
+        public void Write(string msg, bool isSucess)
+        {
+            _IController.Write(msg);
         }
     }
 }

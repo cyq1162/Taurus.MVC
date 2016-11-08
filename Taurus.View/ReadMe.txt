@@ -32,3 +32,7 @@
 
 A：项目需要有对应的Controller项目，默认的配置的项目名称：Taurus.Controllers
 B：根据运行模式注释掉Taurus.Core配置的其中一个。
+
+更新日志：
+1：升级CYQ.Data 版本。
+2：取消ajaxResult属性，增加Write方法用于输出数据。
