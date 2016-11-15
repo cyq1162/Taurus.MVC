@@ -15,6 +15,7 @@ namespace Taurus.Core
         internal const string Controller = "Controller";
         internal const string DefaultController = "DefaultController";
         internal const string TaurusController = "Taurus.Core.Controller";
+        internal const string CheckToken = "CheckToken";
 
         #region GetAssembly
         private static string _DllName;
@@ -36,7 +37,7 @@ namespace Taurus.Core
             {
                 //try
                 //{
-                    _Assembly = Assembly.Load(DllName); // 可直接抛异常。
+                _Assembly = Assembly.Load(DllName); // 可直接抛异常。
                 //}
                 //catch (Exception err)
                 //{
@@ -108,9 +109,32 @@ namespace Taurus.Core
         #endregion
 
         #region GetMethods
+        private static MethodInfo _CheckTokenMethod = null;
+        public static MethodInfo CheckTokenMethod
+        {
+            get
+            {
+                if (_CheckTokenMethod == null)
+                {
+                    Type t = GetType(DefaultController);
+                    if (t != null)
+                    {
+                        _CheckTokenMethod = t.GetMethod(CheckToken, BindingFlags.Static | BindingFlags.Public);
+                    }
+                }
+                return _CheckTokenMethod;
+            }
+        }
         static Dictionary<string, Dictionary<string, MethodInfo>> typeMethods = new Dictionary<string, Dictionary<string, MethodInfo>>();
+        static Dictionary<string, bool> checkTokens = new Dictionary<string, bool>(StringComparer.OrdinalIgnoreCase);
+
         static readonly object methodObj = new object();
         internal static MethodInfo GetMethod(Type t, string methodName)
+        {
+            bool hasTokenAttr;
+            return GetMethod(t, methodName, out hasTokenAttr);
+        }
+        internal static MethodInfo GetMethod(Type t, string methodName, out bool hasTokenAttr)
         {
             string key = t.FullName;
             Dictionary<string, MethodInfo> dic = null;
@@ -120,12 +144,22 @@ namespace Taurus.Core
                 {
                     if (!typeMethods.ContainsKey(key))
                     {
+                        Type tokenType = typeof(TokenAttribute);
+                        bool hasToken = t.GetCustomAttributes(tokenType, true).Length > 0;
+                        if (hasToken)
+                        {
+                            checkTokens.Add(key, true);
+                        }
                         MethodInfo[] items = t.GetMethods(BindingFlags.Instance | BindingFlags.Public | BindingFlags.DeclaredOnly);
                         dic = new Dictionary<string, MethodInfo>(StringComparer.OrdinalIgnoreCase);
                         foreach (MethodInfo item in items)
                         {
                             if (!dic.ContainsKey(item.Name))//对于重载的同名方法，只取第一个空方法。
                             {
+                                if (!hasToken && item.GetCustomAttributes(tokenType, true).Length > 0)
+                                {
+                                    checkTokens.Add(key + "." + item.Name, true);
+                                }
                                 dic.Add(item.Name, item);
                             }
                         }
@@ -134,15 +168,16 @@ namespace Taurus.Core
                 }
             }
             dic = typeMethods[key];
-            if (dic.ContainsKey(methodName))
+            if (!dic.ContainsKey(methodName))
             {
-                return dic[methodName];
+                methodName = Default;
             }
-            if (dic.ContainsKey(Default))
+            hasTokenAttr = checkTokens.ContainsKey(key);
+            if (!hasTokenAttr)
             {
-                return dic[Default];
+                hasTokenAttr = checkTokens.ContainsKey(key + "." + methodName);
             }
-            return null;
+            return dic[methodName];
         }
         #endregion
     }

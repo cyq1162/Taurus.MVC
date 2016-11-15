@@ -6,11 +6,11 @@ using System.Runtime.InteropServices;
 // 控制。更改这些属性值可修改
 // 与程序集关联的信息。
 [assembly: AssemblyTitle("Taurus.MVC Core")]
-[assembly: AssemblyDescription("Taurus开发框架核心库 (http://www.cyqdata.com)")]
+[assembly: AssemblyDescription("Taurus开发框架核心库 (http://taurus.cyqdata.com)")]
 [assembly: AssemblyConfiguration("")]
-[assembly: AssemblyCompany("秋式软件 （2016-09-22）")]
+[assembly: AssemblyCompany("路过秋天 （2016-11-16）")]
 [assembly: AssemblyProduct("Taurus.MVC Core")]
-[assembly: AssemblyCopyright("Copyright ©  秋式软件 2016-2096")]
+[assembly: AssemblyCopyright("Copyright ©  路过秋天 2016-2096")]
 [assembly: AssemblyTrademark("Taurus.MVC")]
 [assembly: AssemblyCulture("")]
 
@@ -31,5 +31,5 @@ using System.Runtime.InteropServices;
 //
 // 可以指定所有这些值，也可以使用“修订号”和“内部版本号”的默认值，
 // 方法是按如下所示使用“*”:
-[assembly: AssemblyVersion("1.7.1.0")]
-[assembly: AssemblyFileVersion("1.7.1.0")]
+[assembly: AssemblyVersion("2.0.0.0")]
+[assembly: AssemblyFileVersion("2.0.0.0")]

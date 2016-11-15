@@ -6,12 +6,12 @@ using System.Runtime.InteropServices;
 // 控制。更改这些属性值可修改
 // 与程序集关联的信息。
 [assembly: AssemblyTitle("Taurus.Controllers")]
-[assembly: AssemblyDescription("")]
+[assembly: AssemblyDescription("Taurus开发框架控制层 (http://taurus.cyqdata.com)")]
 [assembly: AssemblyConfiguration("")]
-[assembly: AssemblyCompany("Microsoft")]
+[assembly: AssemblyCompany("路过秋天 （2016-11-16）")]
 [assembly: AssemblyProduct("Taurus.Controllers")]
-[assembly: AssemblyCopyright("版权所有 (C) Microsoft 2016")]
-[assembly: AssemblyTrademark("")]
+[assembly: AssemblyCopyright("Copyright ©  路过秋天 2016-2096")]
+[assembly: AssemblyTrademark("Taurus.MVC")]
 [assembly: AssemblyCulture("")]
 
 // 将 ComVisible 设置为 false 使此程序集中的类型
@@ -31,5 +31,5 @@ using System.Runtime.InteropServices;
 //
 // 可以指定所有这些值，也可以使用“修订号”和“内部版本号”的默认值，
 // 方法是按如下所示使用“*”:
-[assembly: AssemblyVersion("1.0.0.0")]
-[assembly: AssemblyFileVersion("1.0.0.0")]
+[assembly: AssemblyVersion("2.0.0.0")]
+[assembly: AssemblyFileVersion("2.0.0.0")]

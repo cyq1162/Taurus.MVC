@@ -57,9 +57,19 @@ namespace Taurus.Core
                         }
                         break;
                 }
-                MethodInfo method = InvokeLogic.GetMethod(t, methodName);
+                bool hasTokenAttr = false;
+                MethodInfo method = InvokeLogic.GetMethod(t, methodName, out hasTokenAttr);
                 if (method != null)
                 {
+                    //CheckToken
+                    if (hasTokenAttr && InvokeLogic.CheckTokenMethod != null)
+                    {
+                        bool hasToken = Convert.ToBoolean(InvokeLogic.CheckTokenMethod.Invoke(null, new object[] { this }));
+                        if (!hasToken)
+                        {
+                            context.Response.End();
+                        }
+                    }
                     _Action = method.Name;
                     BeforeInvoke(method.Name);
                     if (!CancelLoadHtml)
@@ -135,7 +145,14 @@ namespace Taurus.Core
         {
 
         }
-
+        /// <summary>
+        /// 检测授权是否通过
+        /// </summary>
+        /// <returns></returns>
+        public virtual bool CheckToken()
+        {
+            return true;
+        }
         /// <summary>
         /// 是否点击了某事件
         /// </summary>

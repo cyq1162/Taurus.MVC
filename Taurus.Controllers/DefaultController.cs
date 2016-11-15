@@ -14,5 +14,14 @@ namespace Taurus.Controllers
         {
             
         }
+        /*
+        本方法可以在其它文件里实现（partial类）
+        public static bool CheckToken(IController controller)
+        {
+            //实现Token验证
+            controller.Context.Response.Write("NoToken");
+            return false;
+        }
+         */
     }
 }
