@@ -177,7 +177,11 @@ namespace Taurus.Core
             {
                 hasTokenAttr = checkTokens.ContainsKey(key + "." + methodName);
             }
-            return dic[methodName];
+            if (dic.ContainsKey(methodName))
+            {
+                return dic[methodName];
+            }
+            return null;
         }
         #endregion
     }
