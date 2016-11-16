@@ -64,7 +64,7 @@ namespace Taurus.Core
                     //CheckToken
                     if (hasTokenAttr && InvokeLogic.CheckTokenMethod != null)
                     {
-                        bool hasToken = Convert.ToBoolean(InvokeLogic.CheckTokenMethod.Invoke(null, new object[] { this }));
+                        bool hasToken = Convert.ToBoolean(InvokeLogic.CheckTokenMethod.Invoke(null, new object[] { this, methodName }));
                         if (!hasToken)
                         {
                             context.Response.End();
@@ -312,7 +312,7 @@ namespace Taurus.Core
             return QueryTool.Query<T>(key, defaultValue, false);
         }
         /// <summary>
-        /// 输出Ajax或API的请求数据
+        /// 输出原始msg的数据
         /// </summary>
         /// <param name="msg">消息内容</param>
         public void Write(string msg)
@@ -320,13 +320,21 @@ namespace Taurus.Core
             apiResult.Append(msg);
         }
         /// <summary>
-        /// 输出Ajax或API的请求数据（Json格式）
+        /// 输出Json格式的数据
         /// </summary>
         /// <param name="msg">消息内容</param>
         /// <param name="isSuccess">成功或失败</param>
         public void Write(string msg, bool isSuccess)
         {
             apiResult.Append(JsonHelper.OutResult(isSuccess, msg));
+        }
+        /// <summary>
+        /// 传进对象时，会自动将对象转Json
+        /// </summary>
+        /// <param name="obj">对象或支持IEnumerable接口的对象列表</param>
+        public void Write(object obj)
+        {
+            Write(JsonHelper.ToJson(obj));
         }
     }
 }

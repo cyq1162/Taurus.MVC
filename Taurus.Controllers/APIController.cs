@@ -16,6 +16,12 @@ namespace Taurus.Controllers
         }
         public void SayHello2()
         {
+            List<string> list = new List<string>();
+            for (int i = 0; i < 5; i++)
+            {
+                list.Add(i.ToString());
+            }
+            Write(list);
             Write("<a href='/index'>Hello：</a>");
             Write("World!", true);
         }
