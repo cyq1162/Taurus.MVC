@@ -9,20 +9,24 @@ using CYQ.Data;
 using System.IO;
 using System.Xml;
 using CYQ.Data.Tool;
+using CYQ.Data.Table;
 namespace Taurus.Core
 {
     /// <summary>
-    /// 视图控制器基类
+    /// the base of Controller
+    /// <para>控制器基类</para>
     /// </summary>
     public abstract partial class Controller : IHttpHandler, IRequiresSessionState
     {
         private StringBuilder apiResult = new StringBuilder();
         /// <summary>
-        /// 取消继续调用事件（可以在重载BeforeInvoke方法内使用）
+        /// to stop invoke method
+        /// <para>取消继续调用事件（可以在重载BeforeInvoke方法内使用）</para>
         /// </summary>
         protected bool CancelInvoke = false;
         /// <summary>
-        /// 是否取消加载Html文件
+        /// to stop load view html
+        /// <para>是否取消加载Html文件</para>
         /// </summary>
         protected bool CancelLoadHtml = false;
         HttpContext context;
@@ -117,6 +121,9 @@ namespace Taurus.Core
 
             context.Response.End();
         }
+        /// <summary>
+        /// Write log to txt
+        /// </summary>
         protected void WriteError(string msg)
         {
             Log.WriteLogToTxt(msg);
@@ -134,7 +141,8 @@ namespace Taurus.Core
 
         }
         /// <summary>
-        /// 检测授权是否通过
+        /// if the result is false will stop invoke method
+        /// <para>检测授权是否通过</para>
         /// </summary>
         /// <returns></returns>
         public virtual bool CheckToken()
@@ -142,9 +150,10 @@ namespace Taurus.Core
             return true;
         }
         /// <summary>
-        /// 是否点击了某事件
+        /// is button event
+        /// <para>是否点击了某事件</para>
         /// </summary>
-        /// <param name="btnName">按钮名称</param>
+        /// <param name="btnName">button name<para>按钮名称</para></param>
         protected bool IsClick(string btnName)
         {
             return Query<string>(btnName) != null;
@@ -172,7 +181,8 @@ namespace Taurus.Core
     {
         private XHtmlAction _View;
         /// <summary>
-        /// 视图模板引擎
+        /// the View Engine
+        /// <para>视图模板引擎</para>
         /// </summary>
         public XHtmlAction View
         {
@@ -186,6 +196,9 @@ namespace Taurus.Core
             }
         }
         private Type _ControllerType;
+        /// <summary>
+        /// Controller Type
+        /// </summary>
         public Type ControllerType
         {
             get
@@ -194,6 +207,9 @@ namespace Taurus.Core
             }
         }
         private string _Action;
+        /// <summary>
+        /// Action value
+        /// </summary>
         public string Action
         {
             get
@@ -202,6 +218,9 @@ namespace Taurus.Core
             }
         }
         private string _Para;
+        /// <summary>
+        /// Para value
+        /// </summary>
         public string Para
         {
             get
@@ -231,7 +250,8 @@ namespace Taurus.Core
             }
         }
         /// <summary>
-        /// datagrid分页的页码数
+        /// request["page"]
+        /// <para>datagrid分页的第N页</para>
         /// </summary>
         public int PageIndex
         {
@@ -241,7 +261,8 @@ namespace Taurus.Core
             }
         }
         /// <summary>
-        /// datagrid分页的页容量
+        /// request["rows"]
+        /// <para>datagrid分页的每页N条</para>
         /// </summary>
         public int PageSize
         {
@@ -252,7 +273,8 @@ namespace Taurus.Core
         }
 
         /// <summary>
-        /// 排序字段名
+        /// request["sort"]
+        /// <para>排序字段名</para>
         /// </summary>
         public string Sort
         {
@@ -263,7 +285,8 @@ namespace Taurus.Core
 
         }
         /// <summary>
-        /// 排序类型（升或降）
+        /// request["order"]
+        /// <para>排序类型（升或降） default desc</para>
         /// </summary>
         public string Order
         {
@@ -286,7 +309,9 @@ namespace Taurus.Core
         {
             get { return Context.Request.RequestType == "POST"; }
         }
-
+        /// <summary>
+        /// Get Request value
+        /// </summary>
         public T Query<T>(Enum key)
         {
             return Query<T>(key.ToString(), default(T));
@@ -300,29 +325,49 @@ namespace Taurus.Core
             return QueryTool.Query<T>(key, defaultValue, false);
         }
         /// <summary>
-        /// 输出原始msg的数据
+        /// Write String result
+        /// <para> 输出原始msg的数据</para>
         /// </summary>
-        /// <param name="msg">消息内容</param>
+        /// <param name="msg">message<para>消息内容</para></param>
         public void Write(string msg)
         {
             apiResult.Append(msg);
         }
         /// <summary>
-        /// 输出Json格式的数据
+        /// Write Json result
+        /// <para>输出Json格式的数据</para>
         /// </summary>
-        /// <param name="msg">消息内容</param>
-        /// <param name="isSuccess">成功或失败</param>
+        /// <param name="isSuccess">success or not</param>
         public void Write(string msg, bool isSuccess)
         {
             apiResult.Append(JsonHelper.OutResult(isSuccess, msg));
         }
         /// <summary>
-        /// 传进对象时，会自动将对象转Json
+        /// Write Json result
+        /// <para>传进对象时，会自动将对象转Json</para>
         /// </summary>
-        /// <param name="obj">对象或支持IEnumerable接口的对象列表</param>
+        /// <param name="obj">any obj is ok<para>对象或支持IEnumerable接口的对象列表</para></param>
         public void Write(object obj)
         {
             Write(JsonHelper.ToJson(obj));
+        }
+
+        public void Write(object obj, bool isSuccess)
+        {
+            Write(JsonHelper.ToJson(obj), isSuccess);
+        }
+
+        /// <summary>
+        /// Get entity from post form
+        /// <para>从Post过来的数据中获得实体类型的转换</para>
+        /// </summary>
+        /// <returns></returns>
+        public T GetEntity<T>()
+        {
+            object obj = Activator.CreateInstance(typeof(T));
+            MDataRow row = MDataRow.CreateFrom(obj);
+            row.LoadFrom();
+            return row.ToEntity<T>();
         }
     }
 }

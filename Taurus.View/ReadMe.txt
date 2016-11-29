@@ -35,4 +35,7 @@ B：根据运行模式注释掉Taurus.Core配置的其中一个。
 
 更新日志：
 1：升级CYQ.Data 版本。
-2：取消ajaxResult属性，增加Write方法用于输出数据。
+2：Controller取消ajaxResult属性，增加Write方法用于输出数据。
+V2.1.1.1
+3：Controller增强Write方法 (2016-11-30)
+4：Controller增加GetEntity<T>()方法 (2016-11-30)

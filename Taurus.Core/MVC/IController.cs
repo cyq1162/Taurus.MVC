@@ -12,6 +12,7 @@ namespace Taurus.Core
         T Query<T>(Enum key);
         T Query<T>(string key);
         T Query<T>(string key, T defaultValue);
+        T GetEntity<T>();
         XHtmlAction View { get; set; }
         HttpContext Context { get; }
         bool IsHttpGet { get; }

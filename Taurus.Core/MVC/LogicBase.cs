@@ -106,5 +106,11 @@ namespace Taurus.Core
         {
             _IController.Write(msg);
         }
+
+
+        public T GetEntity<T>()
+        {
+            return _IController.GetEntity<T>();
+        }
     }
 }
