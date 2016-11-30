@@ -306,28 +306,33 @@
             </summary>
         </member>
         <member name="T:CYQ.Data.AppDebug">
-            <summary>
-            应用程序调试类,能截到应用程序所有执行的SQL
-            </summary>
+             <summary>
+             this class can intercept sql
+            <para> 应用程序调试类,能截到应用程序所有执行的SQL</para>
+             </summary>
         </member>
         <member name="M:CYQ.Data.AppDebug.Start">
             <summary>
-            开始记录调试信息
+            start to record sql
+            <para>开始记录调试信息</para>
             </summary>
         </member>
         <member name="M:CYQ.Data.AppDebug.Stop">
             <summary>
-            停止并清除记录的调试信息
+            stop to record sql
+            <para>停止并清除记录的调试信息</para>
             </summary>
         </member>
         <member name="P:CYQ.Data.AppDebug.IsRecording">
             <summary>
-            正在记录中
+            is recoreding sql ?
+            <para>正在记录中</para>
             </summary>
         </member>
         <member name="P:CYQ.Data.AppDebug.Info">
             <summary>
-            获取调试信息
+            get sql detail info
+            <para>获取调试信息</para>
             </summary>
         </member>
         <member name="T:CYQ.Data.MAction">
@@ -2061,22 +2066,26 @@
         </member>
         <member name="T:CYQ.Data.InsertOp">
             <summary>
-            MAction的Insert方法的返回值选项
+            MAction Insert Options
+            <para>MAction的Insert方法的返回值选项</para>
             </summary>
         </member>
         <member name="F:CYQ.Data.InsertOp.None">
             <summary>
-            使用此项：插入数据后[MSSQL会返回ID,其它数据库则不会返回ID]
+            only insert,no return autoIncrement id
+            <para>使用此项：插入数据后[MSSQL会返回ID,其它数据库则不会返回ID]</para>
             </summary>
         </member>
         <member name="F:CYQ.Data.InsertOp.ID">
             <summary>
-            使用此项：插入数据后会返回ID[默认选项]。
+            insert and return autoincrement id (default option)
+            <para>使用此项：插入数据后会返回ID[默认选项]。</para>
             </summary>
         </member>
         <member name="F:CYQ.Data.InsertOp.Fill">
             <summary>
-            使用此项：插入数据后,会根据返回ID进行查询后填充数据行。
+            insert and select top 1 data to fill row
+            <para>使用此项：插入数据后,会根据返回ID进行查询后填充数据行。</para>
             </summary>
         </member>
         <member name="T:CYQ.Data.Orm.DBFast">
@@ -4525,6 +4534,11 @@
             操作符号:"like"
             </summary>
         </member>
+        <member name="F:CYQ.Data.Table.Op.NotLike">
+            <summary>
+            操作符号:"not like"
+            </summary>
+        </member>
         <member name="F:CYQ.Data.Table.Op.IsNull">
             <summary>
             是否Null值
@@ -4577,7 +4591,7 @@
         </member>
         <member name="M:CYQ.Data.Table.MDataTableFilter.CompareMore(CYQ.Data.Table.MDataRow,System.Collections.Generic.List{CYQ.Data.Table.TFilter})">
             <summary>
-            值比较
+            多条件下值比较
             </summary>
         </member>
         <member name="M:CYQ.Data.Table.MDataTableFilter.SplitWhereOrderby(System.String@,System.String@)">
