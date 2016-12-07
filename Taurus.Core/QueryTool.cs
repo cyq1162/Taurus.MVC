@@ -34,6 +34,10 @@ namespace Taurus.Core
             }
             return localPath.IndexOf('.') == -1;
         }
+        public static bool IsAllowCORS()
+        {
+            return AppConfig.GetAppBool("IsAllowCORS", true);
+        }
         #endregion
         /// <summary>
         /// 是否使用子目录部署网站

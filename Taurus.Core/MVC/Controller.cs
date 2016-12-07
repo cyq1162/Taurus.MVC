@@ -162,14 +162,14 @@ namespace Taurus.Core
         {
             foreach (string name in Context.Request.QueryString)
             {
-                if (name.ToLower().StartsWith("btn"))
+                if (name != null && name.ToLower().StartsWith("btn"))
                 {
                     return name;
                 }
             }
             foreach (string name in Context.Request.Form)
             {
-                if (name.ToLower().StartsWith("btn"))
+                if (name != null && name.ToLower().StartsWith("btn"))
                 {
                     return name;
                 }
@@ -362,12 +362,47 @@ namespace Taurus.Core
         /// <para>从Post过来的数据中获得实体类型的转换</para>
         /// </summary>
         /// <returns></returns>
-        public T GetEntity<T>()
+        public T GetEntity<T>() where T : class
         {
-            object obj = Activator.CreateInstance(typeof(T));
-            MDataRow row = MDataRow.CreateFrom(obj);
-            row.LoadFrom();
-            return row.ToEntity<T>();
+            return JsonHelper.ToEntity<T>(GetJson());
+            //object obj = Activator.CreateInstance(typeof(T));
+            //MDataRow row = MDataRow.CreateFrom(obj);
+            //row.LoadFrom();
+            //return row.ToEntity<T>();
+        }
+        /// <summary>
+        /// 获取Get或Post的数据并转换为Json格式。
+        /// </summary>
+        /// <returns></returns>
+        public string GetJson()
+        {
+            if (IsHttpPost)
+            {
+                if (context.Request.Form.Count > 0)
+                {
+                    if (context.Request.Form.Count == 1 && context.Request.Form.Keys[0] == null)
+                    {
+                        return JsonHelper.ToJson(context.Request.Form[0]);
+                    }
+                    return JsonHelper.ToJson(context.Request.Form);
+                }
+                else
+                {
+                    Stream stream = context.Request.InputStream;
+                    if (stream != null && stream.Length > 0)
+                    {
+                        Byte[] bytes = new Byte[stream.Length];
+                        stream.Read(bytes, 0, bytes.Length);
+                        string data = System.Text.Encoding.UTF8.GetString(bytes);
+                        return JsonHelper.ToJson(data);
+                    }
+                }
+            }
+            else if (IsHttpGet)
+            {
+                return JsonHelper.ToJson(context.Request.Url.Query);
+            }
+            return "{}";
         }
     }
 }

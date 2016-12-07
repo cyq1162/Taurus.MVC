@@ -10,6 +10,8 @@
     <add key="Taurus.Controllers" value="Taurus.Controllers" />
     <!--指定处理的后缀（默认无后缀，可配置.shtml）-->
     <add key="Taurus.Suffix" value=""/>
+	 <!--是否允许跨域请求，默认true-->
+    <add key="IsAllowCORS" value="true"/>
     <!--路由模式【值为0,1或2】[默认为1]
       值为0：匹配{Action}/{Para}
       值为1：匹配{Controller}/{Action}/{Para}
@@ -37,5 +39,10 @@ B：根据运行模式注释掉Taurus.Core配置的其中一个。
 1：升级CYQ.Data 版本。
 2：Controller取消ajaxResult属性，增加Write方法用于输出数据。
 V2.1.1.1
-3：Controller增强Write方法 (2016-11-30)
-4：Controller增加GetEntity<T>()方法 (2016-11-30)
+1：增加Token验证属性：在DefautController中可以定义并实现Token验证：（2016-11-16）（public static bool CheckToken(IController controller, string methodName){}）
+2：Controller增强Write方法 (2016-11-30)
+3：Controller增加GetEntity<T>()方法 (2016-11-30)
+V2.2.0.0
+1：Controller增加GetJson()方法 (2016-12-07)
+2：增加跨域支持(2016-12-07)
+3：增强GetEntity<T>()方法(2016-12-07)

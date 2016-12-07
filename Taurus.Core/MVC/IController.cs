@@ -12,7 +12,7 @@ namespace Taurus.Core
         T Query<T>(Enum key);
         T Query<T>(string key);
         T Query<T>(string key, T defaultValue);
-        T GetEntity<T>();
+        T GetEntity<T>() where T : class;
         XHtmlAction View { get; set; }
         HttpContext Context { get; }
         bool IsHttpGet { get; }
@@ -22,5 +22,6 @@ namespace Taurus.Core
         string Para { get; }
         void Write(string msg);
         void Write(string msg, bool isSuccess);
+        string GetJson();
     }
 }

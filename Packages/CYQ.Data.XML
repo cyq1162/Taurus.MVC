@@ -30,6 +30,11 @@
             获取Web.config或App.config的数字值（允许值不存在或为空时输出默认值）。
             </summary>
         </member>
+        <member name="M:CYQ.Data.AppConfig.GetAppBool(System.String,System.Boolean)">
+            <summary>
+            获取Web.config或App.config的数字值（允许值不存在或为空时输出默认值）。
+            </summary>
+        </member>
         <member name="M:CYQ.Data.AppConfig.GetConn(System.String,System.String@)">
             <summary>
             获取Web.config或App.config的connectionStrings节点的值。

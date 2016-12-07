@@ -108,9 +108,15 @@ namespace Taurus.Core
         }
 
 
-        public T GetEntity<T>()
+        public T GetEntity<T>() where T : class
         {
             return _IController.GetEntity<T>();
+        }
+
+
+        public string GetJson()
+        {
+            return _IController.GetJson();
         }
     }
 }

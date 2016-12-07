@@ -36,16 +36,39 @@ namespace Taurus.Core
         HttpContext context;
         void context_BeginRequest(object sender, EventArgs e)
         {
-            
             if (QueryTool.IsTaurusSuffix())
             {
                 HttpApplication app = (HttpApplication)sender;
                 context = app.Context;
+                CheckCORS();
                 ReplaceOutput();
                 InvokeClass();
             }
         }
 
+        #region 检测CORS跨域请求
+        private void CheckCORS()
+        {
+            if (QueryTool.IsAllowCORS())
+            {
+                if (context.Request.HttpMethod == "OPTIONS")
+                {
+                    context.Response.StatusCode = 204;
+                    context.Response.AppendHeader("Access-Control-Allow-Method", "GET,POST,PUT,DELETE");
+                    context.Response.AppendHeader("Access-Control-Allow-Origin", "*");
+                    context.Response.AppendHeader("Access-Control-Allow-Headers", context.Request.Headers["Access-Control-Allow-Headers"]);
+                    context.Response.End();
+                }
+                else if (context.Request.UrlReferrer != null && context.Request.Url.Host != context.Request.UrlReferrer.Host)
+                {
+                    //跨域访问
+                    context.Response.AppendHeader("Access-Control-Allow-Origin", "*");
+                    context.Response.AppendHeader("Access-Control-Allow-Credentials", "true");
+                }
+            }
+        }
+
+        #endregion
 
 
         #region 替换输出，仅对子目录部署时有效
