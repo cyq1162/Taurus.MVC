@@ -62,31 +62,74 @@ namespace Taurus.Core
         }
         public static T Query<T>(string key, T defaultValue, bool filter)
         {
-            if (HttpContext.Current.Request[key] == null) { return defaultValue; }
-            object result;
-            if (typeof(T).Name == "Int32")
-            {
-                int _result = 0;
-                if (!int.TryParse(HttpContext.Current.Request[key], out _result))
-                {
-                    return defaultValue;
-                }
-                result = _result;
-            }
-            else
+            string value = HttpContext.Current.Request[key];
+            if (value == null) { return defaultValue; }
+            value = value.Trim();
+            object result = null;
+            Type t = typeof(T);
+            if (t.Name == "String")
             {
                 if (filter)
                 {
-                    result = FilterValue(HttpContext.Current.Request[key]);
+                    result = FilterValue(value);
                 }
                 else
                 {
                     string reKey = "[#{@!}#]";
-                    string text = HttpContext.Current.Request[key].Trim().Replace("+", reKey);//
+                    string text = value.Replace("+", reKey);//
                     result = HttpContext.Current.Server.UrlDecode(text).Replace(reKey, "+");
                 }
             }
+            else
+            {
+                try
+                {
+                    result = ChangeType(value, t);
+                }
+                catch
+                {
+                    return defaultValue;
+                }
+
+            }
             return (T)result;
+        }
+
+        private static object ChangeType(object value, Type t)
+        {
+            if (t == null)
+            {
+                return null;
+            }
+            string strValue = Convert.ToString(value);
+            if (t.IsGenericType && t.Name.StartsWith("Nullable"))
+            {
+                t = Nullable.GetUnderlyingType(t);
+                if (strValue == "")
+                {
+                    return null;
+                }
+            }
+            if (t.Name == "String")
+            {
+                return strValue;
+            }
+            if (strValue == "")
+            {
+                return Activator.CreateInstance(t);
+            }
+            else if (t.IsValueType)
+            {
+                if (t.Name == "Guid")
+                {
+                    return new Guid(strValue);
+                }
+                return Convert.ChangeType(strValue, t);
+            }
+            else
+            {
+                return Convert.ChangeType(value, t);
+            }
         }
         /// <summary>
         /// 过滤一般的字符串
