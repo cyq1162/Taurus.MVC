@@ -67,6 +67,7 @@
     <Compile Include="InvokeLogic.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="QueryTool.cs" />
+    <Compile Include="SessionHandler.cs" />
     <Compile Include="UrlRewrite.cs" />
   </ItemGroup>
   <ItemGroup>

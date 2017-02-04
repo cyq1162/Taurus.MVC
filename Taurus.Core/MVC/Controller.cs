@@ -16,7 +16,7 @@ namespace Taurus.Core
     /// the base of Controller
     /// <para>控制器基类</para>
     /// </summary>
-    public abstract partial class Controller : IHttpHandler, IRequiresSessionState
+    public abstract partial class Controller : IHttpHandler
     {
         private StringBuilder apiResult = new StringBuilder();
         /// <summary>

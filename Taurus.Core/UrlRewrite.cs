@@ -13,7 +13,7 @@ namespace Taurus.Core
     /// <summary>
     /// 权限检测模块
     /// </summary>
-    public class UrlRewrite : IHttpModule, IRequiresSessionState
+    public class UrlRewrite : IHttpModule
     {
         public void Dispose()
         {
@@ -21,8 +21,25 @@ namespace Taurus.Core
         }
         public void Init(HttpApplication context)
         {
-            context.BeginRequest += new EventHandler(context_BeginRequest);
+            context.PostMapRequestHandler += context_PostMapRequestHandler;
+            context.AcquireRequestState += context_AcquireRequestState;
             context.Error += context_Error;
+        }
+        HttpContext context;
+        void context_PostMapRequestHandler(object sender, EventArgs e)
+        {
+            HttpApplication app = (HttpApplication)sender;
+            context = app.Context;
+            context.Handler = SessionHandler.Instance;//注册Session
+        }
+        void context_AcquireRequestState(object sender, EventArgs e)
+        {
+            if (QueryTool.IsTaurusSuffix())
+            {
+                CheckCORS();
+                ReplaceOutput();
+                InvokeClass();
+            }
         }
 
         void context_Error(object sender, EventArgs e)
@@ -30,19 +47,6 @@ namespace Taurus.Core
             if (QueryTool.IsTaurusSuffix())
             {
                 Log.WriteLogToTxt(HttpContext.Current.Error);
-            }
-        }
-
-        HttpContext context;
-        void context_BeginRequest(object sender, EventArgs e)
-        {
-            if (QueryTool.IsTaurusSuffix())
-            {
-                HttpApplication app = (HttpApplication)sender;
-                context = app.Context;
-                CheckCORS();
-                ReplaceOutput();
-                InvokeClass();
             }
         }
 
@@ -125,4 +129,5 @@ namespace Taurus.Core
 
 
     }
+   
 }

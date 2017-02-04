@@ -22,6 +22,9 @@ namespace Taurus.Controllers
             controller.Context.Response.Write(methodName + " NoToken");
             return false;
         }
-
+        public void GetToken()
+        {
+ 
+        }
     }
 }

@@ -56,6 +56,7 @@ namespace Taurus.Core
                 return false;
             }
         }
+
         public static T Query<T>(string key)
         {
             return Query<T>(key, default(T), false);
