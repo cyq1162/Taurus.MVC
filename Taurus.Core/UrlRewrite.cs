@@ -30,7 +30,10 @@ namespace Taurus.Core
         {
             HttpApplication app = (HttpApplication)sender;
             context = app.Context;
-            context.Handler = SessionHandler.Instance;//注册Session
+            if (QueryTool.IsTaurusSuffix())
+            {
+                context.Handler = SessionHandler.Instance;//注册Session
+            }
         }
         void context_AcquireRequestState(object sender, EventArgs e)
         {
