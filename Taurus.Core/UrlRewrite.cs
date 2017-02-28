@@ -63,7 +63,10 @@ namespace Taurus.Core
                     context.Response.StatusCode = 204;
                     context.Response.AppendHeader("Access-Control-Allow-Method", "GET,POST,PUT,DELETE");
                     context.Response.AppendHeader("Access-Control-Allow-Origin", "*");
-                    context.Response.AppendHeader("Access-Control-Allow-Headers", context.Request.Headers["Access-Control-Allow-Headers"]);
+                    if (context.Request.Headers["Access-Control-Allow-Headers"] != null)
+                    {
+                        context.Response.AppendHeader("Access-Control-Allow-Headers", context.Request.Headers["Access-Control-Allow-Headers"]);
+                    }
                     context.Response.End();
                 }
                 else if (context.Request.UrlReferrer != null && context.Request.Url.Authority != context.Request.UrlReferrer.Authority)
@@ -132,5 +135,5 @@ namespace Taurus.Core
 
 
     }
-   
+
 }

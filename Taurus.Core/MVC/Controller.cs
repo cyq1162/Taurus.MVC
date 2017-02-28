@@ -118,7 +118,10 @@ namespace Taurus.Core
                 WriteError(err.Message);
                 context.Response.Write(err.Message);
             }
-
+            if (string.IsNullOrEmpty(context.Response.Charset))
+            {
+                context.Response.Charset = "utf-8";
+            }
             context.Response.End();
         }
         /// <summary>
