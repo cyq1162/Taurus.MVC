@@ -119,17 +119,18 @@ namespace Taurus.Core
             }
             catch (ThreadAbortException e)
             {
+                //内部提前Response.End()时引发的异常
                 //ASP.NET 的机制就是通过异常退出线程（不要觉的奇怪）
             }
             catch (Exception err)
             {
                 WriteError(err.Message);
             }
+            //context.Response.End();
         }
         private void WriteError(string tip)
         {
             context.Response.Write(JsonHelper.OutResult(false, tip));
-            context.Response.End();
         }
         #endregion
 

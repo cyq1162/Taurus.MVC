@@ -66,9 +66,18 @@ namespace Taurus.Core
                 if (method != null)
                 {
                     bool isGoOn = true;
-                    if (hasTokenAttr && InvokeLogic.CheckTokenMethod != null)
-                    { //CheckToken
-                        isGoOn = Convert.ToBoolean(InvokeLogic.CheckTokenMethod.Invoke(null, new object[] { this, methodName }));
+                    if (hasTokenAttr)
+                    {
+                        //CheckToken
+                        MethodInfo checkToken = InvokeLogic.GetMethod(t, InvokeLogic.CheckToken);
+                        if (checkToken.Name == InvokeLogic.CheckToken)
+                        {
+                            isGoOn = Convert.ToBoolean(checkToken.Invoke(this, null));
+                        }
+                        else if (InvokeLogic.CheckTokenMethod != null)
+                        {
+                            isGoOn = Convert.ToBoolean(InvokeLogic.CheckTokenMethod.Invoke(null, new object[] { this, methodName }));
+                        }
                     }
                     if (isGoOn)
                     {
@@ -122,7 +131,6 @@ namespace Taurus.Core
             {
                 context.Response.Charset = "utf-8";
             }
-            context.Response.End();
         }
         /// <summary>
         /// Write log to txt

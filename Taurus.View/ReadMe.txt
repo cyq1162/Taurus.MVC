@@ -54,3 +54,7 @@ V2.2.2.2
 V2.2.2.5 (2017-02-28)
 1：升级CYQ.Data
 2：优化3种情况：Session、跨域、编码 可能在某些情况引发异常或乱码
+
+
+V2.2.2.6 (2017-03-27)
+1：每个Controller都可以优先处理CheckToken，若不存在，则才处理DefautController中的CheckToken全局方法
