@@ -95,7 +95,8 @@ namespace Taurus.Core
                         }
                         if (!isOK)
                         {
-                            view.RemoveAttr(list[i], itemref);
+                            view.Remove(list[i]);//移除没有引用的节点
+                           // view.RemoveAttr(list[i], itemref);
                         }
                     }
                 }
