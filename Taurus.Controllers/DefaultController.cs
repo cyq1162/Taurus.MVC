@@ -12,19 +12,25 @@ namespace Taurus.Controllers
     {
         public override void Default()
         {
-
+            Write("Hello world");
         }
         /* */
         //本方法可以在其它文件里实现（partial类）
         public static bool CheckToken(IController controller, string methodName)
         {
             //实现Token验证
-            controller.Context.Response.Write(methodName + " NoToken");
+            controller.Write(methodName + " NoToken");
             return false;
         }
-        public void GetToken()
+        public static bool BeforeInvoke(IController controller, string methodName)
         {
- 
+            if (controller.IsHttpPost)
+            {
+                //实现Token验证
+                
+            }
+            controller.Write(methodName + " NoACK");
+            return false;
         }
     }
 }
