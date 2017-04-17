@@ -10,6 +10,7 @@ namespace Taurus.Controllers
     /// </summary>
     public partial class DefaultController : Controller
     {
+        [HttpGet]
         public override void Default()
         {
             Write("Hello world");
@@ -20,17 +21,17 @@ namespace Taurus.Controllers
         {
             //实现Token验证
             controller.Write(methodName + " NoToken");
-            return false;
+            return true;
         }
         public static bool BeforeInvoke(IController controller, string methodName)
         {
-            if (controller.IsHttpPost)
-            {
-                //实现Token验证
-                
-            }
-            controller.Write(methodName + " NoACK");
-            return false;
+            //if (controller.IsHttpPost)
+            //{
+            //    //拦截全局处理
+            //    controller.Write(methodName + " NoACK");
+            //}
+            
+            return true;
         }
     }
 }
