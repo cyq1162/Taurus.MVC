@@ -18,6 +18,10 @@ namespace Taurus.Core
         internal const string CheckToken = "CheckToken";
         internal const string BeforeInvoke = "BeforeInvoke";
 
+        internal const string TokenAttribute = "TokenAttribute";
+        internal const string HttpGetAttribute = "HttpGetAttribute";
+        internal const string HttpPostAttribute = "HttpPostAttribute";
+
         #region GetAssembly
         private static string _DllName;
         public static string DllName
@@ -149,18 +153,19 @@ namespace Taurus.Core
             }
         }
         static Dictionary<string, Dictionary<string, MethodInfo>> typeMethods = new Dictionary<string, Dictionary<string, MethodInfo>>();
-        static Dictionary<string, bool> checkTokens = new Dictionary<string, bool>(StringComparer.OrdinalIgnoreCase);
+        static Dictionary<string, char[]> methodAttrs = new Dictionary<string, char[]>(StringComparer.OrdinalIgnoreCase);
 
         static readonly object methodObj = new object();
         internal static MethodInfo GetMethod(Type t, string methodName)
         {
-            bool hasTokenAttr;
+            char[] hasTokenAttr;
             return GetMethod(t, methodName, out hasTokenAttr);
         }
-        internal static MethodInfo GetMethod(Type t, string methodName, out bool hasTokenAttr)
+        internal static MethodInfo GetMethod(Type t, string methodName, out char[] attrFlags)
         {
             string key = t.FullName;
             Dictionary<string, MethodInfo> dic = null;
+            attrFlags = new char[3] { '0', '0', '0' };
             if (!typeMethods.ContainsKey(key))
             {
                 lock (methodObj)
@@ -171,7 +176,7 @@ namespace Taurus.Core
                         bool hasToken = t.GetCustomAttributes(tokenType, true).Length > 0;
                         if (hasToken)
                         {
-                            checkTokens.Add(key, true);
+                            methodAttrs.Add(key, null);
                         }
                         MethodInfo[] items = t.GetMethods(BindingFlags.Instance | BindingFlags.Public | BindingFlags.DeclaredOnly);
                         dic = new Dictionary<string, MethodInfo>(StringComparer.OrdinalIgnoreCase);
@@ -179,11 +184,26 @@ namespace Taurus.Core
                         {
                             if (!dic.ContainsKey(item.Name))//对于重载的同名方法，只取第一个空方法。
                             {
-                                if (!hasToken && item.GetCustomAttributes(tokenType, true).Length > 0)
+                                dic.Add(item.Name, item);//追加方法名
+                                object[] attrs = item.GetCustomAttributes(true);
+                                if (attrs.Length > 0)//追加特性名
                                 {
-                                    checkTokens.Add(key + "." + item.Name, true);
+                                    foreach (object attr in attrs)
+                                    {
+                                        string[] names = attr.ToString().Split('.');
+                                        switch (names[names.Length - 1])
+                                        {
+                                            case TokenAttribute:
+                                                attrFlags[0] = '1'; break;
+                                            case HttpGetAttribute:
+                                                attrFlags[1] = '1'; break;
+                                            case HttpPostAttribute:
+                                                attrFlags[2] = '1'; break;
+                                        }
+
+                                    }
+                                    methodAttrs.Add(key + "." + item.Name, attrFlags);
                                 }
-                                dic.Add(item.Name, item);
                             }
                         }
                         typeMethods.Add(key, dic);
@@ -195,11 +215,12 @@ namespace Taurus.Core
             {
                 methodName = Default;
             }
-            hasTokenAttr = checkTokens.ContainsKey(key);
-            if (!hasTokenAttr)
+            if (methodAttrs.ContainsKey(key + "." + methodName))
             {
-                hasTokenAttr = checkTokens.ContainsKey(key + "." + methodName);
+                attrFlags = methodAttrs[key + "." + methodName];
             }
+            if (methodAttrs.ContainsKey(key)) { attrFlags[0] = '1'; }
+
             if (dic.ContainsKey(methodName))
             {
                 return dic[methodName];

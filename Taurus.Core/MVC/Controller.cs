@@ -68,13 +68,13 @@ namespace Taurus.Core
                 }
                 if (isGoOn)
                 {
-                    bool hasTokenAttr = false;
-                    MethodInfo method = InvokeLogic.GetMethod(t, methodName, out hasTokenAttr);
+                    char[] attrFlags;
+                    MethodInfo method = InvokeLogic.GetMethod(t, methodName, out attrFlags);
                     if (method != null)
                     {
-                        if (hasTokenAttr)
+                        if (attrFlags[0] == '1')
                         {
-                            //CheckToken
+                            #region CheckToken
                             MethodInfo checkToken = InvokeLogic.GetMethod(t, InvokeLogic.CheckToken);
                             if (checkToken.Name == InvokeLogic.CheckToken)
                             {
@@ -84,10 +84,25 @@ namespace Taurus.Core
                             {
                                 isGoOn = Convert.ToBoolean(InvokeLogic.CheckTokenMethod.Invoke(null, new object[] { this, methodName }));
                             }
+                            #endregion
+                        }
+                        if (attrFlags[1] != attrFlags[2])//配置了HttpGet或HttpPost
+                        {
+                            if (attrFlags[1] == '1' && !IsHttpGet)
+                            {
+                                isGoOn = false;
+                                Write("Only support HttpGet!", false);
+                            }
+                            else if (attrFlags[2] == '1' && !IsHttpPost)
+                            {
+                                isGoOn = false;
+                                Write("Only support HttpPost!", false);
+                            }
+
                         }
                         if (isGoOn)
                         {
-                            #region MyRegion
+                            #region Method Invoke
                             _Action = method.Name;
                             BeforeInvoke(method.Name);
                             if (!CancelLoadHtml)
@@ -117,7 +132,7 @@ namespace Taurus.Core
                             #endregion
                         }
                     }
-                    
+
                 }
 
                 if (View != null)
@@ -135,7 +150,7 @@ namespace Taurus.Core
             }
             catch (Exception err)
             {
-                WriteError(err.Message);
+                WriteLog(err.Message);
                 context.Response.Write(err.Message);
             }
             if (string.IsNullOrEmpty(context.Response.Charset))
@@ -146,7 +161,7 @@ namespace Taurus.Core
         /// <summary>
         /// Write log to txt
         /// </summary>
-        protected void WriteError(string msg)
+        protected void WriteLog(string msg)
         {
             Log.WriteLogToTxt(msg);
         }
