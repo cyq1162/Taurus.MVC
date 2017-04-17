@@ -8,7 +8,7 @@ using System.Runtime.InteropServices;
 [assembly: AssemblyTitle("Taurus.MVC Core")]
 [assembly: AssemblyDescription("Taurus开发框架核心库 (http://taurus.cyqdata.com)")]
 [assembly: AssemblyConfiguration("")]
-[assembly: AssemblyCompany("路过秋天 （2017-04-01）")]
+[assembly: AssemblyCompany("路过秋天 （2017-04-17）")]
 [assembly: AssemblyProduct("Taurus.MVC Core")]
 [assembly: AssemblyCopyright("Copyright ©  路过秋天 2016-2096")]
 [assembly: AssemblyTrademark("Taurus.MVC")]

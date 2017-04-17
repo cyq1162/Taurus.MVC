@@ -16,6 +16,7 @@ namespace Taurus.Core
         internal const string DefaultController = "DefaultController";
         internal const string TaurusController = "Taurus.Core.Controller";
         internal const string CheckToken = "CheckToken";
+        internal const string BeforeInvoke = "BeforeInvoke";
 
         #region GetAssembly
         private static string _DllName;
@@ -110,6 +111,9 @@ namespace Taurus.Core
 
         #region GetMethods
         private static MethodInfo _CheckTokenMethod = null;
+        /// <summary>
+        /// 全局CheckToken方法
+        /// </summary>
         public static MethodInfo CheckTokenMethod
         {
             get
@@ -123,6 +127,25 @@ namespace Taurus.Core
                     }
                 }
                 return _CheckTokenMethod;
+            }
+        }
+        private static MethodInfo _BeforeInvokeMethod = null;
+        /// <summary>
+        ///  全局BeforeInvoke方法
+        /// </summary>
+        public static MethodInfo BeforeInvokeMethod
+        {
+            get
+            {
+                if (_BeforeInvokeMethod == null)
+                {
+                    Type t = GetType(DefaultController);
+                    if (t != null)
+                    {
+                        _BeforeInvokeMethod = t.GetMethod(BeforeInvoke, BindingFlags.Static | BindingFlags.Public);
+                    }
+                }
+                return _BeforeInvokeMethod;
             }
         }
         static Dictionary<string, Dictionary<string, MethodInfo>> typeMethods = new Dictionary<string, Dictionary<string, MethodInfo>>();

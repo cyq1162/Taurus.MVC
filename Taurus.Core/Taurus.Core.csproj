@@ -51,6 +51,9 @@
     <DocumentationFile>bin\Release\Taurus.Core.XML</DocumentationFile>
   </PropertyGroup>
   <ItemGroup>
+    <Reference Include="CYQ.Data">
+      <HintPath>..\Packages\CYQ.Data.dll</HintPath>
+    </Reference>
     <Reference Include="System" />
     <Reference Include="System.Data" />
     <Reference Include="System.Web" />
@@ -69,12 +72,6 @@
     <Compile Include="QueryTool.cs" />
     <Compile Include="SessionHandler.cs" />
     <Compile Include="UrlRewrite.cs" />
-  </ItemGroup>
-  <ItemGroup>
-    <ProjectReference Include="..\..\..\MySpace\CYQ.Data\CYQ.Data.csproj">
-      <Project>{BD5CCC87-278F-4FEB-AD23-157FCBA9FFA1}</Project>
-      <Name>CYQ.Data</Name>
-    </ProjectReference>
   </ItemGroup>
   <ItemGroup>
     <BootstrapperPackage Include="Microsoft.Net.Client.3.5">

@@ -61,61 +61,72 @@ namespace Taurus.Core
                         }
                         break;
                 }
-                bool hasTokenAttr = false;
-                MethodInfo method = InvokeLogic.GetMethod(t, methodName, out hasTokenAttr);
-                if (method != null)
+                bool isGoOn = true;
+                if (InvokeLogic.BeforeInvokeMethod != null)
                 {
-                    bool isGoOn = true;
-                    if (hasTokenAttr)
+                    isGoOn = Convert.ToBoolean(InvokeLogic.BeforeInvokeMethod.Invoke(null, new object[] { this, methodName }));
+                }
+                if (isGoOn)
+                {
+                    bool hasTokenAttr = false;
+                    MethodInfo method = InvokeLogic.GetMethod(t, methodName, out hasTokenAttr);
+                    if (method != null)
                     {
-                        //CheckToken
-                        MethodInfo checkToken = InvokeLogic.GetMethod(t, InvokeLogic.CheckToken);
-                        if (checkToken.Name == InvokeLogic.CheckToken)
+                        if (hasTokenAttr)
                         {
-                            isGoOn = Convert.ToBoolean(checkToken.Invoke(this, null));
-                        }
-                        else if (InvokeLogic.CheckTokenMethod != null)
-                        {
-                            isGoOn = Convert.ToBoolean(InvokeLogic.CheckTokenMethod.Invoke(null, new object[] { this, methodName }));
-                        }
-                    }
-                    if (isGoOn)
-                    {
-                        _Action = method.Name;
-                        BeforeInvoke(method.Name);
-                        if (!CancelLoadHtml)
-                        {
-                            _View = ViewEngine.Create(t.Name, method.Name);
-                        }
-                        if (!CancelInvoke)
-                        {
-                            method.Invoke(this, null);
-                            if (IsHttpPost)
+                            //CheckToken
+                            MethodInfo checkToken = InvokeLogic.GetMethod(t, InvokeLogic.CheckToken);
+                            if (checkToken.Name == InvokeLogic.CheckToken)
                             {
-                                string name = GetBtnName();
-                                if (!string.IsNullOrEmpty(name))
-                                {
-                                    MethodInfo postBtnMethod = InvokeLogic.GetMethod(t, name);
-                                    if (postBtnMethod != null && postBtnMethod.Name != InvokeLogic.Default)
-                                    {
-                                        postBtnMethod.Invoke(this, null);
-                                    }
-                                }
+                                isGoOn = Convert.ToBoolean(checkToken.Invoke(this, null));
+                            }
+                            else if (InvokeLogic.CheckTokenMethod != null)
+                            {
+                                isGoOn = Convert.ToBoolean(InvokeLogic.CheckTokenMethod.Invoke(null, new object[] { this, methodName }));
+                            }
+                        }
+                        if (isGoOn)
+                        {
+                            #region MyRegion
+                            _Action = method.Name;
+                            BeforeInvoke(method.Name);
+                            if (!CancelLoadHtml)
+                            {
+                                _View = ViewEngine.Create(t.Name, method.Name);
                             }
                             if (!CancelInvoke)
                             {
-                                EndInvoke(method.Name);
+                                method.Invoke(this, null);
+                                if (IsHttpPost)
+                                {
+                                    string name = GetBtnName();
+                                    if (!string.IsNullOrEmpty(name))
+                                    {
+                                        MethodInfo postBtnMethod = InvokeLogic.GetMethod(t, name);
+                                        if (postBtnMethod != null && postBtnMethod.Name != InvokeLogic.Default)
+                                        {
+                                            postBtnMethod.Invoke(this, null);
+                                        }
+                                    }
+                                }
+                                if (!CancelInvoke)
+                                {
+                                    EndInvoke(method.Name);
+                                }
                             }
+                            #endregion
                         }
                     }
-                    if (View != null)
-                    {
-                        context.Response.Write(View.OutXml);
-                    }
-                    else if (apiResult.Length > 0)
-                    {
-                        context.Response.Write(apiResult.ToString());
-                    }
+                    
+                }
+
+                if (View != null)
+                {
+                    context.Response.Write(View.OutXml);
+                }
+                else if (apiResult.Length > 0)
+                {
+                    context.Response.Write(apiResult.ToString());
                 }
             }
             catch (System.Threading.ThreadAbortException)
