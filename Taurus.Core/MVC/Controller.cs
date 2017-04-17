@@ -76,7 +76,7 @@ namespace Taurus.Core
                         {
                             #region CheckToken
                             MethodInfo checkToken = InvokeLogic.GetMethod(t, InvokeLogic.CheckToken);
-                            if (checkToken.Name == InvokeLogic.CheckToken)
+                            if (checkToken != null && checkToken.Name == InvokeLogic.CheckToken)
                             {
                                 isGoOn = Convert.ToBoolean(checkToken.Invoke(this, null));
                             }
