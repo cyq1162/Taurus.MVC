@@ -104,7 +104,7 @@ namespace Taurus.Core
 
         public void Write(string msg, bool isSucess)
         {
-            _IController.Write(msg);
+            _IController.Write(msg, isSucess);
         }
 
 
