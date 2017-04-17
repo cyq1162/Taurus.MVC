@@ -86,7 +86,7 @@ namespace Taurus.Core
                             }
                             #endregion
                         }
-                        if (attrFlags[1] != attrFlags[2])//配置了HttpGet或HttpPost
+                        if (isGoOn && attrFlags[1] != attrFlags[2])//配置了HttpGet或HttpPost
                         {
                             if (attrFlags[1] == '1' && !IsHttpGet)
                             {
