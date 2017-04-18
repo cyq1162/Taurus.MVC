@@ -51,6 +51,15 @@ namespace Taurus.Core
         {
             return _IController.Query<T>(key, defaultValue);
         }
+        public T Query<T>(int paraIndex)
+        {
+            return _IController.Query<T>(paraIndex);
+        }
+
+        public T Query<T>(int paraIndex, T defaultValue)
+        {
+            return _IController.Query<T>(paraIndex, defaultValue);
+        }
         public HttpContext Context
         {
             get

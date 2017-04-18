@@ -58,3 +58,13 @@ V2.2.2.5 (2017-02-28)
 
 V2.2.2.6 (2017-03-27)
 1：每个Controller都可以优先处理CheckToken，若不存在，则才处理DefautController中的CheckToken全局方法
+
+V2.2.2.7 (2017-04-01)
+1：小细节优化，对于没有引用（itemref)的移除节点（原来只是去除属性）,通过此小细节（这样在master.html中就可以事先放置多个引用）(2017-04-01)
+2：修正LogicBase的参数缺少的问题。(2017-04-17)
+3：DefautController增加全局BeforeInvoke方法，用于拦截做全局处理。(2017-04-17)
+public static bool BeforeInvoke(IController controller, string methodName)
+4：增加HttpGet和HttpPost属性(2017-04-17)
+
+V2.2.2.8 (2017-04-18)
+1：Query方法增加重载方法（方便取得Para中的值）(2017-04-18)

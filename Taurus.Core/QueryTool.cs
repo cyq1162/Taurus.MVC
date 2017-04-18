@@ -64,6 +64,11 @@ namespace Taurus.Core
         public static T Query<T>(string key, T defaultValue, bool filter)
         {
             string value = HttpContext.Current.Request[key];
+            return ChangeValueType<T>(value, defaultValue, filter);
+        }
+        internal static T ChangeValueType<T>(string value, T defaultValue, bool filter)
+        {
+            
             if (value == null) { return defaultValue; }
             value = value.Trim();
             object result = null;
@@ -124,6 +129,10 @@ namespace Taurus.Core
                 if (t.Name == "Guid")
                 {
                     return new Guid(strValue);
+                }
+                else if (t.Name.StartsWith("Int") && strValue.IndexOf('.') > -1)
+                {
+                    strValue = strValue.Split('.')[0];
                 }
                 return Convert.ChangeType(strValue, t);
             }

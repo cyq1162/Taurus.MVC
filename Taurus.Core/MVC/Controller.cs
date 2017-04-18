@@ -361,6 +361,22 @@ namespace Taurus.Core
         {
             return QueryTool.Query<T>(key, defaultValue, false);
         }
+        public T Query<T>(int paraIndex)
+        {
+            return Query<T>(paraIndex, default(T));
+        }
+        public T Query<T>(int paraIndex, T defaultValue)
+        {
+            if (!string.IsNullOrEmpty(Para))
+            {
+                string[] items = Para.Split('/');
+                if (items.Length > paraIndex)
+                {
+                    return QueryTool.ChangeValueType<T>(items[paraIndex], defaultValue, false);
+                }
+            }
+            return defaultValue;
+        }
         /// <summary>
         /// Write String result
         /// <para> 输出原始msg的数据</para>
