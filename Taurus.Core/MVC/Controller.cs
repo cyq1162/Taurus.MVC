@@ -254,7 +254,29 @@ namespace Taurus.Core
                 return _Action;
             }
         }
-        private string _Para;
+        private string[] _ParaItems;
+        internal string[] ParaItems
+        {
+            get
+            {
+                if (_ParaItems == null)
+                {
+                    string[] items = QueryTool.GetLocalPath().Trim('/').Split('/');
+                    int len = RouteConfig.RouteMode + 1;
+                    if (items != null && items.Length > len)
+                    {
+                        _ParaItems = new string[items.Length - len];
+                        Array.Copy(items, len, _ParaItems, 0, _ParaItems.Length);
+                    }
+                    else
+                    {
+                        _ParaItems = new string[1];
+                        _ParaItems[0] = "";
+                    }
+                }
+                return _ParaItems;
+            }
+        }
         /// <summary>
         /// Para value
         /// </summary>
@@ -262,28 +284,7 @@ namespace Taurus.Core
         {
             get
             {
-                if (_Para == null)
-                {
-                    _Para = "";
-                    string[] items = QueryTool.GetLocalPath().Trim('/').Split('/');
-                    switch (RouteConfig.RouteMode)
-                    {
-                        case 1:
-                            if (items.Length > 2)
-                            {
-                                _Para = items[2];
-                            }
-                            break;
-                        case 2:
-                            if (items.Length > 3)
-                            {
-                                _Para = items[3];
-                            }
-                            break;
-                    }
-
-                }
-                return _Para;
+                return ParaItems[0];
             }
         }
         /// <summary>
@@ -367,13 +368,9 @@ namespace Taurus.Core
         }
         public T Query<T>(int paraIndex, T defaultValue)
         {
-            if (!string.IsNullOrEmpty(Para))
+            if (ParaItems.Length > paraIndex)
             {
-                string[] items = Para.Split('/');
-                if (items.Length > paraIndex)
-                {
-                    return QueryTool.ChangeValueType<T>(items[paraIndex], defaultValue, false);
-                }
+                return QueryTool.ChangeValueType<T>(ParaItems[paraIndex], defaultValue, false);
             }
             return defaultValue;
         }
