@@ -360,11 +360,23 @@ namespace Taurus.Core
         }
         public T Query<T>(string key, T defaultValue)
         {
-            return QueryTool.Query<T>(key, defaultValue, false);
+            T value = QueryTool.Query<T>(key, defaultValue, false);
+            if (value == null)
+            {
+                //尝试从Json中获取
+                string result = JsonHelper.GetValue(GetJson(), key);
+                if (!string.IsNullOrEmpty(result))
+                {
+                    return QueryTool.ChangeValueType<T>(result, defaultValue, false);
+                }
+
+            }
+            return value;
         }
         public T Query<T>(int paraIndex)
         {
             return Query<T>(paraIndex, default(T));
+
         }
         public T Query<T>(int paraIndex, T defaultValue)
         {
@@ -420,39 +432,56 @@ namespace Taurus.Core
             //row.LoadFrom();
             //return row.ToEntity<T>();
         }
+        private string _Json = null;
         /// <summary>
         /// 获取Get或Post的数据并转换为Json格式。
         /// </summary>
         /// <returns></returns>
         public string GetJson()
         {
-            if (IsHttpPost)
+            if (_Json == null)
             {
-                if (context.Request.Form.Count > 0)
+                if (IsHttpPost)
                 {
-                    if (context.Request.Form.Count == 1 && context.Request.Form.Keys[0] == null)
+                    if (context.Request.Form.Count > 0)
                     {
-                        return JsonHelper.ToJson(context.Request.Form[0]);
+                        if (context.Request.Form.Count == 1 && context.Request.Form.Keys[0] == null)
+                        {
+                            return JsonHelper.ToJson(context.Request.Form[0]);
+                        }
+                        _Json = JsonHelper.ToJson(context.Request.Form);
                     }
-                    return JsonHelper.ToJson(context.Request.Form);
+                    else
+                    {
+                        Stream stream = context.Request.InputStream;
+                        if (stream != null && stream.Length > 0)
+                        {
+                            Byte[] bytes = new Byte[stream.Length];
+                            stream.Read(bytes, 0, bytes.Length);
+                            string data = System.Text.Encoding.UTF8.GetString(bytes);
+                            _Json = JsonHelper.ToJson(data);
+                        }
+                    }
                 }
-                else
+                else if (IsHttpGet)
                 {
-                    Stream stream = context.Request.InputStream;
-                    if (stream != null && stream.Length > 0)
+                    string para = context.Request.Url.Query.TrimStart('?');
+                    if (!string.IsNullOrEmpty(para))
                     {
-                        Byte[] bytes = new Byte[stream.Length];
-                        stream.Read(bytes, 0, bytes.Length);
-                        string data = System.Text.Encoding.UTF8.GetString(bytes);
-                        return JsonHelper.ToJson(data);
+                        if (para.IndexOf("%2") > -1)
+                        {
+                            para = HttpUtility.UrlDecode(para);
+                        }
+                        _Json = JsonHelper.ToJson(para);
                     }
+                    
+                }
+                if (string.IsNullOrEmpty(_Json))
+                {
+                    _Json = "{}";
                 }
             }
-            else if (IsHttpGet)
-            {
-                return JsonHelper.ToJson(context.Request.Url.Query);
-            }
-            return "{}";
+            return _Json;
         }
     }
 }
