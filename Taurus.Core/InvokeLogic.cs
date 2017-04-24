@@ -188,22 +188,22 @@ namespace Taurus.Core
                                 object[] attrs = item.GetCustomAttributes(true);
                                 if (attrs.Length > 0)//追加特性名
                                 {
-                                    attrFlags = new char[3] { '0', '0', '0' };
+                                    char[] aFlags = new char[3] { '0', '0', '0' };
                                     foreach (object attr in attrs)
                                     {
                                         string[] names = attr.ToString().Split('.');
                                         switch (names[names.Length - 1])
                                         {
                                             case TokenAttribute:
-                                                attrFlags[0] = '1'; break;
+                                                aFlags[0] = '1'; break;
                                             case HttpGetAttribute:
-                                                attrFlags[1] = '1'; break;
+                                                aFlags[1] = '1'; break;
                                             case HttpPostAttribute:
-                                                attrFlags[2] = '1'; break;
+                                                aFlags[2] = '1'; break;
                                         }
 
                                     }
-                                    methodAttrs.Add(key + "." + item.Name, attrFlags);
+                                    methodAttrs.Add(key + "." + item.Name, aFlags);
                                 }
                             }
                         }
