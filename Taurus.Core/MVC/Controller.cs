@@ -369,6 +369,10 @@ namespace Taurus.Core
                 {
                     return QueryTool.ChangeValueType<T>(result, defaultValue, false);
                 }
+                else if (context.Request.Headers[key] != null)
+                {
+                    return QueryTool.ChangeValueType<T>(context.Request.Headers[key], defaultValue, false);
+                }
 
             }
             return value;
