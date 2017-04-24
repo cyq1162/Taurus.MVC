@@ -165,7 +165,7 @@ namespace Taurus.Core
         {
             string key = t.FullName;
             Dictionary<string, MethodInfo> dic = null;
-            attrFlags = new char[3] { '0', '0', '0' };
+            attrFlags = null;
             if (!typeMethods.ContainsKey(key))
             {
                 lock (methodObj)
@@ -188,6 +188,7 @@ namespace Taurus.Core
                                 object[] attrs = item.GetCustomAttributes(true);
                                 if (attrs.Length > 0)//追加特性名
                                 {
+                                    attrFlags = new char[3] { '0', '0', '0' };
                                     foreach (object attr in attrs)
                                     {
                                         string[] names = attr.ToString().Split('.');
@@ -220,7 +221,10 @@ namespace Taurus.Core
                 attrFlags = methodAttrs[key + "." + methodName];
             }
             if (methodAttrs.ContainsKey(key)) { attrFlags[0] = '1'; }
-
+            if (attrFlags == null)
+            {
+                attrFlags = new char[3] { '0', '0', '0' };
+            }
             if (dic.ContainsKey(methodName))
             {
                 return dic[methodName];
