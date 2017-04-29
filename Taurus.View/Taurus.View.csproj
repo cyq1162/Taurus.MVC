@@ -66,11 +66,12 @@
   <ItemGroup>
     <Content Include="ReadMe.txt" />
     <Content Include="style\js\master.js" />
-    <Content Include="Views\Default\default.html" />
+    <Content Include="style\js\webapidemo.js" />
     <Content Include="Views\Demo\default.html" />
     <Content Include="Views\Home\about.html" />
     <Content Include="Views\Home\contact.html" />
     <Content Include="Views\Home\index.html" />
+    <Content Include="Views\Home\webapi.html" />
     <Content Include="Views\shared\master.html" />
     <Content Include="Web.config" />
   </ItemGroup>
@@ -107,7 +108,7 @@
         <WebProjectProperties>
           <UseIIS>False</UseIIS>
           <AutoAssignPort>True</AutoAssignPort>
-          <DevelopmentServerPort>13508</DevelopmentServerPort>
+          <DevelopmentServerPort>3094</DevelopmentServerPort>
           <DevelopmentServerVPath>/</DevelopmentServerVPath>
           <IISUrl>
           </IISUrl>
