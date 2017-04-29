@@ -6,8 +6,8 @@
 1：配置文件说明
 <configuration>
   <appSettings>
-    <!--指定控制器所在的项目（Dll）名称-->
-    <add key="Taurus.Controllers" value="Taurus.Controllers" />
+    <!--这里要改成：控制器所在的项目编绎后的dll名称（不包括后缀）-->
+    <add key="Taurus.Controllers" value="项目编绎后的dll名称" />
     <!--指定处理的后缀（默认无后缀，可配置.shtml）-->
     <add key="Taurus.Suffix" value=""/>
 	 <!--是否允许跨域请求，默认true-->
@@ -17,6 +17,10 @@
       值为1：匹配{Controller}/{Action}/{Para}
       值为2：匹配{Module}/{Controller}/{Action}/{Para}-->
     <add key="RouteMode" value="1"/>
+	 <!--是否允许脚本跨域访问-->
+    <add key="IsAllowCORS" value="true"/>
+    <!--指定页面起始访问路径-->
+    <add key="DefaultUrl" value="home/index"/>
   </appSettings>
   <system.web>
     <httpModules>
@@ -54,6 +58,7 @@ V2.2.2.2
 V2.2.2.5 (2017-02-28)
 1：升级CYQ.Data
 2：优化3种情况：Session、跨域、编码 可能在某些情况引发异常或乱码
+
 
 V2.2.2.6 (2017-03-27)
 1：每个Controller都可以优先处理CheckToken，若不存在，则才处理DefautController中的CheckToken全局方法
