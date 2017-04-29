@@ -21,15 +21,29 @@ namespace Taurus.Core
         }
         public void Init(HttpApplication context)
         {
+            context.BeginRequest += context_BeginRequest;
             context.PostMapRequestHandler += context_PostMapRequestHandler;
             context.AcquireRequestState += context_AcquireRequestState;
             context.Error += context_Error;
         }
         HttpContext context;
-        void context_PostMapRequestHandler(object sender, EventArgs e)
+        void context_BeginRequest(object sender, EventArgs e)
         {
             HttpApplication app = (HttpApplication)sender;
             context = app.Context;
+            if (context.Request.Url.LocalPath == "/")//设置默认首页
+            {
+                string defaultUrl = QueryTool.GetDefaultUrl();
+                if (!string.IsNullOrEmpty(defaultUrl))
+                {
+                    context.RewritePath(defaultUrl, false);
+                }
+            }
+
+        }
+
+        void context_PostMapRequestHandler(object sender, EventArgs e)
+        {
             if (QueryTool.IsTaurusSuffix())
             {
                 context.Handler = SessionHandler.Instance;//注册Session

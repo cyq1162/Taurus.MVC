@@ -150,8 +150,9 @@ namespace Taurus.Core
             }
             catch (Exception err)
             {
-                WriteLog(err.Message);
-                context.Response.Write(err.Message);
+                 string errMssg = err.InnerException != null ? err.InnerException.Message : err.Message;
+                 WriteLog(errMssg);
+                 context.Response.Write(errMssg);
             }
             if (string.IsNullOrEmpty(context.Response.Charset))
             {

@@ -13,6 +13,10 @@ namespace Taurus.Core
     internal static class QueryTool
     {
         #region 增加扩展后缀支持
+        public static string GetDefaultUrl()
+        {
+            return AppConfig.GetApp("DefaultUrl", "");
+        }
 
         public static string GetLocalPath()
         {
