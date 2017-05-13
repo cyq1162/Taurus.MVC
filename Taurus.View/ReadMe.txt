@@ -73,3 +73,6 @@ public static bool BeforeInvoke(IController controller, string methodName)
 V2.2.2.8 (2017-04-18)
 1：Query方法增加重载方法（方便取得Para中的值）(2017-04-18)
 2：增加DefaultUrl配置项，设置默认起始访问路径。(2017-04-29)
+
+V2.2.2.9(2017-05-14)
+1:增加CheckNullOrEmpty方法

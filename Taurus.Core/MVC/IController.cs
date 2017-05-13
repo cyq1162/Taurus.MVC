@@ -25,5 +25,6 @@ namespace Taurus.Core
         void Write(string msg);
         void Write(string msg, bool isSuccess);
         string GetJson();
+        string CheckNullOrEmpty(string errMsg, params string[] paras);
     }
 }

@@ -127,5 +127,11 @@ namespace Taurus.Core
         {
             return _IController.GetJson();
         }
+
+
+        public string CheckNullOrEmpty(string errMsg, params string[] paras)
+        {
+            return _IController.CheckNullOrEmpty(errMsg, paras);
+        }
     }
 }

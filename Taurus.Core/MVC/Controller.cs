@@ -150,9 +150,9 @@ namespace Taurus.Core
             }
             catch (Exception err)
             {
-                 string errMssg = err.InnerException != null ? err.InnerException.Message : err.Message;
-                 WriteLog(errMssg);
-                 context.Response.Write(errMssg);
+                string errMssg = err.InnerException != null ? err.InnerException.Message : err.Message;
+                WriteLog(errMssg);
+                context.Response.Write(errMssg);
             }
             if (string.IsNullOrEmpty(context.Response.Charset))
             {
@@ -479,7 +479,7 @@ namespace Taurus.Core
                         }
                         _Json = JsonHelper.ToJson(para);
                     }
-                    
+
                 }
                 if (string.IsNullOrEmpty(_Json))
                 {
@@ -487,6 +487,33 @@ namespace Taurus.Core
                 }
             }
             return _Json;
+        }
+
+        /// <summary>
+        /// 判断是否Null或为空，并返回空的参数
+        /// </summary>
+        /// <param name="errMsg">参数为空时（结束请求返回的错误信息，不想结束请求可以传null）</param>
+        /// <param name="paras"></param>
+        /// <returns></returns>
+        public string CheckNullOrEmpty(string errMsg, params string[] paras)
+        {
+            if (paras.Length > 0)
+            {
+                string json = GetJson();
+                foreach (string para in paras)
+                {
+                    if (!string.IsNullOrEmpty(para) && context.Request.Headers[para] == null && JsonHelper.GetValue(json, para) == "")
+                    {
+                        if (!string.IsNullOrEmpty(errMsg))
+                        {
+                            Write(string.Format(errMsg, para), false);
+                            context.Response.End();
+                        }
+                        return para;
+                    }
+                }
+            }
+            return null;
         }
     }
 }
