@@ -497,19 +497,28 @@ namespace Taurus.Core
         /// <returns></returns>
         public string CheckNullOrEmpty(string errMsg, params string[] paras)
         {
+
             if (paras.Length > 0)
             {
+                if (paras.Length == 1 && paras[0].IndexOf(',') > 0)//"支持"aaa,bbb"这样的写法。
+                {
+                    paras = paras[0].Split(',');
+                }
                 string json = GetJson();
                 foreach (string para in paras)
                 {
-                    if (!string.IsNullOrEmpty(para) && context.Request.Headers[para] == null && JsonHelper.GetValue(json, para) == "")
+                    if (!string.IsNullOrEmpty(para))
                     {
-                        if (!string.IsNullOrEmpty(errMsg))
+                        string[] items = para.Split('&');//支持"aa&中文提示"这样的写法.
+                        if (context.Request.Headers[items[0]] == null && JsonHelper.GetValue(json, items[0]) == "")
                         {
-                            Write(string.Format(errMsg, para), false);
-                            context.Response.End();
+                            if (!string.IsNullOrEmpty(errMsg))
+                            {
+                                Write(string.Format(errMsg, items.Length > 1 ? items[1] : items[0]), false);
+                                context.Response.End();
+                            }
+                            return para;
                         }
-                        return para;
                     }
                 }
             }
