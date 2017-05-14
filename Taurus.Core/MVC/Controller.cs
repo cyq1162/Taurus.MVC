@@ -141,6 +141,10 @@ namespace Taurus.Core
                 }
                 else if (apiResult.Length > 0)
                 {
+                    if (apiResult[0] == '{' && apiResult[apiResult.Length - 1] == '}')
+                    {
+                        context.Response.ContentType = "application/json";
+                    }
                     context.Response.Write(apiResult.ToString());
                 }
             }
