@@ -10,6 +10,7 @@ using System.IO;
 using System.Xml;
 using CYQ.Data.Tool;
 using CYQ.Data.Table;
+using System.Text.RegularExpressions;
 namespace Taurus.Core
 {
     /// <summary>
@@ -353,6 +354,10 @@ namespace Taurus.Core
             get { return Context.Request.RequestType == "POST"; }
         }
         /// <summary>
+        /// 缓存参数值
+        /// </summary>
+        private Dictionary<string, string> queryCache = new Dictionary<string, string>(StringComparer.OrdinalIgnoreCase);
+        /// <summary>
         /// Get Request value
         /// </summary>
         public T Query<T>(Enum key)
@@ -365,6 +370,11 @@ namespace Taurus.Core
         }
         public T Query<T>(string key, T defaultValue)
         {
+            if (queryCache.ContainsKey(key))
+            {
+                return QueryTool.ChangeValueType<T>(queryCache[key], defaultValue, false);
+            }
+
             T value = QueryTool.Query<T>(key, defaultValue, false);
             if (value == null)
             {
@@ -372,13 +382,16 @@ namespace Taurus.Core
                 string result = JsonHelper.GetValue(GetJson(), key);
                 if (!string.IsNullOrEmpty(result))
                 {
-                    return QueryTool.ChangeValueType<T>(result, defaultValue, false);
+                    value = QueryTool.ChangeValueType<T>(result, defaultValue, false);
                 }
                 else if (context.Request.Headers[key] != null)
                 {
-                    return QueryTool.ChangeValueType<T>(context.Request.Headers[key], defaultValue, false);
+                    value = QueryTool.ChangeValueType<T>(context.Request.Headers[key], defaultValue, false);
                 }
-
+            }
+            if (value != null && !queryCache.ContainsKey(key))
+            {
+                queryCache.Add(key, value.ToString());
             }
             return value;
         }
@@ -477,7 +490,7 @@ namespace Taurus.Core
                     string para = context.Request.Url.Query.TrimStart('?');
                     if (!string.IsNullOrEmpty(para))
                     {
-                        if (para.IndexOf("%2") > -1)
+                        if (para.IndexOf("%") > -1)
                         {
                             para = HttpUtility.UrlDecode(para);
                         }
@@ -494,14 +507,14 @@ namespace Taurus.Core
         }
 
         /// <summary>
-        /// 判断是否Null或为空，并返回空的参数
+        /// 格式检测，并返回第一个错误的参数，若正确则返null
         /// </summary>
-        /// <param name="errMsg">参数为空时（结束请求返回的错误信息，不想结束请求可以传null）</param>
-        /// <param name="paras"></param>
+        /// <param name="errMsg">参数为空时（结束请求返回的错误信息，不想结束请求可以传null）<para>
+        /// 示例：{0}不能为空&{0}格式错误</para></param>
+        /// <param name="paras">示例：mobile&手机号&^1[3|4|5|8][0-9]\d{8}$</param>
         /// <returns></returns>
-        public string CheckNullOrEmpty(string errMsg, params string[] paras)
+        public string CheckFormat(string errMsg, params string[] paras)
         {
-
             if (paras.Length > 0)
             {
                 if (paras.Length == 1 && paras[0].IndexOf(',') > 0)//"支持"aaa,bbb"这样的写法。
@@ -513,15 +526,46 @@ namespace Taurus.Core
                 {
                     if (!string.IsNullOrEmpty(para))
                     {
-                        string[] items = para.Split('&');//支持"aa&中文提示"这样的写法.
-                        if (context.Request.Headers[items[0]] == null && JsonHelper.GetValue(json, items[0]) == "")
+                        string[] items = para.Split('&');//支持"user&用户名&正则表达式"这样的写法.
+                        string key = items[0];
+                        string value = context.Request.Headers[key];
+                        if (string.IsNullOrEmpty(value))
+                        {
+                            value = JsonHelper.GetValue(json, key);
+                        }
+                        if (string.IsNullOrEmpty(value))//参数为空
                         {
                             if (!string.IsNullOrEmpty(errMsg))
                             {
-                                context.Response.Write(JsonHelper.OutResult(false, string.Format(errMsg, items.Length > 1 ? items[1] : items[0])));
+                                errMsg = errMsg.Split('&')[0];
+                                context.Response.Write(JsonHelper.OutResult(false, string.Format(errMsg, items.Length > 1 ? items[1] : key)));
                                 context.Response.End();
                             }
                             return para;
+                        }
+                        else if (items.Length > 2)//有正则
+                        {
+                            if (value.IndexOf('%') > -1)
+                            {
+                                value = HttpUtility.UrlDecode(value);
+                            }
+                            if (!Regex.IsMatch(value, items[2]))//如果格式错误
+                            {
+                                if (!string.IsNullOrEmpty(errMsg))
+                                {
+                                    if (errMsg.IndexOf('&') > 0)
+                                    {
+                                        errMsg = errMsg.Split('&')[1];
+                                    }
+                                    context.Response.Write(JsonHelper.OutResult(false, string.Format(errMsg, items.Length > 1 ? items[1] : key)));
+                                    context.Response.End();
+                                }
+                                return para;
+                            }
+                        }
+                        if (!queryCache.ContainsKey(key))
+                        {
+                            queryCache.Add(key, value);
                         }
                     }
                 }

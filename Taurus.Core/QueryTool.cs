@@ -72,7 +72,7 @@ namespace Taurus.Core
         }
         internal static T ChangeValueType<T>(string value, T defaultValue, bool filter)
         {
-            
+
             if (value == null) { return defaultValue; }
             value = value.Trim();
             object result = null;
@@ -85,9 +85,17 @@ namespace Taurus.Core
                 }
                 else
                 {
-                    string reKey = "[#{@!}#]";
-                    string text = value.Replace("+", reKey);//
-                    result = HttpContext.Current.Server.UrlDecode(text).Replace(reKey, "+");
+                    if (value.IndexOf('+') > -1)
+                    {
+                        string reKey = "[#{@!}#]";
+                        string text = value.Replace("+", reKey);//
+                        result = HttpContext.Current.Server.UrlDecode(text).Replace(reKey, "+");
+                    }
+                    else
+                    {
+                        result = HttpContext.Current.Server.UrlDecode(value);
+                    }
+
                 }
             }
             else

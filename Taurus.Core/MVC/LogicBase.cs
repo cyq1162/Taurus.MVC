@@ -129,9 +129,9 @@ namespace Taurus.Core
         }
 
 
-        public string CheckNullOrEmpty(string errMsg, params string[] paras)
+        public string CheckFormat(string errMsg, params string[] paras)
         {
-            return _IController.CheckNullOrEmpty(errMsg, paras);
+            return _IController.CheckFormat(errMsg, paras);
         }
     }
 }

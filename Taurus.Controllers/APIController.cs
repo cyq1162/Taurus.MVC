@@ -37,6 +37,7 @@ namespace Taurus.Controllers
        
         public void GetToken()
         {
+            CheckFormat("{0}不能为空&{0}格式错误", @"un&用户名&^1[3|4|5|8][0-9]\d{8}$", @"pwd&密码&^[\u0391-\uFFE5]+$");
             string userName = Query<string>("un");
             string pwd = Query<string>("pwd");
             if (!string.IsNullOrEmpty(userName) && !string.IsNullOrEmpty(pwd))
