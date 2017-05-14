@@ -514,7 +514,7 @@ namespace Taurus.Core
                         {
                             if (!string.IsNullOrEmpty(errMsg))
                             {
-                                Write(string.Format(errMsg, items.Length > 1 ? items[1] : items[0]), false);
+                                context.Response.Write(JsonHelper.OutResult(false, string.Format(errMsg, items.Length > 1 ? items[1] : items[0])));
                                 context.Response.End();
                             }
                             return para;
