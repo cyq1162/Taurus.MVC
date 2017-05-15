@@ -517,10 +517,10 @@ namespace Taurus.Core
         {
             if (paras.Length > 0)
             {
-                if (paras.Length == 1 && paras[0].IndexOf(',') > 0)//"支持"aaa,bbb"这样的写法。
-                {
-                    paras = paras[0].Split(',');
-                }
+                //if (paras.Length == 1 && paras[0].IndexOf(',') > 0)//"支持"aaa,bbb"这样的写法。
+                //{
+                //    paras = paras[0].Split(',');
+                //}
                 string json = GetJson();
                 foreach (string para in paras)
                 {
