@@ -7,6 +7,7 @@ using System.Web.UI;
 using System.Net;
 using System.Data;
 using CYQ.Data;
+using CYQ.Data.Tool;
 
 namespace Taurus.Core
 {
@@ -113,45 +114,9 @@ namespace Taurus.Core
             return (T)result;
         }
 
-        private static object ChangeType(object value, Type t)
+        internal static object ChangeType(object value, Type t)
         {
-            if (t == null)
-            {
-                return null;
-            }
-            string strValue = Convert.ToString(value);
-            if (t.IsGenericType && t.Name.StartsWith("Nullable"))
-            {
-                t = Nullable.GetUnderlyingType(t);
-                if (strValue == "")
-                {
-                    return null;
-                }
-            }
-            if (t.Name == "String")
-            {
-                return strValue;
-            }
-            if (strValue == "")
-            {
-                return Activator.CreateInstance(t);
-            }
-            else if (t.IsValueType)
-            {
-                if (t.Name == "Guid")
-                {
-                    return new Guid(strValue);
-                }
-                else if (t.Name.StartsWith("Int") && strValue.IndexOf('.') > -1)
-                {
-                    strValue = strValue.Split('.')[0];
-                }
-                return Convert.ChangeType(strValue, t);
-            }
-            else
-            {
-                return Convert.ChangeType(value, t);
-            }
+            return ConvertTool.ChangeType(value, t);
         }
         /// <summary>
         /// 过滤一般的字符串

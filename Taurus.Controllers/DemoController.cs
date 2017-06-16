@@ -104,10 +104,19 @@ namespace Taurus.Controllers
 
     public class DemoController : Controller
     {
+        //protected override void BeforeInvoke(string methodName)
+        //{
+        //    if(methodName=="About")
+        //    {
+        //        Write("非法请示");
+        //        CancelInvoke = true;
+        //        CancelLoadHtml = true;
+        //    }
+        //    base.BeforeInvoke(methodName);
+        //}
         #region Controller方法
         public override void Default()
         {
-
             if (IsHttpGet)
             {
                 InitData();
@@ -142,7 +151,6 @@ namespace Taurus.Controllers
                 #endregion
                 View.OnForeach += new XHtmlAction.SetForeachEventHandler(View_OnForeach);//formater
                 dt.Bind(View);//取UsersView或defaultView节点。
-
             }
             //if (IsHttpPost)
             //{
@@ -170,6 +178,7 @@ namespace Taurus.Controllers
         #region 按钮事件
         public void BtnAdd()
         {
+           
             using (Users u = new Users())
             {
                 string path = SavePic();
@@ -205,7 +214,7 @@ namespace Taurus.Controllers
         {
             using (Users u = new Users())
             {
-                u.Delete();
+                u.Delete();//id  ?id=xxx
                 Reflesh(1);
             }
         }

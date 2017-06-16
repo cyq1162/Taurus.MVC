@@ -12,11 +12,12 @@
     });
 }
 function getData(withToken, methodType) {
+    var data = [{ a: "Aster", b: "good boy", list: {a:"chen",b:"yu"} }];//$.param(data.serializeObject("ab"))
     var json = {
         type: methodType,
-       // contentType:'application/json',
+        contentType:'application/text',
         url: '/api/getdata',
-        data: { un: "Aster" },
+        data: "a=Aster&b=good Boy&unList=[{a:'chen',b:'yu'},{a:'qiang'}]",    //手动把数据转换拼接,
         success: function (data, status, xhr) {
             $("#apiResult").val(JSON.stringify(data));
         },
@@ -30,3 +31,14 @@ function getData(withToken, methodType) {
     }
     $.ajax(json);
 }
+Array.prototype.serializeObject = function (lName) {
+    var o = {};
+    $t = this;
+
+    for (var i = 0; i < $t.length; i++) {
+        for (var item in $t[i]) {
+            o[lName + '[' + i + '].' + item.toString()] = $t[i][item].toString();
+        }
+    }
+    return o;
+};

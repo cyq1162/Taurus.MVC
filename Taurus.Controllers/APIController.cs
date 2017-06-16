@@ -52,10 +52,15 @@ namespace Taurus.Controllers
             }
         }
         [Token]
-        [HttpGet]
-        public void GetData()
+        [HttpPost]
+        //public void GetData(AB un)
+        //{
+        //    Write("your data A:" + un.A, true);
+        //    Write("your data B:" + un.B, true);
+        //}
+        public void GetData(List<AB> unList,string a,string b,AB ab)
         {
-            Write("your data :" + Query<string>("un"), true);
+            Write("your data A:" + unList[0].A+" your data B:" + unList[0].B, true);
         }
     }
 

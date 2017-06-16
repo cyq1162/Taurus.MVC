@@ -112,7 +112,7 @@ namespace Taurus.Core
                             }
                             if (!CancelInvoke)
                             {
-                                method.Invoke(this, null);
+                                method.Invoke(this, GetInvokeParas(method));
                                 if (IsHttpPost)
                                 {
                                     string name = GetBtnName();
@@ -121,7 +121,7 @@ namespace Taurus.Core
                                         MethodInfo postBtnMethod = InvokeLogic.GetMethod(t, name);
                                         if (postBtnMethod != null && postBtnMethod.Name != InvokeLogic.Default)
                                         {
-                                            postBtnMethod.Invoke(this, null);
+                                            postBtnMethod.Invoke(this, GetInvokeParas(postBtnMethod));
                                         }
                                     }
                                 }
@@ -218,6 +218,39 @@ namespace Taurus.Core
                 }
             }
             return null;
+        }
+        private object[] GetInvokeParas(MethodInfo method)
+        {
+            object[] paras = null;
+            #region 增加处理参数支持
+            ParameterInfo[] piList = method.GetParameters();
+            if (piList != null && piList.Length > 0)
+            {
+                paras = new object[piList.Length];
+                for (int i = 0; i < piList.Length; i++)
+                {
+                    
+
+                    ParameterInfo pi=piList[i];
+                    Type t = pi.ParameterType;
+                    string value = Query<string>(pi.Name, null);
+                    if (value == null)
+                    {
+                        if (ReflectTool.GetSystemType(ref t) == SysType.Base)//基础值类型
+                        {
+                            paras[i] = pi.RawDefaultValue;//默认值
+                            continue;
+                        }
+                        else
+                        {
+                            value = GetJson();
+                        }
+                    }
+                    paras[i] = QueryTool.ChangeType(value, t);//类型转换（基础或实体）
+                }
+            }
+            #endregion
+            return paras;
         }
     }
     public abstract partial class Controller : IController
