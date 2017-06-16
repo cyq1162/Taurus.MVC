@@ -229,24 +229,37 @@ namespace Taurus.Core
                 paras = new object[piList.Length];
                 for (int i = 0; i < piList.Length; i++)
                 {
-                    
-
-                    ParameterInfo pi=piList[i];
+                    ParameterInfo pi = piList[i];
                     Type t = pi.ParameterType;
                     string value = Query<string>(pi.Name, null);
                     if (value == null)
                     {
-                        if (ReflectTool.GetSystemType(ref t) == SysType.Base)//基础值类型
+                        if (t.IsValueType && t.IsGenericType && t.FullName.StartsWith("System.Nullable"))
                         {
-                            paras[i] = pi.RawDefaultValue;//默认值
                             continue;
                         }
-                        else
+                        if (ReflectTool.GetSystemType(ref t) != SysType.Base)//基础值类型
                         {
                             value = GetJson();
                         }
                     }
-                    paras[i] = QueryTool.ChangeType(value, t);//类型转换（基础或实体）
+                    try
+                    {
+                        paras[i] = QueryTool.ChangeType(value, t);//类型转换（基础或实体）
+                    }
+                    catch (Exception err)
+                    {
+                        string typeName = t.Name;
+                        if (typeName.StartsWith("Nullable"))
+                        {
+                            typeName = Nullable.GetUnderlyingType(t).Name;
+                        }
+                        string outMsg = string.Format("[{0} {1} = {2}]  [Error : {3}]", typeName, pi.Name, value,  err.Message);
+                        context.Response.Write(outMsg);
+                        context.Response.End();
+                        break;
+                    }
+
                 }
             }
             #endregion

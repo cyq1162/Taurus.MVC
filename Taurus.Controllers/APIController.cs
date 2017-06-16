@@ -58,7 +58,7 @@ namespace Taurus.Controllers
         //    Write("your data A:" + un.A, true);
         //    Write("your data B:" + un.B, true);
         //}
-        public void GetData(List<AB> unList,string a,string b,AB ab)
+        public void GetData(List<AB> unList,string a,int? b,AB ab)
         {
             Write("your data A:" + unList[0].A+" your data B:" + unList[0].B, true);
         }
