@@ -244,6 +244,17 @@
             {talbeName1:'column1,column2',talbeName2:'column1,column2'}
             </summary>
         </member>
+        <member name="P:CYQ.Data.AppConfig.Cache.AutoCacheConn">
+            <summary>
+            CYQ.Data.Cache 自动缓存 - 数据库链接配置
+            在多个不同的应用项目里操作同一个数据库时（又不想使用分布式缓存MemCache或Redis），可以开启此项，达到缓存智能清除的效果。
+            </summary>
+        </member>
+        <member name="P:CYQ.Data.AppConfig.Cache.AutoCacheTaskTime">
+            <summary>
+            当AutoCacheConn开启后，定时扫描数据库的任务时间（毫秒）,默认1000
+            </summary>
+        </member>
         <member name="T:CYQ.Data.AppConfig.Log">
             <summary>
             日志类Log 相关的配置
@@ -1042,6 +1053,11 @@
         <member name="F:CYQ.Data.Cache.AutoCache.cacheKeys">
             <summary>
             单机存档： 表的baseKey:key1,key2,key3...
+            </summary>
+        </member>
+        <member name="P:CYQ.Data.Cache.AutoCache.KeyTable.ActionInstance">
+            <summary>
+            使用同一个链接，并且不关闭。
             </summary>
         </member>
         <member name="T:CYQ.Data.Cache.CacheManage">
@@ -2097,6 +2113,36 @@
             <summary>
             insert and select top 1 data to fill row
             <para>使用此项：插入数据后,会根据返回ID进行查询后填充数据行。</para>
+            </summary>
+        </member>
+        <member name="T:CYQ.Data.Orm.LengthAttribute">
+            <summary>
+            列长度
+            </summary>
+        </member>
+        <member name="P:CYQ.Data.Orm.LengthAttribute.MaxSize">
+            <summary>
+            长度
+            </summary>
+        </member>
+        <member name="P:CYQ.Data.Orm.LengthAttribute.Scale">
+            <summary>
+            精度
+            </summary>
+        </member>
+        <member name="T:CYQ.Data.Orm.KeyAttribute">
+            <summary>
+            主键自增是否允许Null
+            </summary>
+        </member>
+        <member name="T:CYQ.Data.Orm.DefaultValueAttribute">
+            <summary>
+            默认值
+            </summary>
+        </member>
+        <member name="T:CYQ.Data.Orm.DescriptionAttribute">
+            <summary>
+            表名或字段描述
             </summary>
         </member>
         <member name="T:CYQ.Data.Orm.DBFast">
@@ -5194,6 +5240,44 @@
             </summary>
             <returns></returns>
         </member>
+        <member name="T:CYQ.Data.Tool.ConvertTool">
+            <summary>
+            类型转换（支持json转实体）
+            </summary>
+        </member>
+        <member name="M:CYQ.Data.Tool.ConvertTool.ChangeType(System.Object,System.Type)">
+            <summary>
+            类型转换(精准强大)
+            </summary>
+            <param name="value">值处理</param>
+            <param name="t">类型</param>
+            <returns></returns>
+        </member>
+        <member name="T:CYQ.Data.Tool.ReflectTool">
+            <summary>
+            反射工具（带缓存）
+            </summary>
+        </member>
+        <member name="M:CYQ.Data.Tool.ReflectTool.GetGenericArgumentLength(System.Type@)">
+            <summary>
+            获取泛型参数的长度
+            </summary>
+        </member>
+        <member name="M:CYQ.Data.Tool.ReflectTool.GetGenericArgumentLength(System.Type@,System.Type[]@)">
+            <summary>
+            获取泛型参数的长度（和类型）
+            </summary>
+        </member>
+        <member name="M:CYQ.Data.Tool.ReflectTool.GetPropertys(System.Type)">
+            <summary>
+            获得反射属性（内部有缓存）
+            </summary>
+        </member>
+        <member name="M:CYQ.Data.Tool.ReflectTool.GetSystemType(System.Type@)">
+            <summary>
+            获取系统类型，若是Nullable类型，则转为基础类型。
+             </summary>
+        </member>
         <member name="T:CYQ.Data.Tool.StaticTool">
             <summary>
             静态方法工具类
@@ -5210,6 +5294,11 @@
             </summary>
             <param name="t"></param>
             <returns></returns>
+        </member>
+        <member name="M:CYQ.Data.Tool.StaticTool.GetArgumentLength(System.Type@)">
+            <summary>
+             获取泛型的参数长度（非泛型按默认方法计算）
+            </summary>
         </member>
         <member name="M:CYQ.Data.Tool.StaticTool.GetArgumentLength(System.Type@,System.Type[]@)">
             <summary>
@@ -5236,7 +5325,7 @@
         </member>
         <member name="M:CYQ.Data.Tool.StaticTool.ChangeType(System.Object,System.Type)">
             <summary>
-            类型转换
+            类型转换(精准强大)
             </summary>
             <param name="value">值处理</param>
             <param name="t">类型</param>
