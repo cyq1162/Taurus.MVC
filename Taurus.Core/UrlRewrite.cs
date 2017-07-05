@@ -39,7 +39,6 @@ namespace Taurus.Core
                     context.RewritePath(defaultUrl, false);
                 }
             }
-
         }
 
         void context_PostMapRequestHandler(object sender, EventArgs e)
@@ -80,6 +79,10 @@ namespace Taurus.Core
                     if (context.Request.Headers["Access-Control-Allow-Headers"] != null)
                     {
                         context.Response.AppendHeader("Access-Control-Allow-Headers", context.Request.Headers["Access-Control-Allow-Headers"]);
+                    }
+                    else if (context.Request.Headers["Access-Control-Request-Headers"] != null)
+                    {
+                        context.Response.AppendHeader("Access-Control-Allow-Headers", context.Request.Headers["Access-Control-Request-Headers"]);
                     }
                     context.Response.End();
                 }
