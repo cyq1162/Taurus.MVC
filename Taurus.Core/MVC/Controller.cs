@@ -63,78 +63,99 @@ namespace Taurus.Core
                         break;
                 }
                 bool isGoOn = true;
-                if (InvokeLogic.BeforeInvokeMethod != null)
+                //if (InvokeLogic.BeforeInvokeMethod != null)
+                //{
+                //    isGoOn = Convert.ToBoolean(InvokeLogic.BeforeInvokeMethod.Invoke(null, new object[] { this, methodName }));
+                //}
+                //if (isGoOn)
+                //{
+                char[] attrFlags;
+                MethodInfo method = InvokeLogic.GetMethod(t, methodName, out attrFlags);
+                if (method != null)
                 {
-                    isGoOn = Convert.ToBoolean(InvokeLogic.BeforeInvokeMethod.Invoke(null, new object[] { this, methodName }));
-                }
-                if (isGoOn)
-                {
-                    char[] attrFlags;
-                    MethodInfo method = InvokeLogic.GetMethod(t, methodName, out attrFlags);
-                    if (method != null)
+                    if (attrFlags[0] == '1')
                     {
-                        if (attrFlags[0] == '1')
+                        #region Invoke CheckToken
+                        MethodInfo checkToken = InvokeLogic.GetMethod(t, InvokeLogic.CheckToken);
+                        if (checkToken != null && checkToken.Name == InvokeLogic.CheckToken)
                         {
-                            #region CheckToken
-                            MethodInfo checkToken = InvokeLogic.GetMethod(t, InvokeLogic.CheckToken);
-                            if (checkToken != null && checkToken.Name == InvokeLogic.CheckToken)
-                            {
-                                isGoOn = Convert.ToBoolean(checkToken.Invoke(this, null));
-                            }
-                            else if (InvokeLogic.CheckTokenMethod != null)
-                            {
-                                isGoOn = Convert.ToBoolean(InvokeLogic.CheckTokenMethod.Invoke(null, new object[] { this, methodName }));
-                            }
-                            #endregion
+                            isGoOn = Convert.ToBoolean(checkToken.Invoke(this, null));
                         }
-                        if (isGoOn && attrFlags[1] != attrFlags[2])//配置了HttpGet或HttpPost
+                        else if (InvokeLogic.CheckTokenMethod != null)
                         {
-                            if (attrFlags[1] == '1' && !IsHttpGet)
-                            {
-                                isGoOn = false;
-                                Write("Only support HttpGet!", false);
-                            }
-                            else if (attrFlags[2] == '1' && !IsHttpPost)
-                            {
-                                isGoOn = false;
-                                Write("Only support HttpPost!", false);
-                            }
+                            isGoOn = Convert.ToBoolean(InvokeLogic.CheckTokenMethod.Invoke(null, new object[] { this, methodName }));
+                        }
+                        #endregion
+                    }
+                    if (isGoOn && attrFlags[1] != attrFlags[2])//配置了HttpGet或HttpPost
+                    {
+                        if (attrFlags[1] == '1' && !IsHttpGet)
+                        {
+                            isGoOn = false;
+                            Write("Only support HttpGet!", false);
+                        }
+                        else if (attrFlags[2] == '1' && !IsHttpPost)
+                        {
+                            isGoOn = false;
+                            Write("Only support HttpPost!", false);
+                        }
 
+                    }
+                    if (isGoOn)
+                    {
+                        #region Method Invoke
+                        _Action = method.Name;
+
+                        MethodInfo beforeInvoke = InvokeLogic.GetMethod(t, InvokeLogic.BeforeInvoke);
+                        if (beforeInvoke != null && beforeInvoke.Name == InvokeLogic.BeforeInvoke)
+                        {
+                            isGoOn = Convert.ToBoolean(beforeInvoke.Invoke(this, new object[] { method.Name }));
+                        }
+                        else if (InvokeLogic.BeforeInvokeMethod != null)
+                        {
+                            isGoOn = Convert.ToBoolean(InvokeLogic.BeforeInvokeMethod.Invoke(null, new object[] { this, methodName }));
+                        }
+
+                        //BeforeInvoke(method.Name);
+
+                        if (!CancelLoadHtml)
+                        {
+                            _View = ViewEngine.Create(t.Name, method.Name);
                         }
                         if (isGoOn)
                         {
-                            #region Method Invoke
-                            _Action = method.Name;
-                            BeforeInvoke(method.Name);
-                            if (!CancelLoadHtml)
+                            method.Invoke(this, GetInvokeParas(method));
+                            if (IsHttpPost)
                             {
-                                _View = ViewEngine.Create(t.Name, method.Name);
-                            }
-                            if (!CancelInvoke)
-                            {
-                                method.Invoke(this, GetInvokeParas(method));
-                                if (IsHttpPost)
+                                string name = GetBtnName();
+                                if (!string.IsNullOrEmpty(name))
                                 {
-                                    string name = GetBtnName();
-                                    if (!string.IsNullOrEmpty(name))
+                                    MethodInfo postBtnMethod = InvokeLogic.GetMethod(t, name);
+                                    if (postBtnMethod != null && postBtnMethod.Name != InvokeLogic.Default)
                                     {
-                                        MethodInfo postBtnMethod = InvokeLogic.GetMethod(t, name);
-                                        if (postBtnMethod != null && postBtnMethod.Name != InvokeLogic.Default)
-                                        {
-                                            postBtnMethod.Invoke(this, GetInvokeParas(postBtnMethod));
-                                        }
+                                        postBtnMethod.Invoke(this, GetInvokeParas(postBtnMethod));
                                     }
                                 }
-                                if (!CancelInvoke)
-                                {
-                                    EndInvoke(method.Name);
-                                }
                             }
-                            #endregion
+                            if (isGoOn)
+                            {
+                                MethodInfo endInvoke = InvokeLogic.GetMethod(t, InvokeLogic.EndInvoke);
+                                if (endInvoke != null && endInvoke.Name == InvokeLogic.EndInvoke)
+                                {
+                                    isGoOn = Convert.ToBoolean(endInvoke.Invoke(this, new object[] { method.Name }));
+                                }
+                                else if (InvokeLogic.EndInvokeMethod != null)
+                                {
+                                    InvokeLogic.EndInvokeMethod.Invoke(null, new object[] { this, methodName });
+                                }
+                                // EndInvoke(method.Name);
+                            }
                         }
+                        #endregion
                     }
-
                 }
+
+                //}
 
                 if (View != null)
                 {
@@ -171,11 +192,11 @@ namespace Taurus.Core
         {
             Log.WriteLogToTxt(msg);
         }
-        protected virtual void BeforeInvoke(string methodName)
+        public virtual bool BeforeInvoke(string methodName)
         {
-
+            return true;
         }
-        protected virtual void EndInvoke(string methodName)
+        public virtual void EndInvoke(string methodName)
         {
 
         }
@@ -254,7 +275,7 @@ namespace Taurus.Core
                         {
                             typeName = Nullable.GetUnderlyingType(t).Name;
                         }
-                        string outMsg = string.Format("[{0} {1} = {2}]  [Error : {3}]", typeName, pi.Name, value,  err.Message);
+                        string outMsg = string.Format("[{0} {1} = {2}]  [Error : {3}]", typeName, pi.Name, value, err.Message);
                         context.Response.Write(outMsg);
                         context.Response.End();
                         break;
@@ -421,8 +442,8 @@ namespace Taurus.Core
                 return QueryTool.ChangeValueType<T>(queryCache[key], defaultValue, false);
             }
 
-            T value = QueryTool.Query<T>(key, defaultValue, false);
-            if (value == null)
+            T value = default(T);
+            if (Context.Request[key] == null)
             {
                 //尝试从Json中获取
                 string result = JsonHelper.GetValue(GetJson(), key);
@@ -434,6 +455,14 @@ namespace Taurus.Core
                 {
                     value = QueryTool.ChangeValueType<T>(context.Request.Headers[key], defaultValue, false);
                 }
+                else
+                {
+                    value = defaultValue;
+                }
+            }
+            else
+            {
+                value = QueryTool.Query<T>(key, defaultValue, false);//这里不设置默认值(值类型除外）
             }
             if (value != null && !queryCache.ContainsKey(key))
             {
@@ -527,6 +556,10 @@ namespace Taurus.Core
                             Byte[] bytes = new Byte[stream.Length];
                             stream.Read(bytes, 0, bytes.Length);
                             string data = System.Text.Encoding.UTF8.GetString(bytes);
+                            if (data.IndexOf("%") > -1)
+                            {
+                                data = HttpUtility.UrlDecode(data);
+                            }
                             _Json = JsonHelper.ToJson(data);
                         }
                     }
@@ -574,9 +607,10 @@ namespace Taurus.Core
                     {
                         string[] items = para.Split('&');//支持"user&用户名&正则表达式"这样的写法.
                         string key = items[0];
-                        string value = context.Request.Headers[key];
+                        string value = context.Request.Headers[key] ?? context.Request[key];
                         if (string.IsNullOrEmpty(value))
                         {
+
                             value = JsonHelper.GetValue(json, key);
                         }
                         if (string.IsNullOrEmpty(value))//参数为空

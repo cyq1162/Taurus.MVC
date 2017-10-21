@@ -17,6 +17,7 @@ namespace Taurus.Core
         internal const string TaurusController = "Taurus.Core.Controller";
         internal const string CheckToken = "CheckToken";
         internal const string BeforeInvoke = "BeforeInvoke";
+        internal const string EndInvoke = "EndInvoke";
 
         internal const string TokenAttribute = "TokenAttribute";
         internal const string HttpGetAttribute = "HttpGetAttribute";
@@ -114,6 +115,10 @@ namespace Taurus.Core
         #endregion
 
         #region GetMethods
+
+        #region 3个全局方法
+
+       
         private static MethodInfo _CheckTokenMethod = null;
         /// <summary>
         /// 全局CheckToken方法
@@ -152,6 +157,27 @@ namespace Taurus.Core
                 return _BeforeInvokeMethod;
             }
         }
+
+        private static MethodInfo _EndInvokeMethod = null;
+        /// <summary>
+        ///  全局EndInvokeMethod方法
+        /// </summary>
+        public static MethodInfo EndInvokeMethod
+        {
+            get
+            {
+                if (_EndInvokeMethod == null)
+                {
+                    Type t = GetType(DefaultController);
+                    if (t != null)
+                    {
+                        _EndInvokeMethod = t.GetMethod(EndInvoke, BindingFlags.Static | BindingFlags.Public);
+                    }
+                }
+                return _EndInvokeMethod;
+            }
+        }
+        #endregion
         static Dictionary<string, Dictionary<string, MethodInfo>> typeMethods = new Dictionary<string, Dictionary<string, MethodInfo>>();
         static Dictionary<string, char[]> methodAttrs = new Dictionary<string, char[]>(StringComparer.OrdinalIgnoreCase);
 
@@ -220,11 +246,11 @@ namespace Taurus.Core
             {
                 attrFlags = methodAttrs[key + "." + methodName];
             }
-            if (methodAttrs.ContainsKey(key)) { attrFlags[0] = '1'; }
             if (attrFlags == null)
             {
                 attrFlags = new char[3] { '0', '0', '0' };
             }
+            if (methodAttrs.ContainsKey(key)) { attrFlags[0] = '1'; }
             if (dic.ContainsKey(methodName))
             {
                 return dic[methodName];
