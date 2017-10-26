@@ -10,9 +10,10 @@ namespace Taurus.Controllers
 
     public partial class APIController : Controller
     {
-        protected override void BeforeInvoke(string methodName)
+        public override bool BeforeInvoke(string methodName)
         {
             CancelLoadHtml = true;
+            return true;
         }
         /// <summary>
         /// 重写此方法时，此CheckToken的优先级>DefaultController中的静态方法CheckToken
