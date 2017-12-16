@@ -86,7 +86,7 @@ namespace Taurus.Core
                     }
                     context.Response.End();
                 }
-                else if (context.Request.UrlReferrer != null && context.Request.Url.Authority != context.Request.UrlReferrer.Authority)
+                else if (context.Request.UrlReferrer == null || context.Request.Url.Authority != context.Request.UrlReferrer.Authority)
                 {
                     //跨域访问
                     context.Response.AppendHeader("Access-Control-Allow-Origin", "*");
