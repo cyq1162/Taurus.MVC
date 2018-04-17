@@ -36,26 +36,32 @@ namespace Taurus.Core
                 return _DllName;
             }
         }
-        private static Assembly _Assembly;
-        public static Assembly GetAssembly()
+        private static List<Assembly> _Assemblys;
+        public static List<Assembly> GetAssemblys()
         {
-            if (_Assembly == null)
+            if (_Assemblys == null)
             {
+                string[] dllItems = DllName.Split(',');
+                _Assemblys = new List<Assembly>(dllItems.Length);
+                foreach (string item in dllItems)
+                {
+                    _Assemblys.Add(Assembly.Load(item)); // 可直接抛异常。
+                }
                 //try
                 //{
-                _Assembly = Assembly.Load(DllName); // 可直接抛异常。
+                //_Assemblys = 
                 //}
                 //catch (Exception err)
                 //{
                 //    Log.WriteLogToTxt(err);
                 //}
             }
-            return _Assembly;
+            return _Assemblys;
         }
-        public static string GetClassFullName(string className)
-        {
-            return DllName + "." + className;
-        }
+        //public static string GetClassFullName(string className)
+        //{
+        //    return DllName + "." + className;
+        //}
         #endregion
 
         #region GetControllers
@@ -73,19 +79,22 @@ namespace Taurus.Core
                 {
                     if (_Controllers.Count == 0)
                     {
-                        Assembly ass = GetAssembly();
-                        if (ass == null)
+                        List<Assembly> assList = GetAssemblys();
+                        if (assList == null)
                         {
                             throw new Exception("Please make sure web.config'appSetting <add key=\"Taurus.Controllers\" value=\"YourControllerProjectName\") is right!");
                         }
-                        Type[] typeList = ass.GetExportedTypes();
-                        foreach (Type type in typeList)
+                        foreach (Assembly ass in assList)
                         {
-                            if (type.Name.EndsWith(Controller))
+                            Type[] typeList = ass.GetExportedTypes();
+                            foreach (Type type in typeList)
                             {
-                                if (type.BaseType != null && type.BaseType.FullName == TaurusController)
+                                if (type.Name.EndsWith(Controller))
                                 {
-                                    _Controllers.Add(type.Name.Replace(Controller, ""), type);
+                                    if (type.BaseType != null && (type.BaseType.FullName == TaurusController || (type.BaseType.BaseType != null && type.BaseType.BaseType.FullName == TaurusController)))
+                                    {
+                                        _Controllers.Add(type.Name.Replace(Controller, ""), type);
+                                    }
                                 }
                             }
                         }
