@@ -2,7 +2,7 @@
 <html xmlns="http://www.w3.org/1999/xhtml">
 <head itemref="master.head">
     <title>WebAPI Demo</title>
-    <script id="script2" src="/style/js/webapidemo.js"></script>
+    <script id="script2" src="/style/js/webapidemo.js?id=1"></script>
     <style type="text/css">
         #apiResult {
             height: 366px;
@@ -17,9 +17,9 @@
         <input type="button" value="GetToken" onclick="getToken()" />
         ：<input id="token" value="" />
         |
-        <input type="button" value="GetDataWithToken" onclick="getData(true,'GET')" />
-        ：<input type="button" value="GetDataWithNoToken" onclick="getData(false,'GET')" />
-        ：<input type="button" value="GetDataWithToken(Post)" onclick="getData(true, 'POST')" />
+        <input type="button" value="GetDataWithToken" onclick="getData('GetDataWithToken',true,'GET')" />
+        ：<input type="button" value="GetDataWithNoToken" onclick="getData('GetDataWithNoToken',false,'GET')" />
+        ：<input type="button" value="GetDataWithToken(Post)" onclick="getData('GetDataOnlyPost',true, 'POST')" />
         <br />
         <hr />
         <hr />

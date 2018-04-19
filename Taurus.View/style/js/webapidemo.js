@@ -11,13 +11,13 @@
         }
     });
 }
-function getData(withToken, methodType) {
-    var data = [{ a: "Aster", b: "good boy", list: {a:"chen",b:"yu"} }];//$.param(data.serializeObject("ab"))
+function getData(method,withToken, methodType) {
+    var data = [{ a: "Aster", b: "999666", list: {a:"chen",b:"yu"} }];//$.param(data.serializeObject("ab"))
     var json = {
         type: methodType,
         contentType:'application/text',
-        url: '/api/getdata',
-        data: "a=Aster&b=good Boy&unList=[{a:'chen',b:'yu'},{a:'qiang'}]",    //手动把数据转换拼接,
+        url: '/api/'+method,
+        data: "a=Aster&b=999666&unList=[{a:'chen',b:'yu'},{a:'qiang'}]",    //手动把数据转换拼接,
         success: function (data, status, xhr) {
             $("#apiResult").val(JSON.stringify(data));
         },

@@ -25,9 +25,19 @@ namespace Taurus.Controllers
             bool result = false;
             if (!string.IsNullOrEmpty(token))
             {
-                byte[] data = Convert.FromBase64String(token);
-                string text = System.Text.Encoding.UTF8.GetString(data);
-                result = text.StartsWith("Taurus:");
+                try
+                {
+                    byte[] data = Convert.FromBase64String(token);
+                    string text = System.Text.Encoding.UTF8.GetString(data);
+                    result = text.StartsWith("Taurus:");
+                }
+                catch
+                {
+                    Write("token error!", false);
+                    return false;
+                    
+                }
+               
             }
             if (!result)
             {
@@ -52,17 +62,44 @@ namespace Taurus.Controllers
                 Write("UserName or Password Error");
             }
         }
+
+        [Token]
+        public void GetDataWithToken(List<AB> unList, string a, int? b, AB ab)
+        {
+            Write("GetDataWithToken A:" + unList[0].A + " B:" + unList[0].B, true);
+        }
+        public void GetDataWithNoToken(List<AB> unList, string a, int? b, AB ab)
+        {
+            Write("GetDataWithNoToken A:" + unList[0].A + " B:" + unList[0].B, true);
+        }
         [Token]
         [HttpPost]
+        public void GetDataOnlyPost(List<AB> unList, string a, int? b, AB ab)
+        {
+            Write("GetDataOnlyPost A:" + unList[0].A + " B:" + unList[0].B, true);
+        }
+        
+       
         //public void GetData(AB un)
         //{
         //    Write("your data A:" + un.A, true);
         //    Write("your data B:" + un.B, true);
         //}
-        public void GetData(List<AB> unList,string a,int? b,AB ab)
+        //public void GetData(List<AB> unList,string a,int? b,AB ab)
+        //{
+        //    Write("your data A:" + unList[0].A+" your data B:" + unList[0].B, true);
+        //}
+        //itlinks.cn/user?uid=666 itlinks.cn/user/uid/666
+        public void Get()
         {
-            Write("your data A:" + unList[0].A+" your data B:" + unList[0].B, true);
+            int uid = Query<int>("uid");
         }
+
+        public void Get(int uid)
+        {
+            
+        }
+
     }
 
     public partial class APIController
