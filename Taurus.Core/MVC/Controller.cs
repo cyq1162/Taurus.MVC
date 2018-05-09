@@ -413,12 +413,12 @@ namespace Taurus.Core
 
         public bool IsHttpGet
         {
-            get { return Context.Request.RequestType == "GET"; }
+            get { return Context.Request.HttpMethod == "GET"; }
         }
 
         public bool IsHttpPost
         {
-            get { return Context.Request.RequestType == "POST"; }
+            get { return Context.Request.HttpMethod == "POST"; }
         }
         /// <summary>
         /// 缓存参数值
