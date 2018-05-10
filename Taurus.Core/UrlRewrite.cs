@@ -36,7 +36,7 @@ namespace Taurus.Core
                 string defaultUrl = QueryTool.GetDefaultUrl();
                 if (!string.IsNullOrEmpty(defaultUrl))
                 {
-                    context.RewritePath(defaultUrl, false);
+                    context.RewritePath(defaultUrl);
                 }
             }
         }

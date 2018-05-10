@@ -156,7 +156,10 @@ namespace Taurus.Core
                 }
 
                 //}
-
+                if (string.IsNullOrEmpty(context.Response.Charset))
+                {
+                    context.Response.Charset = "utf-8";
+                }
                 if (View != null)
                 {
                     context.Response.Write(View.OutXml);
@@ -180,10 +183,7 @@ namespace Taurus.Core
                 WriteLog(errMssg);
                 context.Response.Write(errMssg);
             }
-            if (string.IsNullOrEmpty(context.Response.Charset))
-            {
-                context.Response.Charset = "utf-8";
-            }
+
         }
         /// <summary>
         /// Write log to txt
