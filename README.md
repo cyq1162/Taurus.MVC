@@ -1,8 +1,11 @@
 # Taurus.MVC
-Taurus.MVC is a simple asp.net mvc framework,created by Aster（路过秋天）<hr />
+Taurus.mvc is a simple mvc or webapi framework for asp.net or asp.net core（适合场景：对性能和并发有较高要求的电商、站点、WebAPI等系统，支持.Net Core）,created by Aster（路过秋天）<hr />
+
+QQ交流群：6033006<br />
+
 Website：http://taurus.cyqdata.com/
 <hr />
-Demo：<br />
+完整企业站Demo：<br />
 Url：http://code.taobao.org/p/cyqopen/src/trunk/Taurus.MVC.GettingStarted/<br />
 SVN checkout：http://code.taobao.org/svn/cyqopen/trunk/Taurus.MVC.GettingStarted
 
