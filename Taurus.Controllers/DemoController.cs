@@ -251,7 +251,7 @@ namespace Taurus.Controllers
             if (file != null && file.ContentLength > 0)
             {
                 string path = "/Upload/" + file.FileName;
-                string folder = AppDomain.CurrentDomain.BaseDirectory + "Upload/";
+                string folder = AppConfig.WebRootPath + "Upload/";
                 if (!Directory.Exists(folder))
                 {
                     Directory.CreateDirectory(folder);
