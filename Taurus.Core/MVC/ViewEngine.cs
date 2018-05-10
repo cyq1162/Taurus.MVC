@@ -28,7 +28,7 @@ namespace Taurus.Core
         /// <param name="path">相对路径，如：/abc/cyq/a.html</param>
         public static XHtmlAction Create(string path)
         {
-            path = AppConfig.RunPath + path.TrimStart('/').Replace("/", "\\");
+            path = AppConfig.WebRootPath + path.TrimStart('/').Replace("/", "\\");
             if (File.Exists(path))
             {
                 XHtmlAction view = new XHtmlAction(true, false);
