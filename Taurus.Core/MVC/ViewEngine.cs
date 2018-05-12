@@ -117,7 +117,7 @@ namespace Taurus.Core
         /// <returns></returns>
         private static XHtmlAction GetSharedView(string htmlName)
         {
-            string path = AppConfig.WebRootPath + AppConfig.GetApp("Views", "Views") + "\\shared\\" + htmlName + ".html";
+            string path = AppConfig.WebRootPath + AppConfig.GetApp("Views", "Views") + "\\Shared\\" + htmlName + ".html";
             if (!File.Exists(path))
             {
                 return null;
