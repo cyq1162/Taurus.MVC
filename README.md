@@ -8,7 +8,6 @@ Website：http://taurus.cyqdata.com/
 Demo：https://github.com/cyq1162/Taurus.MVC.Demo <br />
 
 <hr />
-
 <h1>为什么要创造Taurus.MVC：</h1>
 <p>记得被上一家公司忽悠去负责公司电商平台的时候，情况是这样的：</p>
 <p>项目原版是外包给第三方的，使用：WebForm+NHibernate，代码不堪入目，Bug无限，经常点着点着就挂了。</p>
@@ -16,10 +15,10 @@ Demo：https://github.com/cyq1162/Taurus.MVC.Demo <br />
 <p>当时进去的第一感觉是重做，不过呵呵，老板的心思你不猜不行。</p>
 <p>然后第一阶段就是在旧项目改造维稳了，只要不是需要挂上百台服务器才能解决的问题，都能弱弱地处理的不要不要的，毕竟没有三两三，也不好上梁坑。</p>
 <p>到了第二阶段，自然就是思考重做了：</p>
-<p><strong>电商后台已有ASP.NET Aries 框架，刷刷刷的不用担心太多；</strong></p>
+<p><strong>电商后台已有开源的：<a href="https://github.com/cyq1162/Aries" target="_blank">ASP.NET Aries</a> 框架（已支持.NET Core），刷刷刷的不用担心太多；</strong></p>
 <h2><span style="color: #ff0000;"><strong>电商前台选什么框架呢？</strong></span></h2>
 <p>1：WebForm 太保守；</p>
-<p>2：.NET Core 太激进；</p>
+<p>2：.NET Core 1.1 太激进 (现在Taurus.MVC 已支持.NET Core)；</p>
 <p>3：QBlog（秋色园） 门槛高；</p>
 <p>4：重新写一套，事务繁忙，没空静下心思考，而且时间有限，已向BOSS提交了计划。</p>
 <p><strong>最后只有无奈地选择：ASP.NET MVC 了。</strong></p>
@@ -65,12 +64,15 @@ Demo：https://github.com/cyq1162/Taurus.MVC.Demo <br />
 <h1>Taurus.MVC 源码：</h1>
 <p>1：源代码SVN：<a href="https://github.com/cyq1162/Taurus.MVC">https://github.com/cyq1162/Taurus.MVC</a></p>
 <p>2：Demo演示站：<a href="http://taurus.cyqdata.com/">http://taurus.cyqdata.com</a></p>
-<p>Demo截图是这样的：</p>
+<p>Demo截图是这样的（新版本现在多了个WebAPI Demo）：</p>
 <p><img src="http://images2015.cnblogs.com/blog/17408/201608/17408-20160805023918043-2063699248.jpg" alt="" /></p>
 <h1>Taurus.MVC 框架引入方式：</h1>
-<p>1：在Nuget上搜Taurus.MVC，引用即可（会引入：Taurus.Core和CYQ.Data）</p>
+<p>1：在Nuget上搜：Taurus.MVC，引用即可（会引入：Taurus.Core和CYQ.Data）</p>
 <p>然后出来一个Readme.txt，按提示配置一下URL拦截和指定Controller地方的dll即可。</p>
+<p><strong>.NET Core 版本搜：Taurus.MVC.Core</strong></p>
 <p>2：直接用源码项目（源码项目里会有Demo）。</p>
+<p>.NET版本运行：Taurus.MVC.sln</p>
+<p>.NET Core 版本运行：Taurus.MVC_Core_VS2017.sln</p>
 <h1>Taurus.MVC 框架介绍：</h1>
 <h2>1：源码下载后：解决方案图：</h2>
 <p><img src="http://images2015.cnblogs.com/blog/17408/201608/17408-20160805005840497-1095313333.jpg" alt="" /></p>
@@ -88,15 +90,16 @@ Demo：https://github.com/cyq1162/Taurus.MVC.Demo <br />
 <h2>1：隐匿路由：</h2>
 <p>在.NET MVC里，路由是一块很重要，但麻烦的功能。</p>
 <p>要简化MVC，第一步，就是要思考如何隐式地消灭路由。</p>
-<p>最后内部默认定了两个路由：</p>
+<p>最后内部默认定了3个路由：</p>
+<p>0：{Action}/{Para}</p>
 <p>1：{Controller}/{Action}/{Para}</p>
 <p>2：{Module}/{Controller}/{Action}/{Para}</p>
-<p>默认第一种。</p>
+<p>默认是1。</p>
 <h2>2：扩展路由：</h2>
 <p>当部署为子应用程序，或第一个为用户名时，会多出一个前缀目录。</p>
 <p>这时可以能过AppSetting配置RouteMode值为2，轻松过度。</p>
 <p>上下文会提供三个参数让你获取信息：ControllerType，Action，Para。</p>
-<p><span style="color: #ff0000;"><strong>好了，路由讲完了，想自定义路由？No Way！噢，可以改源码~~~~</strong></span></p>
+<p><span style="color: #ff0000;"><strong>好了，路由讲完了，想自定义路由？在Para上做点创新就可以了~~~~</strong></span></p>
 <h1>2：Taurus.Controllers</h1>
 <h2>1：寻找Controller：</h2>
 <p>规则已经定好了，剩下的事就是按规则找Controller了。</p>
@@ -106,13 +109,13 @@ Demo：https://github.com/cyq1162/Taurus.MVC.Demo <br />
 <p>4：找不到Controller时，都找DefaultController，如果这个都木有（Demo里是有的），就抛异常了。</p>
 <p><img src="http://images2015.cnblogs.com/blog/17408/201608/17408-20160805025506872-16659224.jpg" alt="" /></p>
 <h2>2：调用Controller的Action：</h2>
-<p>1：方法名都是public void，且没有参数（重载多个参数，默认只收集第一个）。</p>
-<p>2：如果是Ajax请求，把处理完的值赋给上下文的AjaxResult即可。</p>
+<p>1：方法名都是public void，可以有参数（重载多个参数，默认只收集第一个）。</p>
+<p>2：有输入的，用Write方法。</p>
 <p>3：找不到Action时，会找Default方法（这个基类里有，所以一定会有，有需要就重写它）。</p>
 <p><img src="http://images2015.cnblogs.com/blog/17408/201608/17408-20160805025353559-490764850.jpg" alt="" /></p>
 <h1>3：Taurus.View</h1>
 <p>1：模板：html（严格的说应该是xhtml）</p>
-<p>2：模板加载方式：和URL对应的寻址路径：就是Views/{Controller}/{Action}.html</p>
+<p>2：模板加载方式：和URL对应的寻址路径：就是Views/{Controller}/{Action}.html ，通过配置可以改变约定的路径。</p>
 <p>3：母版页的引用方式：itemref="页面.节点名称"。（<strong>itemref是div的属性，没人用，就借它来引用节点替换</strong>。）</p>
 <p>4：加载替换语法：</p>
 <p>A：对于input标签，可以使用CYQ.Data.MDataRow.SetToAll批量赋值。</p>
