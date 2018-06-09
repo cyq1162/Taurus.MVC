@@ -619,8 +619,8 @@ namespace Taurus.Core
                             {
                                 
                                 errMsg = errMsg.Split('&')[0];
-                                context.Response.Write(JsonHelper.OutResult(false, string.Format(errMsg, items.Length > 1 ? items[1] : key)));
                                 context.Response.ContentType = "application/json";
+                                context.Response.Write(JsonHelper.OutResult(false, string.Format(errMsg, items.Length > 1 ? items[1] : key)));
                                 context.Response.End();
                             }
                             return para;
@@ -639,8 +639,8 @@ namespace Taurus.Core
                                     {
                                         errMsg = errMsg.Split('&')[1];
                                     }
-                                    context.Response.Write(JsonHelper.OutResult(false, string.Format(errMsg, items.Length > 1 ? items[1] : key)));
                                     context.Response.ContentType = "application/json";
+                                    context.Response.Write(JsonHelper.OutResult(false, string.Format(errMsg, items.Length > 1 ? items[1] : key)));
                                     context.Response.End();
                                 }
                                 return para;
