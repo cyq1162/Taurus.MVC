@@ -3,11 +3,13 @@ Microsoft Visual Studio Solution File, Format Version 12.00
 # Visual Studio 15
 VisualStudioVersion = 15.0.27004.2010
 MinimumVisualStudioVersion = 10.0.40219.1
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Taurus.View_Core_VS2017", "Taurus.View_NetCore\Taurus.View_Core_VS2017.csproj", "{B5D02384-28F4-4DFC-8A60-91D9D53489DA}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Taurus.View_Core_VS2017", "Taurus.View_NetCore\Taurus.View_Core_VS2017.csproj", "{B5D02384-28F4-4DFC-8A60-91D9D53489DA}"
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Taurus.Core_Core_VS2017", "Taurus.Core\Taurus.Core_Core_VS2017.csproj", "{D63FAAFD-2AD9-4A8C-AD50-FA1943107F5E}"
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Taurus.Controllers_Core_VS2017", "Taurus.Controllers\Taurus.Controllers_Core_VS2017.csproj", "{5D64B052-D185-465D-915C-C40AEA61F1D0}"
+EndProject
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "CYQ.Data_Core_VS2017", "..\..\CYQ.Data-GitHub\trunk\CYQ.Data_Core_VS2017.csproj", "{D0A635CF-AE21-4652-A19E-EA2F54BCADE9}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -27,6 +29,10 @@ Global
 		{5D64B052-D185-465D-915C-C40AEA61F1D0}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{5D64B052-D185-465D-915C-C40AEA61F1D0}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{5D64B052-D185-465D-915C-C40AEA61F1D0}.Release|Any CPU.Build.0 = Release|Any CPU
+		{D0A635CF-AE21-4652-A19E-EA2F54BCADE9}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{D0A635CF-AE21-4652-A19E-EA2F54BCADE9}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{D0A635CF-AE21-4652-A19E-EA2F54BCADE9}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{D0A635CF-AE21-4652-A19E-EA2F54BCADE9}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
