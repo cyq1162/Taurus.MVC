@@ -27,8 +27,9 @@ namespace Microsoft.AspNetCore.Http
             try
             {
                 System.Web.HttpApplication.Instance.ExecuteEventHandler();
+                await context.Response.WriteAsync("");
                  //处理信息
-                 await next(context);
+               //  await next(context);
             }
             catch (Exception ex)
             {

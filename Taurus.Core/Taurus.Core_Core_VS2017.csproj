@@ -8,17 +8,21 @@
     <Company>路过秋天 （2018-04-17）</Company>
     <Authors>路过秋天</Authors>
     <Copyright>Copyright ©  路过秋天 2016-2096</Copyright>
-    <Version>2.2.3.5</Version>
+    <Version>2.2.3.7</Version>
     <Product>Taurus.Core .NET Core 版本</Product>
     <PackageProjectUrl>http://taurus.cyqdata.com</PackageProjectUrl>
     <PackageId>Taurus.MVC.Core</PackageId>
-    <GeneratePackageOnBuild>true</GeneratePackageOnBuild>
+    <GeneratePackageOnBuild>false</GeneratePackageOnBuild>
     <PackageReleaseNotes>Taurus.mvc is a simple mvc or webapi framework for asp.net core</PackageReleaseNotes>
     <PackageTags>Taurus.MVC Core ASP.NET aspnetcore webapi</PackageTags>
   </PropertyGroup>
 
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|AnyCPU'">
     <DocumentationFile>bin\Debug\netcoreapp2.0\Taurus.Core.xml</DocumentationFile>
+  </PropertyGroup>
+
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|AnyCPU'">
+    <DocumentationFile>bin\Release\netcoreapp2.0\Taurus.Core.xml</DocumentationFile>
   </PropertyGroup>
 
   <ItemGroup>
@@ -34,8 +38,7 @@
   </ItemGroup>
 
   <ItemGroup>
-    <PackageReference Include="cyqdatacore" Version="5.7.8.6" />
-    <PackageReference Include="Microsoft.AspNetCore.All" Version="2.0.8" />
+    <ProjectReference Include="..\..\..\CYQ.Data-GitHub\trunk\CYQ.Data_Core_VS2017.csproj" />
   </ItemGroup>
 
 </Project>
