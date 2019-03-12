@@ -18,7 +18,7 @@ namespace Taurus.Controllers
         public const string TxtConn = "txt path={0}App_Data";
         public const string XmlConn = "xml path={0}App_Data";
     }
-   
+
     public class Users : CYQ.Data.Orm.OrmBase
     {
         public Users()
@@ -125,11 +125,11 @@ namespace Taurus.Controllers
                 {
                     utTable = ut.Select();
                 }
+
                 // View.OnForeach += new XHtmlAction.SetForeachEventHandler(View_OnForeach);
-               // utTable.Bind(View);//取usertypeView或defaultView节点。
+                // utTable.Bind(View);//取usertypeView或defaultView节点。
 
                 utTable.Bind(View, "ddl" + utTable.TableName);//绑定下拉框，指定节点名称。（用表名，是为了不写死ddlUserType）
-
 
                 MDataTable dt;
                 //UI 操作View
@@ -138,6 +138,7 @@ namespace Taurus.Controllers
                     if (demo.Fill())
                     {
                         demo.UI.SetToAll(View);
+
                         View.LoadData(demo.RawData, "");
                     }
                     Pager pager = new Pager(View);
@@ -178,7 +179,7 @@ namespace Taurus.Controllers
         #region 按钮事件
         public void BtnAdd()
         {
-           
+
             using (Users u = new Users())
             {
                 string path = SavePic();
@@ -304,7 +305,7 @@ namespace Taurus.Controllers
         //    }
         //}
 
-        string View_OnForeach(string text, Dictionary<string,string> values, int rowIndex)
+        string View_OnForeach(string text, Dictionary<string, string> values, int rowIndex)
         {
             values["Sex"] = values["Sex"] == "1" ? "Boy" : "Girl";
             return text;

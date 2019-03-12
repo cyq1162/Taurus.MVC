@@ -28,16 +28,20 @@ namespace Taurus.Core
         /// <param name="path">相对路径，如：/abc/cyq/a.html</param>
         public static XHtmlAction Create(string path)
         {
-            path = AppConfig.WebRootPath + path.TrimStart('/').Replace("/", "\\");
+            path = AppConfig.WebRootPath + path.TrimStart('/');//.Replace("/", "\\");
+           // System.Web.HttpContext.Current.Response.Write(path);
             if (File.Exists(path))
             {
+                //System.Web.HttpContext.Current.Response.Write("path ok");
                 XHtmlAction view = new XHtmlAction(true, false);
 
                 if (view.Load(path, XmlCacheLevel.Hour, true))
                 {
+                   // System.Web.HttpContext.Current.Response.Write("load ok");
                     //处理Shared目录下的节点替换。
                     ReplaceItemRef(view, view.GetList("*", "itemref"), false, 0);
                 }
+                //System.Web.HttpContext.Current.Response.Write(view.OutXml);
                 return view;
             }
             return null;
@@ -117,7 +121,7 @@ namespace Taurus.Core
         /// <returns></returns>
         private static XHtmlAction GetSharedView(string htmlName)
         {
-            string path = AppConfig.WebRootPath + AppConfig.GetApp("Views", "Views") + "\\Shared\\" + htmlName + ".html";
+            string path = AppConfig.WebRootPath + AppConfig.GetApp("Views", "Views") + "/Shared/" + htmlName + ".html";
             if (!File.Exists(path))
             {
                 return null;

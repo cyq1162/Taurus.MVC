@@ -7,8 +7,8 @@ using Microsoft.AspNetCore;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.Logging;
-
-namespace Taurus.View_NetCore
+using CYQ.Data;
+namespace Taurus.View
 {
     public class Program
     {
@@ -20,6 +20,12 @@ namespace Taurus.View_NetCore
         public static IWebHost BuildWebHost(string[] args) =>
             WebHost.CreateDefaultBuilder(args)
                 .UseStartup<Startup>()
+                .UseUrls(GetUrl())
                 .Build();
+        public static string GetUrl()
+        {
+            string url = AppConfig.GetApp("Host", "[http|https]://*:8888");
+            return url;
+        }
     }
 }

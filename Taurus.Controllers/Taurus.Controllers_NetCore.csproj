@@ -19,7 +19,8 @@
   </ItemGroup>
 
   <ItemGroup>
-    <ProjectReference Include="..\Taurus.Core\Taurus.Core_Core_VS2017.csproj" />
+    <ProjectReference Include="..\..\..\CYQ.Data-GitHub\trunk\CYQ.Data_NetCore.csproj" />
+    <ProjectReference Include="..\Taurus.Core\Taurus.Core_NetCore.csproj" />
   </ItemGroup>
 
 </Project>

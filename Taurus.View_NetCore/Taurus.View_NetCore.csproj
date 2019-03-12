@@ -1,0 +1,21 @@
+<Project Sdk="Microsoft.NET.Sdk.Web">
+
+  <PropertyGroup>
+    <TargetFramework>netcoreapp2.0</TargetFramework>
+    <AssemblyName>Taurus.View</AssemblyName>
+    <RootNamespace>Taurus.View</RootNamespace>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <ProjectReference Include="..\..\..\CYQ.Data-GitHub\trunk\CYQ.Data_NetCore.csproj" />
+    <ProjectReference Include="..\Taurus.Controllers\Taurus.Controllers_NetCore.csproj" />
+    <ProjectReference Include="..\Taurus.Core\Taurus.Core_NetCore.csproj" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <Content Update="appsettings.json">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
+  </ItemGroup>
+
+</Project>
