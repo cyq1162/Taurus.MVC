@@ -67,6 +67,15 @@ namespace Taurus.Core
                 return _IController.Context;
             }
         }
+        public HttpRequest Request
+        {
+            get { return _IController.Request; }
+        }
+
+        public HttpResponse Response
+        {
+            get { return _IController.Response; }
+        }
         public bool IsHttpGet
         {
             get { return _IController.IsHttpGet; }
@@ -133,5 +142,8 @@ namespace Taurus.Core
         {
             return _IController.CheckFormat(errMsg, paras);
         }
+
+
+      
     }
 }

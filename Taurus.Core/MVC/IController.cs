@@ -17,6 +17,8 @@ namespace Taurus.Core
         T GetEntity<T>() where T : class;
         XHtmlAction View { get; set; }
         HttpContext Context { get; }
+        HttpRequest Request { get; }
+        HttpResponse Response { get; }
         bool IsHttpGet { get; }
         bool IsHttpPost { get; }
         Type ControllerType { get; }

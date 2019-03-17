@@ -410,7 +410,18 @@ namespace Taurus.Core
         {
             get { return HttpContext.Current; }
         }
+        public HttpRequest Request
+        {
+            get
+            {
+                return Context == null ? null : Context.Request;
+            }
+        }
 
+        public HttpResponse Response
+        {
+            get { return Context == null ? null : Context.Response; }
+        }
         public bool IsHttpGet
         {
             get { return Context.Request.HttpMethod == "GET"; }
@@ -424,6 +435,7 @@ namespace Taurus.Core
         /// 缓存参数值
         /// </summary>
         private Dictionary<string, string> queryCache = new Dictionary<string, string>(StringComparer.OrdinalIgnoreCase);
+        static string[] autoPrefixs = ("," + AppConfig.UI.AutoPrefixs).Split(',');
         /// <summary>
         /// Get Request value
         /// </summary>
@@ -443,33 +455,44 @@ namespace Taurus.Core
             }
 
             T value = default(T);
-            if (Context.Request[key] == null)
+            foreach (string pre in autoPrefixs)
             {
-                //尝试从Json中获取
-                string result = JsonHelper.GetValue(GetJson(), key);
-                if (!string.IsNullOrEmpty(result))
+                string newKey = pre + key;
+                if (Context.Request[newKey] == null)
                 {
-                    value = QueryTool.ChangeValueType<T>(result, defaultValue, false);
-                }
-                else if (context.Request.Headers[key] != null)
-                {
-                    value = QueryTool.ChangeValueType<T>(context.Request.Headers[key], defaultValue, false);
+                    //尝试从Json中获取
+                    string result = JsonHelper.GetValue(GetJson(), newKey);
+                    if (!string.IsNullOrEmpty(result))
+                    {
+                        value = QueryTool.ChangeValueType<T>(result, defaultValue, false);
+                        break;
+                    }
+                    else if (context.Request.Headers[newKey] != null)
+                    {
+                        value = QueryTool.ChangeValueType<T>(context.Request.Headers[newKey], defaultValue, false);
+                        break;
+                    }
+                    else
+                    {
+                        value = defaultValue;
+                    }
                 }
                 else
                 {
-                    value = defaultValue;
+                    value = QueryTool.Query<T>(newKey, defaultValue, false);//这里不设置默认值(值类型除外）
+                    break;
                 }
+
             }
-            else
-            {
-                value = QueryTool.Query<T>(key, defaultValue, false);//这里不设置默认值(值类型除外）
-            }
+
             if (value != null && !queryCache.ContainsKey(key))
             {
                 queryCache.Add(key, value.ToString());
             }
             return value;
         }
+
+
         public T Query<T>(int paraIndex)
         {
             return Query<T>(paraIndex, default(T));
@@ -617,7 +640,7 @@ namespace Taurus.Core
                         {
                             if (!string.IsNullOrEmpty(errMsg))
                             {
-                                
+
                                 errMsg = errMsg.Split('&')[0];
                                 context.Response.ContentType = "application/json";
                                 context.Response.Write(JsonHelper.OutResult(false, string.Format(errMsg, items.Length > 1 ? items[1] : key)));
