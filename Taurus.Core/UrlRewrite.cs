@@ -129,19 +129,23 @@ namespace Taurus.Core
             {
                 WriteError("You need a controller for coding!");
             }
-            try
+            else
             {
-                object o = Activator.CreateInstance(t);//实例化
-                t.GetMethod("ProcessRequest").Invoke(o, new object[] { context });
-            }
-            catch (ThreadAbortException e)
-            {
-                //内部提前Response.End()时引发的异常
-                //ASP.NET 的机制就是通过异常退出线程（不要觉的奇怪）
-            }
-            catch (Exception err)
-            {
-                WriteError(err.Message);
+                try
+                {
+                    object o = Activator.CreateInstance(t);//实例化
+                    t.GetMethod("ProcessRequest").Invoke(o, new object[] { context });
+                }
+
+                catch (ThreadAbortException e)
+                {
+                    //内部提前Response.End()时引发的异常
+                    //ASP.NET 的机制就是通过异常退出线程（不要觉的奇怪）
+                }
+                catch (Exception err)
+                {
+                    WriteError(err.Message);
+                }
             }
             //context.Response.End();
         }
