@@ -21,6 +21,10 @@ namespace Taurus.Core
         }
 
         #region _ICommon
+        public string APIResult
+        {
+            get { return _IController.APIResult; }
+        }
         public string Order
         {
             get { return _IController.Order; }
@@ -115,6 +119,10 @@ namespace Taurus.Core
         {
             get { return _IController.ControllerType; }
         }
+        public string Module
+        {
+            get { return _IController.Module; }
+        }
 
         public string Action
         {
@@ -149,9 +157,9 @@ namespace Taurus.Core
         }
 
 
-        public string CheckFormat(string errMsg, params string[] paras)
+        public bool CheckFormat(string formatter, params string[] paras)
         {
-            return _IController.CheckFormat(errMsg, paras);
+            return _IController.CheckFormat(formatter, paras);
         }
 
 

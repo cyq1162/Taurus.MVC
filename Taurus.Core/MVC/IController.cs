@@ -5,6 +5,7 @@ namespace Taurus.Core
 {
     public interface IController
     {
+        string APIResult { get; }
         int PageIndex { get; }
         int PageSize { get; }
         string Sort { get; }
@@ -25,11 +26,12 @@ namespace Taurus.Core
         bool IsHttpPut { get; }
         bool IsHttpDelete { get; }
         Type ControllerType { get; }
+        string Module { get; }
         string Action { get; }
         string Para { get; }
         void Write(string msg);
         void Write(string msg, bool isSuccess);
         string GetJson();
-        string CheckFormat(string errMsg, params string[] paras);
+        bool CheckFormat(string formatter, params string[] paras);
     }
 }

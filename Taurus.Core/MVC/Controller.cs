@@ -21,6 +21,16 @@ namespace Taurus.Core
     {
         private StringBuilder apiResult = new StringBuilder();
         /// <summary>
+        /// 获取待发送的缓冲区的数据
+        /// </summary>
+        public string APIResult
+        {
+            get
+            {
+                return apiResult.ToString();
+            }
+        }
+        /// <summary>
         /// to stop invoke method
         /// <para>取消继续调用事件（可以在重载BeforeInvoke方法内使用）</para>
         /// </summary>
@@ -57,12 +67,14 @@ namespace Taurus.Core
                         }
                         break;
                     case 2:
+                        _Module = items[0];
                         if (items.Length > 2)
                         {
                             methodName = items[2];
                         }
                         break;
                 }
+                _Action = methodName;
                 #endregion
                 bool isGoOn = true;
 
@@ -110,7 +122,7 @@ namespace Taurus.Core
                     if (isGoOn)
                     {
                         #region Method Invoke
-                        _Action = method.Name;
+                        
 
                         #region BeforeInvoke
                         MethodInfo beforeInvoke = InvokeLogic.GetMethod(t, InvokeLogic.BeforeInvoke);
@@ -362,6 +374,19 @@ namespace Taurus.Core
                 _View = value;//开放Set是考虑用户可以获取OutXml后，将此设为Null，再自定义输出。
             }
         }
+
+        private string _Module;
+        /// <summary>
+        /// Module value
+        /// </summary>
+        public string Module
+        {
+            get
+            {
+                return _Module;
+            }
+        }
+
         private Type _ControllerType;
         /// <summary>
         /// Controller Type
@@ -684,44 +709,36 @@ namespace Taurus.Core
         }
 
         /// <summary>
-        /// 格式检测，并返回第一个错误的参数，若正确则返null
+        /// 格式检测看是否满足验证条件(错误信息可获取APIResult属性)
         /// </summary>
-        /// <param name="errMsg">参数为空时（结束请求返回的错误信息，不想结束请求可以传null）<para>
-        /// 示例：{0}不能为空&{0}格式错误</para></param>
-        /// <param name="paras">示例：mobile&手机号&^1[3|4|5|8][0-9]\d{8}$</param>
+        /// <param name="formatter">示例：{0}不能为空,{0}格式错误</param>
+        /// <param name="paras">示例：mobile,手机号,^1[3|4|5|8][0-9]\d{8}$</param>
         /// <returns></returns>
-        public string CheckFormat(string errMsg, params string[] paras)
+        public bool CheckFormat(string formatter, params string[] paras)
         {
             if (paras.Length > 0)
             {
-                //if (paras.Length == 1 && paras[0].IndexOf(',') > 0)//"支持"aaa,bbb"这样的写法。
-                //{
-                //    paras = paras[0].Split(',');
-                //}
                 string json = GetJson();
                 foreach (string para in paras)
                 {
                     if (!string.IsNullOrEmpty(para))
                     {
-                        string[] items = para.Split('&');//支持"user&用户名&正则表达式"这样的写法.
+                        string[] items = para.Split(',', '&');//支持"user&用户名&正则表达式"这样的写法.
                         string key = items[0];
-                        string value = context.Request.Headers[key] ?? context.Request[key];
+                        string value = Query<string>(key);
                         if (string.IsNullOrEmpty(value))
                         {
-
                             value = JsonHelper.GetValue(json, key);
                         }
                         if (string.IsNullOrEmpty(value))//参数为空
                         {
-                            if (!string.IsNullOrEmpty(errMsg))
+                            if (!string.IsNullOrEmpty(formatter))
                             {
 
-                                errMsg = errMsg.Split('&')[0];
-                                context.Response.ContentType = "application/json";
-                                context.Response.Write(JsonHelper.OutResult(false, string.Format(errMsg, items.Length > 1 ? items[1] : key)));
-                                context.Response.End();
+                                formatter = formatter.Split(',', '&')[0];
+                                Write(string.Format(formatter, items.Length > 1 ? items[1] : key), false);
                             }
-                            return para;
+                            return false;
                         }
                         else if (items.Length > 2)//有正则
                         {
@@ -731,17 +748,15 @@ namespace Taurus.Core
                             }
                             if (!Regex.IsMatch(value, items[2]))//如果格式错误
                             {
-                                if (!string.IsNullOrEmpty(errMsg))
+                                if (!string.IsNullOrEmpty(formatter))
                                 {
-                                    if (errMsg.IndexOf('&') > 0)
+                                    if (formatter.IndexOfAny(new char[] { ',', '&' }) > 0)
                                     {
-                                        errMsg = errMsg.Split('&')[1];
+                                        formatter = formatter.Split(',', '&')[1];
                                     }
-                                    context.Response.ContentType = "application/json";
-                                    context.Response.Write(JsonHelper.OutResult(false, string.Format(errMsg, items.Length > 1 ? items[1] : key)));
-                                    context.Response.End();
+                                    Write(string.Format(formatter, items.Length > 1 ? items[1] : key), false);
                                 }
-                                return para;
+                                return false;
                             }
                         }
                         if (!queryCache.ContainsKey(key))
@@ -751,7 +766,7 @@ namespace Taurus.Core
                     }
                 }
             }
-            return null;
+            return true;
         }
     }
 }
