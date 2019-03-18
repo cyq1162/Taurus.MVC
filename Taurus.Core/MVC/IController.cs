@@ -21,6 +21,9 @@ namespace Taurus.Core
         HttpResponse Response { get; }
         bool IsHttpGet { get; }
         bool IsHttpPost { get; }
+        bool IsHttpHead { get; }
+        bool IsHttpPut { get; }
+        bool IsHttpDelete { get; }
         Type ControllerType { get; }
         string Action { get; }
         string Para { get; }

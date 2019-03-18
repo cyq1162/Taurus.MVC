@@ -42,6 +42,7 @@ namespace Taurus.Core
             try
             {
                 Type t = _ControllerType = this.GetType();
+                #region GetMethodName
                 string[] items = QueryTool.GetLocalPath().Trim('/').Split('/');
                 string methodName = string.Empty;
                 switch (RouteConfig.RouteMode)
@@ -62,20 +63,16 @@ namespace Taurus.Core
                         }
                         break;
                 }
+                #endregion
                 bool isGoOn = true;
-                //if (InvokeLogic.BeforeInvokeMethod != null)
-                //{
-                //    isGoOn = Convert.ToBoolean(InvokeLogic.BeforeInvokeMethod.Invoke(null, new object[] { this, methodName }));
-                //}
-                //if (isGoOn)
-                //{
+
                 char[] attrFlags;
                 MethodInfo method = InvokeLogic.GetMethod(t, methodName, out attrFlags);
                 if (method != null)
                 {
                     if (attrFlags[0] == '1')
                     {
-                        #region Invoke CheckToken
+                        #region Validate CheckToken
                         MethodInfo checkToken = InvokeLogic.GetMethod(t, InvokeLogic.CheckToken);
                         if (checkToken != null && checkToken.Name == InvokeLogic.CheckToken)
                         {
@@ -87,18 +84,27 @@ namespace Taurus.Core
                         }
                         #endregion
                     }
-                    if (isGoOn && attrFlags[1] != attrFlags[2])//配置了HttpGet或HttpPost
+                    if (isGoOn)//配置了HttpGet或HttpPost
                     {
-                        if (attrFlags[1] == '1' && !IsHttpGet)
+                        #region Validate Http methods
+                        string[] httpMethods = InvokeLogic.HttpMethods;
+                        for (int i = 0; i < httpMethods.Length; i++)
                         {
-                            isGoOn = false;
-                            Write("Only support HttpGet!", false);
+                            if (attrFlags[i + 1] == '1')
+                            {
+                                isGoOn = false;
+                                if (httpMethods[i] == Request.HttpMethod)
+                                {
+                                    isGoOn = true;
+                                    break;
+                                }
+                            }
                         }
-                        else if (attrFlags[2] == '1' && !IsHttpPost)
+                        if (!isGoOn)
                         {
-                            isGoOn = false;
-                            Write("Only support HttpPost!", false);
+                            Write("Http method not support " + Request.HttpMethod, false);
                         }
+                        #endregion
 
                     }
                     if (isGoOn)
@@ -106,6 +112,7 @@ namespace Taurus.Core
                         #region Method Invoke
                         _Action = method.Name;
 
+                        #region BeforeInvoke
                         MethodInfo beforeInvoke = InvokeLogic.GetMethod(t, InvokeLogic.BeforeInvoke);
                         if (beforeInvoke != null && beforeInvoke.Name == InvokeLogic.BeforeInvoke)
                         {
@@ -115,6 +122,7 @@ namespace Taurus.Core
                         {
                             isGoOn = Convert.ToBoolean(InvokeLogic.BeforeInvokeMethod.Invoke(null, new object[] { this, methodName }));
                         }
+                        #endregion
 
                         //BeforeInvoke(method.Name);
 
@@ -122,40 +130,47 @@ namespace Taurus.Core
                         {
                             _View = ViewEngine.Create(t.Name, method.Name);
                         }
+
                         if (isGoOn)
                         {
-                            method.Invoke(this, GetInvokeParas(method));
-                            if (IsHttpPost)
+                            object[] paras;
+                            if (GetInvokeParas(method, out paras))
                             {
-                                string name = GetBtnName();
-                                if (!string.IsNullOrEmpty(name))
+                                method.Invoke(this, paras);
+                                if (IsHttpPost)
                                 {
-                                    MethodInfo postBtnMethod = InvokeLogic.GetMethod(t, name);
-                                    if (postBtnMethod != null && postBtnMethod.Name != InvokeLogic.Default)
+                                    #region Button Invoke
+                                    string name = GetBtnName();
+                                    if (!string.IsNullOrEmpty(name))
                                     {
-                                        postBtnMethod.Invoke(this, GetInvokeParas(postBtnMethod));
+                                        MethodInfo postBtnMethod = InvokeLogic.GetMethod(t, name);
+                                        if (postBtnMethod != null && postBtnMethod.Name != InvokeLogic.Default && GetInvokeParas(postBtnMethod, out paras))
+                                        {
+                                            postBtnMethod.Invoke(this, paras);
+                                        }
                                     }
+                                    #endregion
                                 }
-                            }
-                            if (isGoOn)
-                            {
-                                MethodInfo endInvoke = InvokeLogic.GetMethod(t, InvokeLogic.EndInvoke);
-                                if (endInvoke != null && endInvoke.Name == InvokeLogic.EndInvoke)
+                                if (isGoOn)
                                 {
-                                    isGoOn = Convert.ToBoolean(endInvoke.Invoke(this, new object[] { method.Name }));
+                                    #region EndInvoke
+                                    MethodInfo endInvoke = InvokeLogic.GetMethod(t, InvokeLogic.EndInvoke);
+                                    if (endInvoke != null && endInvoke.Name == InvokeLogic.EndInvoke)
+                                    {
+                                        isGoOn = Convert.ToBoolean(endInvoke.Invoke(this, new object[] { method.Name }));
+                                    }
+                                    else if (InvokeLogic.EndInvokeMethod != null)
+                                    {
+                                        InvokeLogic.EndInvokeMethod.Invoke(null, new object[] { this, methodName });
+                                    }
+                                    #endregion
+                                    // EndInvoke(method.Name);
                                 }
-                                else if (InvokeLogic.EndInvokeMethod != null)
-                                {
-                                    InvokeLogic.EndInvokeMethod.Invoke(null, new object[] { this, methodName });
-                                }
-                                // EndInvoke(method.Name);
                             }
                         }
                         #endregion
                     }
                 }
-
-                //}
                 if (string.IsNullOrEmpty(context.Response.Charset))
                 {
                     context.Response.Charset = "utf-8";
@@ -240,11 +255,12 @@ namespace Taurus.Core
             }
             return null;
         }
-        private object[] GetInvokeParas(MethodInfo method)
+        private bool GetInvokeParas(MethodInfo method, out object[] paras)
         {
-            object[] paras = null;
+            paras = null;
             #region 增加处理参数支持
             ParameterInfo[] piList = method.GetParameters();
+            object[] validateList = method.GetCustomAttributes(typeof(ValidateAttribute), true);
             if (piList != null && piList.Length > 0)
             {
                 paras = new object[piList.Length];
@@ -264,6 +280,11 @@ namespace Taurus.Core
                             value = GetJson();
                         }
                     }
+                    //检测是否允许为空，是否满足正则格式。
+                    if (!ValidateParas(validateList, pi.Name, value))
+                    {
+                        return false;
+                    }
                     try
                     {
                         paras[i] = QueryTool.ChangeType(value, t);//类型转换（基础或实体）
@@ -277,15 +298,50 @@ namespace Taurus.Core
                         }
                         string outMsg = string.Format("[{0} {1} = {2}]  [Error : {3}]", typeName, pi.Name, value, err.Message);
                         Write(outMsg, false);
-                       // context.Response.Write(outMsg);
-                        context.Response.End();
-                        break;
+                        return false;
                     }
 
                 }
             }
             #endregion
-            return paras;
+            return true;
+        }
+        private bool ValidateParas(object[] validateList, string paraName, string paraValue)
+        {
+            if (validateList != null)
+            {
+                foreach (object item in validateList)
+                {
+                    ValidateAttribute valid = item as ValidateAttribute;
+                    if (valid.paraName == paraName || valid.paraName.StartsWith(paraName + "."))
+                    {
+                        if (valid.paraName.StartsWith(paraName + ".") && !string.IsNullOrEmpty(paraValue))
+                        {
+                            paraValue = JsonHelper.GetValue(paraValue, valid.paraName.Substring(paraName.Length + 1));
+                        }
+                        if (valid.isRequired && string.IsNullOrEmpty(paraValue))
+                        {
+                            Write(valid.emptyTip, false);
+                            return false;
+                        }
+                        else if (!string.IsNullOrEmpty(valid.regex) && !string.IsNullOrEmpty(paraValue))
+                        {
+                            if (paraValue.IndexOf('%') > -1)
+                            {
+                                paraValue = HttpUtility.UrlDecode(paraValue);
+                            }
+                            if (!Regex.IsMatch(paraValue, valid.regex))//如果格式错误
+                            {
+                                Write(valid.regexTip, false);
+                                return false;
+                            }
+                        }
+                    }
+                }
+
+            }
+
+            return true;
         }
     }
     public abstract partial class Controller : IController
@@ -423,6 +479,8 @@ namespace Taurus.Core
         {
             get { return Context == null ? null : Context.Response; }
         }
+        #region Http Method
+
         public bool IsHttpGet
         {
             get { return Context.Request.HttpMethod == "GET"; }
@@ -432,6 +490,22 @@ namespace Taurus.Core
         {
             get { return Context.Request.HttpMethod == "POST"; }
         }
+
+        public bool IsHttpHead
+        {
+            get { return Context.Request.HttpMethod == "HEAD"; }
+        }
+
+        public bool IsHttpPut
+        {
+            get { return Context.Request.HttpMethod == "PUT"; }
+        }
+
+        public bool IsHttpDelete
+        {
+            get { return Context.Request.HttpMethod == "DELETE"; }
+        }
+        #endregion
         /// <summary>
         /// 缓存参数值
         /// </summary>

@@ -85,7 +85,18 @@ namespace Taurus.Core
         {
             get { return _IController.IsHttpPost; }
         }
-
+        public bool IsHttpHead
+        {
+            get { return _IController.IsHttpHead; }
+        }
+        public bool IsHttpPut
+        {
+            get { return _IController.IsHttpPut; }
+        }
+        public bool IsHttpDelete
+        {
+            get { return _IController.IsHttpDelete; }
+        }
         public XHtmlAction View
         {
             get

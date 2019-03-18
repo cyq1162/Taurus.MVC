@@ -22,6 +22,11 @@ namespace Taurus.Core
         internal const string TokenAttribute = "TokenAttribute";
         internal const string HttpGetAttribute = "HttpGetAttribute";
         internal const string HttpPostAttribute = "HttpPostAttribute";
+        internal const string HttpHeadAttribute = "HttpHeadAttribute";
+        internal const string HttpPutAttribute = "HttpPutAttribute";
+        internal const string HttpDeleteAttribute = "HttpDeleteAttribute";
+
+        internal static string[] HttpMethods = new string[] { "GET", "POST", "HEAD", "PUT", "DELETE" };
 
         #region GetAssembly
         private static string _DllName;
@@ -127,7 +132,7 @@ namespace Taurus.Core
 
         #region 3个全局方法
 
-       
+
         private static MethodInfo _CheckTokenMethod = null;
         /// <summary>
         /// 全局CheckToken方法
@@ -223,7 +228,7 @@ namespace Taurus.Core
                                 object[] attrs = item.GetCustomAttributes(true);
                                 if (attrs.Length > 0)//追加特性名
                                 {
-                                    char[] aFlags = new char[3] { '0', '0', '0' };
+                                    char[] aFlags = new char[6] { '0', '0', '0', '0', '0', '0' };
                                     foreach (object attr in attrs)
                                     {
                                         string[] names = attr.ToString().Split('.');
@@ -235,6 +240,12 @@ namespace Taurus.Core
                                                 aFlags[1] = '1'; break;
                                             case HttpPostAttribute:
                                                 aFlags[2] = '1'; break;
+                                            case HttpHeadAttribute:
+                                                aFlags[3] = '1'; break;
+                                            case HttpPutAttribute:
+                                                aFlags[4] = '1'; break;
+                                            case HttpDeleteAttribute:
+                                                aFlags[5] = '1'; break;
                                         }
 
                                     }
@@ -257,7 +268,7 @@ namespace Taurus.Core
             }
             if (attrFlags == null)
             {
-                attrFlags = new char[3] { '0', '0', '0' };
+                attrFlags = new char[6] { '0', '0', '0', '0', '0', '0' };
             }
             if (methodAttrs.ContainsKey(key)) { attrFlags[0] = '1'; }
             if (dic.ContainsKey(methodName))

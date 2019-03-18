@@ -9,14 +9,32 @@ namespace Taurus.Core
     {
 
     }
-    [AttributeUsage(AttributeTargets.Class | AttributeTargets.Method, AllowMultiple = false, Inherited = true)]
+    #region HttpMethod
+
+    [AttributeUsage(AttributeTargets.Method, AllowMultiple = false, Inherited = true)]
     public class HttpGetAttribute : Attribute
     {
 
     }
-    [AttributeUsage(AttributeTargets.Class | AttributeTargets.Method, AllowMultiple = false, Inherited = true)]
+    [AttributeUsage(AttributeTargets.Method, AllowMultiple = false, Inherited = true)]
     public class HttpPostAttribute : Attribute
     {
 
     }
+    [AttributeUsage(AttributeTargets.Method, AllowMultiple = false, Inherited = true)]
+    public class HttpHeadAttribute : Attribute
+    {
+
+    }
+    [AttributeUsage(AttributeTargets.Method, AllowMultiple = false, Inherited = true)]
+    public class HttpPutAttribute : Attribute
+    {
+
+    }
+    [AttributeUsage(AttributeTargets.Method, AllowMultiple = false, Inherited = true)]
+    public class HttpDeleteAttribute : Attribute
+    {
+
+    }
+    #endregion
 }

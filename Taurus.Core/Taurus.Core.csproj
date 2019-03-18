@@ -64,6 +64,7 @@
     <Compile Include="MVC\RouteConfig.cs" />
     <Compile Include="MVC\Controller.cs" />
     <Compile Include="MVC\TokenAttribute.cs" />
+    <Compile Include="MVC\ValidateAttribute.cs" />
     <Compile Include="MVC\ViewEngine.cs" />
     <Compile Include="MVC\IController.cs" />
     <Compile Include="MVC\LogicBase.cs" />
