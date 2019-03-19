@@ -9,7 +9,7 @@ namespace Taurus.Core
     /// 自动较验参是否必填、正则验证
     /// </summary>
     [AttributeUsage(AttributeTargets.Method, AllowMultiple = true, Inherited = true)]
-    public class ValidateAttribute : Attribute
+    public class RequireAttribute : Attribute
     {
         public string paraName, regex, emptyTip, regexTip;
         public bool isRequired;
@@ -18,22 +18,22 @@ namespace Taurus.Core
         /// 验证参数
         /// </summary>
         /// <param name="paraName">参数名称</param>
-        public ValidateAttribute(string paraName)
+        public RequireAttribute(string paraName)
         {
             Init(paraName, true, null, null, null);
         }
         /// <param name="isRequired">是否必填</param>
-        public ValidateAttribute(string paraName, bool isRequired)
+        public RequireAttribute(string paraName, bool isRequired)
         {
             Init(paraName, isRequired, null, null, null);
         }
         /// <param name="regex">正则</param>
-        public ValidateAttribute(string paraName, bool isRequired, string regex)
+        public RequireAttribute(string paraName, bool isRequired, string regex)
         {
             Init(paraName, isRequired, regex, null, null);
         }
         /// <param name="outParaName">输出的参数提示名</param>
-        public ValidateAttribute(string paraName, bool isRequired, string regex, string outParaName)
+        public RequireAttribute(string paraName, bool isRequired, string regex, string outParaName)
         {
             //验证outParaName 是否中文
 
@@ -55,7 +55,7 @@ namespace Taurus.Core
 
         /// <param name="emptyTip">为空时的提示</param>
         /// <param name="regexTip">正则验证失败时的提示</param>
-        public ValidateAttribute(string paraName, bool isRequired, string regex, string emptyTip, string regexTip)
+        public RequireAttribute(string paraName, bool isRequired, string regex, string emptyTip, string regexTip)
         {
             Init(paraName, isRequired, regex, emptyTip, regexTip);
         }

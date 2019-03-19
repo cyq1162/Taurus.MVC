@@ -272,7 +272,7 @@ namespace Taurus.Core
             paras = null;
             #region 增加处理参数支持
             ParameterInfo[] piList = method.GetParameters();
-            object[] validateList = method.GetCustomAttributes(typeof(ValidateAttribute), true);
+            object[] validateList = method.GetCustomAttributes(typeof(RequireAttribute), true);
             if (piList != null && piList.Length > 0)
             {
                 paras = new object[piList.Length];
@@ -324,7 +324,7 @@ namespace Taurus.Core
             {
                 foreach (object item in validateList)
                 {
-                    ValidateAttribute valid = item as ValidateAttribute;
+                    RequireAttribute valid = item as RequireAttribute;
                     if (valid.paraName == paraName || valid.paraName.StartsWith(paraName + "."))
                     {
                         if (valid.paraName.StartsWith(paraName + ".") && !string.IsNullOrEmpty(paraValue))
