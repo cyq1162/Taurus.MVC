@@ -85,14 +85,18 @@ namespace Taurus.Core
                     if (attrFlags[0] == '1')
                     {
                         #region Validate CheckToken
-                        MethodInfo checkToken = InvokeLogic.GetMethod(t, InvokeLogic.CheckToken);
-                        if (checkToken != null && checkToken.Name == InvokeLogic.CheckToken)
+                        MethodInfo checkToken = InvokeLogic.GetMethod(t, InvokeLogic.Const.CheckToken);
+                        if (checkToken != null && checkToken.Name == InvokeLogic.Const.CheckToken)
                         {
                             isGoOn = Convert.ToBoolean(checkToken.Invoke(this, null));
                         }
-                        else if (InvokeLogic.CheckTokenMethod != null)
+                        else if (InvokeLogic.DefaultCheckToken != null)
                         {
-                            isGoOn = Convert.ToBoolean(InvokeLogic.CheckTokenMethod.Invoke(null, new object[] { this, methodName }));
+                            isGoOn = Convert.ToBoolean(InvokeLogic.DefaultCheckToken.Invoke(null, new object[] { this, methodName }));
+                        }
+                        else if (InvokeLogic.AuthCheckToken != null)
+                        {
+                            isGoOn = Convert.ToBoolean(InvokeLogic.AuthCheckToken.Invoke(null, new object[] { this }));
                         }
                         #endregion
                     }
@@ -122,11 +126,11 @@ namespace Taurus.Core
                     if (isGoOn)
                     {
                         #region Method Invoke
-                        
+
 
                         #region BeforeInvoke
-                        MethodInfo beforeInvoke = InvokeLogic.GetMethod(t, InvokeLogic.BeforeInvoke);
-                        if (beforeInvoke != null && beforeInvoke.Name == InvokeLogic.BeforeInvoke)
+                        MethodInfo beforeInvoke = InvokeLogic.GetMethod(t, InvokeLogic.Const.BeforeInvoke);
+                        if (beforeInvoke != null && beforeInvoke.Name == InvokeLogic.Const.BeforeInvoke)
                         {
                             isGoOn = Convert.ToBoolean(beforeInvoke.Invoke(this, new object[] { method.Name }));
                         }
@@ -156,8 +160,9 @@ namespace Taurus.Core
                                     if (!string.IsNullOrEmpty(name))
                                     {
                                         MethodInfo postBtnMethod = InvokeLogic.GetMethod(t, name);
-                                        if (postBtnMethod != null && postBtnMethod.Name != InvokeLogic.Default && GetInvokeParas(postBtnMethod, out paras))
+                                        if (postBtnMethod != null && postBtnMethod.Name != InvokeLogic.Const.Default)
                                         {
+                                            GetInvokeParas(postBtnMethod, out paras);
                                             postBtnMethod.Invoke(this, paras);
                                         }
                                     }
@@ -166,8 +171,8 @@ namespace Taurus.Core
                                 if (isGoOn)
                                 {
                                     #region EndInvoke
-                                    MethodInfo endInvoke = InvokeLogic.GetMethod(t, InvokeLogic.EndInvoke);
-                                    if (endInvoke != null && endInvoke.Name == InvokeLogic.EndInvoke)
+                                    MethodInfo endInvoke = InvokeLogic.GetMethod(t, InvokeLogic.Const.EndInvoke);
+                                    if (endInvoke != null && endInvoke.Name == InvokeLogic.Const.EndInvoke)
                                     {
                                         isGoOn = Convert.ToBoolean(endInvoke.Invoke(this, new object[] { method.Name }));
                                     }
@@ -176,7 +181,10 @@ namespace Taurus.Core
                                         InvokeLogic.EndInvokeMethod.Invoke(null, new object[] { this, methodName });
                                     }
                                     #endregion
-                                    // EndInvoke(method.Name);
+                                    if (InvokeLogic.DocRecord != null)
+                                    {
+                                        InvokeLogic.DocRecord.Invoke(null, new object[] { this, methodName });
+                                    }
                                 }
                             }
                         }
@@ -315,6 +323,19 @@ namespace Taurus.Core
 
                 }
             }
+            //对未验证过的参数，再进行一次验证。
+            foreach (object item in validateList)
+            {
+                RequireAttribute valid = item as RequireAttribute;
+                if (!valid.isValidated)
+                {
+                    if (!ValidateParas(validateList, valid.paraName, Query<string>(valid.paraName)))
+                    {
+                        return false;
+                    }
+                }
+            }
+            validateList = null;
             #endregion
             return true;
         }
@@ -325,8 +346,9 @@ namespace Taurus.Core
                 foreach (object item in validateList)
                 {
                     RequireAttribute valid = item as RequireAttribute;
-                    if (valid.paraName == paraName || valid.paraName.StartsWith(paraName + "."))
+                    if (!valid.isValidated && (valid.paraName == paraName || valid.paraName.StartsWith(paraName + ".")))
                     {
+                        valid.isValidated = true;//设置已经验证过此参数，后续可以跳过。
                         if (valid.paraName.StartsWith(paraName + ".") && !string.IsNullOrEmpty(paraValue))
                         {
                             paraValue = JsonHelper.GetValue(paraValue, valid.paraName.Substring(paraName.Length + 1));

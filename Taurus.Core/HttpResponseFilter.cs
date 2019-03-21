@@ -102,7 +102,7 @@ namespace Taurus.Core
         internal static string Replace(string html)
         {
             string ui = AppConfig.GetApp("UI", string.Empty);
-            if (ui != string.Empty && QueryTool.IsUseUISite)
+            if (ui != string.Empty && QueryTool.IsSubAppSite)
             {
                 ui = ui.ToLower();
                 html = html.Replace(" src=\"/", " src=\"" + ui + "/").Replace(" src = \"/", " src = \"" + ui + "/").Replace(" src = '/", " src = '/" + ui + "/").Replace(" src='/", " src ='/" + ui + "/"); ;

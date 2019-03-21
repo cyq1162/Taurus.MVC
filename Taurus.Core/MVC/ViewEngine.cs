@@ -18,7 +18,7 @@ namespace Taurus.Core
         public static XHtmlAction Create(string controlName, string actionName)
         {
             string path = AppConfig.GetApp("Views", "Views") + "/"
-                          + controlName.Replace(InvokeLogic.Controller, "")
+                          + controlName.Replace(InvokeLogic.Const.Controller, "")
                           + "/" + actionName + ".html";
             return Create(path);
         }
@@ -29,7 +29,7 @@ namespace Taurus.Core
         public static XHtmlAction Create(string path)
         {
             path = AppConfig.WebRootPath + path.TrimStart('/');//.Replace("/", "\\");
-           // System.Web.HttpContext.Current.Response.Write(path);
+            // System.Web.HttpContext.Current.Response.Write(path);
             if (File.Exists(path))
             {
                 //System.Web.HttpContext.Current.Response.Write("path ok");
@@ -37,7 +37,7 @@ namespace Taurus.Core
 
                 if (view.Load(path, XmlCacheLevel.Hour, true))
                 {
-                   // System.Web.HttpContext.Current.Response.Write("load ok");
+                    // System.Web.HttpContext.Current.Response.Write("load ok");
                     //处理Shared目录下的节点替换。
                     ReplaceItemRef(view, view.GetList("*", "itemref"), false, 0);
                 }
@@ -76,7 +76,7 @@ namespace Taurus.Core
                         }
                         else
                         {
-                            XHtmlAction sharedView = GetSharedView(items[0]);//找到masterView
+                            XHtmlAction sharedView = GetSharedView(items[0], view.FileName);//找到masterView
                             if (sharedView != null)
                             {
                                 XmlNode xNode = sharedView.Get(items[1]);//找到被替换的节点
@@ -100,7 +100,7 @@ namespace Taurus.Core
                         if (!isOK)
                         {
                             view.Remove(list[i]);//移除没有引用的节点
-                           // view.RemoveAttr(list[i], itemref);
+                            // view.RemoveAttr(list[i], itemref);
                         }
                     }
                 }
@@ -119,12 +119,29 @@ namespace Taurus.Core
         /// </summary>
         /// <param name="htmlName"></param>
         /// <returns></returns>
-        private static XHtmlAction GetSharedView(string htmlName)
+        private static XHtmlAction GetSharedView(string htmlName, string htmlPath)
         {
             string path = AppConfig.WebRootPath + AppConfig.GetApp("Views", "Views") + "/Shared/" + htmlName + ".html";
             if (!File.Exists(path))
             {
-                return null;
+                path = null;
+                string[] files = Directory.GetFiles(Path.GetDirectoryName(htmlPath), htmlName + ".html", SearchOption.AllDirectories);
+                if (files != null && files.Length > 0)
+                {
+                    path = files[0];
+                }
+                else
+                {
+                    files = Directory.GetFiles(AppConfig.WebRootPath + AppConfig.GetApp("Views", "Views"), htmlName + ".html", SearchOption.AllDirectories);
+                    if (files != null && files.Length > 0)
+                    {
+                        path = files[0];
+                    }
+                }
+                if (path == null)
+                {
+                    return null;
+                }
             }
             XHtmlAction sharedView = null;
             string key = path.GetHashCode().ToString();

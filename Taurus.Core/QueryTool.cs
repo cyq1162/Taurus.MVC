@@ -16,13 +16,13 @@ namespace Taurus.Core
         #region 增加扩展后缀支持
         public static string GetDefaultUrl()
         {
-            return AppConfig.GetApp("DefaultUrl", "");
+            return AppConfig.GetApp(AppSettings.DefaultUrl, "");
         }
 
         public static string GetLocalPath()
         {
             string localPath = HttpContext.Current.Request.Url.LocalPath;
-            string suffix = AppConfig.GetApp("Taurus.Suffix", "");
+            string suffix = AppConfig.GetApp(AppSettings.Suffix, "");
             if (suffix != "" && localPath.EndsWith(suffix))
             {
                 return localPath.Replace(suffix, "");
@@ -32,7 +32,7 @@ namespace Taurus.Core
         public static bool IsTaurusSuffix()
         {
             string localPath = HttpContext.Current.Request.Url.LocalPath;
-            string suffix = AppConfig.GetApp("Taurus.Suffix", "");
+            string suffix = AppConfig.GetApp(AppSettings.Suffix, "");
             if (suffix != "" && localPath.EndsWith(suffix))
             {
                 return true;
@@ -41,17 +41,17 @@ namespace Taurus.Core
         }
         public static bool IsAllowCORS()
         {
-            return AppConfig.GetAppBool("IsAllowCORS", true);
+            return AppConfig.GetAppBool(AppSettings.IsAllowCORS, true);
         }
         #endregion
         /// <summary>
         /// 是否使用子目录部署网站
         /// </summary>
-        public static bool IsUseUISite
+        public static bool IsSubAppSite
         {
             get
             {
-                string ui = AppConfig.GetApp("UI", string.Empty).ToLower();
+                string ui = AppConfig.GetApp(AppSettings.SubAppName, string.Empty).ToLower();
                 if (ui != string.Empty)
                 {
                     ui = ui.Trim('/');

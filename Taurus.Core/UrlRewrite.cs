@@ -101,7 +101,7 @@ namespace Taurus.Core
         #region 替换输出，仅对子目录部署时有效
         void ReplaceOutput()
         {
-            if (QueryTool.IsUseUISite)
+            if (QueryTool.IsSubAppSite)
             {
                 //如果项目需要部署成子应用程序，则开启，否则不需要开启（可注释掉下面一行代码）
                 context.Response.Filter = new HttpResponseFilter(context.Response.Filter);
@@ -115,7 +115,7 @@ namespace Taurus.Core
             Type t = null;
             //ViewController是由页面的前两个路径决定了。
             string[] items = QueryTool.GetLocalPath().Trim('/').Split('/');
-            string className = InvokeLogic.Default;
+            string className = InvokeLogic.Const.Default;
             if (RouteConfig.RouteMode == 1)
             {
                 className = items[0];

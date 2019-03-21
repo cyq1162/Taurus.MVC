@@ -12,7 +12,7 @@ namespace Taurus.Core
     public class RequireAttribute : Attribute
     {
         public string paraName, regex, emptyTip, regexTip;
-        public bool isRequired;
+        public bool isRequired, isValidated;
 
         /// <summary>
         /// 验证参数

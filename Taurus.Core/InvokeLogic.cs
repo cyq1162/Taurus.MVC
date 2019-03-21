@@ -11,34 +11,64 @@ namespace Taurus.Core
     /// </summary>
     static class InvokeLogic
     {
-        internal const string Default = "Default";
-        internal const string Controller = "Controller";
-        internal const string DefaultController = "DefaultController";
-        internal const string TaurusController = "Taurus.Core.Controller";
-        internal const string CheckToken = "CheckToken";
-        internal const string BeforeInvoke = "BeforeInvoke";
-        internal const string EndInvoke = "EndInvoke";
+        public class Const
+        {
+            internal const string Default = "Default";
+            internal const string Controller = "Controller";
+            internal const string DefaultController = "DefaultController";
+            internal const string DocController = "DocController";
+            internal const string AuthController = "AuthController";
+            internal const string TaurusCoreController = "Taurus.Core.Controller";
 
-        internal const string TokenAttribute = "TokenAttribute";
-        internal const string HttpGetAttribute = "HttpGetAttribute";
-        internal const string HttpPostAttribute = "HttpPostAttribute";
-        internal const string HttpHeadAttribute = "HttpHeadAttribute";
-        internal const string HttpPutAttribute = "HttpPutAttribute";
-        internal const string HttpDeleteAttribute = "HttpDeleteAttribute";
+            internal const string Doc = "Doc";
+            internal const string Auth = "Auth";
 
+            internal const string CheckToken = "CheckToken";
+            internal const string BeforeInvoke = "BeforeInvoke";
+            internal const string EndInvoke = "EndInvoke";
+            internal const string Record = "Record";
+
+            internal const string TokenAttribute = "TokenAttribute";
+            internal const string HttpGetAttribute = "HttpGetAttribute";
+            internal const string HttpPostAttribute = "HttpPostAttribute";
+            internal const string HttpHeadAttribute = "HttpHeadAttribute";
+            internal const string HttpPutAttribute = "HttpPutAttribute";
+            internal const string HttpDeleteAttribute = "HttpDeleteAttribute";
+
+            internal const string NeedConfigController = "Please make sure config appsettings : add key=\"Taurus.Controllers\" value=\"YourControllerProjectName\" is right!";
+
+            internal static bool IsStartDoc
+            {
+                get
+                {
+                    return AppConfig.GetAppBool(AppSettings.IsStartDoc, false);
+                }
+            }
+
+            internal static bool IsStartAuth
+            {
+                get
+                {
+                    return !string.IsNullOrEmpty(AppConfig.GetApp(AppSettings.Auth));
+                }
+            }
+        }
         internal static string[] HttpMethods = new string[] { "GET", "POST", "HEAD", "PUT", "DELETE" };
 
         #region GetAssembly
-        private static string _DllName;
-        public static string DllName
+        private static string _DllNames;
+        /// <summary>
+        /// 控制器名称（多个时逗号分隔）
+        /// </summary>
+        public static string DllNames
         {
             get
             {
-                if (string.IsNullOrEmpty(_DllName))
+                if (string.IsNullOrEmpty(_DllNames))
                 {
-                    _DllName = AppConfig.GetApp("Taurus.Controllers", "Taurus.Controllers");
+                    _DllNames = AppConfig.GetApp(AppSettings.Controllers, AppSettings.Controllers);
                 }
-                return _DllName;
+                return _DllNames;
             }
         }
         private static List<Assembly> _Assemblys;
@@ -46,7 +76,7 @@ namespace Taurus.Core
         {
             if (_Assemblys == null)
             {
-                string[] dllItems = DllName.Split(',');
+                string[] dllItems = DllNames.Split(',');
                 _Assemblys = new List<Assembly>(dllItems.Length);
                 foreach (string item in dllItems)
                 {
@@ -76,7 +106,7 @@ namespace Taurus.Core
         /// <summary>
         /// 获取控制器
         /// </summary>
-        private static Dictionary<string, Type> GetControllers()
+        internal static Dictionary<string, Type> GetControllers()
         {
             if (_Controllers.Count == 0)
             {
@@ -87,21 +117,30 @@ namespace Taurus.Core
                         List<Assembly> assList = GetAssemblys();
                         if (assList == null)
                         {
-                            throw new Exception("Please make sure web.config'appSetting <add key=\"Taurus.Controllers\" value=\"YourControllerProjectName\") is right!");
+                            throw new Exception(Const.NeedConfigController);
                         }
                         foreach (Assembly ass in assList)
                         {
                             Type[] typeList = ass.GetExportedTypes();
                             foreach (Type type in typeList)
                             {
-                                if (type.Name.EndsWith(Controller))
+                                if (type.Name.EndsWith(Const.Controller))
                                 {
-                                    if (type.BaseType != null && (type.BaseType.FullName == TaurusController || (type.BaseType.BaseType != null && type.BaseType.BaseType.FullName == TaurusController)))
+                                    if (type.BaseType != null && (type.BaseType.FullName == Const.TaurusCoreController || (type.BaseType.BaseType != null && type.BaseType.BaseType.FullName == Const.TaurusCoreController)))
                                     {
-                                        _Controllers.Add(type.Name.Replace(Controller, ""), type);
+                                        _Controllers.Add(type.Name.Replace(Const.Controller, ""), type);
                                     }
                                 }
                             }
+                        }
+                        //追加APIHelp
+                        if (Const.IsStartDoc)
+                        {
+                            _Controllers.Add(Const.Doc, typeof(Taurus.Core.DocController));
+                        }
+                        if (Const.IsStartAuth)
+                        {
+                            _Controllers.Add(Const.Auth, typeof(Taurus.Core.AuthController));
                         }
                     }
                 }
@@ -119,9 +158,9 @@ namespace Taurus.Core
             {
                 return controllers[className];
             }
-            if (controllers.ContainsKey(Default))
+            if (controllers.ContainsKey(Const.Default))
             {
-                return controllers[Default];
+                return controllers[Const.Default];
             }
             return null;
         }
@@ -133,23 +172,23 @@ namespace Taurus.Core
         #region 3个全局方法
 
 
-        private static MethodInfo _CheckTokenMethod = null;
+        private static MethodInfo _DefaultCheckToken = null;
         /// <summary>
         /// 全局CheckToken方法
         /// </summary>
-        public static MethodInfo CheckTokenMethod
+        public static MethodInfo DefaultCheckToken
         {
             get
             {
-                if (_CheckTokenMethod == null)
+                if (_DefaultCheckToken == null)
                 {
-                    Type t = GetType(DefaultController);
+                    Type t = GetType(Const.DefaultController);
                     if (t != null)
                     {
-                        _CheckTokenMethod = t.GetMethod(CheckToken, BindingFlags.Static | BindingFlags.Public);
+                        _DefaultCheckToken = t.GetMethod(Const.CheckToken, BindingFlags.Static | BindingFlags.Public);
                     }
                 }
-                return _CheckTokenMethod;
+                return _DefaultCheckToken;
             }
         }
         private static MethodInfo _BeforeInvokeMethod = null;
@@ -162,10 +201,10 @@ namespace Taurus.Core
             {
                 if (_BeforeInvokeMethod == null)
                 {
-                    Type t = GetType(DefaultController);
+                    Type t = GetType(Const.DefaultController);
                     if (t != null)
                     {
-                        _BeforeInvokeMethod = t.GetMethod(BeforeInvoke, BindingFlags.Static | BindingFlags.Public);
+                        _BeforeInvokeMethod = t.GetMethod(Const.BeforeInvoke, BindingFlags.Static | BindingFlags.Public);
                     }
                 }
                 return _BeforeInvokeMethod;
@@ -182,13 +221,52 @@ namespace Taurus.Core
             {
                 if (_EndInvokeMethod == null)
                 {
-                    Type t = GetType(DefaultController);
+                    Type t = GetType(Const.DefaultController);
                     if (t != null)
                     {
-                        _EndInvokeMethod = t.GetMethod(EndInvoke, BindingFlags.Static | BindingFlags.Public);
+                        _EndInvokeMethod = t.GetMethod(Const.EndInvoke, BindingFlags.Static | BindingFlags.Public);
                     }
                 }
                 return _EndInvokeMethod;
+            }
+        }
+
+        private static MethodInfo _AuthCheckToken = null;
+        /// <summary>
+        /// 默认AuthController.CheckToken方法
+        /// </summary>
+        public static MethodInfo AuthCheckToken
+        {
+            get
+            {
+                if (_AuthCheckToken == null && Const.IsStartAuth)
+                {
+                    Type t = GetType(Const.Auth);
+                    if (t != null)
+                    {
+                        _AuthCheckToken = t.GetMethod(Const.CheckToken, BindingFlags.Static | BindingFlags.Public);
+                    }
+                }
+                return _AuthCheckToken;
+            }
+        }
+        private static MethodInfo _DocRecord = null;
+        /// <summary>
+        /// 默认DocController.Record方法
+        /// </summary>
+        public static MethodInfo DocRecord
+        {
+            get
+            {
+                if (_DocRecord == null && Const.IsStartDoc)
+                {
+                    Type t = GetType(Const.Doc);
+                    if (t != null)
+                    {
+                        _DocRecord = t.GetMethod(Const.Record, BindingFlags.Static | BindingFlags.Public);
+                    }
+                }
+                return _DocRecord;
             }
         }
         #endregion
@@ -234,17 +312,17 @@ namespace Taurus.Core
                                         string[] names = attr.ToString().Split('.');
                                         switch (names[names.Length - 1])
                                         {
-                                            case TokenAttribute:
+                                            case Const.TokenAttribute:
                                                 aFlags[0] = '1'; break;
-                                            case HttpGetAttribute:
+                                            case Const.HttpGetAttribute:
                                                 aFlags[1] = '1'; break;
-                                            case HttpPostAttribute:
+                                            case Const.HttpPostAttribute:
                                                 aFlags[2] = '1'; break;
-                                            case HttpHeadAttribute:
+                                            case Const.HttpHeadAttribute:
                                                 aFlags[3] = '1'; break;
-                                            case HttpPutAttribute:
+                                            case Const.HttpPutAttribute:
                                                 aFlags[4] = '1'; break;
-                                            case HttpDeleteAttribute:
+                                            case Const.HttpDeleteAttribute:
                                                 aFlags[5] = '1'; break;
                                         }
 
@@ -260,7 +338,7 @@ namespace Taurus.Core
             dic = typeMethods[key];
             if (!dic.ContainsKey(methodName))
             {
-                methodName = Default;
+                methodName = Const.Default;
             }
             if (methodAttrs.ContainsKey(key + "." + methodName))
             {

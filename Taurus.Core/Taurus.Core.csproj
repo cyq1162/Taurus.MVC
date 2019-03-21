@@ -40,6 +40,7 @@
     <DefineConstants>DEBUG;TRACE</DefineConstants>
     <ErrorReport>prompt</ErrorReport>
     <WarningLevel>4</WarningLevel>
+    <DocumentationFile>bin\Debug\Taurus.Core.XML</DocumentationFile>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|AnyCPU' ">
     <DebugType>pdbonly</DebugType>
@@ -51,7 +52,7 @@
     <DocumentationFile>bin\Release\Taurus.Core.XML</DocumentationFile>
   </PropertyGroup>
   <ItemGroup>
-    <Reference Include="CYQ.Data, Version=5.7.6.9, Culture=neutral, processorArchitecture=MSIL">
+    <Reference Include="CYQ.Data, Version=5.7.8.6, Culture=neutral, processorArchitecture=MSIL">
       <SpecificVersion>False</SpecificVersion>
       <HintPath>..\Packages\CYQ.Data.dll</HintPath>
     </Reference>
@@ -61,6 +62,9 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="AppSettings.cs" />
+    <Compile Include="Extend\DocController.cs" />
+    <Compile Include="Extend\AuthController.cs" />
     <Compile Include="MVC\RouteConfig.cs" />
     <Compile Include="MVC\Controller.cs" />
     <Compile Include="MVC\TokenAttribute.cs" />
