@@ -66,11 +66,11 @@ namespace Taurus.Controllers
             {
                 byte[] data = System.Text.Encoding.UTF8.GetBytes("Taurus:" + un);
                 string base64 = Convert.ToBase64String(data);
-                Write(base64);
+                Write(base64, true);
             }
             else
             {
-                Write("UserName or Password Error");
+                Write("UserName or Password Error", false);
             }
         }
 

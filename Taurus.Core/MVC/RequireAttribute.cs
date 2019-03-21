@@ -20,7 +20,8 @@ namespace Taurus.Core
         /// <param name="paraName">参数名称</param>
         public RequireAttribute(string paraName)
         {
-            Init(paraName, true, null, null, null);
+
+            Init(paraName, true, null, paraName.Contains(",") ? "{0} is required." : null, null);
         }
         /// <param name="isRequired">是否必填</param>
         public RequireAttribute(string paraName, bool isRequired)

@@ -4,7 +4,7 @@
         url: '/api/gettoken',
         data: { un: "13431148888", pwd: "中文密码啦" },
         success: function (data, status, xhr) {
-            $("#token").val(data);
+                $("#token").val(data.msg);
         },
         error: function (xhr, type) {
             alert(xhr);

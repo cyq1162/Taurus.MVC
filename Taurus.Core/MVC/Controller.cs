@@ -329,7 +329,18 @@ namespace Taurus.Core
                 RequireAttribute valid = item as RequireAttribute;
                 if (!valid.isValidated)
                 {
-                    if (!ValidateParas(validateList, valid.paraName, Query<string>(valid.paraName)))
+                    if (valid.paraName.IndexOf(',') > -1)
+                    {
+                        foreach (string name in valid.paraName.Split(','))
+                        {
+                            if (string.IsNullOrEmpty(Query<string>(name)))
+                            {
+                                Write(string.Format(valid.emptyTip, name), false);
+                                return false;
+                            }
+                        }
+                    }
+                    else if (!ValidateParas(validateList, valid.paraName, Query<string>(valid.paraName)))
                     {
                         return false;
                     }
