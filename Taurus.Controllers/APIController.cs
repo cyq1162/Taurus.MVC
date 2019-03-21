@@ -6,8 +6,11 @@ using Taurus.Core;
 
 namespace Taurus.Controllers
 {
-   
 
+    /// <summary>
+    /// API 接口
+    /// </summary>
+    [Token]
     public partial class APIController : Controller
     {
         public override bool BeforeInvoke(string methodName)
@@ -18,6 +21,7 @@ namespace Taurus.Controllers
         /// <summary>
         /// 重写此方法时，此CheckToken的优先级>DefaultController中的静态方法CheckToken
         /// </summary>
+        /// <remarks>aaaa</remarks>
         /// <returns></returns>
         public override bool CheckToken()
         {
@@ -35,9 +39,9 @@ namespace Taurus.Controllers
                 {
                     Write("token error!", false);
                     return false;
-                    
+
                 }
-               
+
             }
             if (!result)
             {
@@ -45,15 +49,23 @@ namespace Taurus.Controllers
             }
             return result;
         }
-       
-        public void GetToken()
+
+        /// <summary>
+        /// 获取Token
+        /// </summary>
+        /// <param name="un">用户名</param>
+        /// <param name="pwd">密码</param>
+        /// <returns>{success:true:msg:"tokenString..."}</returns>
+        [HttpGet, Require("un", true, RegexConst.Mobile), Require("pwd")]
+        public void GetToken(string un, string pwd)
         {
-            CheckFormat("{0}不能为空&{0}格式错误", @"un&用户名&^1[3|4|5|8][0-9]\d{8}$", @"pwd&密码&^[\u0391-\uFFE5]+$");
-            string userName = Query<string>("un");
-            string pwd = Query<string>("pwd");
-            if (!string.IsNullOrEmpty(userName) && !string.IsNullOrEmpty(pwd))
+            //is required. is invalid. 判断 是否：中文
+            //CheckFormat("{0}不能为空&{0}格式错误", @"un&用户名&^1[3|4|5|8][0-9]\d{8}$", @"pwd&密码&^[\u0391-\uFFE5]+$");
+            //string userName = Query<string>("un");
+            //string pwd = Query<string>("pwd");
+            if (!string.IsNullOrEmpty(un) && !string.IsNullOrEmpty(pwd))
             {
-                byte[] data = System.Text.Encoding.UTF8.GetBytes("Taurus:" + userName);
+                byte[] data = System.Text.Encoding.UTF8.GetBytes("Taurus:" + un);
                 string base64 = Convert.ToBase64String(data);
                 Write(base64);
             }
@@ -63,7 +75,7 @@ namespace Taurus.Controllers
             }
         }
 
-        [Token]
+        [Token, HttpGet]
         public void GetDataWithToken(List<AB> unList, string a, int? b, AB ab)
         {
             Write("GetDataWithToken A:" + unList[0].A + " B:" + unList[0].B, true);
@@ -72,14 +84,14 @@ namespace Taurus.Controllers
         {
             Write("GetDataWithNoToken A:" + unList[0].A + " B:" + unList[0].B, true);
         }
-        [Token]
-        [HttpPost]
+        // [Token, HttpPost]
+        [Require("ab.a"), Require("ab.b"), Require("unList.0.b")]
         public void GetDataOnlyPost(List<AB> unList, string a, int? b, AB ab)
         {
             Write("GetDataOnlyPost A:" + unList[0].A + " B:" + unList[0].B, true);
         }
-        
-       
+
+
         //public void GetData(AB un)
         //{
         //    Write("your data A:" + un.A, true);
@@ -97,7 +109,7 @@ namespace Taurus.Controllers
 
         public void Get(int uid)
         {
-            
+
         }
 
     }
@@ -107,8 +119,8 @@ namespace Taurus.Controllers
         //其它示例代码 
         public class AB
         {
-            public string A { get; set; }
-            public string B { get; set; }
+            public string A;
+            public string B;
         }
         public override void Default()
         {

@@ -213,6 +213,7 @@ namespace Taurus.Controllers
         }
         public void BtnDelete()
         {
+ 
             using (Users u = new Users())
             {
                 u.Delete();//id  ?id=xxx

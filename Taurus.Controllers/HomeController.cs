@@ -11,6 +11,11 @@ namespace Taurus.Controllers
         {
             Context.Response.Redirect("/");
         }
+        //public override bool BeforeInvoke(string methodName)
+        //{
+        //    ViewEngine.
+        //    return true;
+        //} 
         public void Index()
         {
         }

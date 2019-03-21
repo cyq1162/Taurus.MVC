@@ -24,6 +24,7 @@ namespace Taurus.Controllers
             //controller.Write(methodName + " NoToken");
             return true;
         }
+        //[Regex("mn",true,"addfd"];
         public static bool BeforeInvoke(IController controller, string methodName)
         {
             //if (controller.IsHttpPost)
@@ -33,6 +34,10 @@ namespace Taurus.Controllers
             //}
             
             return true;
+        }
+        public static void EndInvoke(IController controller, string methodName)
+        {
+
         }
     }
 }

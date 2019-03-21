@@ -43,10 +43,6 @@
     <WarningLevel>4</WarningLevel>
   </PropertyGroup>
   <ItemGroup>
-    <Reference Include="CYQ.Data, Version=5.6.3.7, Culture=neutral, processorArchitecture=MSIL">
-      <SpecificVersion>False</SpecificVersion>
-      <HintPath>..\Packages\CYQ.Data.dll</HintPath>
-    </Reference>
     <Reference Include="System" />
     <Reference Include="System.Data" />
     <Reference Include="System.Data.DataSetExtensions" />
@@ -64,16 +60,28 @@
     <Reference Include="System.Xml.Linq" />
   </ItemGroup>
   <ItemGroup>
+    <Content Include="App_Data\Users.ts" />
+    <Content Include="App_Data\Users.txt" />
+    <Content Include="App_Data\UserType.ts" />
+    <Content Include="App_Data\UserType.xml" />
     <Content Include="ReadMe.txt" />
     <Content Include="style\js\master.js" />
     <Content Include="style\js\webapidemo.js" />
+    <Content Include="Views\Doc\detail.html" />
+    <Content Include="Views\Doc\common.html" />
+    <Content Include="Views\Doc\css\css.css" />
+    <Content Include="Views\Doc\images\BlueTabFace.jpg" />
+    <Content Include="Views\Doc\images\BlueTabRight.jpg" />
+    <Content Include="Views\Doc\default.html" />
     <Content Include="Views\Demo\default.html" />
     <Content Include="Views\Home\about.html" />
     <Content Include="Views\Home\contact.html" />
     <Content Include="Views\Home\index.html" />
     <Content Include="Views\Home\webapi.html" />
     <Content Include="Views\shared\master.html" />
-    <Content Include="Web.config" />
+    <Content Include="Web.config">
+      <SubType>Designer</SubType>
+    </Content>
   </ItemGroup>
   <ItemGroup>
     <Compile Include="Properties\AssemblyInfo.cs" />
@@ -88,6 +96,10 @@
       <Name>Taurus.Core</Name>
     </ProjectReference>
   </ItemGroup>
+  <ItemGroup>
+    <None Include="Properties\PublishProfiles\Taurus_Publish.pubxml" />
+  </ItemGroup>
+  <ItemGroup />
   <PropertyGroup>
     <VisualStudioVersion Condition="'$(VisualStudioVersion)' == ''">10.0</VisualStudioVersion>
     <VSToolsPath Condition="'$(VSToolsPath)' == ''">$(MSBuildExtensionsPath32)\Microsoft\VisualStudio\v$(VisualStudioVersion)</VSToolsPath>

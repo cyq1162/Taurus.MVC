@@ -11,16 +11,21 @@
     <!--指定处理的后缀（默认无后缀，可配置.shtml）-->
     <add key="Taurus.Suffix" value=""/>
 	 <!--是否允许跨域请求，默认true-->
-    <add key="IsAllowCORS" value="true"/>
+    <add key="Taurus.IsAllowCORS" value="true"/>
     <!--路由模式【值为0,1或2】[默认为1]
       值为0：匹配{Action}/{Para}
       值为1：匹配{Controller}/{Action}/{Para}
       值为2：匹配{Module}/{Controller}/{Action}/{Para}-->
-    <add key="RouteMode" value="1"/>
-	 <!--是否允许脚本跨域访问-->
-    <add key="IsAllowCORS" value="true"/>
+    <add key="Taurus.RouteMode" value="1"/>
     <!--指定页面起始访问路径-->
-    <add key="DefaultUrl" value="home/index"/>
+    <add key="Taurus.DefaultUrl" value="home/index"/>
+	 <!--是否启动创建API文档，访问路径为：/doc/default,需要保留源码里/Views/Doc目录下的文件-->
+    <add key="Taurus.IsStartDoc" value="true"/>
+	<!--是否启动默认的Token机制，可配置的映射字段：TableName,UserName,Password(这三个必填写，后面可选）,
+	FullName,Status,PasswordExpireTime,Email,Mobile,RoleID,TokenExpireTime(这个是配置小时）
+	启用后，可以使用AuthHelper里的功能进行注册，登陆等功能，默认获取token的地址在：/auth/gettoken?uid=xxx&pwd=xxx 
+	-->
+    <add key="Taurus.Auth" value="{TableName:Users,TokenExpireTime:24}"/>
   </appSettings>
   <system.web>
     <httpModules>
@@ -85,3 +90,19 @@ V2.2.3.4(2017-07-05,2017-10-22)
 1 :增加跨域参数
 2：修正Query<T>(aaa,defaultValue)的默认取的取值顺序问题。
 3：增加EndInvode事件和BenginInvode的事件执行顺序调整。
+4：CYQ.Data同时升级到V5.7.8.3
+
+V2.2.3.5(2017-04-19)
+1：支持Controller分布在不同的dll中（Taurus.Controllers配置允许多个，逗号分隔）。
+2：支持Controller二次继承（A：B   B：Taurus.Core.Controller）
+
+V2.2.3.9(2019-03-14)
+1：支持NetCore下的的部署（路径和大小写调整）
+2、CYQ.Data同时升级到V5.7.9.4
+
+V2.3(2019-03-21)
+1、增加了CMS功能的标签替换功能。
+2、增加参数验证属性（Require），验证是否必填写和正则格式。
+3、增强了参数的类型转换。
+4、增加WebAPI文档生成功能。
+5、CYQ.Data同时升级到V5.7.9.7
