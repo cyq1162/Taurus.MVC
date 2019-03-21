@@ -65,6 +65,10 @@
     <Content Include="App_Data\UserType.ts" />
     <Content Include="App_Data\UserType.xml" />
     <Content Include="ReadMe.txt" />
+    <Content Include="style\css\bootstrap-theme.min.css" />
+    <Content Include="style\css\bootstrap.min.css" />
+    <Content Include="style\js\bootstrap.min.js" />
+    <Content Include="style\js\jquery.min.js" />
     <Content Include="style\js\master.js" />
     <Content Include="style\js\webapidemo.js" />
     <Content Include="Views\Doc\detail.html" />
