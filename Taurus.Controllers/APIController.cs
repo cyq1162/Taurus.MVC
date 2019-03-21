@@ -10,7 +10,6 @@ namespace Taurus.Controllers
     /// <summary>
     /// API 接口
     /// </summary>
-    [Token]
     public partial class APIController : Controller
     {
         public override bool BeforeInvoke(string methodName)
