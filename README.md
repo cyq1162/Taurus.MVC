@@ -3,7 +3,7 @@ Taurus.mvc is a simple mvc or webapi framework for asp.net or asp.net core（适
 
 QQ交流群：6033006<br />
 
-Website：http://taurus.cyqdata.com/
+Windows部署：http://taurus.cyqdata.com/ Linux（CentOS7) 部署：http://mvc.taurus.cyqdata.com
 <hr />
 Demo：https://github.com/cyq1162/Taurus.MVC.Demo <br />
 
