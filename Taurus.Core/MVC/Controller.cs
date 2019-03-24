@@ -216,6 +216,10 @@ namespace Taurus.Core
             {
                 string errMssg = err.InnerException != null ? err.InnerException.Message : err.Message;
                 WriteLog(errMssg);
+                if (View == null)
+                {
+                    errMssg = JsonHelper.OutResult(false, errMssg);
+                }
                 context.Response.Write(errMssg);
             }
 
