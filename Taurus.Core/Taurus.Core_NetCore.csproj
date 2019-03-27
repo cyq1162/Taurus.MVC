@@ -5,10 +5,10 @@
     <AssemblyName>Taurus.Core</AssemblyName>
     <RootNamespace>Taurus.Core</RootNamespace>
     <Description>Taurus.mvc is a simple mvc or webapi framework for asp.net core</Description>
-    <Company>路过秋天 （2019-03-13）</Company>
+    <Company>路过秋天 （2019-03-21）</Company>
     <Authors>路过秋天</Authors>
     <Copyright>Copyright ©  路过秋天 2016-2096</Copyright>
-    <Version>2.2.3.8</Version>
+    <Version>2.3.0.0</Version>
     <Product>Taurus.Core .NET Core 版本</Product>
     <PackageProjectUrl>http://taurus.cyqdata.com</PackageProjectUrl>
     <PackageId>Taurus.MVC.Core</PackageId>

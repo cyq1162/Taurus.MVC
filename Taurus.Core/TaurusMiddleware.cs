@@ -26,10 +26,24 @@ namespace Microsoft.AspNetCore.Http
         {
             try
             {
-                System.Web.HttpApplication.Instance.ExecuteEventHandler();
-                await context.Response.WriteAsync("");
-                 //处理信息
-               //  await next(context);
+                if (context.Request.Path.Value.IndexOf("/App_Data/", StringComparison.OrdinalIgnoreCase) > -1)//兼容受保护的目录
+                {
+                    context.Response.StatusCode = 403;
+                    await context.Response.WriteAsync("403 Forbidden");
+                }
+                else
+                {
+                    System.Web.HttpApplication.Instance.ExecuteEventHandler();
+                    if (context.Response.HasStarted)  // || Body是只写流  (context.Response.Body != null && context.Response.Body.CanRead
+                    {
+                        await context.Response.WriteAsync("");
+                    }
+                    //处理信息
+                    else
+                    {
+                        await next(context);
+                    }
+                }
             }
             catch (Exception ex)
             {
@@ -41,10 +55,10 @@ namespace Microsoft.AspNetCore.Http
     {
         public static IApplicationBuilder UseTaurusMvc(this IApplicationBuilder builder, IHostingEnvironment env)
         {
+            AppConfig.WebRootPath = env.WebRootPath;//设置根目录地址，ASPNETCore的根目录和其它应用不一样。
             //执行一次，用于注册事件
             UrlRewrite url = new UrlRewrite();
             url.Init(System.Web.HttpApplication.Instance);
-            AppConfig.WebRootPath = env.WebRootPath;//设置根目录地址，ASPNETCore的根目录和其它应用不一样。
             return builder.UseMiddleware<TaurusMiddleware>();
         }
     }
