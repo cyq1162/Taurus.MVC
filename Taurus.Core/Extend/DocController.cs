@@ -8,6 +8,7 @@ using System.Xml;
 using System.Reflection;
 using CYQ.Data.Tool;
 using CYQ.Data.Table;
+using System.Data;
 namespace Taurus.Core
 {
     /// <summary>
@@ -15,15 +16,20 @@ namespace Taurus.Core
     /// </summary>
     public partial class DocController : Controller
     {
+        public override bool BeforeInvoke(string methodName)
+        {
+            Init();
+            return true;
+        }
         public override void Default()
         {
-            LoadController();
-            LoadAction();
+            BindController();
+            BindAction();
         }
         public void Detail()
         {
-            LoadController();
-            LoadDetail();
+            BindController();
+            BindDetail();
         }
 
         /// <summary>
@@ -121,114 +127,172 @@ namespace Taurus.Core
             return null;
         }
 
-        string name, description;
-        Type type;
-        private void LoadController()
-        {
-            name = Query<string>("c");
 
-            MDictionary<string, string> cDescrption = new MDictionary<string, string>();
-            //搜集参数
-            Dictionary<string, Type> cType = InvokeLogic.GetControllers();
-            foreach (KeyValuePair<string, Type> item in cType)
-            {
-                switch (item.Value.Name)
-                {
-                    case InvokeLogic.Const.DefaultController:
-                    case InvokeLogic.Const.DocController:
-                        continue;
-                }
-                string desc = GetDescription(GetXml(), item.Value.FullName, "T:").Trim();
-                if (string.IsNullOrEmpty(name) || name == item.Value.FullName)
-                {
-                    name = item.Value.FullName;
-                    description = desc;
-                    type = item.Value;
-                }
-                cDescrption.Add(item.Value.FullName, desc);
-            }
-            MDataTable.CreateFrom(cDescrption).Bind(View, "lbControllers");
-        }
-        private void LoadAction()
+        private void InitController()
         {
-            if (type == null) { return; }
-            bool controllerHasToken = type.GetCustomAttributes(typeof(TokenAttribute), false).Length > 0;
-            View.Set("labName", SetType.InnerText, name);
-            View.Set("labDescription", SetType.InnerText, description);
-            MethodInfo[] methods = type.GetMethods(BindingFlags.Instance | BindingFlags.Public | BindingFlags.DeclaredOnly);
-            if (methods.Length > 0)
+            if (ControllerTable == null)
             {
-                MDataTable dt = new MDataTable();
-                dt.Columns.Add("attr,url,desc,name,fullname");
-                foreach (MethodInfo method in methods)
+                ControllerTable = new MDataTable("Controller");
+                ControllerTable.Columns.Add("CName,Desc,TokenFlag");
+                ControllerTable.Columns.Add("Type", SqlDbType.Variant);
+
+
+                MDictionary<string, string> cDescrption = new MDictionary<string, string>();
+                //搜集参数
+                Dictionary<string, Type> cType = InvokeLogic.GetControllers(2);
+                foreach (KeyValuePair<string, Type> item in cType)
                 {
-                    switch (method.Name)
+                    switch (item.Value.Name)
                     {
-                        case InvokeLogic.Const.BeforeInvoke:
-                        case InvokeLogic.Const.EndInvoke:
-                        case InvokeLogic.Const.CheckToken:
-                        case InvokeLogic.Const.Default:
+                        case InvokeLogic.Const.DefaultController:
+                        case InvokeLogic.Const.DocController:
                             continue;
                     }
-                    if (dt.FindRow("name='" + method.Name + "'") != null)
-                    {
-                        continue;
-                    }
-                    MDataRow row = dt.NewRow(true);
 
-                    #region 属性处理
-                    string attrText = "";
-                    object[] attrs = method.GetCustomAttributes(true);
-                    bool methodHasToken = false;
-                    foreach (object attr in attrs)
-                    {
-                        if (attr.GetType().Name.StartsWith("Http"))
-                        {
-                            attrText += "[" + attr.GetType().Name.Replace("Attribute", "] ").Replace("Http", "").ToLower();
-                        }
-                        else if (attr.GetType().Name == InvokeLogic.Const.TokenAttribute)
-                        {
-                            methodHasToken = true;
-                        }
-                    }
-                    if (string.IsNullOrEmpty(attrText))
-                    {
-                        attrText = "[get] ";
-                    }
-                    if (methodHasToken || controllerHasToken)
-                    {
-                        attrText += "[token]";
-                    }
-                    row.Set(0, attrText);
-                    #endregion
-
-                    #region Url
-                    row.Set(1, "/" + type.Name.Replace("Controller", "").ToLower() + "/" + method.Name.ToLower());
-                    #endregion
-
-                    #region 描述
-                    name = type.FullName + "." + method.Name;
-                    ParameterInfo[] paras = method.GetParameters();
-                    if (paras.Length > 0)
-                    {
-                        name += "(";
-                        foreach (ParameterInfo para in paras)
-                        {
-                            name += para.ParameterType.FullName + ",";
-                        }
-                        name = name.TrimEnd(',') + ")";
-                    }
-                    description = GetDescription(actions, name, "M:");
-                    row.Set(2, description);
-                    #endregion
-
-                    row.Set(3, method.Name);
-                    row.Set(4, type.FullName);
+                    string desc = GetDescription(GetXml(), item.Value.FullName, "T:").Trim();
+                    ControllerTable.NewRow(true)
+                       .Set(0, item.Value.FullName)
+                       .Set(1, desc)
+                       .Set(2, item.Value.GetCustomAttributes(typeof(TokenAttribute), false).Length)
+                       .Set(3, item.Value);
                 }
-                dt.Bind(View, "labMethods");
             }
         }
-        private void LoadDetail()
+        private void InitAction()
+        {
+            if (ActionTable == null)
+            {
+                ActionTable = new MDataTable("Action");
+                ActionTable.Columns.Add("CName,AName,Attr,Url,Desc");
+                for (int i = 0; i < ControllerTable.Rows.Count; i++)
+                {
+                    MDataRow row = ControllerTable.Rows[i];
+
+                    Type type = row.Get<Type>("Type");
+
+                    MethodInfo[] methods = type.GetMethods(BindingFlags.Instance | BindingFlags.Public | BindingFlags.DeclaredOnly);
+                    bool hasMehtod = false;
+                    #region 处理
+                    foreach (MethodInfo method in methods)
+                    {
+                        switch (method.Name)
+                        {
+                            case InvokeLogic.Const.BeforeInvoke:
+                            case InvokeLogic.Const.EndInvoke:
+                            case InvokeLogic.Const.CheckToken:
+                            case InvokeLogic.Const.Default:
+                                continue;
+                        }
+                        hasMehtod = true;
+                        string attrText = "";
+                        #region 属性处理
+
+                        object[] attrs = method.GetCustomAttributes(true);
+                        bool methodHasToken = false;
+                        foreach (object attr in attrs)
+                        {
+                            if (attr.GetType().Name.StartsWith("Http"))
+                            {
+                                attrText += "[" + attr.GetType().Name.Replace("Attribute", "] ").Replace("Http", "").ToLower();
+                            }
+                            else if (attr.GetType().Name == InvokeLogic.Const.TokenAttribute)
+                            {
+                                methodHasToken = true;
+                            }
+                        }
+                        if (string.IsNullOrEmpty(attrText))
+                        {
+                            attrText = "[get] ";
+                        }
+                        if (methodHasToken || row.Get<bool>("TokenFlag"))
+                        {
+                            attrText += "[token]";
+                        }
+                        #endregion
+
+                        string url = "";
+                        #region Url
+                        url = "/" + type.Name.Replace("Controller", "").ToLower() + "/" + method.Name.ToLower();
+                        if (RouteConfig.RouteMode == 2)
+                        {
+                            string[] items = type.FullName.Split('.');
+                            string module = items[items.Length - 2];
+                            url = "/" + module.ToLower() + url;
+                        }
+                        #endregion
+                        string desc = "";
+                        #region 描述
+                        string name = type.FullName + "." + method.Name;
+                        ParameterInfo[] paras = method.GetParameters();
+                        if (paras.Length > 0)
+                        {
+                            name += "(";
+                            foreach (ParameterInfo para in paras)
+                            {
+                                name += para.ParameterType.FullName + ",";
+                            }
+                            name = name.TrimEnd(',') + ")";
+                        }
+                        desc = GetDescription(actions, name, "M:");
+                        #endregion
+
+                        ActionTable.NewRow(true)
+                        .Set(0, row.Get<string>("CName"))
+                        .Set(1, method.Name)
+                        .Set(2, attrText)
+                        .Set(3, url)
+                        .Set(4, desc);
+                    }
+                    #endregion
+                    if (!hasMehtod)
+                    {
+                        //remove 
+                        ControllerTable.Rows.RemoveAt(i);
+                        i--;
+                        continue;
+                    }
+                }
+            }
+        }
+
+
+        #region 处理数据
+        static MDataTable ControllerTable, ActionTable;
+        static readonly object o = new object();
+        void Init()
+        {
+            if (ControllerTable == null)
+            {
+                lock (o)
+                {
+                    if (ControllerTable == null)
+                    {
+                        InitController();
+                        InitAction();
+                    }
+                }
+            }
+        }
+        #endregion
+
+        #region 处理绑定UI
+        private void BindController()
+        {
+            ControllerTable.Bind(View);
+        }
+        private void BindAction()
+        {
+            string name = Query<string>("c");
+            if (string.IsNullOrEmpty(name))
+            {
+                name = ControllerTable.Rows[0].Get<string>("CName");
+            }
+
+            View.LoadData(ControllerTable.FindRow("CName='" + name + "'"), "");
+            MDataTable dt = ActionTable.Select("CName='" + name + "'");
+            dt.Bind(View);
+        }
+        private void BindDetail()
         {
             Dictionary<string, string> dicReturn = new Dictionary<string, string>();
             Dictionary<string, string> dicParas = new Dictionary<string, string>();
@@ -243,7 +307,7 @@ namespace Taurus.Core
             {
                 foreach (XmlNode item in node.ChildNodes)
                 {
-                    switch(item.Name.ToLower())
+                    switch (item.Name.ToLower())
                     {
                         case "returns":
                             dicReturn.Add("returns", node.LastChild.InnerText.Trim());
@@ -259,9 +323,12 @@ namespace Taurus.Core
                 }
                 if (dicParas.Count > 0)
                 {
-                    MDataTable.CreateFrom(dicParas).Bind(View, "labParas");
+                    MDataTable dt = MDataTable.CreateFrom(dicParas);
+                    dt.TableName = "Para";
+                    dt.Bind(View);
                 }
             }
         }
+        #endregion
     }
 }

@@ -122,9 +122,9 @@ namespace Taurus.Core
             }
             else if (RouteConfig.RouteMode == 2)
             {
-                className = items.Length > 1 ? items[1] : "";
+                className = items.Length > 1 ? items[0] + "." + items[1] : "";
             }
-            t = InvokeLogic.GetType(className);
+            t = InvokeLogic.GetController(className);
             if (t == null)
             {
                 WriteError("You need a controller for coding!");

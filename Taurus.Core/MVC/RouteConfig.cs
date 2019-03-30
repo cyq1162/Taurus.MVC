@@ -18,8 +18,8 @@ namespace Taurus.Core
         /// </summary>
         public static int RouteMode
         {
-            get { return AppConfig.GetAppInt("RouteMode", 1); }
-            set { AppConfig.SetApp("RouteMode", value.ToString()); }
+            get { return AppConfig.GetAppInt(AppSettings.RouteMode, 1); }
+            set { AppConfig.SetApp(AppSettings.RouteMode, value.ToString()); }
         }
     }
 }

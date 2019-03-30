@@ -34,8 +34,8 @@
                                 <dt style="text-align: left;">Controllers</dt>
                                 <dd style="text-align: left;">
                                     <div class="publiclist_sidebar">
-                                        <ul id="lbControllers">
-                                            <li><a href="/doc/default?c={0}" title="{1}">{0}</a>
+                                        <ul id="ControllerView">
+                                            <li><a href="${'/'+module}/doc/default?c={0}" title="{1}">{0}</a>
                                             </li>
                                         </ul>
                                     </div>
@@ -49,14 +49,14 @@
                 <div class="gutter">
                     <div class="default_contents">
                         <h6 class="pubtime">
-                            <a id="labName">名称</a> : <em id="labDescription">...</em>
+                            <a>${CName}</a> : <em>${Desc:懒的写描述。}</em>
                         </h6>
                     </div>
-                    <div id="labMethods">
+                    <div id="ActionView">
                         <div class="default_contents">
-                            <h6 class="pubtime">{0} : <a href="/doc/detail?c={4}&a={3}&p={0}&u={1}&d={2}">{1}</a></h6>
+                            <h6 class="pubtime">${Attr} : <a href="${'/'+module}/doc/detail?c=${CName}&a=${AName}&p=${Attr}&u=${Url}&d=${Desc}">${Url}</a></h6>
                             <div class="user_article">
-                                <h1>{2}</h1>
+                                <h1>${Desc:懒到没写说明。}</h1>
                                <!-- <p id="labAbstract">
                                 </p>
                                 <p class="right articalinfo">

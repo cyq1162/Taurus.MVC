@@ -145,6 +145,14 @@ namespace Taurus.Core
                         if (!CancelLoadHtml)
                         {
                             _View = ViewEngine.Create(t.Name, method.Name);
+                            if (_View != null)
+                            {
+                                //追加几个全局标签变量
+                                _View.KeyValue.Add("module", Module.ToLower());
+                                _View.KeyValue.Add("controller", ControllerType.Name.ToLower());
+                                _View.KeyValue.Add("action", Action.ToLower());
+                                _View.KeyValue.Add("para", Para.ToLower());
+                            }
                         }
 
                         if (isGoOn)
@@ -412,7 +420,7 @@ namespace Taurus.Core
             }
         }
 
-        private string _Module;
+        private string _Module = "";
         /// <summary>
         /// Module value
         /// </summary>
@@ -435,7 +443,7 @@ namespace Taurus.Core
                 return _ControllerType;
             }
         }
-        private string _Action;
+        private string _Action = "";
         /// <summary>
         /// Action value
         /// </summary>

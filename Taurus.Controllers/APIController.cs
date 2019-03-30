@@ -6,12 +6,18 @@ using Taurus.Core;
 
 namespace Taurus.Controllers
 {
+    public class BaseController : Controller
+    { }
 
     /// <summary>
     /// API 接口
     /// </summary>
-    public partial class APIController : Controller
+    public partial class APIController : BaseController
     {
+        public void Hello()
+        {
+            Write("hello Controllers.API");
+        }
         public override bool BeforeInvoke(string methodName)
         {
             CancelLoadHtml = true;

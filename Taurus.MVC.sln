@@ -7,6 +7,8 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Taurus.Controllers", "Tauru
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Taurus.View", "Taurus.View\Taurus.View.csproj", "{81220C80-9BFF-47BD-AB6E-FABF5CA9F74F}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "CYQ.Data", "..\..\CYQ.Data-GitHub\trunk\CYQ.Data.csproj", "{BD5CCC87-278F-4FEB-AD23-157FCBA9FFA1}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -25,6 +27,10 @@ Global
 		{81220C80-9BFF-47BD-AB6E-FABF5CA9F74F}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{81220C80-9BFF-47BD-AB6E-FABF5CA9F74F}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{81220C80-9BFF-47BD-AB6E-FABF5CA9F74F}.Release|Any CPU.Build.0 = Release|Any CPU
+		{BD5CCC87-278F-4FEB-AD23-157FCBA9FFA1}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{BD5CCC87-278F-4FEB-AD23-157FCBA9FFA1}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{BD5CCC87-278F-4FEB-AD23-157FCBA9FFA1}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{BD5CCC87-278F-4FEB-AD23-157FCBA9FFA1}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

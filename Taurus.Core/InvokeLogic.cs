@@ -9,7 +9,7 @@ namespace Taurus.Core
     /// <summary>
     /// 反射Controller类
     /// </summary>
-    static class InvokeLogic
+    internal static class InvokeLogic
     {
         public class Const
         {
@@ -22,6 +22,8 @@ namespace Taurus.Core
 
             internal const string Doc = "Doc";
             internal const string Auth = "Auth";
+            internal const string CoreDoc = "Core.Doc";
+            internal const string CoreAuth = "Core.Auth";
 
             internal const string CheckToken = "CheckToken";
             internal const string BeforeInvoke = "BeforeInvoke";
@@ -53,7 +55,7 @@ namespace Taurus.Core
                 }
             }
         }
-        internal static string[] HttpMethods = new string[] { "GET", "POST", "HEAD", "PUT", "DELETE" };
+        public static string[] HttpMethods = new string[] { "GET", "POST", "HEAD", "PUT", "DELETE" };
 
         #region GetAssembly
         private static string _DllNames;
@@ -100,19 +102,25 @@ namespace Taurus.Core
         #endregion
 
         #region GetControllers
-
-        private static Dictionary<string, Type> _Controllers = new Dictionary<string, Type>(StringComparer.OrdinalIgnoreCase);
+        /// <summary>
+        /// 存档一级名称的控制器
+        /// </summary>
+        private static Dictionary<string, Type> _Lv1Controllers = new Dictionary<string, Type>(StringComparer.OrdinalIgnoreCase);
+        /// <summary>
+        /// 存档二级名称的控制器
+        /// </summary>
+        private static Dictionary<string, Type> _Lv2Controllers = new Dictionary<string, Type>(StringComparer.OrdinalIgnoreCase);
         private static readonly object objLock = new object();
         /// <summary>
         /// 获取控制器
         /// </summary>
-        internal static Dictionary<string, Type> GetControllers()
+        public static Dictionary<string, Type> GetControllers(int level)
         {
-            if (_Controllers.Count == 0)
+            if (_Lv1Controllers.Count == 0)
             {
                 lock (objLock)
                 {
-                    if (_Controllers.Count == 0)
+                    if (_Lv1Controllers.Count == 0)
                     {
                         List<Assembly> assList = GetAssemblys();
                         if (assList == null)
@@ -128,7 +136,16 @@ namespace Taurus.Core
                                 {
                                     if (type.BaseType != null && (type.BaseType.FullName == Const.TaurusCoreController || (type.BaseType.BaseType != null && type.BaseType.BaseType.FullName == Const.TaurusCoreController)))
                                     {
-                                        _Controllers.Add(type.Name.Replace(Const.Controller, ""), type);
+                                        string lv1Name = GetLevelName(type.FullName, 1);
+                                        string lv2Name = GetLevelName(type.FullName, 2);
+                                        if (!_Lv1Controllers.ContainsKey(lv1Name))
+                                        {
+                                            _Lv1Controllers.Add(lv1Name, type);
+                                        }
+                                        if (!_Lv2Controllers.ContainsKey(lv2Name))
+                                        {
+                                            _Lv2Controllers.Add(lv2Name, type);
+                                        }
                                     }
                                 }
                             }
@@ -136,31 +153,59 @@ namespace Taurus.Core
                         //追加APIHelp
                         if (Const.IsStartDoc)
                         {
-                            _Controllers.Add(Const.Doc, typeof(Taurus.Core.DocController));
+                            _Lv1Controllers.Add(Const.Doc, typeof(Taurus.Core.DocController));
+                            _Lv2Controllers.Add(Const.CoreDoc, typeof(Taurus.Core.DocController));
                         }
                         if (Const.IsStartAuth)
                         {
-                            _Controllers.Add(Const.Auth, typeof(Taurus.Core.AuthController));
+                            _Lv1Controllers.Add(Const.Auth, typeof(Taurus.Core.AuthController));
+                            _Lv2Controllers.Add(Const.CoreAuth, typeof(Taurus.Core.AuthController));
                         }
                     }
                 }
             }
-            return _Controllers;
+            return level == 1 ? _Lv1Controllers : _Lv2Controllers;
+        }
+        /// <summary>
+        /// 存档N级名称（Module.Controller)
+        /// </summary>
+        /// <param name="fullName"></param>
+        /// <returns></returns>
+        private static string GetLevelName(string fullName, int level)
+        {
+            string[] items = fullName.Split('.');
+            string lv1Name = items[items.Length - 1].Replace(Const.Controller, "");
+            if (level == 2)
+            {
+                return items[items.Length - 2] + "." + lv1Name;
+            }
+            return lv1Name;
         }
         /// <summary>
         /// 通过className类名获得对应的Controller类
         /// </summary>
         /// <returns></returns>
-        public static Type GetType(string className)
+        public static Type GetController(string className)
         {
-            Dictionary<string, Type> controllers = GetControllers();
-            if (!string.IsNullOrEmpty(className) && controllers.ContainsKey(className)) //1：完整匹配【名称空间.类名】
+            if (string.IsNullOrEmpty(className))
+            {
+                className = Const.Default;
+            }
+            int level = className.Contains(".") ? 2 : 1;
+            Dictionary<string, Type> controllers = GetControllers(level);
+            if (controllers.ContainsKey(className))
             {
                 return controllers[className];
             }
-            if (controllers.ContainsKey(Const.Default))
+            else if (level == 2)
             {
-                return controllers[Const.Default];
+                className = className.Split('.')[1];
+                //再查一级路径
+                controllers = GetControllers(1);
+                if (controllers.ContainsKey(className))
+                {
+                    return controllers[className];
+                }
             }
             return null;
         }
@@ -182,7 +227,7 @@ namespace Taurus.Core
             {
                 if (_DefaultCheckToken == null)
                 {
-                    Type t = GetType(Const.DefaultController);
+                    Type t = GetController(Const.DefaultController);
                     if (t != null)
                     {
                         _DefaultCheckToken = t.GetMethod(Const.CheckToken, BindingFlags.Static | BindingFlags.Public);
@@ -201,7 +246,7 @@ namespace Taurus.Core
             {
                 if (_BeforeInvokeMethod == null)
                 {
-                    Type t = GetType(Const.DefaultController);
+                    Type t = GetController(Const.DefaultController);
                     if (t != null)
                     {
                         _BeforeInvokeMethod = t.GetMethod(Const.BeforeInvoke, BindingFlags.Static | BindingFlags.Public);
@@ -221,7 +266,7 @@ namespace Taurus.Core
             {
                 if (_EndInvokeMethod == null)
                 {
-                    Type t = GetType(Const.DefaultController);
+                    Type t = GetController(Const.DefaultController);
                     if (t != null)
                     {
                         _EndInvokeMethod = t.GetMethod(Const.EndInvoke, BindingFlags.Static | BindingFlags.Public);
@@ -241,7 +286,7 @@ namespace Taurus.Core
             {
                 if (_AuthCheckToken == null && Const.IsStartAuth)
                 {
-                    Type t = GetType(Const.Auth);
+                    Type t = GetController(Const.Auth);
                     if (t != null)
                     {
                         _AuthCheckToken = t.GetMethod(Const.CheckToken, BindingFlags.Static | BindingFlags.Public);
@@ -260,7 +305,7 @@ namespace Taurus.Core
             {
                 if (_DocRecord == null && Const.IsStartDoc)
                 {
-                    Type t = GetType(Const.Doc);
+                    Type t = GetController(Const.Doc);
                     if (t != null)
                     {
                         _DocRecord = t.GetMethod(Const.Record, BindingFlags.Static | BindingFlags.Public);
