@@ -1,5 +1,5 @@
 # Taurus.MVC
-Taurus.mvc is a simple mvc or webapi framework for asp.net or asp.net core（适合场景：对性能和并发有较高要求的电商、站点、WebAPI等系统，支持.Net Core）,created by Aster（路过秋天）<hr />
+Taurus.mvc is a high-performance mvc and webapi framework for asp.net or asp.net core（适合场景：对性能和并发有较高要求的电商、站点、WebAPI等系统，支持.Net Core）,created by Aster（路过秋天）<hr />
 
 QQ交流群：6033006<br />
 
