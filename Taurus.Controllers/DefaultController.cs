@@ -2,7 +2,7 @@
 using System.Collections.Generic;
 using System.Text;
 using Taurus.Core;
-
+using CYQ.Data;
 namespace Taurus.Controllers
 {
     /// <summary>
@@ -27,6 +27,15 @@ namespace Taurus.Controllers
         //[Regex("mn",true,"addfd"];
         public static bool BeforeInvoke(IController controller, string methodName)
         {
+            //MAction action = new MAction("Test1", "server=.;database=demo;uid=sa;pwd=123456");
+
+            //action.BeginTransation();
+            //action.Set("name", "google");
+            //if (action.Insert())
+            //{
+            //    throw new Exception("aa");
+            //}
+            
             //if (controller.IsHttpPost)
             //{
             //    //拦截全局处理
