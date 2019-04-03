@@ -9,124 +9,124 @@ Linux（CentOS7) 部署：http://mvc.taurus.cyqdata.com
 Demo：https://github.com/cyq1162/Taurus.MVC.Demo <br />
 
 <hr />
-<h1>为什么要创造Taurus.MVC：</h1>
-<p>记得被上一家公司忽悠去负责公司电商平台的时候，情况是这样的：</p>
-<p>项目原版是外包给第三方的，使用：WebForm+NHibernate，代码不堪入目，Bug无限，经常点着点着就挂了。</p>
-<p>一开始招了几个实习的大学生在那玩，搞不定了，终于忽悠的我了，哈哈。。。</p>
-<p>当时进去的第一感觉是重做，不过呵呵，老板的心思你不猜不行。</p>
-<p>然后第一阶段就是在旧项目改造维稳了，只要不是需要挂上百台服务器才能解决的问题，都能弱弱地处理的不要不要的，毕竟没有三两三，也不好上梁坑。</p>
-<p>到了第二阶段，自然就是思考重做了：</p>
-<p><strong>电商后台已有开源的：<a href="https://github.com/cyq1162/Aries" target="_blank">ASP.NET Aries</a> 框架（已支持.NET Core），刷刷刷的不用担心太多；</strong></p>
-<h2><span style="color: #ff0000;"><strong>电商前台选什么框架呢？</strong></span></h2>
-<p>1：WebForm 太保守；</p>
-<p>2：.NET Core 1.1 太激进 (现在Taurus.MVC 已支持.NET Core)；</p>
-<p>3：QBlog（秋色园） 门槛高；</p>
-<p>4：重新写一套，事务繁忙，没空静下心思考，而且时间有限，已向BOSS提交了计划。</p>
-<p><strong>最后只有无奈地选择：ASP.NET MVC 了。</strong></p>
-<p>仔细想想.NET环境，市面上流行的开发框架，都是微软自家的（说好的百花齐放呢？）</p>
-<p>我也知道，有些上点年纪的，也造框架，不过都是造给自己或自己公司用的（和造给用户用的思考的角度和涉及的广度是不一样的）。</p>
-<p>也有一些免费造给人民群众的，不过宣传三两下就没声音了；</p>
-<p>园子里也从来不会主动帮助第三方的开源框架做推广，光靠博主自己的激情和情怀，能支持多久都是是个未知数，毕竟搞框架是没收入的。</p>
-<p>笔风一转：</p>
-<p>后来，老板倒下了.....(泪奔~~~)。</p>
-<p>然后，就有时间静下心来好好用情怀造框架了！</p>
-<p>终于，Taurus.MVC 就出来了，而且一出来就开源了！！！开源！！开！三遍。</p>
-<h1>关于框架取名：Taurus</h1>
-<p>十年前造CYQ.Data的时候，名字取的不好（怪我咯），导致推广阻力大。</p>
-<p>于是现在造新的框架，都必须得好好想个名字，毕竟得取个像：齐得龙，齐东强，齐得龙东强 这样的才够响亮而彻底。</p>
-<p>前一小阵子发布的：ASP.NET Aries 业务开发框架：取名：Aries（白羊座，温柔中带点骄情）。</p>
-<p>于是思考，是该延续白羊系列叫：Aries.MVC 呢？</p>
-<p>还是。。。打造黄金十二宫呢？</p>
-<p>然后把十三星座，八大行星的英文单词查了个遍，发现都没怎么满意，跳跃式取名有阻碍，那就顺序取名吧。</p>
-<p>Taurus（金牛座），其实最后决定的原因是这个单词的发音：脱了（很有看大片的感觉，而且充满想象力，爆力中带点色咪咪的感觉）。</p>
+<h1><span style="vertical-align: inherit;"><span style="vertical-align: inherit;">Why create Taurus.MVC:</span></span></h1>
+<p><span style="vertical-align: inherit;"><span style="vertical-align: inherit;">I remember when I was fooled by the last company to take charge of the company's e-commerce platform, the situation is this:</span></span></p>
+<p><span style="vertical-align: inherit;"><span style="vertical-align: inherit;">The original version of the project is outsourced to a third party. Using: WebForm+NHibernate, the code is unsightly, the bug is infinite, and it is often hung up.</span></span></p>
+<p><span style="vertical-align: inherit;"><span style="vertical-align: inherit;">At the beginning, I recruited a few internship college students to play there. I couldn&rsquo;t make it anymore, and finally I was fooled, haha. </span><span style="vertical-align: inherit;">. </span><span style="vertical-align: inherit;">.</span></span></p>
+<p><span style="vertical-align: inherit;"><span style="vertical-align: inherit;">The first feeling that I went in at the time was to redo, but hehe, the boss&rsquo;s mind can&rsquo;t guess.</span></span></p>
+<p><span style="vertical-align: inherit;"><span style="vertical-align: inherit;">Then the first stage is to maintain the stability of the old project. As long as it is not a problem that needs to be solved by hundreds of servers, it can be handled weakly. After all, there are no three or two, and it is not good for the beam.</span></span></p>
+<p><span style="vertical-align: inherit;"><span style="vertical-align: inherit;">In the second stage, nature is thinking about redoing:</span></span></p>
+<p><strong><span style="vertical-align: inherit;"><span style="vertical-align: inherit;">The e-commerce background has been open source: </span></span><a href="https://github.com/cyq1162/Aries" target="_blank"><span style="vertical-align: inherit;"><span style="vertical-align: inherit;">ASP.NET Aries</span></span></a><span style="vertical-align: inherit;"><span style="vertical-align: inherit;"> framework (supported .NET Core), don't worry too much about brushing;</span></span></strong></p>
+<h2><span style="color: #ff0000;"><strong><span style="vertical-align: inherit;"><span style="vertical-align: inherit;">What framework does the e-commerce front desk choose?</span></span></strong></span></h2>
+<p><span style="vertical-align: inherit;"><span style="vertical-align: inherit;">1: WebForm is too conservative;</span></span></p>
+<p><span style="vertical-align: inherit;"><span style="vertical-align: inherit;">2: .NET Core 1.1 is too aggressive (now Taurus.MVC already supports .NET Core);</span></span></p>
+<p><span style="vertical-align: inherit;"><span style="vertical-align: inherit;">3: QBlog (autumn garden) threshold is high;</span></span></p>
+<p><span style="vertical-align: inherit;"><span style="vertical-align: inherit;">4: Re-write a set, busy business, no time to calm down and think, and time is limited, has submitted a plan to BOSS.</span></span></p>
+<p><strong><span style="vertical-align: inherit;"><span style="vertical-align: inherit;">Finally, only helplessly choose: ASP.NET MVC.</span></span></strong></p>
+<p><span style="vertical-align: inherit;"><span style="vertical-align: inherit;">Think about the .NET environment, the popular development framework on the market, all of Microsoft's own (say a good flower?)</span></span></p>
+<p><span style="vertical-align: inherit;"><span style="vertical-align: inherit;">I also know that some older people also make frameworks, but they are all made for themselves or their own companies (and the angle of thinking and the breadth involved are not the same).</span></span></p>
+<p><span style="vertical-align: inherit;"><span style="vertical-align: inherit;">There are also some free gifts to the people, but there is no sound in propaganda after three or two;</span></span></p>
+<p><span style="vertical-align: inherit;"><span style="vertical-align: inherit;">The garden has never taken the initiative to help third-party open source frameworks to promote, relying on the blogger's own passion and sentiment, how long it can support is an unknown number, after all, the framework is no income.</span></span></p>
+<p><span style="vertical-align: inherit;"><span style="vertical-align: inherit;">A stroke of the pen:</span></span></p>
+<p><span style="vertical-align: inherit;"><span style="vertical-align: inherit;">Later, the boss fell down..... (tears rush ~~~).</span></span></p>
+<p><span style="vertical-align: inherit;"><span style="vertical-align: inherit;">Then, there is time to calm down and build a framework with emotions!</span></span></p>
+<p><span style="vertical-align: inherit;"><span style="vertical-align: inherit;">Finally, Taurus.MVC came out, and it was open source when it came out! </span><span style="vertical-align: inherit;">! </span><span style="vertical-align: inherit;">! </span><span style="vertical-align: inherit;">Open source! </span><span style="vertical-align: inherit;">! </span><span style="vertical-align: inherit;">open! </span><span style="vertical-align: inherit;">Three times.</span></span></p>
+<h1><span style="vertical-align: inherit;"><span style="vertical-align: inherit;">About the frame name: Taurus</span></span></h1>
+<p><span style="vertical-align: inherit;"><span style="vertical-align: inherit;">When I made CYQ.Data ten years ago, the name was not good (blame me), which led to the promotion of resistance.</span></span></p>
+<p><span style="vertical-align: inherit;"><span style="vertical-align: inherit;">So now, to create a new framework, you must have a good name, after all, you have to take a picture like: Qi Delong, Qi Dongqiang, Qi Delong Dongqiang is so loud and thorough.</span></span></p>
+<p><span style="vertical-align: inherit;"><span style="vertical-align: inherit;">Previously released a little: ASP.NET Aries business development framework: named: Aries (Aries, gentle with a little pride).</span></span></p>
+<p><span style="vertical-align: inherit;"><span style="vertical-align: inherit;">So thinking, is the continuation of the Aries series called: Aries.MVC?</span></span></p>
+<p><span style="vertical-align: inherit;"><span style="vertical-align: inherit;">still is. </span><span style="vertical-align: inherit;">. </span><span style="vertical-align: inherit;">. </span><span style="vertical-align: inherit;">Create a golden zodiac?</span></span></p>
+<p><span style="vertical-align: inherit;"><span style="vertical-align: inherit;">Then I checked the English words of the thirteen constellations and the eight planets and found that they were not satisfied. If the jumping name is obstructed, then the name should be named.</span></span></p>
+<p><span style="vertical-align: inherit;"><span style="vertical-align: inherit;">Taurus (Taurus), in fact, the final decision is the pronunciation of the word: off (very big-looking feeling, and full of imagination, the feeling of a little Mimi in the explosion).</span></span></p>
 <p><img src="http://images2015.cnblogs.com/blog/17408/201608/17408-20160805023118559-795702157.jpg" alt="" /></p>
-<h1>关于框架的适用场景：</h1>
-<p>选择框架，对高手来说，是一门学问；对新手来说，只是一种选择。</p>
-<p>在我年轻的时候，被迫只能选择微软造的框架，现在，我成了创造者：</p>
-<p>CYQ.Data+Aries+Taurus，几乎能适应所有的业务场景。</p>
-<p>已经可以不用ASP.NET WebForm、ASP.NET MVC了。</p>
-<p>但，仍然依旧离不开ASP.NET平台。</p>
-<p>如上所说：</p>
-<p>1：ASP.NET Aries 适用业务系统和后台快速开发。</p>
-<p>2：Taurus.MVC 适用于对性能要求较高的电商等前端系统和WebAPI。</p>
-<h1>关于框架的优势：</h1>
-<p>通常讲框架的优势，就是开始扯蛋吹B的时候，只要市场口号喊的响亮，产品只要不是弱的一B就不是什么问题。</p>
-<p>框架有啥优势？常人都先问这个，你要吹的我心动，吹的我心开，才回你一声哦，然后默默把源码下载存硬盘里。</p>
-<p>由于市面基本微软一家统一天下，所以比较都是找微软家的MVC了。</p>
-<p>其实吧，和.NET MVC 比起来，只能说：一个天上，一个地下。</p>
-<p>MVC4安装完：800M（没搞明白究竟是要装什么东西这么大）；</p>
-<p>Taurus.MVC安装完：400K（Taurus.Core.dll+CYQ.Data）。</p>
-<p>很明显：微软这些年一直做加法，没想做减法，一直做创新，没想做兼容，很多产品都大粗大叶，让人纠心。</p>
-<p>扯远了，说说优势，让我想想，让我和静静一起想想...</p>
-<p>先用几个被用滥的词：轻量级？高性能？高效率？</p>
-<p><strong>不行，得与众不同，有点别人没做到的才叫优势：</strong></p>
-<p><strong>噢，对，得用图表示，这样才能显的专业，对，这样这样，那样那样，好，整完了，上图：</strong></p>
+<h1><span style="vertical-align: inherit;"><span style="vertical-align: inherit;">Applicable scenarios for the framework:</span></span></h1>
+<p><span style="vertical-align: inherit;"><span style="vertical-align: inherit;">Choosing a framework is a matter of learning for the master; it is only a choice for the novice.</span></span></p>
+<p><span style="vertical-align: inherit;"><span style="vertical-align: inherit;">When I was young, I was forced to choose only the framework created by Microsoft. Now, I became the creator:</span></span></p>
+<p><span style="vertical-align: inherit;"><span style="vertical-align: inherit;">CYQ.Data+Aries+Taurus can adapt to almost all business scenarios.</span></span></p>
+<p><span style="vertical-align: inherit;"><span style="vertical-align: inherit;">Already without ASP.NET WebForm, ASP.NET MVC.</span></span></p>
+<p><span style="vertical-align: inherit;"><span style="vertical-align: inherit;">However, it still remains inseparable from the ASP.NET platform.</span></span></p>
+<p><span style="vertical-align: inherit;"><span style="vertical-align: inherit;">As mentioned above:</span></span></p>
+<p><span style="vertical-align: inherit;"><span style="vertical-align: inherit;">1: ASP.NET Aries is suitable for rapid development of business systems and backgrounds.</span></span></p>
+<p><span style="vertical-align: inherit;"><span style="vertical-align: inherit;">2: Taurus.MVC is suitable for front-end systems and WebAPIs such as e-commerce with high performance requirements.</span></span></p>
+<h1><span style="vertical-align: inherit;"><span style="vertical-align: inherit;">About the advantages of the framework:</span></span></h1>
+<p><span style="vertical-align: inherit;"><span style="vertical-align: inherit;">Usually speaking, the advantage of the framework is that when you start to blow B, as long as the market slogan is loud, the product is not a problem as long as it is not weak.</span></span></p>
+<p><span style="vertical-align: inherit;"><span style="vertical-align: inherit;">What are the advantages of the framework? </span><span style="vertical-align: inherit;">Ordinary people ask this first, you want to blow my heart, blow my heart, only to return to you, and then silently download the source code to save the hard drive.</span></span></p>
+<p><span style="vertical-align: inherit;"><span style="vertical-align: inherit;">Because the market is basically a unified Microsoft world, so it is more to find Microsoft's MVC.</span></span></p>
+<p><span style="vertical-align: inherit;"><span style="vertical-align: inherit;">In fact, compared with .NET MVC, you can only say: one heaven, one underground.</span></span></p>
+<p><span style="vertical-align: inherit;"><span style="vertical-align: inherit;">MVC4 installed: 800M (do not figure out what is to be installed so much);</span></span></p>
+<p><span style="vertical-align: inherit;"><span style="vertical-align: inherit;">Taurus.MVC installed: 400K (Taurus.Core.dll + CYQ.Data).</span></span></p>
+<p><span style="vertical-align: inherit;"><span style="vertical-align: inherit;">Obviously: Microsoft has been doing additions for the past few years, did not want to do subtraction, has been doing innovation, did not want to be compatible, many products are big and big, people are reluctant.</span></span></p>
+<p><span style="vertical-align: inherit;"><span style="vertical-align: inherit;">Far away, talk about the advantages, let me think about it, let me think about it with silence...</span></span></p>
+<p><span style="vertical-align: inherit;"><span style="vertical-align: inherit;">Use a few words that are overused: lightweight? </span><span style="vertical-align: inherit;">high performance? </span><span style="vertical-align: inherit;">high efficiency?</span></span></p>
+<p><strong><span style="vertical-align: inherit;"><span style="vertical-align: inherit;">No, it&rsquo;s different, a little bit of what others don&rsquo;t do is called an advantage:</span></span></strong></p>
+<p><strong><span style="vertical-align: inherit;"><span style="vertical-align: inherit;">Oh, yes, you have to use a graph to show that you can be professional, yes, this way, that way, good, finished, above:</span></span></strong></p>
 <p><strong><img src="http://images2015.cnblogs.com/blog/17408/201608/17408-20160805014733122-66381202.jpg" alt="" /></strong></p>
-<h1>Taurus.MVC 源码：</h1>
-<p>1：源代码SVN：<a href="https://github.com/cyq1162/Taurus.MVC">https://github.com/cyq1162/Taurus.MVC</a></p>
-<p>2：Demo演示站：<a href="http://taurus.cyqdata.com/">http://taurus.cyqdata.com</a></p>
-<p>Demo截图是这样的（新版本现在多了个WebAPI Demo）：</p>
+<h1><span style="vertical-align: inherit;"><span style="vertical-align: inherit;">Taurus.MVC Source code:</span></span></h1>
+<p><span style="vertical-align: inherit;"><span style="vertical-align: inherit;">1: Source code SVN: </span></span><a href="https://github.com/cyq1162/Taurus.MVC"><span style="vertical-align: inherit;"><span style="vertical-align: inherit;">https://github.com/cyq1162/Taurus.MVC</span></span></a></p>
+<p><span style="vertical-align: inherit;"><span style="vertical-align: inherit;">2: Demo demo station: </span></span><a href="http://taurus.cyqdata.com/"><span style="vertical-align: inherit;"><span style="vertical-align: inherit;">http://taurus.cyqdata.com</span></span></a></p>
+<p><span style="vertical-align: inherit;"><span style="vertical-align: inherit;">The Demo screenshot is like this (the new version now has a WebAPI Demo):</span></span></p>
 <p><img src="http://images2015.cnblogs.com/blog/17408/201608/17408-20160805023918043-2063699248.jpg" alt="" /></p>
-<h1>Taurus.MVC 框架引入方式：</h1>
-<p>1：在Nuget上搜：Taurus.MVC，引用即可（会引入：Taurus.Core和CYQ.Data）</p>
-<p>然后出来一个Readme.txt，按提示配置一下URL拦截和指定Controller地方的dll即可。</p>
-<p><strong>.NET Core 版本搜：Taurus.MVC.Core</strong></p>
-<p>2：直接用源码项目（源码项目里会有Demo）。</p>
-<p>.NET版本运行：Taurus.MVC.sln</p>
-<p>.NET Core 版本运行：Taurus.MVC_Core_VS2017.sln</p>
-<h1>Taurus.MVC 框架介绍：</h1>
-<h2>1：源码下载后：解决方案图：</h2>
+<h1><span style="vertical-align: inherit;"><span style="vertical-align: inherit;">Taurus.MVC framework introduction method:</span></span></h1>
+<p><span style="vertical-align: inherit;"><span style="vertical-align: inherit;">1: Search on Nuget: Taurus.MVC, reference (will be introduced: Taurus.Core and CYQ.Data)</span></span></p>
+<p><span style="vertical-align: inherit;"><span style="vertical-align: inherit;">Then come out a Readme.txt, follow the prompts to configure the URL interception and specify the dll of the Controller place.</span></span></p>
+<p><strong><span style="vertical-align: inherit;"><span style="vertical-align: inherit;">.NET Core version search: Taurus.MVC.Core</span></span></strong></p>
+<p><span style="vertical-align: inherit;"><span style="vertical-align: inherit;">2: Directly use the source project (there will be Demo in the source project).</span></span></p>
+<p><span style="vertical-align: inherit;"><span style="vertical-align: inherit;">.NET version running: Taurus.MVC.sln</span></span></p>
+<p><span style="vertical-align: inherit;"><span style="vertical-align: inherit;">.NET Core version running: Taurus.MVC_Core_VS2017.sln</span></span></p>
+<h1><span style="vertical-align: inherit;"><span style="vertical-align: inherit;">Introduction to the Taurus.MVC framework:</span></span></h1>
+<h2><span style="vertical-align: inherit;"><span style="vertical-align: inherit;">1: After downloading the source code: Solution diagram:</span></span></h2>
 <p><img src="http://images2015.cnblogs.com/blog/17408/201608/17408-20160805005840497-1095313333.jpg" alt="" /></p>
-<h2>2：解决方案说明：</h2>
-<p>1：CYQ.Data：主要XHtmlAction当模板引擎，另外当数据层可以提供Model或提供自动绑定语法。</p>
-<p>2：Taurus.Core：主要实现了路由重写、Controller调用、ViewEngine等核心方法。</p>
-<p>3：Taurus.Controllers 方法入口，写代码的地方。</p>
-<p>4：Taurus.View 只存放html和css和js</p>
-<h2>3：补充说明：</h2>
-<p>1：通常MVC的Controller，Modle，View文件都放在一个项目里，这里就分拆到两个项目了。</p>
-<p>2：为了项目层级清晰，你可以建Model项目（放实体）和Logic项目（写业务逻辑代码）还有Utility（放工具类）。</p>
-<p>3：框架提供的Demo，就马马虎虎全放Controllers项目里了。</p>
-<p><strong>下面按MVC的套路来简单说说基础的原理及使用方式：</strong></p>
-<h1>1：Taurus.MVC的路由：</h1>
-<h2>1：隐匿路由：</h2>
-<p>在.NET MVC里，路由是一块很重要，但麻烦的功能。</p>
-<p>要简化MVC，第一步，就是要思考如何隐式地消灭路由。</p>
-<p>最后内部默认定了3个路由：</p>
-<p>0：{Action}/{Para}</p>
-<p>1：{Controller}/{Action}/{Para}</p>
-<p>2：{Module}/{Controller}/{Action}/{Para}</p>
-<p>默认是1。</p>
-<h2>2：扩展路由：</h2>
-<p>当部署为子应用程序，或第一个为用户名时，会多出一个前缀目录。</p>
-<p>这时可以能过AppSetting配置RouteMode值为2，轻松过度。</p>
-<p>上下文会提供三个参数让你获取信息：ControllerType，Action，Para。</p>
-<p><span style="color: #ff0000;"><strong>好了，路由讲完了，想自定义路由？在Para上做点创新就可以了~~~~</strong></span></p>
-<h1>2：Taurus.Controllers</h1>
-<h2>1：寻找Controller：</h2>
-<p>规则已经定好了，剩下的事就是按规则找Controller了。</p>
-<p>1：收集所有的Controller。</p>
-<p>2：指定去哪收集：默认是去Taurus.Controllers找继承自基类：Taurus.Core.Controller。</p>
-<p>3：自定义存放Controllers：AppSetting配置Taurus.Controllers的值，假设为：Taurus.View</p>
-<p>4：找不到Controller时，都找DefaultController，如果这个都木有（Demo里是有的），就抛异常了。</p>
+<h2><span style="vertical-align: inherit;"><span style="vertical-align: inherit;">2: Solution Description:</span></span></h2>
+<p><span style="vertical-align: inherit;"><span style="vertical-align: inherit;">1: CYQ.Data: The main XHtmlAction is the template engine, additionally when the data layer can provide a Model or provide automatic binding syntax.</span></span></p>
+<p><span style="vertical-align: inherit;"><span style="vertical-align: inherit;">2: Taurus.Core: Mainly implements core methods such as route rewriting, Controller calling, and ViewEngine.</span></span></p>
+<p><span style="vertical-align: inherit;"><span style="vertical-align: inherit;">3: Taurus.Controllers method entry, where to write the code.</span></span></p>
+<p><span style="vertical-align: inherit;"><span style="vertical-align: inherit;">4: Taurus.View only stores html and css and js</span></span></p>
+<h2><span style="vertical-align: inherit;"><span style="vertical-align: inherit;">3: Supplementary note:</span></span></h2>
+<p><span style="vertical-align: inherit;"><span style="vertical-align: inherit;">1: Usually MVC Controller, Modle, View files are placed in a project, here split into two projects.</span></span></p>
+<p><span style="vertical-align: inherit;"><span style="vertical-align: inherit;">2: In order to clear the project level, you can build Model project (put entity) and Logic project (write business logic code) and Utility (put tool class).</span></span></p>
+<p><span style="vertical-align: inherit;"><span style="vertical-align: inherit;">3: The Demo provided by the framework is fully loaded into the Controllers project.</span></span></p>
+<p><strong><span style="vertical-align: inherit;"><span style="vertical-align: inherit;">In the following, according to the MVC routine, simply explain the basic principles and usage:</span></span></strong></p>
+<h1><span style="vertical-align: inherit;"><span style="vertical-align: inherit;">1: Route of Taurus.MVC:</span></span></h1>
+<h2><span style="vertical-align: inherit;"><span style="vertical-align: inherit;">1: Hidden route:</span></span></h2>
+<p><span style="vertical-align: inherit;"><span style="vertical-align: inherit;">In .NET MVC, routing is a very important but cumbersome feature.</span></span></p>
+<p><span style="vertical-align: inherit;"><span style="vertical-align: inherit;">The first step in simplifying MVC is to think about how to implicitly eliminate routing.</span></span></p>
+<p><span style="vertical-align: inherit;"><span style="vertical-align: inherit;">Finally, the internal default has 3 routes:</span></span></p>
+<p><span style="vertical-align: inherit;"><span style="vertical-align: inherit;">0:{Action}/{Para}</span></span></p>
+<p><span style="vertical-align: inherit;"><span style="vertical-align: inherit;">1:{Controller}/{Action}/{Para}</span></span></p>
+<p><span style="vertical-align: inherit;"><span style="vertical-align: inherit;">2: {Module}/{Controller}/{Action}/{Para}</span></span></p>
+<p><span style="vertical-align: inherit;"><span style="vertical-align: inherit;">The default is 1.</span></span></p>
+<h2><span style="vertical-align: inherit;"><span style="vertical-align: inherit;">2: Extended routing:</span></span></h2>
+<p><span style="vertical-align: inherit;"><span style="vertical-align: inherit;">When deployed as a sub-application, or when the first one is a username, an additional prefix directory is created.</span></span></p>
+<p><span style="vertical-align: inherit;"><span style="vertical-align: inherit;">At this time, it is possible to configure the RouteMode value to 2 by AppSetting, which is easy and excessive.</span></span></p>
+<p><span style="vertical-align: inherit;"><span style="vertical-align: inherit;">The context provides three parameters for you to get information: ControllerType, Action, Para.</span></span></p>
+<p><span style="color: #ff0000;"><strong><span style="vertical-align: inherit;"><span style="vertical-align: inherit;">Ok, the routing is finished, want to customize the route? </span><span style="vertical-align: inherit;">Do some innovation on Para~~~~</span></span></strong></span></p>
+<h1><span style="vertical-align: inherit;"><span style="vertical-align: inherit;">2: Taurus.Controllers</span></span></h1>
+<h2><span style="vertical-align: inherit;"><span style="vertical-align: inherit;">1: Looking for the Controller:</span></span></h2>
+<p><span style="vertical-align: inherit;"><span style="vertical-align: inherit;">The rules have been fixed, and the rest is to find the Controller according to the rules.</span></span></p>
+<p><span style="vertical-align: inherit;"><span style="vertical-align: inherit;">1: Collect all the Controllers.</span></span></p>
+<p><span style="vertical-align: inherit;"><span style="vertical-align: inherit;">2: Specify where to collect: The default is to go to Taurus.Controllers to find inheritance from the base class: Taurus.Core.Controller.</span></span></p>
+<p><span style="vertical-align: inherit;"><span style="vertical-align: inherit;">3: Customize the Controllers: AppSetting to configure the value of Taurus.Controllers, assuming: Taurus.View</span></span></p>
+<p><span style="vertical-align: inherit;"><span style="vertical-align: inherit;">4: When you can't find the Controller, you can find the DefaultController. If this is all there is (there is some in Demo), it will throw an exception.</span></span></p>
 <p><img src="http://images2015.cnblogs.com/blog/17408/201608/17408-20160805025506872-16659224.jpg" alt="" /></p>
-<h2>2：调用Controller的Action：</h2>
-<p>1：方法名都是public void，可以有参数（重载多个参数，默认只收集第一个）。</p>
-<p>2：有输入的，用Write方法。</p>
-<p>3：找不到Action时，会找Default方法（这个基类里有，所以一定会有，有需要就重写它）。</p>
+<h2><span style="vertical-align: inherit;"><span style="vertical-align: inherit;">2: Call the Controller's Action:</span></span></h2>
+<p><span style="vertical-align: inherit;"><span style="vertical-align: inherit;">1: The method names are all public void, which can have parameters (overloading multiple parameters, only the first one is collected by default).</span></span></p>
+<p><span style="vertical-align: inherit;"><span style="vertical-align: inherit;">2: If there is input, use the Write method.</span></span></p>
+<p><span style="vertical-align: inherit;"><span style="vertical-align: inherit;">3: When the Action is not found, the Default method will be found (this base class is there, so there must be, and it will be rewritten if necessary).</span></span></p>
 <p><img src="http://images2015.cnblogs.com/blog/17408/201608/17408-20160805025353559-490764850.jpg" alt="" /></p>
-<h1>3：Taurus.View</h1>
-<p>1：模板：html（严格的说应该是xhtml）</p>
-<p>2：模板加载方式：和URL对应的寻址路径：就是Views/{Controller}/{Action}.html ，通过配置可以改变约定的路径。</p>
-<p>3：母版页的引用方式：itemref="页面.节点名称"。（<strong>itemref是div的属性，没人用，就借它来引用节点替换</strong>。）</p>
-<p>4：加载替换语法：</p>
-<p>A：对于input标签，可以使用CYQ.Data.MDataRow.SetToAll批量赋值。</p>
-<p>B：对于${name}，可以使用View.LoadData(数据,"前缀")，会自动格式化。</p>
-<p>C：对于列表循环标签：可以使用CYQ.Data.MDataTable.Bind方法绑定。</p>
+<h1><span style="vertical-align: inherit;"><span style="vertical-align: inherit;">3: Taurus.View</span></span></h1>
+<p><span style="vertical-align: inherit;"><span style="vertical-align: inherit;">1: Template: html (strictly speaking, it should be xhtml)</span></span></p>
+<p><span style="vertical-align: inherit;"><span style="vertical-align: inherit;">2: Template loading method: The addressing path corresponding to the URL: Views/{Controller}/{Action}.html, which can change the agreed path through configuration.</span></span></p>
+<p><span style="vertical-align: inherit;"><span style="vertical-align: inherit;">3: Reference method of master page: itemref="page.node name". </span><span style="vertical-align: inherit;">( </span></span><strong><span style="vertical-align: inherit;"><span style="vertical-align: inherit;">itemref is the attribute of a div. If no one uses it, it will be used to reference node replacement</span></span></strong><span style="vertical-align: inherit;"><span style="vertical-align: inherit;"> .)</span></span></p>
+<p><span style="vertical-align: inherit;"><span style="vertical-align: inherit;">4: Load replacement syntax:</span></span></p>
+<p><span style="vertical-align: inherit;"><span style="vertical-align: inherit;">A: For the input tag, you can use CYQ.Data.MDataRow.SetToAll to assign values ​​in bulk.</span></span></p>
+<p><span style="vertical-align: inherit;"><span style="vertical-align: inherit;">B: For ${name}, you can use View.LoadData (data, "prefix"), which will be formatted automatically.</span></span></p>
+<p><span style="vertical-align: inherit;"><span style="vertical-align: inherit;">C: For list loop tags: you can bind using the CYQ.Data.MDataTable.Bind method.</span></span></p>
 <p><img src="http://images2015.cnblogs.com/blog/17408/201608/17408-20160805025919762-770843444.jpg" alt="" /></p>
-<h1>总结：</h1>
-<p>1：本文并没详细讲解使用方法，对于使用方式，会在下一篇文章介绍：</p>
-<p>嗯，一篇介绍就够了，因为实在没啥可讲的了，不需要写一本书。</p>
-<p>2：Demo里提供增删改查列表分页功能，能力好点或有MVC基础的，扫下源码就会使用。</p>
-<p>3：今天的重点是开源。。。开源。。。开源。。。重要的事情说123。</p>
-<p>最后说一声：</p>
-<p>此框架的开源，给了.NET的人民群众多了一种选择。</p>
+<h1><span style="vertical-align: inherit;"><span style="vertical-align: inherit;">to sum up:</span></span></h1>
+<p><span style="vertical-align: inherit;"><span style="vertical-align: inherit;">1: This article does not explain the usage method in detail. For the usage, it will be introduced in the next article:</span></span></p>
+<p><span style="vertical-align: inherit;"><span style="vertical-align: inherit;">Well, an introduction is enough, because there is nothing to say, you don't need to write a book.</span></span></p>
+<p><span style="vertical-align: inherit;"><span style="vertical-align: inherit;">2: Demo provides the function of adding, deleting, and revising list paging. If the ability is good or has MVC basics, the source code will be used.</span></span></p>
+<p><span style="vertical-align: inherit;"><span style="vertical-align: inherit;">3: Today's focus is on open source. </span><span style="vertical-align: inherit;">. </span><span style="vertical-align: inherit;">. </span><span style="vertical-align: inherit;">Open source. </span><span style="vertical-align: inherit;">. </span><span style="vertical-align: inherit;">. </span><span style="vertical-align: inherit;">Open source. </span><span style="vertical-align: inherit;">. </span><span style="vertical-align: inherit;">. </span><span style="vertical-align: inherit;">The important thing is to say 123.</span></span></p>
+<p><span style="vertical-align: inherit;"><span style="vertical-align: inherit;">Finally say:</span></span></p>
+<p><span style="vertical-align: inherit;"><span style="vertical-align: inherit;">The open source of this framework gives the people of .NET a choice.</span></span></p>
