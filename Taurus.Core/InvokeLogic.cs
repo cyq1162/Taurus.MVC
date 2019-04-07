@@ -3,7 +3,7 @@ using System;
 using System.Collections.Generic;
 using System.Reflection;
 using System.Text;
-
+using System.IO;
 namespace Taurus.Core
 {
     /// <summary>
@@ -68,7 +68,19 @@ namespace Taurus.Core
             {
                 if (string.IsNullOrEmpty(_DllNames))
                 {
-                    _DllNames = AppConfig.GetApp(AppSettings.Controllers, AppSettings.Controllers);
+                    _DllNames = AppConfig.GetApp(AppSettings.Controllers, "");
+                    if (string.IsNullOrEmpty(_DllNames))
+                    {
+                        string[] files = Directory.GetFiles(AppConfig.AssemblyPath, "*Controllers.dll", SearchOption.TopDirectoryOnly);
+                        if (files != null)
+                        {
+                            foreach (string file in files)
+                            {
+                                _DllNames += Path.GetFileNameWithoutExtension(file) + ",";
+                            }
+                            _DllNames = _DllNames.TrimEnd(',');
+                        }
+                    }
                 }
                 return _DllNames;
             }
@@ -135,7 +147,7 @@ namespace Taurus.Core
                                 if (type.Name.EndsWith(Const.Controller))
                                 {
                                     //三层继承判断，应该够用了。
-                                    if (type.BaseType != null && (type.BaseType.FullName == Const.TaurusCoreController 
+                                    if (type.BaseType != null && (type.BaseType.FullName == Const.TaurusCoreController
                                         || (type.BaseType.BaseType != null && type.BaseType.BaseType.FullName == Const.TaurusCoreController)
                                         || (type.BaseType.BaseType.BaseType != null && type.BaseType.BaseType.BaseType.FullName == Const.TaurusCoreController)
                                         || (type.BaseType.BaseType.BaseType.BaseType != null && type.BaseType.BaseType.BaseType.BaseType.FullName == Const.TaurusCoreController)
