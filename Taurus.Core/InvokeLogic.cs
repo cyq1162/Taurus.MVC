@@ -147,11 +147,11 @@ namespace Taurus.Core
                                 if (type.Name.EndsWith(Const.Controller))
                                 {
                                     //三层继承判断，应该够用了。
-                                    if (type.BaseType != null && (type.BaseType.FullName == Const.TaurusCoreController
+                                    if ((type.BaseType != null && type.BaseType.FullName == Const.TaurusCoreController)
                                         || (type.BaseType.BaseType != null && type.BaseType.BaseType.FullName == Const.TaurusCoreController)
                                         || (type.BaseType.BaseType.BaseType != null && type.BaseType.BaseType.BaseType.FullName == Const.TaurusCoreController)
                                         || (type.BaseType.BaseType.BaseType.BaseType != null && type.BaseType.BaseType.BaseType.BaseType.FullName == Const.TaurusCoreController)
-                                        ))
+                                        )
                                     {
                                         string lv1Name = GetLevelName(type.FullName, 1);
                                         string lv2Name = GetLevelName(type.FullName, 2);
