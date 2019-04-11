@@ -133,7 +133,7 @@ namespace Taurus.Core
             if (ControllerTable == null)
             {
                 ControllerTable = new MDataTable("Controller");
-                ControllerTable.Columns.Add("CName,Desc,TokenFlag");
+                ControllerTable.Columns.Add("CName,CDesc,TokenFlag");
                 ControllerTable.Columns.Add("Type", SqlDbType.Variant);
 
 
@@ -163,7 +163,7 @@ namespace Taurus.Core
             if (ActionTable == null)
             {
                 ActionTable = new MDataTable("Action");
-                ActionTable.Columns.Add("CName,AName,Attr,Url,Desc");
+                ActionTable.Columns.Add("CName,AName,Attr,Url,ADesc");
                 for (int i = 0; i < ControllerTable.Rows.Count; i++)
                 {
                     MDataRow row = ControllerTable.Rows[i];
