@@ -82,7 +82,7 @@ namespace Taurus.Core
                     status += user.Status + "=1 and ";
                 }
                 string where = string.Empty;
-                if (action.DalType == DalType.Txt || action.DalType == DalType.Xml)
+                if (action.DataBaseType == DataBaseType.Txt || action.DataBaseType == DataBaseType.Xml)
                 {
                     where = status + user.UserName + string.Format("='{0}'", userName);
                 }
