@@ -139,7 +139,7 @@ namespace Taurus.Controllers
                     {
                         demo.UI.SetToAll(View);
 
-                        View.LoadData(demo.RawData, "");
+                        View.LoadData(demo, "");
                     }
                     Pager pager = new Pager(View);
                     dt = demo.Select(pager.PageIndex, pager.PageSize);
