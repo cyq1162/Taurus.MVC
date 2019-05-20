@@ -719,9 +719,11 @@ namespace Taurus.Core
                     else
                     {
                         Stream stream = context.Request.InputStream;
-                        if (stream != null && stream.Length > 0)
+                        if (stream != null && stream.CanRead)
                         {
-                            Byte[] bytes = new Byte[stream.Length];
+                            long len = (long)context.Request.ContentLength;
+
+                            Byte[] bytes = new Byte[len];
                             stream.Read(bytes, 0, bytes.Length);
                             string data = System.Text.Encoding.UTF8.GetString(bytes);
                             if (data.IndexOf("%") > -1)
