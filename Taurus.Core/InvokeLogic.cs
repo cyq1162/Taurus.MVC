@@ -216,6 +216,13 @@ namespace Taurus.Core
             {
                 return controllers[className];
             }
+            else if (level == 1)
+            {
+                if (controllers.ContainsKey(Const.Default))
+                {
+                    return controllers[Const.Default];
+                }
+            }
             else if (level == 2)
             {
                 className = className.Split('.')[1];
