@@ -53,9 +53,28 @@ namespace Microsoft.AspNetCore.Http
     }
     public static class TaurusExtensions
     {
+        /// <summary>
+        /// Net Core 3.1 把IHostingEnvironment 拆分成了：IWebHostEnvironment和IHostEnvironment 
+        /// 所以增加重载方法适应。
+        /// </summary>
+        /// <param name="builder"></param>
+        /// <param name="env"></param>
+        /// <returns></returns>
+        public static IApplicationBuilder UseTaurusMvc(this IApplicationBuilder builder, object env)
+        {
+            if (env is IHostingEnvironment)
+            {
+                return UseTaurusMvc(builder, env as IHostingEnvironment);
+            }
+            throw new Exception("env must be IWebHostEnvironment or IHostingEnvironment or String");
+        }
         public static IApplicationBuilder UseTaurusMvc(this IApplicationBuilder builder, IHostingEnvironment env)
         {
-            AppConfig.WebRootPath = env.WebRootPath;//设置根目录地址，ASPNETCore的根目录和其它应用不一样。
+            return UseTaurusMvc(builder, env.WebRootPath);
+        }
+        public static IApplicationBuilder UseTaurusMvc(this IApplicationBuilder builder, string webRootPath)
+        {
+            AppConfig.WebRootPath = webRootPath;//设置根目录地址，ASPNETCore的根目录和其它应用不一样。
             //执行一次，用于注册事件
             UrlRewrite url = new UrlRewrite();
             url.Init(System.Web.HttpApplication.Instance);
