@@ -1,0 +1,126 @@
+﻿<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head itemref="common.head">
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+</head>
+<body id="Node_Body">
+    <div id="body_allwrap">
+        <div id="body_midwrap">
+            <div itemref="common.body_header">
+                [这里引用的头部内容]
+            </div>
+            <div itemref="common.body_sidebar">
+                [这里引用的左侧栏的内容]
+            </div>
+            <div id="body_content">
+                <div class="gutter">
+                    <div class="default_contents">
+                        <div class="user_article">
+                            <h1 class="title_txt">
+                                <a href="#">${d:这家伙很懒，没有写说明。}</a>
+                            </h1>
+                            <div class="blogstory">
+                                <div id="labBody">
+                                    <p>请求方式：${p}</p>
+                                    <p>请求地址：<input id="url" type="text" value="${u}" style="width:90%" /></p>
+                                    <p>重点参数说明：</p>
+                                    <form name="f1" enctype="application/x-www-form-urlencoded">
+                                        <table class="dataintable">
+                                            <tr>
+                                                <th>参数</th>
+                                                <th>描述</th>
+                                                <th>必填</th>
+                                                <th>类型</th>
+                                                <th>示例值</th>
+                                            </tr>
+
+                                            <tbody id="ParaView" clearflag="1">
+                                                <tr>
+                                                    <td width="80px">{0}</td>
+                                                    <td>{1}</td>
+                                                    <td>
+                                                        <%# ${required}?'是':'否'%>
+                                                    </td>
+                                                    <td><%# '${type}'=='file'?'文件':('${type}'=='header'?'请求头':'${type}')%></td>
+                                                    <td>
+                                                        <![CDATA[
+                                                        <input name="{0}" type="<%# '${type}'=='file'?'file':'text'%>" value="{4}" style="width:90%"  rtype="${type}" <%# ${required}?'required="required"':'false'%> />
+                                                        ]]>
+                                                    </td>
+
+                                                </tr>
+                                            </tbody>
+                                        </table>
+                                    </form>
+
+                                    <p>应返回：</p>
+
+                                    <div class="sign">
+                                        <div class="code">
+                                            <div>${returns:无}</div>
+                                        </div>
+                                    </div>
+                                    <hr />
+                                    <input type="button" value="运行示例请求" onclick="run()" /> | <select id="httpType"><option>GET</option><option>POST</option><option>HEAD</option><option>PUT</option><option>DELETE</option></select>
+                                    <hr />
+                                    <div style="display:none;background-color:darkseagreen" id="runResult">
+                                        <p style="text-indent:10px"> 示例运行结果：</p>
+                                        <div class="sign">
+                                            <div class="code">
+                                                <div id="resultContent"></div>
+                                            </div>
+                                        </div>
+                                        <p style="text-indent:10px"> 示例结果(服务器返回)请求头：</p>
+
+                                        <div class="sign">
+                                            <div class="code">
+                                                <div id="resultHeader"></div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+  
+                            </div>
+                        </div>
+ 
+                        <div class="commentnew" id="Node_PostComment">
+                                <dl>
+                                    <dt>
+                                        <ul>
+                                            <li class="left" key="postcomment">高级接口测试</li>
+                                        </ul>
+                                    </dt>
+                                    <dd>
+                                        <ul>
+                                            <li>
+                                                推荐使用： <a href="https://www.telerik.com/download/fiddler" target="_blank" title="download">fiddler</a> 工具，打开时右侧的Composer菜单中即可测试：<a href="https://www.cnblogs.com/cyq1162/p/10574607.html" target="_blank">教程地址</a>。
+                                            </li>
+                                        </ul>
+                                        <!-- <ul>
+                                             <li>
+                                                 <label key="nickname">
+                                                     昵称</label>:<input keyvalue="anonymous" name="txtNickName" id="txtNickName" type="text"
+                                                         maxlength="20" value="" />
+                                                 </li>
+                                         </ul>
+                                         <ul>
+                                             <li class="right">
+                                                 <textarea id="txtBody" name="txtBody" cols="55" rows="8">  </textarea>
+                                             </li>
+                                         </ul>
+                                         <ul>
+                                             <li class="right">
+                                                 <input keyvalue="submit" name="Submit" type="submit" value="提交" class="submitbtn" />
+                                                 <span id="postMessage"></span></li>
+                                         </ul>-->
+                                    </dd>
+                                </dl>
+                        </div>
+                    </div>
+
+                </div>
+            </div>
+        </div>
+    </div>
+</body>
+</html>
