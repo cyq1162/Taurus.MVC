@@ -1,4 +1,4 @@
-<?xml version="1.0" standalone="yes"?>
+﻿<?xml version="1.0" standalone="yes"?>
 <UserType>
   <UserType>
     <ID>1</ID>
@@ -19,5 +19,37 @@
   <UserType>
     <ID>5</ID>
     <TypeName>QBlog</TypeName>
+  </UserType>
+  <UserType>
+    <ID>6</ID>
+    <TypeName>Type1</TypeName>
+  </UserType>
+  <UserType>
+    <ID>7</ID>
+    <TypeName>Type2</TypeName>
+  </UserType>
+  <UserType>
+    <ID>8</ID>
+    <TypeName>Type3</TypeName>
+  </UserType>
+  <UserType>
+    <ID>9</ID>
+    <TypeName>Type4</TypeName>
+  </UserType>
+  <UserType>
+    <ID>10</ID>
+    <TypeName>Type1</TypeName>
+  </UserType>
+  <UserType>
+    <ID>11</ID>
+    <TypeName>Type2</TypeName>
+  </UserType>
+  <UserType>
+    <ID>12</ID>
+    <TypeName>Type3</TypeName>
+  </UserType>
+  <UserType>
+    <ID>13</ID>
+    <TypeName>Type4</TypeName>
   </UserType>
 </UserType>

@@ -1,13 +1,16 @@
-<Project Sdk="Microsoft.NET.Sdk">
+﻿<Project Sdk="Microsoft.NET.Sdk">
 
   <PropertyGroup>
-    <TargetFramework>netcoreapp2.1</TargetFramework>
+    <TargetFramework>netcoreapp3.1</TargetFramework>
     <AssemblyName>Taurus.Controllers</AssemblyName>
     <RootNamespace>Taurus.Controllers</RootNamespace>
+    <AssemblyVersion>2.3.2.0</AssemblyVersion>
+    <FileVersion>2.3.2.0</FileVersion>
+    <Version>2.3.2.0</Version>
   </PropertyGroup>
 
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|AnyCPU'">
-    <DocumentationFile>bin\Debug\netcoreapp2.0\Taurus.Controllers.xml</DocumentationFile>
+    <DocumentationFile>D:\Code\Other\cyqdata\Taurus.MVC\trunk\Taurus.Controllers\Taurus.Controllers.xml</DocumentationFile>
   </PropertyGroup>
 
   <ItemGroup>
@@ -19,8 +22,13 @@
   </ItemGroup>
 
   <ItemGroup>
-    <ProjectReference Include="..\..\..\CYQ.Data-GitHub\trunk\CYQ.Data_NetCore.csproj" />
     <ProjectReference Include="..\Taurus.Core\Taurus.Core_NetCore.csproj" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <Reference Include="CYQ.Data">
+      <HintPath>..\Packages\netcoreapp3.1\CYQ.Data.dll</HintPath>
+    </Reference>
   </ItemGroup>
 
 </Project>
