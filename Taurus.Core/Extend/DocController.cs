@@ -305,6 +305,9 @@ namespace Taurus.Core
             XmlNode node = GetDescriptionNode(GetXml(), Query<string>("c") + "." + Query<string>("a"), "M:");
             if (node != null)
             {
+                MDataTable dt = new MDataTable("Para");
+                dt.Columns.Add("name,desc,required,type,value");
+
                 foreach (XmlNode item in node.ChildNodes)
                 {
                     switch (item.Name.ToLower())
@@ -313,7 +316,11 @@ namespace Taurus.Core
                             dicReturn.Add("returns", node.LastChild.InnerText.Trim());
                             break;
                         case "param":
-                            dicParas.Add(item.Attributes["name"].Value, item.InnerText);
+                            dt.NewRow(true).Set(0, GetAttrValue(item,"name"))
+                                .Set(1, item.InnerText)
+                                .Set(2, GetAttrValue(item, "required","false"))
+                                .Set(3, GetAttrValue(item, "type"))
+                                .Set(4, GetAttrValue(item, "value"));
                             break;
                     }
                 }
@@ -321,14 +328,24 @@ namespace Taurus.Core
                 {
                     View.LoadData(dicReturn, "");
                 }
-                if (dicParas.Count > 0)
+                if (dt.Rows.Count > 0)
                 {
-                    MDataTable dt = MDataTable.CreateFrom(dicParas);
-                    dt.TableName = "Para";
                     dt.Bind(View);
                 }
             }
         }
+        private string GetAttrValue(XmlNode node, string attrName) {
+            return GetAttrValue(node, attrName, "");
+        }
+        private string GetAttrValue(XmlNode node, string attrName,string defaultValue)
+        {
+            if(node.Attributes[attrName]!=null)
+            {
+                return node.Attributes[attrName].Value;
+            }
+            return defaultValue;
+        }
         #endregion
     }
+   
 }
