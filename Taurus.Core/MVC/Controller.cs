@@ -209,11 +209,23 @@ namespace Taurus.Core
                 }
                 else if (apiResult.Length > 0)
                 {
-                    if (apiResult[0] == '{' && apiResult[apiResult.Length - 1] == '}')
+                    string outResult = apiResult.ToString();
+                    if (string.IsNullOrEmpty(context.Response.ContentType))
                     {
-                        context.Response.ContentType = "application/json";
+                        context.Response.ContentType = "text/html";
                     }
-                    context.Response.Write(apiResult.ToString());
+                    if (context.Response.ContentType == "text/html")
+                    {
+                        if (apiResult[0] == '{' && apiResult[apiResult.Length - 1] == '}')
+                        {
+                            context.Response.ContentType = "application/json";
+                        }
+                        else if (outResult.StartsWith("<?xml") && apiResult[apiResult.Length - 1] == '>')
+                        {
+                            context.Response.ContentType = "application/xml";
+                        }
+                    }
+                    context.Response.Write(outResult);
                 }
             }
             catch (System.Threading.ThreadAbortException)
