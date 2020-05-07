@@ -115,7 +115,7 @@ namespace Taurus.Core
                         {
                             foreach (XmlNode item in list)
                             {
-                                if (item.Attributes["name"].Value.StartsWith(type + name + "("))
+                                if (item.Attributes["name"].Value.StartsWith(type + name.Split('(')[0] + "("))
                                 {
                                     return item;
                                 }
@@ -150,11 +150,14 @@ namespace Taurus.Core
                     }
 
                     string desc = GetDescription(GetXml(), item.Value.FullName, "T:").Trim();
-                    ControllerTable.NewRow(true)
-                       .Set(0, item.Value.FullName)
-                       .Set(1, desc)
-                       .Set(2, item.Value.GetCustomAttributes(typeof(TokenAttribute), false).Length)
-                       .Set(3, item.Value);
+                    if (!string.IsNullOrEmpty(desc))
+                    {
+                        ControllerTable.NewRow(true)
+                           .Set(0, item.Value.FullName)
+                           .Set(1, desc)
+                           .Set(2, item.Value.GetCustomAttributes(typeof(TokenAttribute), false).Length)
+                           .Set(3, item.Value);
+                    }
                 }
             }
         }
@@ -235,13 +238,15 @@ namespace Taurus.Core
                         }
                         desc = GetDescription(actions, name, "M:");
                         #endregion
-
-                        ActionTable.NewRow(true)
-                        .Set(0, row.Get<string>("CName"))
-                        .Set(1, method.Name)
-                        .Set(2, attrText)
-                        .Set(3, url)
-                        .Set(4, desc);
+                        if (!string.IsNullOrEmpty(desc))
+                        {
+                            ActionTable.NewRow(true)
+                            .Set(0, row.Get<string>("CName"))
+                            .Set(1, method.Name)
+                            .Set(2, attrText)
+                            .Set(3, url)
+                            .Set(4, desc);
+                        }
                     }
                     #endregion
                     if (!hasMehtod)
@@ -316,9 +321,9 @@ namespace Taurus.Core
                             dicReturn.Add("returns", node.LastChild.InnerText.Trim());
                             break;
                         case "param":
-                            dt.NewRow(true).Set(0, GetAttrValue(item,"name"))
+                            dt.NewRow(true).Set(0, GetAttrValue(item, "name"))
                                 .Set(1, item.InnerText)
-                                .Set(2, GetAttrValue(item, "required","false"))
+                                .Set(2, GetAttrValue(item, "required", "false"))
                                 .Set(3, GetAttrValue(item, "type"))
                                 .Set(4, GetAttrValue(item, "value"));
                             break;
@@ -334,12 +339,13 @@ namespace Taurus.Core
                 }
             }
         }
-        private string GetAttrValue(XmlNode node, string attrName) {
+        private string GetAttrValue(XmlNode node, string attrName)
+        {
             return GetAttrValue(node, attrName, "");
         }
-        private string GetAttrValue(XmlNode node, string attrName,string defaultValue)
+        private string GetAttrValue(XmlNode node, string attrName, string defaultValue)
         {
-            if(node.Attributes[attrName]!=null)
+            if (node.Attributes[attrName] != null)
             {
                 return node.Attributes[attrName].Value;
             }
@@ -347,5 +353,5 @@ namespace Taurus.Core
         }
         #endregion
     }
-   
+
 }
