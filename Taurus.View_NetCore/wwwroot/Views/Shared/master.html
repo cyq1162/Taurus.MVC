@@ -7,16 +7,16 @@
     <meta name="description" content="Taurus.MVC is a simple mvc or webapi framework for asp.net" />
     <meta name="author" content="Aster(路过秋天)" />
     <!-- 新 Bootstrap 核心 CSS 文件 -->
-    <link rel="stylesheet" href="//cdn.bootcss.com/bootstrap/3.3.5/css/bootstrap.min.css" />
+    <link rel="stylesheet" href="/style/css/bootstrap.min.css" />
 
     <!-- 可选的Bootstrap主题文件（一般不用引入） -->
-    <link rel="stylesheet" href="//cdn.bootcss.com/bootstrap/3.3.5/css/bootstrap-theme.min.css" />
+    <link rel="stylesheet" href="/style/css/bootstrap-theme.min.css" />
 
     <!-- jQuery文件。务必在bootstrap.min.js 之前引入 -->
-    <script src="//cdn.bootcss.com/jquery/1.11.3/jquery.min.js"></script>
+    <script src="/style/js/jquery.min.js"></script>
 
     <!-- 最新的 Bootstrap 核心 JavaScript 文件 -->
-    <script src="//cdn.bootcss.com/bootstrap/3.3.5/js/bootstrap.min.js"></script>
+    <script src="/style/js/bootstrap.min.js"></script>
     <script src="/style/js/master.js"></script>
     <script itemref="script2"></script>
     <style itemref="style"></style>
@@ -77,10 +77,11 @@
                 <div id="navbar" class="collapse navbar-collapse">
                     <ul class="nav navbar-nav">
                         <li><a href="/">Home</a></li>
-                        <li><a href="/home/about">About</a></li>
-                        <li><a href="/home/contact">Contact</a></li>
-                        <li><a href="/demo/default?id=1">MVC Demo</a></li>
-                        <li><a href="/home/webapi">WebAPI Demo</a></li>
+                        <li><a href="${'/'+module}/home/about">About</a></li>
+                        <li><a href="${'/'+module}/home/contact">Contact</a></li>
+                        <li><a href="${'/'+module}/demo/default?id=1">MVC Demo</a></li>
+                        <li><a href="${'/'+module}/home/webapi">WebAPI Demo</a></li>
+                         <li><a href="${'/'+module}/doc" target="_blank" title="WebAPI文档自动即时生成">WebAPI Document</a></li>
                     </ul>
                 </div>
                 <!--/.nav-collapse -->

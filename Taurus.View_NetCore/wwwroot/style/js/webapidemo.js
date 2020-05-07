@@ -4,7 +4,7 @@
         url: '/api/gettoken',
         data: { un: "13431148888", pwd: "中文密码啦" },
         success: function (data, status, xhr) {
-            $("#token").val(data);
+                $("#token").val(data.msg);
         },
         error: function (xhr, type) {
             alert(xhr);
@@ -15,7 +15,7 @@ function getData(method,withToken, methodType) {
     var data = [{ a: "Aster", b: "999666", list: {a:"chen",b:"yu"} }];//$.param(data.serializeObject("ab"))
     var json = {
         type: methodType,
-        contentType: methodType == "GET" ? 'application/text' : "application/x-www-form-urlencoded",
+        contentType:'application/text',
         url: '/api/'+method,
         data: "a=Aster&b=999666&unList=[{a:'chen',b:'yu'},{a:'qiang'}]",    //手动把数据转换拼接,
         success: function (data, status, xhr) {
