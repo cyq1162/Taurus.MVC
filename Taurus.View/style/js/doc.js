@@ -49,13 +49,13 @@ function ajax(type, url, data, header, formData) {
         success: function (result, status, xhr) {
             $("#runResult").show();
             $("#resultHeader").html(formatHeader(xhr.getAllResponseHeaders()));
-            $("#resultContent").html(JSON.stringify(result).replace('<', '&lt;').replace('>', '&gt;'))
+            $("#resultContent").html(JSON.stringify(result).replace(/</g, '&lt;').replace(/>/g, '&gt;'));
         },
         error: function (result) {
             if (result.statusText == "OK") {
                 $("#runResult").show();
                 $("#resultHeader").html(formatHeader(result.getAllResponseHeaders()));
-                $("#resultContent").html(result.responseText.replace('<', '&lt;').replace('>', '&gt;'));
+                $("#resultContent").html(result.responseText.replace(/</g, '&lt;').replace(/>/g, '&gt;'));
             }
         }
     };
