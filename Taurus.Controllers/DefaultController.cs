@@ -19,6 +19,7 @@ namespace Taurus.Controllers
         //本方法可以在其它文件里实现（partial类）
         public static bool CheckToken(IController controller, string methodName)
         {
+
             controller.CheckFormat("token Can't be Empty", "token");
             //实现Token验证
             //controller.Write(methodName + " NoToken");

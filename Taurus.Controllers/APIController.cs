@@ -58,10 +58,13 @@ namespace Taurus.Controllers
         /// <summary>
         /// 获取Token
         /// </summary>
-        /// <param name="un">用户名</param>
-        /// <param name="pwd">密码</param>
+        /// 
+        /// <param name="un" required="true" value="13488889999">用户名</param>
+        /// <param name="pwd" type="header">密码</param>
+        /// <param name="upload" type="file">图片上传</param>
         /// <returns>{success:true:msg:"tokenString..."}</returns>
         [HttpGet, Require("un", true, RegexConst.Mobile), Require("pwd")]
+        [HttpPost]
         public void GetToken(string un, string pwd)
         {
             //is required. is invalid. 判断 是否：中文
@@ -87,7 +90,7 @@ namespace Taurus.Controllers
         }
         public void GetDataWithNoToken(List<AB> unList, string a, int? b, AB ab)
         {
-            Write("GetDataWithNoToken A:" + unList[0].A + " B:" + unList[0].B, true);
+            Write("GetDataWithNoToken A:" + unList[0].A + " B:" + unList[0].B+"<script>alert('ok');</script>", true);
         }
         // [Token, HttpPost]
         [Require("ab.a"), Require("ab.b"), Require("unList.0.b")]
