@@ -22,99 +22,102 @@
                             <div class="blogstory">
                                 <div id="labBody">
                                     <p>请求方式：${p}</p>
-                                    <p>请求地址：${u}</p>
+                                    <p>请求地址：<input id="url" type="text" value="${u}" style="width:90%" /></p>
                                     <p>重点参数说明：</p>
-                                    <table class="dataintable">
-                                        <tr>
-                                            <th>参数</th>
-                                            <th>描述</th>
-                                        </tr>
-                                        <tbody id="ParaView" clearflag="1">
+                                    <form name="f1" enctype="application/x-www-form-urlencoded">
+                                        <table class="dataintable">
                                             <tr>
-                                                <td width="80px">{0}</td>
-                                                <td>{1}</td>
+                                                <th>参数</th>
+                                                <th>描述</th>
+                                                <th>必填</th>
+                                                <th>类型</th>
+                                                <th>示例值</th>
                                             </tr>
-                                        </tbody>
-                                    </table>
-                                    <p>返回结果：</p>
+
+                                            <tbody id="ParaView" clearflag="1">
+                                                <tr>
+                                                    <td width="80px">{0}</td>
+                                                    <td>{1}</td>
+                                                    <td>
+                                                        <%# ${required}?'是':'否'%>
+                                                    </td>
+                                                    <td><%# '${type}'=='file'?'文件':('${type}'=='header'?'请求头':'${type}')%></td>
+                                                    <td>
+                                                        <![CDATA[
+                                                        <input name="{0}" type="<%# '${type}'=='file'?'file':'text'%>" value="{4}" style="width:90%"  rtype="${type}" <%# ${required}?'required="required"':'false'%> />
+                                                        ]]>
+                                                    </td>
+
+                                                </tr>
+                                            </tbody>
+                                        </table>
+                                    </form>
+
+                                    <p>应返回：</p>
+
                                     <div class="sign">
                                         <div class="code">
                                             <div>${returns:无}</div>
                                         </div>
                                     </div>
-                                </div>
-<!--                                <div class="post-tag" id="labTag" key="tag">
-                                   
-                                </div>
+                                    <hr />
+                                    <input type="button" value="运行示例请求" onclick="run()" /> | <select id="httpType"><option>GET</option><option>POST</option><option>HEAD</option><option>PUT</option><option>DELETE</option></select>
+                                    <hr />
+                                    <div style="display:none;background-color:darkseagreen" id="runResult">
+                                        <p style="text-indent:10px"> 示例运行结果：</p>
+                                        <div class="sign">
+                                            <div class="code">
+                                                <div id="resultContent"></div>
+                                            </div>
+                                        </div>
+                                        <p style="text-indent:10px"> 示例结果(服务器返回)请求头：</p>
 
-                                <div adkey="Detail_D1" class="ad">
+                                        <div class="sign">
+                                            <div class="code">
+                                                <div id="resultHeader"></div>
+                                            </div>
+                                        </div>
+                                    </div>
                                 </div>
-                                <p class="right articalinfo">
-                                    <span id="labEdit"><a id="labID" href="/edit" key="edit">[编辑]</a></span> <span id="labCreateTime">2010-06-28</span> | <a id="labName" href="/edit">[类别]</a> |
-									<label key="comment">
-                                        [评论]</label><label id="labCommentCount"></label>
-                                    |
-									<label key="browse">
-                                        [浏览]</label><label id="labHits"></label>
-                                </p>
-                                <div style="text-align: left;">
-                                </div>-->
+  
                             </div>
                         </div>
-                       <!-- <div id="labCommentList" class="commentslist">
-                            <dl class="question">
-                                <dt><a href="#" id="labRow">#52楼</a> <a id="labNickName" href="/">路过秋天</a> <span
-                                    class="comment-date" id="divCreateTime">2009-12-08 11:53</span><span id="Node_Reply_Menu"><a
-                                        id="labReply" href="/edit" key="reply">[回复]</a></span> <span id="Node_Del_Menu"><a
-                                            id="labDelete" href="/edit" key="delete">[删除]</a></span>
-                                    <dd class="quesauthor">
-                                        <a href="/" id="labUserID">
-                                            <img src="/" id="labHeadUrl" border="0" align="absmiddle" width="50" height="50" /></a></dd>
-                                    <dd
-                                        id="divBody">自己占沙发。</dd>
-                                    <div id="Node_Reply" class="reply">
-                                        <span key="reply">回复</span>： <span id="labReBody">回复的内容很长很长...... </span>
-                                    </div>
-                                </dt>
-                            </dl>
-                        </div>
-                        <div cachefrom="Node_Pager">
-                        </div>-->
+ 
                         <div class="commentnew" id="Node_PostComment">
-                            <form method="post">
                                 <dl>
                                     <dt>
                                         <ul>
-                                            <li class="left" key="postcomment">接口测试</li>
+                                            <li class="left" key="postcomment">高级接口测试</li>
                                         </ul>
                                     </dt>
                                     <dd>
-                                        <ul><li>
-                                        推荐使用： <a href="https://www.telerik.com/download/fiddler" target="_blank" title="download">fiddler</a> 工具，打开时右侧的Composer菜单中即可测试：<a href="https://www.cnblogs.com/cyq1162/p/10574607.html" target="_blank">教程地址</a>。
-                                            </li></ul>
-                                       <!-- <ul>
-                                            <li>
-                                                <label key="nickname">
-                                                    昵称</label>:<input keyvalue="anonymous" name="txtNickName" id="txtNickName" type="text"
-                                                        maxlength="20" value="" />
-                                                </li>
-                                        </ul>
                                         <ul>
-                                            <li class="right">
-                                                <textarea id="txtBody" name="txtBody" cols="55" rows="8">  </textarea>
+                                            <li>
+                                                推荐使用： <a href="https://www.telerik.com/download/fiddler" target="_blank" title="download">fiddler</a> 工具，打开时右侧的Composer菜单中即可测试：<a href="https://www.cnblogs.com/cyq1162/p/10574607.html" target="_blank">教程地址</a>。
                                             </li>
                                         </ul>
-                                        <ul>
-                                            <li class="right">
-                                                <input keyvalue="submit" name="Submit" type="submit" value="提交" class="submitbtn" />
-                                                <span id="postMessage"></span></li>
-                                        </ul>-->
+                                        <!-- <ul>
+                                             <li>
+                                                 <label key="nickname">
+                                                     昵称</label>:<input keyvalue="anonymous" name="txtNickName" id="txtNickName" type="text"
+                                                         maxlength="20" value="" />
+                                                 </li>
+                                         </ul>
+                                         <ul>
+                                             <li class="right">
+                                                 <textarea id="txtBody" name="txtBody" cols="55" rows="8">  </textarea>
+                                             </li>
+                                         </ul>
+                                         <ul>
+                                             <li class="right">
+                                                 <input keyvalue="submit" name="Submit" type="submit" value="提交" class="submitbtn" />
+                                                 <span id="postMessage"></span></li>
+                                         </ul>-->
                                     </dd>
                                 </dl>
-                            </form>
                         </div>
                     </div>
-     
+
                 </div>
             </div>
         </div>

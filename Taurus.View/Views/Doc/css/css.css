@@ -1,7 +1,7 @@
 body{height:100%;min-width:760px;}
 
 a{text-decoration:none;color:#369;}
-a:hover{text-decoration:none;color:#D59139;}
+a:hover{text-decoration:none;color:#D59139;cursor:pointer}
 .spadding{margin:0;padding:0;}
 .middle{text-align:center;}
 .small{font-size:9px;}
@@ -23,11 +23,11 @@ a:hover{text-decoration:none;color:#D59139;}
 .aboutauthor dd em{color:#93B300;margin:0 2px;}
 
 
-/*sidebar list style*/
+/*sidebar list style
 .publiclist_sidebar ul li{line-height:24px;height:24px;width:210px;overflow:hidden;}
 .publiclist_sidebar ul li a{padding:0 0 0 15px;}
 .friendslist_sidebar ul li{line-height:24px;}
-.friendslist_sidebar ul li a{padding:0 0 0 15px;}
+.friendslist_sidebar ul li a{padding:0 0 0 15px;}*/
 
 /***Contents Style***/
 #body_content div.gutter{margin:0 .5em;float:left;width:98%;display:inline;}
