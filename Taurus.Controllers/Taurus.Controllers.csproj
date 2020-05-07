@@ -52,8 +52,7 @@
     <DocumentationFile>bin\Release\Taurus.Controllers.XML</DocumentationFile>
   </PropertyGroup>
   <ItemGroup>
-    <Reference Include="CYQ.Data, Version=5.7.9.7, Culture=neutral, processorArchitecture=MSIL">
-      <SpecificVersion>False</SpecificVersion>
+    <Reference Include="CYQ.Data">
       <HintPath>..\Packages\CYQ.Data.dll</HintPath>
     </Reference>
     <Reference Include="System" />
