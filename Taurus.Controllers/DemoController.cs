@@ -197,9 +197,10 @@ namespace Taurus.Controllers
         {
             using (Users u = new Users())
             {
-                u.LoadFrom(true);
+                //u.LoadFrom(true);
                 //Users u2 = u.RawData.ToEntity<Users>();
-                string name = u.Name;
+                //string name = u.Name;
+                //u.Name = "111";
                 string path = SavePic();
                 if (path != null)
                 {
@@ -249,17 +250,20 @@ namespace Taurus.Controllers
 
         private string SavePic()
         {
-            HttpPostedFile file = Context.Request.Files[0];
-            if (file != null && file.ContentLength > 0)
+            if (Context.Request.Files != null)
             {
-                string path = "/Upload/" + file.FileName;
-                string folder = AppConfig.WebRootPath + "Upload/";
-                if (!Directory.Exists(folder))
+                HttpPostedFile file = Context.Request.Files[0];
+                if (file != null && file.ContentLength > 0)
                 {
-                    Directory.CreateDirectory(folder);
+                    string path = "/Upload/" + file.FileName;
+                    string folder = AppConfig.WebRootPath + "Upload/";
+                    if (!Directory.Exists(folder))
+                    {
+                        Directory.CreateDirectory(folder);
+                    }
+                    file.SaveAs(folder + file.FileName);
+                    return path;
                 }
-                file.SaveAs(folder + file.FileName);
-                return path;
             }
             return null;
         }
