@@ -146,6 +146,7 @@ namespace Taurus.Core
                     {
                         case InvokeLogic.Const.DefaultController:
                         case InvokeLogic.Const.DocController:
+                        case InvokeLogic.Const.AuthController:
                             continue;
                     }
 
