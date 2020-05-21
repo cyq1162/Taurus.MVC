@@ -91,7 +91,7 @@ namespace Taurus.Core
         private string GetDescription(List<XHtmlAction> actions, string name, string type)
         {
             XmlNode node = GetDescriptionNode(actions, name, type);
-            if (node != null)
+            if (node != null && node.ChildNodes.Count > 0)
             {
                 return node.ChildNodes[0].InnerText.Trim();
             }
@@ -104,7 +104,7 @@ namespace Taurus.Core
                 foreach (XHtmlAction action in actions)
                 {
                     XmlNode node = action.Get(type + name);
-                    if (node != null)
+                    if (node != null && node.ChildNodes.Count > 0)
                     {
                         return node.ChildNodes[0];
                     }
@@ -288,7 +288,7 @@ namespace Taurus.Core
         private void BindAction()
         {
             string name = Query<string>("c");
-            if (string.IsNullOrEmpty(name))
+            if (string.IsNullOrEmpty(name) && ControllerTable.Rows.Count > 0)
             {
                 name = ControllerTable.Rows[0].Get<string>("CName");
             }
