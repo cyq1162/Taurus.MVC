@@ -18,7 +18,6 @@ namespace Taurus.Core
         /// 构造函数
         /// </summary>
         /// <param name="stream">参数为：HttpContext.Current.Response.Filter</param>
-        /// <param name="replaceHtmlTextList">字典集合：key为被替换正则表达式,value为替换的字符串</param>
         public HttpResponseFilter(Stream stream)
         {
             filterStream = stream;
