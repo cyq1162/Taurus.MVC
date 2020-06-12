@@ -15,7 +15,7 @@ namespace Taurus.Core
         /// </summary>
         public const string Controllers = "Taurus.Controllers";
         /// <summary>
-        /// 配置是否启用WebAPI文档自动生成功能 如 Taurus.Doc ：true
+        /// 配置是否启用WebAPI文档自动生成功能 如 Taurus.IsStartDoc ：true
         /// 默认值：false
         /// </summary>
         public const string IsStartDoc = "Taurus.IsStartDoc";
