@@ -92,17 +92,17 @@ namespace Taurus.Core
                     string other = "";
                     if (action.Data.Columns.Contains(user.UserName))
                     {
-                        other = user.UserName + "=@UserName";
+                        other = DBTool.Keyword(user.UserName, action.DataBaseType) + "=@UserName";
                     }
                     if (action.Data.Columns.Contains(user.Mobile))
                     {
                         if (other != "") { other += " or "; }
-                        other += user.Mobile + "=@UserName";
+                        other += DBTool.Keyword(user.Mobile, action.DataBaseType) + "=@UserName";
                     }
                     if (action.Data.Columns.Contains(user.Email))
                     {
                         if (other != "") { other += " or "; }
-                        other += user.Email + "=@UserName";
+                        other += DBTool.Keyword(user.Email, action.DataBaseType) + "=@UserName";
                     }
                     where = status + string.Format("({0})", other);
                 }
