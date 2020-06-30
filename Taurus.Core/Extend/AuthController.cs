@@ -90,15 +90,21 @@ namespace Taurus.Core
                 {
                     action.SetPara("UserName", userName, System.Data.DbType.String);
                     string other = "";
+                    if (action.Data.Columns.Contains(user.UserName))
+                    {
+                        other = user.UserName + "=@UserName";
+                    }
                     if (action.Data.Columns.Contains(user.Mobile))
                     {
-                        other += " or " + user.Mobile + "=@UserName";
+                        if (other != "") { other += " or "; }
+                        other += user.Mobile + "=@UserName";
                     }
                     if (action.Data.Columns.Contains(user.Email))
                     {
-                        other += " or " + user.Email + "=@UserName";
+                        if (other != "") { other += " or "; }
+                        other += user.Email + "=@UserName";
                     }
-                    where = status + string.Format("({0}=@UserName {1})", user.UserName, other);
+                    where = status + string.Format("({0})", other);
                 }
                 if (action.Fill(where))
                 {
