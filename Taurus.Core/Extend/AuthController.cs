@@ -216,6 +216,7 @@ namespace Taurus.Core
             //清除token
             HttpCookie tokenCookie = new HttpCookie(AuthConst.CookieTokenName, "");
             // HttpCookie userNameCookie = new HttpCookie("aries_user");//为了保留记住用户名功能，不清用户名Cookie
+            tokenCookie.Domain = AppConfig.XHtml.Domain;
             tokenCookie.Expires = DateTime.Now.AddYears(-1);
             response.Cookies.Add(tokenCookie);
         }
