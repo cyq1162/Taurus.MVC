@@ -2392,9 +2392,14 @@
             日志类型
             </summary>
         </member>
+        <member name="P:CYQ.Data.SysLogs.HostName">
+            <summary>
+            请求的主机名称(系统默认读取主机名)
+            </summary>
+        </member>
         <member name="P:CYQ.Data.SysLogs.Host">
             <summary>
-            请求的主机地址
+            请求的主机IP(系统默认读取主机内网IP，若无则返回主机名)
             </summary>
         </member>
         <member name="P:CYQ.Data.SysLogs.PageUrl">
@@ -3664,6 +3669,13 @@
             将行的数据转成两列（ColumnName、Value）的表
             </summary>
         </member>
+        <member name="M:CYQ.Data.Table.MDataRow.ToTable(System.Boolean)">
+            <summary>
+            将行的数据转成两列（ColumnName、Value）的表
+            </summary>
+            <param name="onlyData">仅数据（不含列头结构）</param>
+            <returns></returns>
+        </member>
         <member name="M:CYQ.Data.Table.MDataRow.Clear">
             <summary>
             将行的数据行的值全重置为Null
@@ -3679,6 +3691,14 @@
             <summary>
             获取行的当前状态[0:未更改；1:已赋值,值相同[可插入]；2:已赋值,值不同[可更新]]
             </summary>
+        </member>
+        <member name="M:CYQ.Data.Table.MDataRow.Sets(System.Int32,System.Object[])">
+            <summary>
+            为行设置值（批量设置多个值）
+            </summary>
+            <param name="startIndex">起始行索引</param>
+            <param name="values">多个值</param>
+            <returns></returns>
         </member>
         <member name="M:CYQ.Data.Table.MDataRow.Set(System.Object,System.Object)">
             <summary>
@@ -3924,7 +3944,7 @@
         </member>
         <member name="P:CYQ.Data.Table.MDataTable.DynamicData">
             <summary>
-            动态存储数据
+            动态存储数据(如：AcceptChanges 产生的异常默认由本参数存储)
             </summary>
         </member>
         <member name="P:CYQ.Data.Table.MDataTable.TableName">
@@ -4093,11 +4113,13 @@
             批量插入或更新 [提示：操作和当前表名有关，如当前表名不是要提交入库的表名,请给TableName属性重新赋值]
             </summary>
             <param name="op">操作选项[插入|更新]</param>
+            <returns>返回false时，若有异常，存在：DynamicData 参数中</returns>
         </member>
         <member name="M:CYQ.Data.Table.MDataTable.AcceptChanges(CYQ.Data.Table.AcceptOp,System.String,System.Object[])">
             <param name="op">操作选项[插入|更新]</param>
             <param name="newConn">指定新的数据库链接</param>
             <param name="jointPrimaryKeys">AcceptOp为Update或Auto时，若需要设置联合主键为唯一检测或更新条件，则可设置多个字段名</param>
+            <returns>返回false时，若有异常，存在：DynamicData 参数中</returns>
         </member>
         <member name="M:CYQ.Data.Table.MDataTable.GetChanges">
             <summary>
@@ -4493,7 +4515,7 @@
             列名
             </summary>
         </member>
-        <member name="F:CYQ.Data.Table.MCellStruct.TableName">
+        <member name="P:CYQ.Data.Table.MCellStruct.TableName">
             <summary>
             表名
             </summary>
