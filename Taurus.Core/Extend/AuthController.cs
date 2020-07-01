@@ -41,6 +41,7 @@ namespace Taurus.Core
             if (!AuthHelper.TokenIsValid)
             {
                 controller.Write(JsonHelper.OutResult("success", false, "msg", "token is invalid.", "code", 10001));
+                return false;
             }
             return true;
         }
