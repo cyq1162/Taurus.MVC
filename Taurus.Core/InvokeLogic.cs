@@ -172,13 +172,25 @@ namespace Taurus.Core
                         //追加APIHelp
                         if (Const.IsStartDoc)
                         {
-                            _Lv1Controllers.Add(Const.Doc, typeof(Taurus.Core.DocController));
-                            _Lv2Controllers.Add(Const.CoreDoc, typeof(Taurus.Core.DocController));
+                            if (!_Lv1Controllers.ContainsKey(Const.Doc))
+                            {
+                                _Lv1Controllers.Add(Const.Doc, typeof(Taurus.Core.DocController));
+                            }
+                            if (!_Lv2Controllers.ContainsKey(Const.CoreDoc))
+                            {
+                                _Lv2Controllers.Add(Const.CoreDoc, typeof(Taurus.Core.DocController));
+                            }
                         }
                         if (Const.IsStartAuth)
                         {
-                            _Lv1Controllers.Add(Const.Auth, typeof(Taurus.Core.AuthController));
-                            _Lv2Controllers.Add(Const.CoreAuth, typeof(Taurus.Core.AuthController));
+                            if (!_Lv1Controllers.ContainsKey(Const.Auth))
+                            {
+                                _Lv1Controllers.Add(Const.Auth, typeof(Taurus.Core.AuthController));
+                            }
+                            if (!_Lv2Controllers.ContainsKey(Const.CoreAuth))
+                            {
+                                _Lv2Controllers.Add(Const.CoreAuth, typeof(Taurus.Core.AuthController));
+                            }
                         }
                     }
                 }

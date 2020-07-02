@@ -136,20 +136,21 @@ namespace Taurus.Core
                 ControllerTable.Columns.Add("CName,CDesc,TokenFlag");
                 ControllerTable.Columns.Add("Type", SqlDbType.Variant);
 
-
                 MDictionary<string, string> cDescrption = new MDictionary<string, string>();
                 //搜集参数
                 Dictionary<string, Type> cType = InvokeLogic.GetControllers(2);
                 foreach (KeyValuePair<string, Type> item in cType)
                 {
-                    switch (item.Value.Name)
+                    if (item.Value.FullName.StartsWith("Taurus.Core."))
                     {
-                        case InvokeLogic.Const.DefaultController:
-                        case InvokeLogic.Const.DocController:
-                        case InvokeLogic.Const.AuthController:
-                            continue;
+                        switch (item.Value.Name)
+                        {
+                            case InvokeLogic.Const.DefaultController:
+                            case InvokeLogic.Const.DocController:
+                            case InvokeLogic.Const.AuthController:
+                                continue;
+                        }
                     }
-
                     string desc = GetDescription(GetXml(), item.Value.FullName, "T:").Trim();
                     if (!string.IsNullOrEmpty(desc))
                     {
