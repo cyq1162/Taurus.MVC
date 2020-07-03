@@ -44,7 +44,7 @@ namespace Taurus.Core
                 else
                 {
                     emptyTip = outParaName + " is required.";
-                    regexTip = outParaName + " is invalid(validated by " + regex + ").";
+                    regexTip = outParaName + " is invalid.";
                 }
             }
             Init(paraName, isRequired, regex, emptyTip, regexTip);
@@ -67,7 +67,7 @@ namespace Taurus.Core
             }
             if (string.IsNullOrEmpty(regexTip))
             {
-                regexTip = paraName + " is invalid(validated by " + regex + ").";
+                regexTip = paraName + " is invalid.";
             }
             this.emptyTip = emptyTip;
             this.regexTip = regexTip;
