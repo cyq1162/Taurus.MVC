@@ -46,9 +46,7 @@
   </ItemGroup>
 
   <ItemGroup>
-    <Reference Include="CYQ.Data">
-      <HintPath>..\Packages\netcoreapp3.1\CYQ.Data.dll</HintPath>
-    </Reference>
+    <ProjectReference Include="..\..\..\CYQ.Data\trunk\CYQ.Data_NetCore.csproj" />
   </ItemGroup>
 
 </Project>

@@ -26,11 +26,13 @@ namespace Taurus.Core
             internal const string CoreAuth = "Core.Auth";
 
             internal const string CheckToken = "CheckToken";
+            internal const string CheckAck = "CheckAck";
             internal const string BeforeInvoke = "BeforeInvoke";
             internal const string EndInvoke = "EndInvoke";
             internal const string Record = "Record";
 
             internal const string TokenAttribute = "TokenAttribute";
+            internal const string AckAttribute = "AckAttribute";
             internal const string HttpGetAttribute = "HttpGetAttribute";
             internal const string HttpPostAttribute = "HttpPostAttribute";
             internal const string HttpHeadAttribute = "HttpHeadAttribute";
@@ -55,7 +57,6 @@ namespace Taurus.Core
                 }
             }
         }
-        public static string[] HttpMethods = new string[] { "GET", "POST", "HEAD", "PUT", "DELETE" };
 
         #region GetAssembly
         private static string _DllNames;
@@ -252,8 +253,27 @@ namespace Taurus.Core
 
         #region GetMethods
 
-        #region 3个全局方法
+        #region 4个全局方法
 
+        private static MethodInfo _DefaultCheckAck = null;
+        /// <summary>
+        /// 全局DefaultCheckAck方法
+        /// </summary>
+        public static MethodInfo DefaultCheckAck
+        {
+            get
+            {
+                if (_DefaultCheckAck == null)
+                {
+                    Type t = GetController(Const.DefaultController);
+                    if (t != null)
+                    {
+                        _DefaultCheckAck = t.GetMethod(Const.CheckAck, BindingFlags.Static | BindingFlags.Public);
+                    }
+                }
+                return _DefaultCheckAck;
+            }
+        }
 
         private static MethodInfo _DefaultCheckToken = null;
         /// <summary>
@@ -354,15 +374,15 @@ namespace Taurus.Core
         }
         #endregion
         static Dictionary<string, Dictionary<string, MethodInfo>> typeMethods = new Dictionary<string, Dictionary<string, MethodInfo>>();
-        static Dictionary<string, char[]> methodAttrs = new Dictionary<string, char[]>(StringComparer.OrdinalIgnoreCase);
+        static Dictionary<string, AttributeList> methodAttrs = new Dictionary<string, AttributeList>(StringComparer.OrdinalIgnoreCase);
 
         static readonly object methodObj = new object();
         internal static MethodInfo GetMethod(Type t, string methodName)
         {
-            char[] hasTokenAttr;
+            AttributeList hasTokenAttr;
             return GetMethod(t, methodName, out hasTokenAttr);
         }
-        internal static MethodInfo GetMethod(Type t, string methodName, out char[] attrFlags)
+        internal static MethodInfo GetMethod(Type t, string methodName, out AttributeList attrFlags)
         {
             string key = t.FullName;
             Dictionary<string, MethodInfo> dic = null;
@@ -373,40 +393,45 @@ namespace Taurus.Core
                 {
                     if (!typeMethods.ContainsKey(key))
                     {
-                        Type tokenType = typeof(TokenAttribute);
-                        bool hasToken = t.GetCustomAttributes(tokenType, true).Length > 0;
-                        if (hasToken)
+                        bool hasToken = t.GetCustomAttributes(typeof(TokenAttribute), true).Length > 0;
+                        bool hasAck = t.GetCustomAttributes(typeof(AckAttribute), true).Length > 0;
+                        if (hasToken || hasAck)
                         {
-                            methodAttrs.Add(key, null);
+                            AttributeList al = new AttributeList();
+                            al.HasToken = hasToken;
+                            al.HasAck = hasAck;
+                            methodAttrs.Add(key, al);
                         }
                         MethodInfo[] items = t.GetMethods(BindingFlags.Instance | BindingFlags.Public | BindingFlags.DeclaredOnly);
                         dic = new Dictionary<string, MethodInfo>(StringComparer.OrdinalIgnoreCase);
                         foreach (MethodInfo item in items)
                         {
-                            if (!dic.ContainsKey(item.Name))//对于重载的同名方法，只取第一个空方法。
+                            if (!dic.ContainsKey(item.Name))//对于重载的同名方法，只取第一个方法。
                             {
                                 dic.Add(item.Name, item);//追加方法名
                                 object[] attrs = item.GetCustomAttributes(true);
                                 if (attrs.Length > 0)//追加特性名
                                 {
-                                    char[] aFlags = new char[6] { '0', '0', '0', '0', '0', '0' };
+                                    AttributeList aFlags = new AttributeList();
                                     foreach (object attr in attrs)
                                     {
                                         string[] names = attr.ToString().Split('.');
                                         switch (names[names.Length - 1])
                                         {
                                             case Const.TokenAttribute:
-                                                aFlags[0] = '1'; break;
+                                                aFlags.HasToken = true; break;
+                                            case Const.AckAttribute:
+                                                aFlags.HasAck = true; break;
                                             case Const.HttpGetAttribute:
-                                                aFlags[1] = '1'; break;
+                                                aFlags.HasGet = true; break;
                                             case Const.HttpPostAttribute:
-                                                aFlags[2] = '1'; break;
+                                                aFlags.HasPost = true; break;
                                             case Const.HttpHeadAttribute:
-                                                aFlags[3] = '1'; break;
+                                                aFlags.HasHead = true; break;
                                             case Const.HttpPutAttribute:
-                                                aFlags[4] = '1'; break;
+                                                aFlags.HasPut = true; break;
                                             case Const.HttpDeleteAttribute:
-                                                aFlags[5] = '1'; break;
+                                                aFlags.HasDelete = true; break;
                                         }
 
                                     }
@@ -429,9 +454,14 @@ namespace Taurus.Core
             }
             if (attrFlags == null)
             {
-                attrFlags = new char[6] { '0', '0', '0', '0', '0', '0' };
+                attrFlags = new AttributeList();
             }
-            if (methodAttrs.ContainsKey(key)) { attrFlags[0] = '1'; }
+            if (methodAttrs.ContainsKey(key))//如果类级别有，所有方法都继承
+            {
+                AttributeList al = methodAttrs[key];
+                attrFlags.HasToken = attrFlags.HasToken || al.HasToken;
+                attrFlags.HasAck = attrFlags.HasAck || al.HasAck;
+            }
             if (dic.ContainsKey(methodName))
             {
                 return dic[methodName];

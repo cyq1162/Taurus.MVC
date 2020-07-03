@@ -78,11 +78,33 @@ namespace Taurus.Core
                 #endregion
                 bool isGoOn = true;
 
-                char[] attrFlags;
+                AttributeList attrFlags;
                 MethodInfo method = InvokeLogic.GetMethod(t, methodName, out attrFlags);
                 if (method != null)
                 {
-                    if (attrFlags[0] == '1')
+                    if (isGoOn)//配置了HttpGet或HttpPost
+                    {
+                        isGoOn = attrFlags.HasKey(Request.HttpMethod);
+                        if (!isGoOn)
+                        {
+                            Write("Http method not support " + Request.HttpMethod, false);
+                        }
+                    }
+                    if (isGoOn && attrFlags.HasAck)//有[Ack]
+                    {
+                        #region Validate CheckAck
+                        MethodInfo checkAck = InvokeLogic.GetMethod(t, InvokeLogic.Const.CheckAck);
+                        if (checkAck != null && checkAck.Name == InvokeLogic.Const.CheckAck)
+                        {
+                            isGoOn = Convert.ToBoolean(checkAck.Invoke(this, null));
+                        }
+                        else if (InvokeLogic.DefaultCheckAck != null)
+                        {
+                            isGoOn = Convert.ToBoolean(InvokeLogic.DefaultCheckAck.Invoke(null, new object[] { this, methodName }));
+                        }
+                        #endregion
+                    }
+                    if (isGoOn && attrFlags.HasToken)//有[Token]
                     {
                         #region Validate CheckToken
                         MethodInfo checkToken = InvokeLogic.GetMethod(t, InvokeLogic.Const.CheckToken);
@@ -99,29 +121,6 @@ namespace Taurus.Core
                             isGoOn = Convert.ToBoolean(InvokeLogic.AuthCheckToken.Invoke(null, new object[] { this }));
                         }
                         #endregion
-                    }
-                    if (isGoOn)//配置了HttpGet或HttpPost
-                    {
-                        #region Validate Http methods
-                        string[] httpMethods = InvokeLogic.HttpMethods;
-                        for (int i = 0; i < httpMethods.Length; i++)
-                        {
-                            if (attrFlags[i + 1] == '1')
-                            {
-                                isGoOn = false;
-                                if (httpMethods[i] == Request.HttpMethod)
-                                {
-                                    isGoOn = true;
-                                    break;
-                                }
-                            }
-                        }
-                        if (!isGoOn)
-                        {
-                            Write("Http method not support " + Request.HttpMethod, false);
-                        }
-                        #endregion
-
                     }
                     if (isGoOn)
                     {
@@ -265,10 +264,19 @@ namespace Taurus.Core
         }
         /// <summary>
         /// if the result is false will stop invoke method
-        /// <para>检测授权是否通过</para>
+        /// <para>检测身份是否通过</para>
         /// </summary>
         /// <returns></returns>
         public virtual bool CheckToken()
+        {
+            return true;
+        }
+        /// <summary>
+        /// if the result is false will stop invoke method
+        /// <para>检测请求是否合法</para>
+        /// </summary>
+        /// <returns></returns>
+        public virtual bool CheckAck()
         {
             return true;
         }
@@ -319,7 +327,7 @@ namespace Taurus.Core
                         {
                             continue;
                         }
-                        if (ReflectTool.GetSystemType(ref t) != SysType.Base)//基础值类型
+                        if (piList.Length == 1 && ReflectTool.GetSystemType(ref t) != SysType.Base)//基础值类型
                         {
                             value = GetJson();
                         }
