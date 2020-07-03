@@ -15,17 +15,27 @@ namespace Taurus.Controllers
         {
             Write("Hello world");
         }
-        /* */
-        //本方法可以在其它文件里实现（partial类）
+        /// <summary>
+        /// 用于登陆前的请求合法性验证，配合[Ack]属性
+        /// </summary>
+        public static bool CheckAck(IController controller, string methodName)
+        {
+            //需要自己实现Ack验证
+            return controller.CheckFormat("ack Can't be Empty", "ack");
+            
+        }
+        /// <summary>
+        /// 用于需要登陆后的身份验证，配合[Token]属性
+        /// </summary>
         public static bool CheckToken(IController controller, string methodName)
         {
-
-            controller.CheckFormat("token Can't be Empty", "token");
-            //实现Token验证
-            //controller.Write(methodName + " NoToken");
-            return true;
+            //需要自己实现，或者通过配置Taurus.Auth启动自带的验证（自带的注释掉此方法即可）。
+            return controller.CheckFormat("token Can't be Empty", "token");
         }
-        //[Regex("mn",true,"addfd"];
+
+        /// <summary>
+        /// 全局【方法执行前拦截】
+        /// </summary>
         public static bool BeforeInvoke(IController controller, string methodName)
         {
             //MAction action = new MAction("Test1", "server=.;database=demo;uid=sa;pwd=123456");
@@ -45,6 +55,9 @@ namespace Taurus.Controllers
             
             return true;
         }
+        /// <summary>
+        /// 全局【方法执行后业务】
+        /// </summary>
         public static void EndInvoke(IController controller, string methodName)
         {
 
