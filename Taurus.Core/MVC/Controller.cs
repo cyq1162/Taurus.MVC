@@ -320,7 +320,7 @@ namespace Taurus.Core
                 {
                     ParameterInfo pi = piList[i];
                     Type t = pi.ParameterType;
-                    string value = Query<string>(pi.Name, null);
+                    object value = Query<object>(pi.Name, null);
                     if (value == null)
                     {
                         if (t.IsValueType && t.IsGenericType && t.FullName.StartsWith("System.Nullable"))
@@ -333,7 +333,7 @@ namespace Taurus.Core
                         }
                     }
                     //检测是否允许为空，是否满足正则格式。
-                    if (!ValidateParas(validateList, pi.Name, value))
+                    if (!ValidateParas(validateList, pi.Name, Convert.ToString(value)))
                     {
                         return false;
                     }
@@ -392,7 +392,7 @@ namespace Taurus.Core
                     if (!valid.isValidated && (valid.paraName == paraName || valid.paraName.StartsWith(paraName + ".")))
                     {
                         valid.isValidated = true;//设置已经验证过此参数，后续可以跳过。
-                        if (valid.paraName.StartsWith(paraName + ".") && !string.IsNullOrEmpty(paraValue))
+                        if (valid.paraName.StartsWith(paraName + ".") && !string.IsNullOrEmpty(paraValue))//json字集
                         {
                             paraValue = JsonHelper.GetValue(paraValue, valid.paraName.Substring(paraName.Length + 1));
                         }
@@ -623,7 +623,7 @@ namespace Taurus.Core
             foreach (string pre in autoPrefixs)
             {
                 string newKey = pre + key;
-                if (Context.Request[newKey] == null)
+                if (Context.Request[newKey] == null && (Context.Request.Files == null || Context.Request.Files[newKey] == null))
                 {
                     //尝试从Json中获取
                     string result = JsonHelper.GetValue(GetJson(), newKey);
@@ -736,14 +736,16 @@ namespace Taurus.Core
                         }
                         _Json = JsonHelper.ToJson(context.Request.Form);
                     }
-                    else
+                    else if (context.Request.Files == null || context.Request.Files.Count == 0)
                     {
                         Stream stream = context.Request.InputStream;
                         if (stream != null && stream.CanRead)
                         {
                             long len = (long)context.Request.ContentLength;
-
                             Byte[] bytes = new Byte[len];
+                            // ////NetCore 3.0 会抛异常，可配置可以同步请求读取流数据
+                            //services.Configure<KestrelServerOptions>(x => x.AllowSynchronousIO = true)
+                            //    .Configure<IISServerOptions>(x => x.AllowSynchronousIO = true);
                             stream.Read(bytes, 0, bytes.Length);
                             string data = System.Text.Encoding.UTF8.GetString(bytes);
                             if (data.IndexOf("%") > -1)

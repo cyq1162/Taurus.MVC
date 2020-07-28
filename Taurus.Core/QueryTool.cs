@@ -69,6 +69,11 @@ namespace Taurus.Core
         public static T Query<T>(string key, T defaultValue, bool filter)
         {
             string value = HttpContext.Current.Request[key];
+            if (value == null && HttpContext.Current.Request.Files[key] != null)
+            {
+                object o = HttpContext.Current.Request.Files[key];
+                return (T)o;
+            }
             return ChangeValueType<T>(value, defaultValue, filter);
         }
         internal static T ChangeValueType<T>(string value, T defaultValue, bool filter)
