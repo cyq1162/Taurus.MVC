@@ -41,7 +41,7 @@
                                                     <td>
                                                         <%# ${required}?'是':'否'%>
                                                     </td>
-                                                    <td><%# '${type}'=='file'?'文件':('${type}'=='header'?'请求头':'${type}')%></td>
+                                                    <td><%# '${type}'=='file'?'文件':('${type}'=='header'?'请求头':'文本')%></td>
                                                     <td>
                                                         <![CDATA[
                                                         <input name="{0}" type="<%# '${type}'=='file'?'file':'text'%>" value="{4}" style="width:90%"  rtype="${type}" <%# ${required}?'required="required"':'false'%> />
