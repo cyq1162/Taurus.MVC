@@ -128,14 +128,17 @@ namespace Taurus.Core
 
 
                         #region BeforeInvoke
-                        MethodInfo beforeInvoke = InvokeLogic.GetMethod(t, InvokeLogic.Const.BeforeInvoke);
-                        if (beforeInvoke != null && beforeInvoke.Name == InvokeLogic.Const.BeforeInvoke)
-                        {
-                            isGoOn = Convert.ToBoolean(beforeInvoke.Invoke(this, new object[] { method.Name }));
-                        }
-                        else if (InvokeLogic.BeforeInvokeMethod != null)
+                        if (InvokeLogic.BeforeInvokeMethod != null)//先调用全局
                         {
                             isGoOn = Convert.ToBoolean(InvokeLogic.BeforeInvokeMethod.Invoke(null, new object[] { this, methodName }));
+                        }
+                        if (isGoOn)
+                        {
+                            MethodInfo beforeInvoke = InvokeLogic.GetMethod(t, InvokeLogic.Const.BeforeInvoke);
+                            if (beforeInvoke != null && beforeInvoke.Name == InvokeLogic.Const.BeforeInvoke)
+                            {
+                                isGoOn = Convert.ToBoolean(beforeInvoke.Invoke(this, new object[] { method.Name }));
+                            }
                         }
                         #endregion
 
@@ -181,17 +184,17 @@ namespace Taurus.Core
                                     MethodInfo endInvoke = InvokeLogic.GetMethod(t, InvokeLogic.Const.EndInvoke);
                                     if (endInvoke != null && endInvoke.Name == InvokeLogic.Const.EndInvoke)
                                     {
-                                        isGoOn = Convert.ToBoolean(endInvoke.Invoke(this, new object[] { method.Name }));
+                                        endInvoke.Invoke(this, new object[] { method.Name });
                                     }
-                                    else if (InvokeLogic.EndInvokeMethod != null)
+                                    if (InvokeLogic.EndInvokeMethod != null)
                                     {
                                         InvokeLogic.EndInvokeMethod.Invoke(null, new object[] { this, methodName });
                                     }
                                     #endregion
-                                    if (InvokeLogic.DocRecord != null)
-                                    {
-                                        InvokeLogic.DocRecord.Invoke(null, new object[] { this, methodName });
-                                    }
+                                    //if (InvokeLogic.DocRecord != null)
+                                    //{
+                                    //    InvokeLogic.DocRecord.Invoke(null, new object[] { this, methodName });
+                                    //}
                                 }
                             }
                         }

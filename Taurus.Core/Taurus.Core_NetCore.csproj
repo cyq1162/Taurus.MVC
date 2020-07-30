@@ -1,22 +1,27 @@
 ﻿<Project Sdk="Microsoft.NET.Sdk">
 
   <PropertyGroup>
-    <TargetFramework>netcoreapp3.1</TargetFramework>
+    <TargetFramework>netcoreapp2.1</TargetFramework>
     <AssemblyName>Taurus.Core</AssemblyName>
     <RootNamespace>Taurus.Core</RootNamespace>
-    <Description>Taurus.mvc is a simple mvc or webapi framework for asp.net core</Description>
-    <Company>路过秋天 （2020-05-07）</Company>
+    <Description>Taurus.mvc is a high-performance mvc and webapi framework for asp.net or asp.net core（适合场景：对性能和并发有较高要求的电商、站点、WebAPI等系统，支持.Net Core）(开源地址：https://github.com/cyq1162/cyqdata)</Description>
+    <Company>路过秋天 （2020-07-30）</Company>
     <Authors>路过秋天</Authors>
     <Copyright>Copyright ©  路过秋天 2016-2096</Copyright>
-    <Version>2.3.2.0</Version>
+    <Version>2.3.3.1</Version>
     <Product>Taurus.Core .NET Core 版本</Product>
-    <PackageProjectUrl>http://taurus.cyqdata.com</PackageProjectUrl>
+    <PackageProjectUrl>https://github.com/cyq1162/Taurus.MVC</PackageProjectUrl>
     <PackageId>Taurus.MVC.Core</PackageId>
-    <GeneratePackageOnBuild>false</GeneratePackageOnBuild>
-    <PackageReleaseNotes>Taurus.mvc is a simple mvc or webapi framework for asp.net core</PackageReleaseNotes>
+    <GeneratePackageOnBuild>true</GeneratePackageOnBuild>
+    <PackageReleaseNotes>同一种开发，支持两种（win or linux) 部署。
+V2.3.3(2019-07-30)
+1、CYQ.Data升级到V5.8.3.5
+2、增强WebAPI文档生成功能
+3、增强了参数的类型转换
+4、增加[Ack]属性（机制和Token一样）</PackageReleaseNotes>
     <PackageTags>Taurus.MVC Core ASP.NET aspnetcore webapi</PackageTags>
-    <AssemblyVersion>2.3.2.0</AssemblyVersion>
-    <FileVersion>2.3.2.0</FileVersion>
+    <AssemblyVersion>2.3.3.1</AssemblyVersion>
+    <FileVersion>2.3.3.1</FileVersion>
   </PropertyGroup>
 
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|AnyCPU'">

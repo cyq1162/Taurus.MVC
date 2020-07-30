@@ -331,6 +331,26 @@ namespace Taurus.Core
                             break;
                     }
                 }
+                string[] attrs = Query<string>("p", "").Split(' ', '[', ']');
+                foreach (string attr in attrs)
+                {
+                    if (!string.IsNullOrEmpty(attr))
+                    {
+                        string name = attr.ToLower();
+                        if (name == "get" || name == "post" || name == "head" || name == "put" || name == "delete")
+                        {
+                            continue;
+                        }
+                        dt.NewRow(true, 0).Set(0, name)
+                                .Set(1, name)
+                                .Set(2, true)
+                                .Set(3, "header")
+                                .Set(4, AppConfig.GetApp("Taurus.Default" + attr));
+                    }
+
+
+                }
+
                 if (dicReturn.Count > 0)
                 {
                     View.LoadData(dicReturn, "");

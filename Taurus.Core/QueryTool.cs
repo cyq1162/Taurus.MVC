@@ -68,7 +68,7 @@ namespace Taurus.Core
         }
         public static T Query<T>(string key, T defaultValue, bool filter)
         {
-            string value = HttpContext.Current.Request[key];
+            string value = HttpContext.Current.Request[key]?? HttpContext.Current.Request.QueryString[key]?? HttpContext.Current.Request.Headers[key];
             if (value == null && HttpContext.Current.Request.Files != null && HttpContext.Current.Request.Files[key] != null)
             {
                 object o = HttpContext.Current.Request.Files[key];

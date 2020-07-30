@@ -355,7 +355,7 @@ namespace Taurus.Core
         }
         private static MethodInfo _DocRecord = null;
         /// <summary>
-        /// 默认DocController.Record方法
+        /// 默认DocController.Record方法(用于记录所有的请求及参数，后期实现批量执行测试结果)
         /// </summary>
         public static MethodInfo DocRecord
         {
