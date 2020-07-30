@@ -339,6 +339,7 @@ namespace Taurus.Core
                         string name = attr.ToLower();
                         if (name == "get" || name == "post" || name == "head" || name == "put" || name == "delete")
                         {
+                            View.Set("httpType", name.ToUpper());
                             continue;
                         }
                         dt.NewRow(true, 0).Set(0, name)
