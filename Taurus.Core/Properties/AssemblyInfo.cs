@@ -8,7 +8,7 @@ using System.Runtime.InteropServices;
 [assembly: AssemblyTitle("Taurus.MVC Core")]
 [assembly: AssemblyDescription("Taurus开发框架核心库 (http://taurus.cyqdata.com)")]
 [assembly: AssemblyConfiguration("")]
-[assembly: AssemblyCompany("路过秋天 （2020-07-30）")]
+[assembly: AssemblyCompany("路过秋天 （2020-07-31）")]
 [assembly: AssemblyProduct("Taurus.MVC Core")]
 [assembly: AssemblyCopyright("Copyright ©  路过秋天 2016-2096")]
 [assembly: AssemblyTrademark("Taurus.MVC")]
@@ -31,5 +31,5 @@ using System.Runtime.InteropServices;
 //
 // 可以指定所有这些值，也可以使用“修订号”和“内部版本号”的默认值，
 // 方法是按如下所示使用“*”:
-[assembly: AssemblyVersion("2.3.3.0")]
-[assembly: AssemblyFileVersion("2.3.3.0")]
+[assembly: AssemblyVersion("2.3.4.0")]
+[assembly: AssemblyFileVersion("2.3.4.0")]
