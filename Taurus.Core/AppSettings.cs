@@ -7,7 +7,7 @@ namespace Taurus.Core
     /// <summary>
     /// Taurus 默认可以设置的配置项
     /// </summary>
-    public class AppSettings
+    public partial class AppSettings
     {
         /// <summary>
         /// 指定控制器(控制器所在的项目名称) 如 Taurus.Controllers : Taurus.Controllers
@@ -55,7 +55,10 @@ namespace Taurus.Core
         /// 默认值：无
         /// </summary>
         public const string SubAppName = "Taurus.SubAppName";
-        
+        /// <summary>
+        /// 配置Doc默认文档自动提交的图片（配置相对路径）
+        /// </summary>
+        public const string DocDefaultImg = "Taurus.DocDefaultImg";
 
     }
 }

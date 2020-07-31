@@ -59,6 +59,7 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="AppSettings.cs" />
+    <Compile Include="Extend\HttpPostedFileExtend.cs" />
     <Compile Include="Extend\DocController.cs" />
     <Compile Include="Extend\AuthController.cs" />
     <Compile Include="MVC\Attribute\AckAttribute.cs" />

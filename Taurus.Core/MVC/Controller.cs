@@ -342,7 +342,19 @@ namespace Taurus.Core
                     }
                     try
                     {
-                        paras[i] = QueryTool.ChangeType(value, t);//类型转换（基础或实体）
+                        //特殊值处理
+                        if (t.Name == "HttpPostedFile" && value is string && Convert.ToString(value) == AppSettings.DocDefaultImg.ToLower())
+                        {
+                            string path = AppConfig.GetApp(AppSettings.DocDefaultImg);
+                            if (!string.IsNullOrEmpty(path))
+                            {
+                                paras[i] = HttpPostedFileExtend.Create(path);
+                            }
+                        }
+                        else
+                        {
+                            paras[i] = QueryTool.ChangeType(value, t);//类型转换（基础或实体）
+                        }
                     }
                     catch (Exception err)
                     {

@@ -323,11 +323,13 @@ namespace Taurus.Core
                             dicReturn.Add("returns", node.LastChild.InnerText.Trim());
                             break;
                         case "param":
-                            dt.NewRow(true).Set(0, GetAttrValue(item, "name"))
+                            string name = GetAttrValue(item, "name", "").ToLower();
+                            string value = GetAttrValue(item, "value", AppConfig.GetApp("Taurus.Default" + name));
+                            dt.NewRow(true).Set(0, name)
                                 .Set(1, item.InnerText)
                                 .Set(2, GetAttrValue(item, "required", "false"))
                                 .Set(3, GetAttrValue(item, "type"))
-                                .Set(4, GetAttrValue(item, "value"));
+                                .Set(4, value);
                             break;
                     }
                 }
@@ -348,7 +350,6 @@ namespace Taurus.Core
                                 .Set(3, "header")
                                 .Set(4, AppConfig.GetApp("Taurus.Default" + attr));
                     }
-
 
                 }
 
