@@ -108,7 +108,7 @@ function runAll() {
             $(this).next().attr("id", "i" + i).html("...");
             $(this).parent().next().find("p").html("");
             var url = $(this).attr("href");
-            $("<iframe src='" + url + "&runall=1&id=i" + i + "' width='0px' height='1px'></iframe").prependTo('body');
+            $("<iframe src='" + url + "&runall=1&id=i" + i + "' style='display:none'></iframe>").prependTo('body');
         });
     }
 }
