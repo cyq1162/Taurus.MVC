@@ -38,18 +38,17 @@
                                                 <tr>
                                                     <td width="80px">{0}</td>
                                                     <td>{1}</td>
-                                                    <td>
-                                                        <%# ${required}?'是':'否'%>
-                                                    </td>
+                                                    <td><%# ${required}?'是':'否'%></td>
                                                     <td><%# '${type}'=='file'?'文件':('${type}'=='header'?'请求头':'文本')%></td>
                                                     <td>
                                                         <![CDATA[
-                                                        <input name="{0}" type="<%# '${type}'=='file'?'file':'text'%>" value="{4}" style="width:90%"  rtype="${type}" <%# ${required}?'required="required"':'false'%> />
+                                                        <input name="{0}" type="<%# '${type}'=='file'?'file':'text'%>" value="{4}" style="width:90%" rtype="${type}" <%# ${required}?"required='required'":"false"%> />
                                                         ]]>
                                                     </td>
 
                                                 </tr>
                                             </tbody>
+
                                         </table>
                                     </form>
 
@@ -61,7 +60,7 @@
                                         </div>
                                     </div>
                                     <hr />
-                                    <input type="button" value="运行示例请求" onclick="run()" /> | <select id="httpType"><option>GET</option><option>POST</option><option>HEAD</option><option>PUT</option><option>DELETE</option></select>
+                                    <input id="run" type="button" value="运行示例请求" onclick="run()" /> | <select id="httpType"><option>GET</option><option>POST</option><option>HEAD</option><option>PUT</option><option>DELETE</option></select>
                                     <hr />
                                     <div style="display:none;background-color:darkseagreen" id="runResult">
                                         <p style="text-indent:10px"> 示例运行结果：</p>
