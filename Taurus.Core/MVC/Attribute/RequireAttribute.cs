@@ -101,5 +101,24 @@ namespace Taurus.Core
         /// </summary>
         public const string PostalCode = @"^\d{6}$";
         public const string IP = @"^((25[0-5]|2[0-4]\d|((1\d{2})|([1-9]?\d)))\.){3}(25[0-5]|2[0-4]\d|((1\d{2})|([1-9]?\d)))$";
+        /// <summary>
+        /// 任意符号长度
+        /// </summary>
+        /// <param name="len">固定长度</param>
+        /// <returns></returns>
+        public static string Len(int len)
+        {
+            return @"^*{" + len + "}$";
+        }
+        /// <summary>
+        /// 任意符号长度
+        /// </summary>
+        /// <param name="min">最少长度</param>
+        /// <param name="max">最长长度</param>
+        /// <returns></returns>
+        public static string Len(int min, int max)
+        {
+            return @"^*{" + min + "," + max + "}$";
+        }
     }
 }

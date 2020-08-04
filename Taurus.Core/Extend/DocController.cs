@@ -193,16 +193,21 @@ namespace Taurus.Core
                         #region 属性处理
 
                         object[] attrs = method.GetCustomAttributes(true);
-                        bool methodHasToken = false;
+                        bool methodHasToken = false, methodHasAck = false;
                         foreach (object attr in attrs)
                         {
-                            if (attr.GetType().Name.StartsWith("Http"))
+                            string attrName = attr.GetType().Name;
+                            if (attrName.StartsWith("Http"))
                             {
-                                attrText += "[" + attr.GetType().Name.Replace("Attribute", "] ").Replace("Http", "").ToLower();
+                                attrText += "[" + attrName.Replace("Attribute", "] ").Replace("Http", "").ToLower();
                             }
-                            else if (attr.GetType().Name == InvokeLogic.Const.TokenAttribute)
+                            else if (attrName == InvokeLogic.Const.TokenAttribute)
                             {
                                 methodHasToken = true;
+                            }
+                            else if (attrName == InvokeLogic.Const.AckAttribute)
+                            {
+                                methodHasAck = true;
                             }
                         }
                         if (string.IsNullOrEmpty(attrText))
@@ -212,6 +217,10 @@ namespace Taurus.Core
                         if (methodHasToken || row.Get<bool>("TokenFlag"))
                         {
                             attrText += "[token]";
+                        }
+                        if (methodHasAck)
+                        {
+                            attrText += "[ack]";
                         }
                         #endregion
 
@@ -352,7 +361,25 @@ namespace Taurus.Core
                     }
 
                 }
-
+                string[] paras = AppConfig.GetApp(AppSettings.DocDefaultParas, "").Split(',');
+                if (paras.Length > 0)
+                {
+                    foreach (string para in paras)
+                    {
+                        if (!string.IsNullOrEmpty(para))
+                        {
+                            string name = para.ToLower();
+                            if (dt.FindRow("name='" + name + "'") == null)
+                            {
+                                dt.NewRow(true, 0).Set(0, name)
+                                       .Set(1, name)
+                                       .Set(2, true)
+                                       .Set(3, "header")
+                                       .Set(4, AppConfig.GetApp("Taurus.Default" + para));
+                            }
+                        }
+                    }
+                }
                 if (dicReturn.Count > 0)
                 {
                     View.LoadData(dicReturn, "");
