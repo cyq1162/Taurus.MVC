@@ -334,10 +334,15 @@ namespace Taurus.Core
                         case "param":
                             string name = GetAttrValue(item, "name", "").ToLower();
                             string value = GetAttrValue(item, "value", AppConfig.GetApp("Taurus.Default" + name));
+                            string type = GetAttrValue(item, "type");
+                            if (string.IsNullOrEmpty(type))
+                            {
+                                
+                            }
                             dt.NewRow(true).Set(0, name)
                                 .Set(1, item.InnerText)
                                 .Set(2, GetAttrValue(item, "required", "false"))
-                                .Set(3, GetAttrValue(item, "type"))
+                                .Set(3, type)
                                 .Set(4, value);
                             break;
                     }
@@ -361,7 +366,7 @@ namespace Taurus.Core
                     }
 
                 }
-                string[] paras = AppConfig.GetApp(AppSettings.DocDefaultParas, "").Split(',');
+                string[] paras = AppConfig.GetApp(DocSettings.DocDefaultParas, "").Split(',');
                 if (paras.Length > 0)
                 {
                     foreach (string para in paras)

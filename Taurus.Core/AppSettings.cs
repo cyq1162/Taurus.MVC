@@ -55,14 +55,6 @@ namespace Taurus.Core
         /// 默认值：无
         /// </summary>
         public const string SubAppName = "Taurus.SubAppName";
-        /// <summary>
-        /// 配置Doc默认文档自动提交的图片（配置相对路径）
-        /// </summary>
-        public const string DocDefaultImg = "Taurus.DocDefaultImg";
-        /// <summary>
-        /// 配置Doc默认追加的（多个以逗号分隔）参数（一般用于配置全局的请求头）
-        /// </summary>
-        public const string DocDefaultParas = "Taurus.DocDefaultParas";
 
     }
 }
