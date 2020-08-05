@@ -773,17 +773,20 @@ namespace Taurus.Core
                         if (stream != null && stream.CanRead)
                         {
                             long len = (long)context.Request.ContentLength;
-                            Byte[] bytes = new Byte[len];
-                            // ////NetCore 3.0 会抛异常，可配置可以同步请求读取流数据
-                            //services.Configure<KestrelServerOptions>(x => x.AllowSynchronousIO = true)
-                            //    .Configure<IISServerOptions>(x => x.AllowSynchronousIO = true);
-                            stream.Read(bytes, 0, bytes.Length);
-                            string data = System.Text.Encoding.UTF8.GetString(bytes);
-                            if (data.IndexOf("%") > -1)
+                            if (len > 0)
                             {
-                                data = HttpUtility.UrlDecode(data);
+                                Byte[] bytes = new Byte[len];
+                                // ////NetCore 3.0 会抛异常，可配置可以同步请求读取流数据
+                                //services.Configure<KestrelServerOptions>(x => x.AllowSynchronousIO = true)
+                                //    .Configure<IISServerOptions>(x => x.AllowSynchronousIO = true);
+                                stream.Read(bytes, 0, bytes.Length);
+                                string data = System.Text.Encoding.UTF8.GetString(bytes);
+                                if (data.IndexOf("%") > -1)
+                                {
+                                    data = HttpUtility.UrlDecode(data);
+                                }
+                                _Json = JsonHelper.ToJson(data);
                             }
-                            _Json = JsonHelper.ToJson(data);
                         }
                     }
                 }
