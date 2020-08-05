@@ -612,7 +612,7 @@ namespace Taurus.Core
         }
         #endregion
         /// <summary>
-        /// 缓存参数值
+        /// 缓存参数值，内部字典（Query方法可查。）
         /// </summary>
         private Dictionary<string, string> queryCache = new Dictionary<string, string>(StringComparer.OrdinalIgnoreCase);
         static string[] autoPrefixs = ("," + AppConfig.UI.AutoPrefixs).Split(',');
@@ -685,6 +685,22 @@ namespace Taurus.Core
                 return QueryTool.ChangeValueType<T>(ParaItems[paraIndex], defaultValue, false);
             }
             return defaultValue;
+        }
+        /// <summary>
+        /// 自己构造请求参数(Query方法可查，优先级最高）
+        /// </summary>
+        /// <param name="name">名称</param>
+        /// <param name="value">请求值</param>
+        public void SetQuery(string name, string value)
+        {
+            if (queryCache.ContainsKey(name))
+            {
+                queryCache[name] = value;
+            }
+            else
+            {
+                queryCache.Add(name, value);
+            }
         }
         /// <summary>
         /// Write String result

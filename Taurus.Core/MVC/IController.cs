@@ -15,6 +15,7 @@ namespace Taurus.Core
         T Query<T>(string key, T defaultValue);
         T Query<T>(int paraIndex);
         T Query<T>(int paraIndex, T defaultValue);
+        void SetQuery(string name, string value);
         T GetEntity<T>() where T : class;
         XHtmlAction View { get; set; }
         HttpContext Context { get; }

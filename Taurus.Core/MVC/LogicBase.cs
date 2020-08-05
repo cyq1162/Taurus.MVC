@@ -64,6 +64,10 @@ namespace Taurus.Core
         {
             return _IController.Query<T>(paraIndex, defaultValue);
         }
+        public void SetQuery(string name, string value)
+        {
+            _IController.SetQuery(name, value);
+        }
         public HttpContext Context
         {
             get
@@ -162,7 +166,6 @@ namespace Taurus.Core
             return _IController.CheckFormat(formatter, paras);
         }
 
-
-      
+       
     }
 }
