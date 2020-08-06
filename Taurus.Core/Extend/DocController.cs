@@ -347,7 +347,7 @@ namespace Taurus.Core
                             break;
                         case "param":
                             string name = GetAttrValue(item, "name", "").ToLower();
-                            string value = GetAttrValue(item, "value", AppConfig.GetApp("Taurus.Default" + name));
+                            string value = GetAttrValue(item, "value", Query<string>(name));
                             string type = GetAttrValue(item, "type");
                             if (string.IsNullOrEmpty(type))
                             {
@@ -376,11 +376,11 @@ namespace Taurus.Core
                                 .Set(1, name)
                                 .Set(2, true)
                                 .Set(3, "header")
-                                .Set(4, AppConfig.GetApp("Taurus.Default" + attr));
+                                .Set(4, Query<string>(attr));
                     }
 
                 }
-                string[] paras = AppConfig.GetApp(DocSettings.DocDefaultParas, "").Split(',');
+                string[] paras = DocSettings.DefaultParas.Split(',');
                 if (paras.Length > 0)
                 {
                     foreach (string para in paras)
@@ -394,7 +394,7 @@ namespace Taurus.Core
                                        .Set(1, name)
                                        .Set(2, true)
                                        .Set(3, "header")
-                                       .Set(4, AppConfig.GetApp("Taurus.Default" + para));
+                                       .Set(4, Query<string>(para));
                             }
                         }
                     }
