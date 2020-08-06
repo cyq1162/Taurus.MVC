@@ -72,10 +72,10 @@ namespace Taurus.Core
                 string[] dllNames = ("Taurus.Core," + InvokeLogic.DllNames).Split(',');
                 foreach (string dll in dllNames)
                 {
-                    if (File.Exists(AppConfig.AssemblyPath + dll + ".XML"))
+                    if (File.Exists(AppConfig.AssemblyPath + dll + ".xml"))
                     {
                         XHtmlAction action = new XHtmlAction(false, true);
-                        if (action.Load(AppConfig.AssemblyPath + dll + ".XML"))
+                        if (action.Load(AppConfig.AssemblyPath + dll + ".xml"))
                         {
                             actions.Add(action);
                         }
@@ -136,7 +136,6 @@ namespace Taurus.Core
                 ControllerTable.Columns.Add("CName,CDesc,TokenFlag");
                 ControllerTable.Columns.Add("Type", SqlDbType.Variant);
 
-                MDictionary<string, string> cDescrption = new MDictionary<string, string>();
                 //搜集参数
                 Dictionary<string, Type> cType = InvokeLogic.GetControllers(2);
                 foreach (KeyValuePair<string, Type> item in cType)
@@ -306,17 +305,29 @@ namespace Taurus.Core
 
             View.LoadData(ControllerTable.FindRow("CName='" + name + "'"), "");
             MDataTable dt = ActionTable.Select("CName='" + name + "'");
+            string filter = Query<string>("f");
+            if (!string.IsNullOrEmpty(filter))
+            {
+                string where = string.Empty;
+                foreach (string item in filter.Split('|'))
+                {
+                    if (where == string.Empty)
+                    {
+                        where = "ADesc like '%" + item + "%'";
+                    }
+                    else
+                    {
+                        where += " or ADesc like '%" + item + "%'";
+                    }
+
+                }
+                dt = dt.Select(where);
+            }
             dt.Bind(View);
         }
         private void BindDetail()
         {
             Dictionary<string, string> dicReturn = new Dictionary<string, string>();
-            Dictionary<string, string> dicParas = new Dictionary<string, string>();
-            //string[] items = Query<string>("c", "").Split('.');
-            ////设置标题
-            //string url = items[items.Length - 1].Replace("Controller", "").ToLower() + "/" + Query<string>("a", "").ToLower();
-            //dic.Add("url", url);
-            //View.LoadData(dic, "");
             //读取参数说明：
             XmlNode node = GetDescriptionNode(GetXml(), Query<string>("c") + "." + Query<string>("a"), "M:");
             if (node != null)
@@ -329,7 +340,10 @@ namespace Taurus.Core
                     switch (item.Name.ToLower())
                     {
                         case "returns":
-                            dicReturn.Add("returns", node.LastChild.InnerText.Trim());
+                            if (!dicReturn.ContainsKey("returns"))
+                            {
+                                dicReturn.Add("returns", node.LastChild.InnerText.Trim());
+                            }
                             break;
                         case "param":
                             string name = GetAttrValue(item, "name", "").ToLower();
@@ -337,7 +351,7 @@ namespace Taurus.Core
                             string type = GetAttrValue(item, "type");
                             if (string.IsNullOrEmpty(type))
                             {
-                                
+
                             }
                             dt.NewRow(true).Set(0, name)
                                 .Set(1, item.InnerText)
