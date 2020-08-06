@@ -345,7 +345,7 @@ namespace Taurus.Core
                         //特殊值处理
                         if (t.Name == "HttpPostedFile" && value is string && Convert.ToString(value) == DocSettings.DocDefaultImg.ToLower())
                         {
-                            string path = AppConfig.GetApp(DocSettings.DocDefaultImg);
+                            string path =DocSettings.DefaultImg;
                             if (!string.IsNullOrEmpty(path))
                             {
                                 paras[i] = HttpPostedFileExtend.Create(path);
