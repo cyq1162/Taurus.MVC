@@ -345,7 +345,7 @@ namespace Taurus.Core
                         //特殊值处理
                         if (t.Name == "HttpPostedFile" && value is string && Convert.ToString(value) == DocSettings.DocDefaultImg.ToLower())
                         {
-                            string path =DocSettings.DefaultImg;
+                            string path = DocSettings.DefaultImg;
                             if (!string.IsNullOrEmpty(path))
                             {
                                 paras[i] = HttpPostedFileExtend.Create(path);
@@ -614,7 +614,7 @@ namespace Taurus.Core
         /// <summary>
         /// 缓存参数值，内部字典（Query方法可查。）
         /// </summary>
-        private Dictionary<string, string> queryCache = new Dictionary<string, string>(StringComparer.OrdinalIgnoreCase);
+        private MDictionary<string, string> queryCache = new MDictionary<string, string>(StringComparer.OrdinalIgnoreCase);
         static string[] autoPrefixs = ("," + AppConfig.UI.AutoPrefixs).Split(',');
         /// <summary>
         /// Get Request value
