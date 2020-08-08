@@ -348,7 +348,7 @@ namespace Taurus.Core
                         case "param":
                             string name = GetAttrValue(item, "name", "").ToLower();
                             string value = GetAttrValue(item, "value", Query<string>(name));
-                            string type = GetAttrValue(item, "type");
+                            string type = GetAttrValue(item, "type","string");
                             if (string.IsNullOrEmpty(type))
                             {
 
