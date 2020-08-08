@@ -36,10 +36,10 @@
 
                                             <tbody id="ParaView" clearflag="1">
                                                 <tr>
-                                                    <td width="80px">{0}</td>
+                                                    <td width="100px">{0}</td>
                                                     <td>{1}</td>
-                                                    <td><%# ${required}?'是':'否'%></td>
-                                                    <td><%# '${type}'=='file'?'文件':('${type}'=='header'?'请求头':'文本')%></td>
+                                                    <td width="30px"><%# ${required}?'是':'否'%></td>
+                                                    <td width="60px"><%# '${type}'=='file'?'文件':('${type}'=='header'?'请求头':'${type}')%></td>
                                                     <td>
                                                         <![CDATA[
                                                         <input name="{0}" type="<%# '${type}'=='file'?'file':'text'%>" value="{4}" style="width:90%" rtype="${type}" <%# ${required}?"required='required'":"false"%> />

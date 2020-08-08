@@ -1,4 +1,8 @@
-﻿function run() {
+﻿/// <reference path="jquery.min.js" />
+function run() {
+    $("#runResult").hide();
+    $("#resultContent").html("");
+    $("#resultHeader").html("");
     //获取头部信息
     var url = $("#url").val();
     if (!url.startsWith("http")) {
@@ -17,6 +21,9 @@
         if (value == "" && !required) {
             return;
         }
+        //保存参数，以便下次还原参数。
+        record(name, value);
+
         if (type == 'header') {
             header[name] = value;
         }
@@ -25,7 +32,7 @@
                 data[name] = "taurus.docdefaultimg";
             }
             else {
-            formData = new FormData($("form")[0]);//文件上传
+                formData = new FormData($("form")[0]);//文件上传
                 return;
             }
         }
@@ -94,7 +101,7 @@ function formatHeader(header) {
     return array.join('');
 }
 
-//--------------------------------
+//-------------批量运行-------------------
 function isRunAll() {
     return location.href.indexOf("&runall=1") > 0
 }
@@ -108,7 +115,8 @@ function runAll() {
             $(this).next().attr("id", "i" + i).html("...");
             $(this).parent().next().find("p").html("");
             var url = $(this).attr("href");
-            $("<iframe src='" + url + "&runall=1&id=i" + i + "' style='display:none'></iframe>").prependTo('body');
+            var html = "<iframe src='" + url + "&runall=1&id=i" + i + "' style='display:none'></iframe>";
+            $(html).prependTo('body');
         });
     }
 }
@@ -125,3 +133,29 @@ function setValue(url, success, fullMsg) {
     sp.html(html);
     sp.parent().next().find("p").html(fullMsg);
 }
+
+//------------记录、还原 参数值---------
+var isRecord = true;
+function record(name, value) {
+    if (isRecord) {
+        var key = location.search;
+        localStorage.setItem(key + name, value);
+    }
+}
+function restore() {
+    if (isRecord) {
+        var key = location.search;
+        $("form").find("[name]:input").each(function () {
+            var name = $(this).attr('name');
+            var type = $(this).attr('rtype');
+            var value = $(this).val();
+            if (type != "file" && value == "") {
+                $(this).val(localStorage.getItem(key + name));
+            }
+        }
+        );
+    }
+}
+setTimeout(function () { restore();}, 100);
+
+
