@@ -330,7 +330,14 @@ namespace Taurus.Core
                         {
                             continue;
                         }
-                        if (piList.Length == 1 && ReflectTool.GetSystemType(ref t) != SysType.Base)//基础值类型
+                        if (t.Name == "HttpPostedFile")
+                        {
+                            if (Request.Files != null && Request.Files.Count == 1)
+                            {
+                                value = Request.Files[0];
+                            }
+                        }
+                        else if (piList.Length == 1 && ReflectTool.GetSystemType(ref t) != SysType.Base)//基础值类型
                         {
                             value = GetJson();
                         }
