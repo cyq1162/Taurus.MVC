@@ -127,7 +127,7 @@ namespace Taurus.Core
             t = InvokeLogic.GetController(className);
             if (t == null)
             {
-                WriteError("You need a controller for coding!");
+                WriteError("You need a "+ className + " controller for coding!");
             }
             else
             {
