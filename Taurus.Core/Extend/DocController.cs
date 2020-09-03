@@ -334,7 +334,7 @@ namespace Taurus.Core
             {
                 MDataTable dt = new MDataTable("Para");
                 dt.Columns.Add("name,desc,required,type,value");
-                XmlNodeList list = node.Name == "member" ? node.ChildNodes : node.ParentNode.ChildNodes;
+                XmlNodeList list = node.ChildNodes[0].InnerXml.Contains("<param") ? node.ChildNodes[0].ChildNodes : node.ChildNodes;
                 foreach (XmlNode item in list)
                 {
                     switch (item.Name.ToLower())
