@@ -334,7 +334,11 @@ namespace Taurus.Core
             {
                 MDataTable dt = new MDataTable("Para");
                 dt.Columns.Add("name,desc,required,type,value");
-                XmlNodeList list = node.ChildNodes[0].InnerXml.Contains("<param") ? node.ChildNodes[0].ChildNodes : node.ChildNodes;
+                XmlNodeList list = node.ChildNodes;
+                if (node.ChildNodes.Count>0 && (node.ChildNodes[0].InnerXml.Contains("<param") || node.ChildNodes[0].InnerXml.Contains("<returns")))
+                {
+                    list = node.ChildNodes[0].ChildNodes;
+                }
                 foreach (XmlNode item in list)
                 {
                     switch (item.Name.ToLower())
