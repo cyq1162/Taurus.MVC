@@ -332,6 +332,10 @@ namespace Taurus.Core
             XmlNode node = GetDescriptionNode(GetXml(), Query<string>("c") + "." + Query<string>("a"), "M:");
             if (node != null)
             {
+                if (node.Name == "summary")
+                {
+                    node = node.ParentNode;
+                }
                 MDataTable dt = new MDataTable("Para");
                 dt.Columns.Add("name,desc,required,type,value");
                 XmlNodeList list = node.ChildNodes;
