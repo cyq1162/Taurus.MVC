@@ -236,8 +236,8 @@ namespace Taurus.Core
             }
             catch (Exception err)
             {
-                string errMssg = err.InnerException != null ? err.InnerException.Message : err.Message;
-                WriteLog(errMssg);
+                string errMssg = err.InnerException != null ? err.InnerException.Message : err.Message + err.StackTrace;
+                WriteLog("【Taurus.Core.Controller】：" + errMssg);
                 if (View == null)
                 {
                     errMssg = JsonHelper.OutResult(false, errMssg);
@@ -323,6 +323,15 @@ namespace Taurus.Core
                 {
                     ParameterInfo pi = piList[i];
                     Type t = pi.ParameterType;
+                    if (t.Name == "HttpFileCollection")
+                    {
+                        paras[i] = Request.Files;
+                        if (!ValidateParas(validateList, pi.Name, (Request.Files != null && Request.Files.Count > 0) ? "1" : null))
+                        {
+                            return false;
+                        }
+                        continue;
+                    }
                     object value = Query<object>(pi.Name, null);
                     if (value == null)
                     {
@@ -337,6 +346,7 @@ namespace Taurus.Core
                                 value = Request.Files[0];
                             }
                         }
+
                         else if (piList.Length == 1 && ReflectTool.GetSystemType(ref t) != SysType.Base)//基础值类型
                         {
                             value = GetJson();

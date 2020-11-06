@@ -39,6 +39,7 @@ namespace Taurus.Core
         //{
         //    if (controller.View == null)
         //    {
+        //
         //        string json = controller.APIResult;
         //        if (!string.IsNullOrEmpty(json) && json.Contains("success\":true"))
         //        {
