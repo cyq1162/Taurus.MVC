@@ -114,6 +114,7 @@ namespace Taurus.Core
 
         #region 处理Shared模板View
         static Dictionary<string, XHtmlAction> sharedViews = new Dictionary<string, XHtmlAction>();
+        static readonly object lockObj = new object();
         /// <summary>
         /// 获取Shared文件View
         /// </summary>
@@ -145,6 +146,7 @@ namespace Taurus.Core
             }
             XHtmlAction sharedView = null;
             string key = path.GetHashCode().ToString();
+
             if (sharedViews.ContainsKey(key))
             {
                 sharedView = sharedViews[key];
@@ -158,12 +160,20 @@ namespace Taurus.Core
                     return sharedView;
                 }
             }
+
             sharedView = new XHtmlAction(true, true);
             if (sharedView.Load(path, XmlCacheLevel.Day, true))
             {
-                sharedViews.Add(key, sharedView);
+                lock (lockObj)
+                {
+                    if (!sharedView.Contains(key))
+                    {
+                        sharedViews.Add(key, sharedView);
+                    }
+                }
                 return sharedView;
             }
+
             return null;
         }
         #endregion
