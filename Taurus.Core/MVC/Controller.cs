@@ -664,9 +664,9 @@ namespace Taurus.Core
                         value = QueryTool.ChangeValueType<T>(result, defaultValue, false);
                         break;
                     }
-                    else if (context.Request.Headers[newKey] != null)
+                    else if (Context.Request.Headers[newKey] != null)
                     {
-                        value = QueryTool.ChangeValueType<T>(context.Request.Headers[newKey], defaultValue, false);
+                        value = QueryTool.ChangeValueType<T>(Context.Request.Headers[newKey], defaultValue, false);
                         break;
                     }
                     else
@@ -776,20 +776,20 @@ namespace Taurus.Core
             {
                 if (IsHttpPost)
                 {
-                    if (context.Request.Form.Count > 0)
+                    if (Context.Request.Form.Count > 0)
                     {
-                        if (context.Request.Form.Count == 1 && context.Request.Form.Keys[0] == null)
+                        if (Context.Request.Form.Count == 1 && Context.Request.Form.Keys[0] == null)
                         {
-                            return JsonHelper.ToJson(context.Request.Form[0]);
+                            return JsonHelper.ToJson(Context.Request.Form[0]);
                         }
-                        _Json = JsonHelper.ToJson(context.Request.Form);
+                        _Json = JsonHelper.ToJson(Context.Request.Form);
                     }
-                    else if (context.Request.Files == null || context.Request.Files.Count == 0)
+                    else if (Context.Request.Files == null || Context.Request.Files.Count == 0)
                     {
-                        Stream stream = context.Request.InputStream;
+                        Stream stream = Context.Request.InputStream;
                         if (stream != null && stream.CanRead)
                         {
-                            long len = (long)context.Request.ContentLength;
+                            long len = (long)Context.Request.ContentLength;
                             if (len > 0)
                             {
                                 Byte[] bytes = new Byte[len];
@@ -809,7 +809,7 @@ namespace Taurus.Core
                 }
                 else if (IsHttpGet)
                 {
-                    string para = context.Request.Url.Query.TrimStart('?');
+                    string para = Context.Request.Url.Query.TrimStart('?');
                     if (!string.IsNullOrEmpty(para))
                     {
                         if (para.IndexOf("%") > -1)
