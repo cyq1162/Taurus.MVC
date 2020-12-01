@@ -381,6 +381,7 @@ namespace Taurus.Core
                             typeName = Nullable.GetUnderlyingType(t).Name;
                         }
                         string outMsg = string.Format("[{0} {1} = {2}]  [Error : {3}]", typeName, pi.Name, value, err.Message);
+                        WriteLog(outMsg);
                         Write(outMsg, false);
                         return false;
                     }
