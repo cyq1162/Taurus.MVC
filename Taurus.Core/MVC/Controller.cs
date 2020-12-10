@@ -251,7 +251,7 @@ namespace Taurus.Core
         /// </summary>
         protected void WriteLog(string msg)
         {
-            Log.WriteLogToTxt(msg);
+            Log.Write(msg);
         }
         public virtual bool BeforeInvoke(string methodName)
         {
