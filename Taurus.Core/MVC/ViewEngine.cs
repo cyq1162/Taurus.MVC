@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Text;
 using CYQ.Data.Xml;
 using CYQ.Data;
+using CYQ.Data.Tool;
 using System.IO;
 using System.Xml;
 namespace Taurus.Core
@@ -145,7 +146,7 @@ namespace Taurus.Core
                 }
             }
             XHtmlAction sharedView = null;
-            string key = path.GetHashCode().ToString();
+            string key = EncryptHelper.GetHashKey(path);
 
             if (sharedViews.ContainsKey(key))
             {

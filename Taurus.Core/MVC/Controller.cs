@@ -236,13 +236,17 @@ namespace Taurus.Core
             }
             catch (Exception err)
             {
-                string errMssg = err.InnerException != null ? err.InnerException.Message : err.Message + err.StackTrace;
-                WriteLog("【Taurus.Core.Controller】：" + errMssg);
+                string errMsg = err.InnerException != null ? err.InnerException.Message : err.Message;
+                if (err.StackTrace != null)
+                {
+                    errMsg += "\n" + err.StackTrace;
+                }
+                WriteLog("【Taurus.Core.Controller】：" + errMsg);
                 if (View == null)
                 {
-                    errMssg = JsonHelper.OutResult(false, errMssg);
+                    errMsg = JsonHelper.OutResult(false, errMsg);
                 }
-                context.Response.Write(errMssg);
+                context.Response.Write(errMsg);
             }
 
         }
