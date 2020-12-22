@@ -236,12 +236,31 @@ namespace Taurus.Core
             }
             catch (Exception err)
             {
-                string errMsg = err.InnerException != null ? err.InnerException.Message : err.Message;
+                StringBuilder sb = new StringBuilder();
+                string errMsg = Log.GetExceptionMessage(err);
+                sb.AppendLine(errMsg);
                 if (err.StackTrace != null)
                 {
-                    errMsg += "\n" + err.StackTrace;
+                    sb.AppendLine(err.StackTrace);
                 }
-                WriteLog("【Taurus.Core.Controller】：" + errMsg);
+               
+                if (Request.Headers.Count > 0)
+                {
+                    sb.AppendLine("\n-----------Headers-----------");
+                    foreach (string key in Request.Headers.AllKeys)
+                    {
+                        sb.AppendLine(key + " : " + Request.Headers[key]);
+                    }
+                }
+                if (Request.Form.Count > 0)
+                {
+                    sb.AppendLine("-----------Forms-----------");
+                    foreach (string key in Request.Form.AllKeys)
+                    {
+                        sb.AppendLine(key + " : " + Request.Form[key]);
+                    }
+                }
+                WriteLog("【Taurus.Core.Controller】：" + sb.ToString());
                 if (View == null)
                 {
                     errMsg = JsonHelper.OutResult(false, errMsg);
