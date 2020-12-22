@@ -129,7 +129,7 @@ namespace Taurus.Core
                             }
                             //获取角色名称
                             string roleIDs = action.Get<string>(user.RoleID, "").Replace(',', '_');
-                            token = EncryptHelper.Encrypt(DateTime.Now.AddHours(user.TokenExpireTime) + "," + userID + "," + userName + "," + fullName + "," + roleIDs);
+                            token = EncryptHelper.Encrypt(DateTime.Now + "," + userID + "," + userName + "," + fullName + "," + roleIDs);
                         }
                         else
                         {
@@ -264,11 +264,23 @@ namespace Taurus.Core
             get
             {
                 DateTime d;
-                if (DateTime.TryParse(GetTokenValue(0), out d) && d >= DateTime.Now)
+                if (DateTime.TryParse(GetTokenValue(0), out d) && d.AddHours(user.TokenExpireTime) >= DateTime.Now)
                 {
                     return true;
                 }
                 return false;
+            }
+        }
+        /// <summary>
+        /// Token 创建时间
+        /// </summary>
+        public static DateTime TokenCreateTime
+        {
+            get
+            {
+                DateTime d;
+                DateTime.TryParse(GetTokenValue(0), out d);
+                return d;
             }
         }
         public static string UserID
@@ -377,7 +389,7 @@ namespace Taurus.Core
         public string Email = "Email";
         public string Mobile = "Mobile";
         public string RoleID = "RoleID";
-        public int TokenExpireTime = 24;
+        public int TokenExpireTime = 24 * 365;
     }
     /// <summary>
     /// 授权相关的信息
