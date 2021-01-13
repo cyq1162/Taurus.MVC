@@ -303,28 +303,30 @@ namespace Taurus.Core
             {
                 name = ControllerTable.Rows[0].Get<string>("CName");
             }
-
-            View.LoadData(ControllerTable.FindRow("CName='" + name + "'"), "");
-            MDataTable dt = ActionTable.Select("CName='" + name + "'");
-            string filter = Query<string>("f");
-            if (!string.IsNullOrEmpty(filter))
+            if (View != null)
             {
-                string where = string.Empty;
-                foreach (string item in filter.Split('|'))
+                View.LoadData(ControllerTable.FindRow("CName='" + name + "'"), "");
+                MDataTable dt = ActionTable.Select("CName='" + name + "'");
+                string filter = Query<string>("f");
+                if (!string.IsNullOrEmpty(filter))
                 {
-                    if (where == string.Empty)
+                    string where = string.Empty;
+                    foreach (string item in filter.Split('|'))
                     {
-                        where = "ADesc like '%" + item + "%'";
-                    }
-                    else
-                    {
-                        where += " or ADesc like '%" + item + "%'";
-                    }
+                        if (where == string.Empty)
+                        {
+                            where = "ADesc like '%" + item + "%'";
+                        }
+                        else
+                        {
+                            where += " or ADesc like '%" + item + "%'";
+                        }
 
+                    }
+                    dt = dt.Select(where);
                 }
-                dt = dt.Select(where);
+                dt.Bind(View);
             }
-            dt.Bind(View);
         }
         private void BindDetail()
         {
