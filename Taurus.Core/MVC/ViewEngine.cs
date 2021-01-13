@@ -29,14 +29,20 @@ namespace Taurus.Core
         /// <param name="path">相对路径，如：/abc/cyq/a.html</param>
         public static XHtmlAction Create(string path)
         {
-            path = AppConfig.WebRootPath + path.TrimStart('/');//.Replace("/", "\\");
+            string fullPath = AppConfig.WebRootPath + path.TrimStart('/');//.Replace("/", "\\");
+            bool isExists = File.Exists(fullPath);
+            if (!isExists)
+            {
+                fullPath= AppConfig.WebRootPath + path.TrimStart('/').ToLower();
+                isExists= File.Exists(fullPath);
+            }
             // System.Web.HttpContext.Current.Response.Write(path);
-            if (File.Exists(path))
+            if (isExists)
             {
                 //System.Web.HttpContext.Current.Response.Write("path ok");
                 XHtmlAction view = new XHtmlAction(true, false);
 
-                if (view.Load(path, XmlCacheLevel.Hour, true))
+                if (view.Load(fullPath, XmlCacheLevel.Hour, true))
                 {
                     // System.Web.HttpContext.Current.Response.Write("load ok");
                     //处理Shared目录下的节点替换。
