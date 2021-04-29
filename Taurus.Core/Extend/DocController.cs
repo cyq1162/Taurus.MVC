@@ -365,7 +365,7 @@ namespace Taurus.Core
 
                             }
                             dt.NewRow(true).Set(0, name)
-                                .Set(1, item.InnerText)
+                                .Set(1, item.InnerText.Replace("\n","<br />"))
                                 .Set(2, GetAttrValue(item, "required", "false"))
                                 .Set(3, type)
                                 .Set(4, value);
