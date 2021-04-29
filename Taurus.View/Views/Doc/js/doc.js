@@ -1,5 +1,6 @@
 ﻿/// <reference path="jquery.min.js" />
 function run() {
+    $("#run").attr('disabled', true);
     $("#runResult").hide();
     $("#resultContent").html("");
     $("#resultHeader").html("");
@@ -59,6 +60,7 @@ function ajax(type, url, data, header, formData) {
                 }
         },
         success: function (result, status, xhr) {
+            $("#run").attr('disabled', false);
             $("#runResult").show();
             $("#resultHeader").html(formatHeader(xhr.getAllResponseHeaders()));
             var msg = JSON.stringify(result).replace(/</g, '&lt;').replace(/>/g, '&gt;');
@@ -68,6 +70,7 @@ function ajax(type, url, data, header, formData) {
             }
         },
         error: function (result) {
+            $("#run").attr('disabled', false);
             if (result) {
                 $("#runResult").show();
                 $("#resultHeader").html(formatHeader(result.getAllResponseHeaders()));
