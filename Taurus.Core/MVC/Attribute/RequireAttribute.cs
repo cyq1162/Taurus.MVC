@@ -23,28 +23,53 @@ namespace Taurus.Core
 
             Init(paraName, true, null, paraName.Contains(",") ? "{0} is required." : null, null);
         }
+        /// <summary>
+        /// 验证参数
+        /// </summary>
+        /// <param name="paraName">参数名称</param>
+        /// <param name="cnParaName">输出的参数提示名</param>
+        public RequireAttribute(string paraName, string cnParaName)
+        {
+            //验证outParaName 是否中文
+
+            if (cnParaName != paraName && !string.IsNullOrEmpty(cnParaName))
+            {
+                if (Regex.IsMatch(cnParaName, @"[\u4e00-\u9fbb]"))//中文
+                {
+                    emptyTip = cnParaName + "不能为空。";
+                    regexTip = cnParaName + "格式错误。";
+                }
+                else
+                {
+                    emptyTip = cnParaName + " is required.";
+                    regexTip = cnParaName + " is invalid.";
+                }
+            }
+            Init(paraName, true, null, emptyTip, regexTip);
+        }
+
         /// <param name="isRequired">是否必填</param>
         /// <param name="regex">正则</param>
         public RequireAttribute(string paraName, bool isRequired, string regex)
         {
             Init(paraName, isRequired, regex, null, null);
         }
-        /// <param name="outParaName">输出的参数提示名</param>
-        public RequireAttribute(string paraName, bool isRequired, string regex, string outParaName)
+        /// <param name="cnParaName">输出的参数提示名</param>
+        public RequireAttribute(string paraName, bool isRequired, string regex, string cnParaName)
         {
             //验证outParaName 是否中文
 
-            if (outParaName != paraName && !string.IsNullOrEmpty(outParaName))
+            if (cnParaName != paraName && !string.IsNullOrEmpty(cnParaName))
             {
-                if (Regex.IsMatch(outParaName, @"[\u4e00-\u9fbb]"))//中文
+                if (Regex.IsMatch(cnParaName, @"[\u4e00-\u9fbb]"))//中文
                 {
-                    emptyTip = outParaName + "不能为空。";
-                    regexTip = outParaName + "格式错误。";
+                    emptyTip = cnParaName + "不能为空。";
+                    regexTip = cnParaName + "格式错误。";
                 }
                 else
                 {
-                    emptyTip = outParaName + " is required.";
-                    regexTip = outParaName + " is invalid.";
+                    emptyTip = cnParaName + " is required.";
+                    regexTip = cnParaName + " is invalid.";
                 }
             }
             Init(paraName, isRequired, regex, emptyTip, regexTip);

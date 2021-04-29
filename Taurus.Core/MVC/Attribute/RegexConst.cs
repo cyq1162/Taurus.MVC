@@ -16,7 +16,7 @@ namespace Taurus.Core
         /// <summary>
         /// 手机号
         /// </summary>
-        public const string Mobile = @"^1([38][0-9]|4[579]|5[0-3,5-9]|6[6]|7[0135678]|9[89])\d{8}$";
+        public const string Mobile = @"^1([38][0-9]|4[579]|5[0-3,5-9]|6[6]|7[0135678]|9[189])\d{8}$";
         public const string Email = @"^\w+([-+.]\w+)*@\w+([-.]\w+)*\.\w+([-.]\w+)*$";
         /// <summary>
         /// 中文
