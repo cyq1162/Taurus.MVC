@@ -17,7 +17,7 @@
                     <div class="default_contents">
                         <div class="user_article">
                             <h1 class="title_txt">
-                                <a href="#">${d:这家伙很懒，没有写说明。}</a>
+                                <a href="#">${n}、${d:这家伙很懒，没有写说明。}</a>
                             </h1>
                             <div class="blogstory">
                                 <div id="labBody">
@@ -42,7 +42,7 @@
                                                     <td width="60px"><%# '${type}'=='file'?'文件':('${type}'=='header'?'请求头':'${type}')%></td>
                                                     <td>
                                                         <![CDATA[
-                                                        <input name="{0}" type="<%# '${type}'=='file'?'file':'text'%>" value="{4}" style="width:90%" rtype="${type}" <%# ${required}?"required='required'":"false"%> />
+                                                        <input name="{0}" type="<%# '${type}'=='file'?'file':'text'%>" value="{4}" style="width:90%" rtype="${type}"  multiple="multiple" <%# ${required}?"required='required'":"false"%> />
                                                         ]]>
                                                     </td>
 

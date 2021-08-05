@@ -325,6 +325,21 @@ namespace Taurus.Core
                     }
                     dt = dt.Select(where);
                 }
+                if (dt != null)
+                {
+                    MCellStruct mc = new MCellStruct("Num", SqlDbType.NVarChar);
+                    dt.Columns.Insert(0, mc);
+                    int rowCount=dt.Rows.Count;
+                    if (rowCount > 0)
+                    {
+                        int padLeft=rowCount.ToString().Length;
+                        for (int i = 0; i < rowCount; i++)
+                        {
+                            string num = (i+1).ToString();
+                            dt.Rows[i].Set(0, num.PadLeft(padLeft, '0'));
+                        }
+                    }
+                }
                 dt.Bind(View);
             }
         }
@@ -342,7 +357,7 @@ namespace Taurus.Core
                 MDataTable dt = new MDataTable("Para");
                 dt.Columns.Add("name,desc,required,type,value");
                 XmlNodeList list = node.ChildNodes;
-                if (node.ChildNodes.Count>0 && (node.ChildNodes[0].InnerXml.Contains("<param") || node.ChildNodes[0].InnerXml.Contains("<returns")))
+                if (node.ChildNodes.Count > 0 && (node.ChildNodes[0].InnerXml.Contains("<param") || node.ChildNodes[0].InnerXml.Contains("<returns")))
                 {
                     list = node.ChildNodes[0].ChildNodes;
                 }
@@ -359,13 +374,13 @@ namespace Taurus.Core
                         case "param":
                             string name = GetAttrValue(item, "name", "").ToLower();
                             string value = GetAttrValue(item, "value", Query<string>(name));
-                            string type = GetAttrValue(item, "type","string");
+                            string type = GetAttrValue(item, "type", "string");
                             if (string.IsNullOrEmpty(type))
                             {
 
                             }
                             dt.NewRow(true).Set(0, name)
-                                .Set(1, item.InnerText.Replace("\n","<br />"))
+                                .Set(1, item.InnerText.Replace("\n", "<br />"))
                                 .Set(2, GetAttrValue(item, "required", "false"))
                                 .Set(3, type)
                                 .Set(4, value);
