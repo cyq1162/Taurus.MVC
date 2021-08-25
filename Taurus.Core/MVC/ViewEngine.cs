@@ -120,7 +120,7 @@ namespace Taurus.Core
         }
 
         #region 处理Shared模板View
-        static Dictionary<string, XHtmlAction> sharedViews = new Dictionary<string, XHtmlAction>();
+        static MDictionary<string, XHtmlAction> sharedViews = new MDictionary<string, XHtmlAction>();
         static readonly object lockObj = new object();
         /// <summary>
         /// 获取Shared文件View
