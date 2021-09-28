@@ -245,6 +245,10 @@ namespace Taurus.Core
                 {
                     return controllers[className];
                 }
+                if (controllers.ContainsKey(Const.Default))
+                {
+                    return controllers[Const.Default];
+                }
             }
             return null;
         }
