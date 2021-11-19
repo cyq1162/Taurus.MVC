@@ -27,6 +27,7 @@ namespace Taurus.Core
 
             internal const string CheckToken = "CheckToken";
             internal const string CheckAck = "CheckAck";
+            internal const string RouteMapInvoke = "RouteMapInvoke";
             internal const string BeforeInvoke = "BeforeInvoke";
             internal const string EndInvoke = "EndInvoke";
             internal const string Record = "Record";
@@ -317,7 +318,25 @@ namespace Taurus.Core
                 return _BeforeInvokeMethod;
             }
         }
-
+        private static MethodInfo _RouteMapInvokeMethod = null;
+        /// <summary>
+        ///  全局BeforeInvoke方法
+        /// </summary>
+        public static MethodInfo RouteMapInvokeMethod
+        {
+            get
+            {
+                if (_RouteMapInvokeMethod == null)
+                {
+                    Type t = GetController(Const.DefaultController);
+                    if (t != null)
+                    {
+                        _RouteMapInvokeMethod = t.GetMethod(Const.RouteMapInvoke, BindingFlags.Static | BindingFlags.Public);
+                    }
+                }
+                return _RouteMapInvokeMethod;
+            }
+        }
         private static MethodInfo _EndInvokeMethod = null;
         /// <summary>
         ///  全局EndInvokeMethod方法

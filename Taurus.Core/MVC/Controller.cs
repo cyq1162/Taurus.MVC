@@ -243,7 +243,7 @@ namespace Taurus.Core
                 {
                     sb.AppendLine(err.StackTrace);
                 }
-               
+
                 if (Request.Headers.Count > 0)
                 {
                     sb.AppendLine("\n-----------Headers-----------");
@@ -274,7 +274,7 @@ namespace Taurus.Core
         /// </summary>
         protected void WriteLog(string msg)
         {
-            Log.Write(msg);
+            Log.Write(msg, LogType.Taurus);
         }
         public virtual bool BeforeInvoke(string methodName)
         {

@@ -9,6 +9,7 @@ using System.Reflection;
 using CYQ.Data.Tool;
 using CYQ.Data.Table;
 using System.Data;
+
 namespace Taurus.Core
 {
     /// <summary>

@@ -3,6 +3,7 @@ using CYQ.Data.Tool;
 using System;
 using System.Collections.Generic;
 using System.IO;
+using System.Reflection;
 using System.Text;
 using System.Threading;
 using System.Web;
@@ -37,6 +38,19 @@ namespace Taurus.Core
                 if (!string.IsNullOrEmpty(defaultUrl))
                 {
                     context.RewritePath(defaultUrl);
+                    return;
+                }
+            }
+            if (QueryTool.IsTaurusSuffix())
+            {
+                MethodInfo routeMapInvoke = InvokeLogic.RouteMapInvokeMethod;
+                if (routeMapInvoke != null)
+                {
+                    string url = Convert.ToString(routeMapInvoke.Invoke(null, new object[] { context.Request }));
+                    if (!string.IsNullOrEmpty(url))
+                    {
+                        context.RewritePath(url);
+                    }
                 }
             }
         }
@@ -50,11 +64,14 @@ namespace Taurus.Core
         }
         void context_AcquireRequestState(object sender, EventArgs e)
         {
-            if (QueryTool.IsTaurusSuffix())
+            if (RequestAPI.Record(context))
             {
-                CheckCORS();
-                ReplaceOutput();
-                InvokeClass();
+                if (QueryTool.IsTaurusSuffix())
+                {
+                    CheckCORS();
+                    ReplaceOutput();
+                    InvokeClass();
+                }
             }
         }
 
@@ -127,7 +144,7 @@ namespace Taurus.Core
             t = InvokeLogic.GetController(className);
             if (t == null)
             {
-                WriteError("You need a "+ className + " controller for coding!");
+                WriteError("You need a " + className + " controller for coding!");
             }
             else
             {
