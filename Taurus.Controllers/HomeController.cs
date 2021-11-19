@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Text;
+using System.Web;
 using Taurus.Core;
 
 namespace Taurus.Controllers
@@ -18,6 +19,12 @@ namespace Taurus.Controllers
         //} 
         public void Index()
         {
+            HttpCookie cookie = new HttpCookie("taurus");
+            cookie.Value = "taurus.Test";
+            Response.Cookies.Add(cookie);
+            //string path = @"C:\Users\Administrator\Pictures\temp\timg.jpg";
+            //HttpPostedFile hpf = Taurus.Core.HttpPostedFileExtend.Create(path);
+            //hpf.SaveAs(System.IO.Path.GetDirectoryName(path) + "\\ddd.jpg");
         }
         public void About() { }
         public void Contact() { }

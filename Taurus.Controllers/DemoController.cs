@@ -17,13 +17,14 @@ namespace Taurus.Controllers
     {
         public const string TxtConn = "txt path={0}App_Data";
         public const string XmlConn = "xml path={0}App_Data";
+        public const string Conn = "Conn";
     }
 
     public class Users : CYQ.Data.Orm.OrmBase
     {
         public Users()
         {
-            base.SetInit(this, "Users", Connection.TxtConn);
+            base.SetInit(this, "users2", Connection.Conn);
         }
         private int _ID;
 
@@ -60,9 +61,9 @@ namespace Taurus.Controllers
             get { return _HeadImgUrl; }
             set { _HeadImgUrl = value; }
         }
-        private int _UserType;
+        private int? _UserType;
 
-        public int UserType
+        public int? UserType
         {
             get { return _UserType; }
             set { _UserType = value; }
@@ -81,7 +82,7 @@ namespace Taurus.Controllers
     {
         public UserType()
         {
-            base.SetInit(this, "UserType", Connection.XmlConn);
+            base.SetInit(this, "UserType", Connection.Conn);
         }
         private int _ID;
 
@@ -142,6 +143,8 @@ namespace Taurus.Controllers
                         View.LoadData(demo, "");
                     }
                     Pager pager = new Pager(View);
+                    //demo.SetSelectColumns("id", "count(id) as c");
+                    //dt = demo.Select(2, 3);
                     dt = demo.Select(pager.PageIndex, pager.PageSize);
                     pager.Bind(dt.RecordsAffected);//°ó¶¨·ÖÒ³¿Ø¼þ¡£
                 }
@@ -197,6 +200,7 @@ namespace Taurus.Controllers
         {
             using (Users u = new Users())
             {
+               
                 //u.LoadFrom(true);
                 //Users u2 = u.RawData.ToEntity<Users>();
                 //string name = u.Name;
@@ -206,9 +210,9 @@ namespace Taurus.Controllers
                 {
                     u.HeadImgUrl = path;
                 }
-                if (u.Update(null, true))
+                if (u.Update(Query<int>("id"), true))
                 {
-                    Reflesh(u.ID);
+                    Reflesh(Query<int>("id"));
                 }
             }
         }
@@ -217,7 +221,7 @@ namespace Taurus.Controllers
 
             using (Users u = new Users())
             {
-                u.Delete();//id  ?id=xxx
+                u.Delete(Query<int>("id"));//id  ?id=xxx
                 Reflesh(1);
             }
         }
@@ -228,7 +232,7 @@ namespace Taurus.Controllers
 
         private void InitData()
         {
-            if (!DBTool.Exists("UserType", "U", "xml path={0}App_Data"))
+            if (!DBTool.Exists("UserType", "U", Connection.Conn))
             {
                 using (UserType ut = new UserType())
                 {

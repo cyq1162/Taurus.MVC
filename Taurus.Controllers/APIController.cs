@@ -14,9 +14,19 @@ namespace Taurus.Controllers
     /// </summary>
     public partial class APIController : BaseController
     {
+        /// <summary>
+        /// 输出Hello (text/html)
+        /// </summary>
         public void Hello()
         {
             Write("hello Controllers.API");
+        }
+        /// <summary>
+        /// 输出Hello (application/xml)
+        /// </summary>
+        public void HelloXml()
+        {
+            Write("<?xml><content>hello Controllers.API<content></xml>");
         }
         public override bool BeforeInvoke(string methodName)
         {
@@ -82,16 +92,32 @@ namespace Taurus.Controllers
                 Write("UserName or Password Error", false);
             }
         }
-
+        /// <summary>
+        /// GetDataWithToken
+        /// </summary>
+        /// <param name="unList"></param>
+        /// <param name="a"></param>
+        /// <param name="b"></param>
+        /// <param name="ab"></param>
         [Token, HttpGet]
         public void GetDataWithToken(List<AB> unList, string a, int? b, AB ab)
         {
             Write("GetDataWithToken A:" + unList[0].A + " B:" + unList[0].B, true);
         }
+        /// <summary>
+        /// GetDataWithNoToken
+        /// </summary>
+        /// <param name="unList"></param>
+        /// <param name="a"></param>
+        /// <param name="b"></param>
+        /// <param name="ab"></param>
         public void GetDataWithNoToken(List<AB> unList, string a, int? b, AB ab)
         {
             Write("GetDataWithNoToken A:" + unList[0].A + " B:" + unList[0].B+"<script>alert('ok');</script>", true);
         }
+        /// <summary>
+        /// GetDataOnlyPost
+        /// </summary>
         // [Token, HttpPost]
         [Require("ab.a"), Require("ab.b"), Require("unList.0.b")]
         public void GetDataOnlyPost(List<AB> unList, string a, int? b, AB ab)
