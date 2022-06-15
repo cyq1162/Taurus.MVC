@@ -10,6 +10,9 @@ function run() {
         url = location.origin + url;
     }
     var httpType = $("#httpType").val();
+    var dataType = $("#dataType").val();
+    record("httpType", httpType);
+    record("dataType", dataType);
     var data = {};
     var formData;//文件上传
     //收集参数
@@ -43,16 +46,16 @@ function run() {
 
     });
 
-    ajax(httpType, url, data, header, formData);
+    ajax(httpType,dataType, url, data, header, formData);
     //ajax("HEAD", url, data, header);
 }
-function ajax(type, url, data, header, formData) {
+function ajax(type,dataType, url, data, header, formData) {
 
     var opt = {
         type: type,
         url: url,
         data: formData || data,//文件上传优先
-        dataType: 'json',
+        dataType: dataType,
         beforeSend: function (request) {
             if (header)
                 for (var i in header) {
@@ -63,10 +66,31 @@ function ajax(type, url, data, header, formData) {
             $("#run").attr('disabled', false);
             $("#runResult").show();
             $("#resultHeader").html(formatHeader(xhr.getAllResponseHeaders()));
-            var msg = JSON.stringify(result).replace(/</g, '&lt;').replace(/>/g, '&gt;');
+            var msg = result.toString().replace(/</g, '&lt;').replace(/>/g, '&gt;');
+            switch (dataType)
+            {
+                case "json":
+                    msg = JSON.stringify(result);
+                    break;
+                case "xml":
+                    msg = result.firstChild.outerHTML;
+                    break;
+                default:
+                    msg = result.toString();
+                    break;
+            }
+            if (dataType == "xml")
+            {
+               
+            }
+            else if (dataType == "text")
+            {
+
+            }
+                msg=msg.replace(/</g, '&lt;').replace(/>/g, '&gt;');
             $("#resultContent").html(msg);
             if (isRunAll()) {
-                parent.setValue(location.href, result.success, msg);
+                parent.setValue(location.href, result.success == undefined ? true : result.success, msg);
             }
         },
         error: function (result) {
@@ -148,6 +172,12 @@ function record(name, value) {
 function restore() {
     if (isRecord) {
         var key = location.search.split("&runall=1")[0];
+        var httpType = localStorage.getItem(key + "httpType");
+        var dataType = localStorage.getItem(key + "dataType");
+        if (httpType && dataType) {
+            $("#httpType").val(httpType);
+            $("#dataType").val(dataType);
+        }
         $("form").find("[name]:input").each(function () {
             var name = $(this).attr('name');
             var type = $(this).attr('rtype');
