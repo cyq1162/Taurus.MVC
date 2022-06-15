@@ -64,15 +64,15 @@ namespace Taurus.Core
         }
         void context_AcquireRequestState(object sender, EventArgs e)
         {
-            if (RequestAPI.Record(context))
-            {
+            //if (RequestAPI.Record(context))
+            //{
                 if (QueryTool.IsTaurusSuffix())
                 {
                     CheckCORS();
                     ReplaceOutput();
                     InvokeClass();
                 }
-            }
+            //}
         }
 
         void context_Error(object sender, EventArgs e)
