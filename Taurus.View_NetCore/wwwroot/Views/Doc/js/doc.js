@@ -147,7 +147,7 @@ function record(name, value) {
 }
 function restore() {
     if (isRecord) {
-        var key = location.search;
+        var key = location.search.split("&runall=1")[0];
         $("form").find("[name]:input").each(function () {
             var name = $(this).attr('name');
             var type = $(this).attr('rtype');
