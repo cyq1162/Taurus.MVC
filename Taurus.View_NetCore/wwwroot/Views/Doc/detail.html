@@ -22,6 +22,7 @@
                             <div class="blogstory">
                                 <div id="labBody">
                                     <p>请求方式：${p}</p>
+                                    <p>请求主机：${host}</p>
                                     <p>请求地址：<input id="url" type="text" value="${u}" style="width:90%" /></p>
                                     <p>重点参数说明：</p>
                                     <form name="f1" enctype="application/x-www-form-urlencoded">
@@ -52,7 +53,7 @@
                                         </table>
                                     </form>
 
-                                    <p>应返回：</p>
+                                    <p>示例结果：</p>
 
                                     <div class="sign">
                                         <div class="code">
@@ -60,16 +61,16 @@
                                         </div>
                                     </div>
                                     <hr />
-                                    <input id="run" type="button" value="运行示例请求" onclick="run()" /> | <select id="httpType"><option>GET</option><option>POST</option><option>HEAD</option><option>PUT</option><option>DELETE</option></select> | <select id="dataType"><option>json</option><option>xml</option><option>html</option><option>text</option></select>
+                                    <input id="run" type="button" value="运行请求" onclick="run()" /> | <select id="httpType"><option>GET</option><option>POST</option><option>HEAD</option><option>PUT</option><option>DELETE</option></select> | <select id="dataType"><option>json</option><option>xml</option><option>html</option><option>text</option></select>
                                     <hr />
                                     <div style="display:none;background-color:darkseagreen" id="runResult">
-                                        <p style="text-indent:10px"> 示例运行结果：</p>
+                                        <p style="text-indent:10px"> 运行结果：</p>
                                         <div class="sign">
                                             <div class="code">
                                                 <div id="resultContent"></div>
                                             </div>
                                         </div>
-                                        <p style="text-indent:10px"> 示例结果(服务器返回)请求头：</p>
+                                        <p style="text-indent:10px"> 运行结果请求头：</p>
 
                                         <div class="sign">
                                             <div class="code">
