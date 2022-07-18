@@ -24,7 +24,7 @@ namespace Taurus.Controllers
     {
         public Users()
         {
-            base.SetInit(this, "users2", Connection.Conn);
+            base.SetInit(this, "users2", Connection.TxtConn);
         }
         private int _ID;
 
@@ -82,7 +82,7 @@ namespace Taurus.Controllers
     {
         public UserType()
         {
-            base.SetInit(this, "UserType", Connection.Conn);
+            base.SetInit(this, "UserType", Connection.TxtConn);
         }
         private int _ID;
 
