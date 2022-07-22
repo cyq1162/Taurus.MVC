@@ -70,7 +70,8 @@ namespace Microsoft.AspNetCore.Http
         }
         public static IApplicationBuilder UseTaurusMvc(this IApplicationBuilder builder, IHostingEnvironment env)
         {
-            return UseTaurusMvc(builder, env.WebRootPath);
+            //Net6新建的项目，WebRootPath竟然是空。
+            return UseTaurusMvc(builder, env.WebRootPath??env.ContentRootPath+ "wwwroot");
         }
         public static IApplicationBuilder UseTaurusMvc(this IApplicationBuilder builder, string webRootPath)
         {
