@@ -2511,6 +2511,11 @@
             创建时间
             </summary>
         </member>
+        <member name="M:CYQ.Data.SysLogs.Write">
+            <summary>
+            将日志写入到队列中待线程执行。
+            </summary>
+        </member>
         <member name="F:CYQ.Data.SysLogs.IsWriteToTxt">
             <summary>
             是否写到文本中
@@ -4783,6 +4788,13 @@
             <param name="columnName">列名</param>
             <param name="ordinal">序号</param>
         </member>
+        <member name="M:CYQ.Data.Table.MDataColumn.SetValue(System.String,System.Object)">
+            <summary>
+            给列批量赋相同的值。
+            </summary>
+            <param name="columnName">列名</param>
+            <param name="value">值</param>
+        </member>
         <member name="M:CYQ.Data.Table.MDataColumn.ToJson(System.Boolean)">
             <summary>
             输出Json格式的表构架
@@ -5790,6 +5802,13 @@
             </summary>
             <param name="key">the name or key of json
             <para>键值(有层级时用：XXX.YYY.ZZZ)</para></param>
+            <returns></returns>
+        </member>
+        <member name="M:CYQ.Data.Tool.JsonHelper.IsSuccess(System.String)">
+            <summary>
+            Json 返回值是否为true（包含"success":true）
+            </summary>
+            <param name="json"></param>
             <returns></returns>
         </member>
         <member name="M:CYQ.Data.Tool.JsonHelper.OutResult(System.Boolean,System.String)">
