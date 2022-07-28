@@ -45,41 +45,81 @@ namespace Taurus.Core
         {
             get { return true; }
         }
+        private string firstPara = string.Empty;
+        private void Init(Type t)
+        {
+            string[] items = QueryTool.GetLocalPath().Trim('/').Split('/');
+            firstPara=items[0];
+            int paraStartIndex = RouteConfig.RouteMode + 1;
+            string methodName = string.Empty;
+            switch (RouteConfig.RouteMode)
+            {
+                case 0:
+                    methodName = items[0];
+                    break;
+                case 1:
+                    if (items.Length > 1)
+                    {
+                        string typeName = t.Name.Replace(InvokeLogic.Const.Controller, "").ToLower();
+                        if (items.Length > 2 && items[0].ToLower() != typeName && items[1].ToLower() == typeName && items[0] == MicroService.Config.ClientName.ToLower())
+                        {
+                            paraStartIndex++;
+                            methodName = items[2];//往后兼容一格。
+                        }
+                        else
+                        {
+                            methodName = items[1];
+                        }
+                    }
+                    break;
+                case 2:
+                    _Module = items[0];
+                    if (items.Length > 2)
+                    {
+                        methodName = items[2];
+                    }
+                    else if (items.Length > 1)
+                    {
+                        //兼容【路由1=》（变更为）2】
+                        methodName = items[1];
+                    }
+                    break;
+            }
+            _Action = methodName;
 
+
+            if (items.Length > paraStartIndex)
+            {
+                _ParaItems = new string[items.Length - paraStartIndex];
+                Array.Copy(items, paraStartIndex, _ParaItems, 0, _ParaItems.Length);
+            }
+            else
+            {
+                _ParaItems = new string[1];
+                _ParaItems[0] = "";
+            }
+
+        }
         public void ProcessRequest(HttpContext context)
         {
             this.context = context;
             try
             {
                 Type t = _ControllerType = this.GetType();
-                #region GetMethodName
-                string[] items = QueryTool.GetLocalPath().Trim('/').Split('/');
-                string methodName = string.Empty;
-                switch (RouteConfig.RouteMode)
+                Init(t);
+                #region 处理微服务Proxy
+                if (t.Name == InvokeLogic.Const.MicroServiceController && firstPara.ToLower() != t.Name.Replace(InvokeLogic.Const.Controller, "").ToLower())
                 {
-                    case 0:
-                        methodName = items[0];
-                        break;
-                    case 1:
-                        if (items.Length > 1)
-                        {
-                            methodName = items[1];
-                        }
-                        break;
-                    case 2:
-                        _Module = items[0];
-                        if (items.Length > 2)
-                        {
-                            methodName = items[2];
-                        }
-                        break;
+                    MicroService.Run.Proxy(this);
+                    return;
+                    //methodName = InvokeLogic.Const.Proxy;
                 }
-                _Action = methodName;
                 #endregion
+
                 bool isGoOn = true;
 
                 AttributeList attrFlags;
-                MethodInfo method = InvokeLogic.GetMethod(t, methodName, out attrFlags);
+                MethodInfo method = InvokeLogic.GetMethod(t, Action, out attrFlags);
                 if (method != null)
                 {
                     if (isGoOn)//配置了HttpGet或HttpPost
@@ -100,7 +140,32 @@ namespace Taurus.Core
                         }
                         else if (InvokeLogic.DefaultCheckAck != null)
                         {
-                            isGoOn = Convert.ToBoolean(InvokeLogic.DefaultCheckAck.Invoke(null, new object[] { this, methodName }));
+                            isGoOn = Convert.ToBoolean(InvokeLogic.DefaultCheckAck.Invoke(null, new object[] { this, Action }));
+                        }
+                        if (!isGoOn)
+                        {
+                            Write("Check AckAttribute is illegal.", false);
+                        }
+                        #endregion
+                    }
+                    if (isGoOn && attrFlags.HasMicroService)//有[MicroService]
+                    {
+                        #region Validate CheckMicroService 【如果开启全局，即需要调整授权机制，则原有局部机制失效。】
+                        if (InvokeLogic.DefaultCheckMicroService != null)
+                        {
+                            isGoOn = Convert.ToBoolean(InvokeLogic.DefaultCheckMicroService.Invoke(null, new object[] { this, Action }));
+                        }
+                        else
+                        {
+                            MethodInfo checkMicroService = InvokeLogic.GetMethod(t, InvokeLogic.Const.CheckMicroService);
+                            if (checkMicroService != null && checkMicroService.Name == InvokeLogic.Const.CheckMicroService)
+                            {
+                                isGoOn = Convert.ToBoolean(checkMicroService.Invoke(this, null));
+                            }
+                        }
+                        if (!isGoOn)
+                        {
+                            Write("Check MicroServiceAttribute is illegal.", false);
                         }
                         #endregion
                     }
@@ -114,11 +179,15 @@ namespace Taurus.Core
                         }
                         else if (InvokeLogic.DefaultCheckToken != null)
                         {
-                            isGoOn = Convert.ToBoolean(InvokeLogic.DefaultCheckToken.Invoke(null, new object[] { this, methodName }));
+                            isGoOn = Convert.ToBoolean(InvokeLogic.DefaultCheckToken.Invoke(null, new object[] { this, Action }));
                         }
                         else if (InvokeLogic.AuthCheckToken != null)
                         {
                             isGoOn = Convert.ToBoolean(InvokeLogic.AuthCheckToken.Invoke(null, new object[] { this }));
+                        }
+                        if (!isGoOn)
+                        {
+                            Write("Check TokenAttribute is illegal.", false);
                         }
                         #endregion
                     }
@@ -130,7 +199,7 @@ namespace Taurus.Core
                         #region BeforeInvoke
                         if (InvokeLogic.BeforeInvokeMethod != null)//先调用全局
                         {
-                            isGoOn = Convert.ToBoolean(InvokeLogic.BeforeInvokeMethod.Invoke(null, new object[] { this, methodName }));
+                            isGoOn = Convert.ToBoolean(InvokeLogic.BeforeInvokeMethod.Invoke(null, new object[] { this, Action }));
                         }
                         if (isGoOn)
                         {
@@ -154,6 +223,7 @@ namespace Taurus.Core
                                 _View.KeyValue.Add("controller", ControllerType.Name.ToLower());
                                 _View.KeyValue.Add("action", Action.ToLower());
                                 _View.KeyValue.Add("para", Para.ToLower());
+                                _View.KeyValue.Add("httphost", Request.Url.AbsoluteUri.Substring(0, Request.Url.AbsoluteUri.Length - Request.Url.PathAndQuery.Length));
                             }
                         }
 
@@ -163,7 +233,7 @@ namespace Taurus.Core
                             if (GetInvokeParas(method, out paras))
                             {
                                 method.Invoke(this, paras);
-                                if (IsHttpPost)
+                                if (IsHttpPost && _View != null)
                                 {
                                     #region Button Invoke
                                     string name = GetBtnName();
@@ -188,7 +258,7 @@ namespace Taurus.Core
                                     }
                                     if (InvokeLogic.EndInvokeMethod != null)
                                     {
-                                        InvokeLogic.EndInvokeMethod.Invoke(null, new object[] { this, methodName });
+                                        InvokeLogic.EndInvokeMethod.Invoke(null, new object[] { this, Action });
                                     }
                                     #endregion
                                     //if (InvokeLogic.DocRecord != null)
@@ -306,6 +376,17 @@ namespace Taurus.Core
         {
             return true;
         }
+
+        /// <summary>
+        /// if the result is false will stop invoke method
+        /// <para>检测微服务间的请求是否合法</para>
+        /// </summary>
+        /// <returns></returns>
+        public virtual bool CheckMicroService()
+        {
+            return MicroService.Config.ServerKey == Context.Request.Headers[MicroService.Const.HeaderKey];
+        }
+
         /// <summary>
         /// is button event
         /// <para>是否点击了某事件</para>
@@ -507,7 +588,17 @@ namespace Taurus.Core
                 return _Module;
             }
         }
-
+        //private string _Controller = "";
+        ///// <summary>
+        ///// Module value
+        ///// </summary>
+        //public string Controller
+        //{
+        //    get
+        //    {
+        //        return _Controller;
+        //    }
+        //}
         private Type _ControllerType;
         /// <summary>
         /// Controller Type
@@ -521,7 +612,7 @@ namespace Taurus.Core
         }
         private string _Action = "";
         /// <summary>
-        /// Action value
+        /// MethodName - Action value
         /// </summary>
         public string Action
         {
@@ -535,21 +626,6 @@ namespace Taurus.Core
         {
             get
             {
-                if (_ParaItems == null)
-                {
-                    string[] items = QueryTool.GetLocalPath().Trim('/').Split('/');
-                    int len = RouteConfig.RouteMode + 1;
-                    if (items != null && items.Length > len)
-                    {
-                        _ParaItems = new string[items.Length - len];
-                        Array.Copy(items, len, _ParaItems, 0, _ParaItems.Length);
-                    }
-                    else
-                    {
-                        _ParaItems = new string[1];
-                        _ParaItems[0] = "";
-                    }
-                }
                 return _ParaItems;
             }
         }
@@ -768,7 +844,14 @@ namespace Taurus.Core
         /// <param name="obj">any obj is ok<para>对象或支持IEnumerable接口的对象列表</para></param>
         public void Write(object obj)
         {
-            Write(JsonHelper.ToJson(obj));
+            if (obj is byte[])
+            {
+                context.Response.BinaryWrite(obj as byte[]);
+            }
+            else
+            {
+                Write(JsonHelper.ToJson(obj));
+            }
         }
 
         public void Write(object obj, bool isSuccess)

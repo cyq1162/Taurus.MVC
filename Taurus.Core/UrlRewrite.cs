@@ -32,6 +32,9 @@ namespace Taurus.Core
         {
             HttpApplication app = (HttpApplication)sender;
             context = app.Context;
+            string urlAbs = context.Request.Url.AbsoluteUri;
+            string urlPath = context.Request.Url.PathAndQuery;
+            MicroService.Run.Start(urlAbs.Substring(0, urlAbs.Length - urlPath.Length));//微服务检测、启动。
             if (context.Request.Url.LocalPath == "/")//设置默认首页
             {
                 string defaultUrl = QueryTool.GetDefaultUrl();
@@ -66,12 +69,12 @@ namespace Taurus.Core
         {
             //if (RequestAPI.Record(context))
             //{
-                if (QueryTool.IsTaurusSuffix())
-                {
-                    CheckCORS();
-                    ReplaceOutput();
-                    InvokeClass();
-                }
+            if (QueryTool.IsTaurusSuffix())
+            {
+                CheckCORS();
+                ReplaceOutput();
+                InvokeClass();
+            }
             //}
         }
 
@@ -133,13 +136,13 @@ namespace Taurus.Core
             //ViewController是由页面的前两个路径决定了。
             string[] items = QueryTool.GetLocalPath().Trim('/').Split('/');
             string className = InvokeLogic.Const.Default;
-            if (RouteConfig.RouteMode == 1)
+            if (RouteConfig.RouteMode >0)
             {
-                className = items[0];
-            }
-            else if (RouteConfig.RouteMode == 2)
-            {
-                className = items.Length > 1 ? items[0] + "." + items[1] : "";
+            //    className = items[0];
+            //}
+            //else if (RouteConfig.RouteMode == 2)
+            //{
+                className = items.Length > 1 ? items[0] + "." + items[1] : items[0];
             }
             t = InvokeLogic.GetController(className);
             if (t == null)

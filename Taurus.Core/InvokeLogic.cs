@@ -19,14 +19,19 @@ namespace Taurus.Core
             internal const string DocController = "DocController";
             internal const string AuthController = "AuthController";
             internal const string TaurusCoreController = "Taurus.Core.Controller";
+            internal const string MicroServiceController = "MicroServiceController";
 
             internal const string Doc = "Doc";
             internal const string Auth = "Auth";
+            internal const string MicroService = "MicroService";
             internal const string CoreDoc = "Core.Doc";
             internal const string CoreAuth = "Core.Auth";
+            internal const string CoreMicroService = "Core.MicroService";
+            internal const string Proxy = "Proxy";//MicroService.Proxy
 
             internal const string CheckToken = "CheckToken";
             internal const string CheckAck = "CheckAck";
+            internal const string CheckMicroService = "CheckMicroService";
             internal const string RouteMapInvoke = "RouteMapInvoke";
             internal const string BeforeInvoke = "BeforeInvoke";
             internal const string EndInvoke = "EndInvoke";
@@ -34,6 +39,7 @@ namespace Taurus.Core
 
             internal const string TokenAttribute = "TokenAttribute";
             internal const string AckAttribute = "AckAttribute";
+            internal const string MicroServiceAttribute = "MicroServiceAttribute";
             internal const string HttpGetAttribute = "HttpGetAttribute";
             internal const string HttpPostAttribute = "HttpPostAttribute";
             internal const string HttpHeadAttribute = "HttpHeadAttribute";
@@ -73,7 +79,11 @@ namespace Taurus.Core
                     _DllNames = AppConfig.GetApp(AppSettings.Controllers, "");
                     if (string.IsNullOrEmpty(_DllNames))
                     {
-                        string[] files = Directory.GetFiles(AppConfig.AssemblyPath, "*Controllers.dll", SearchOption.TopDirectoryOnly);
+                        string[] files = Directory.GetFiles(AppConfig.AssemblyPath, "*Controllers.dll", SearchOption.AllDirectories);
+                        if (files == null || files.Length == 0)
+                        {
+                            files = Directory.GetFiles(AppConfig.AssemblyPath, "*.dll", SearchOption.TopDirectoryOnly);//没有配置，搜索所有的dll。
+                        }
                         if (files != null)
                         {
                             foreach (string file in files)
@@ -194,6 +204,15 @@ namespace Taurus.Core
                                 _Lv2Controllers.Add(Const.CoreAuth, typeof(Taurus.Core.AuthController));
                             }
                         }
+                        //微服务API
+                        if (!_Lv1Controllers.ContainsKey(Const.MicroService))
+                        {
+                            _Lv1Controllers.Add(Const.MicroService, typeof(Taurus.Core.MicroServiceController));
+                        }
+                        if (!_Lv2Controllers.ContainsKey(Const.CoreMicroService))
+                        {
+                            _Lv2Controllers.Add(Const.CoreMicroService, typeof(Taurus.Core.MicroServiceController));
+                        }
                     }
                 }
             }
@@ -224,32 +243,56 @@ namespace Taurus.Core
             {
                 className = Const.Default;
             }
-            int level = className.Contains(".") ? 2 : 1;
-            Dictionary<string, Type> controllers = GetControllers(level);
-            if (controllers.ContainsKey(className))
+            else
             {
-                return controllers[className];
-            }
-            else if (level == 1)
-            {
-                if (controllers.ContainsKey(Const.Default))
+                #region 检测微服务 - 服务端优化
+                if (MicroService.Server.Contains(className))
                 {
-                    return controllers[Const.Default];
+                    return typeof(MicroServiceController);
+                }
+                #endregion
+            }
+            Dictionary<string, Type> controllers = GetControllers(1);
+            string[] names = className.Split('.');//home/index
+            if (RouteConfig.RouteMode == 1 || names.Length == 1)
+            {
+                if (controllers.ContainsKey(names[0]))
+                {
+                    return controllers[names[0]];
+                }
+                if (names.Length > 1 && controllers.ContainsKey(names[1]))
+                {
+                    return controllers[names[1]];
                 }
             }
-            else if (level == 2)
+            else if (RouteConfig.RouteMode == 2)
             {
-                className = className.Split('.')[1];
+                Dictionary<string, Type> controllers2 = GetControllers(2);
+                if (controllers2.ContainsKey(className))
+                {
+                    return controllers2[className];
+                }
                 //再查一级路径
-                controllers = GetControllers(1);
-                if (controllers.ContainsKey(className))
+                if (controllers.ContainsKey(names[1]))
                 {
-                    return controllers[className];
+                    return controllers[names[1]];
                 }
-                if (controllers.ContainsKey(Const.Default))
+                //兼容【路由1=》（变更为）2】
+                if (controllers.ContainsKey(names[0]))
                 {
-                    return controllers[Const.Default];
+                    return controllers[names[0]];
                 }
+
+            }
+            #region 检测微服务 - 客户端后置
+            if (MicroService.Client.Contains(className))
+            {
+                return typeof(MicroServiceController);
+            }
+            #endregion
+            if (controllers.ContainsKey(Const.Default))
+            {
+                return controllers[Const.Default];
             }
             return null;
         }
@@ -270,13 +313,32 @@ namespace Taurus.Core
             {
                 if (_DefaultCheckAck == null)
                 {
-                    Type t = GetController(Const.DefaultController);
+                    Type t = GetController(Const.Default);
                     if (t != null)
                     {
                         _DefaultCheckAck = t.GetMethod(Const.CheckAck, BindingFlags.Static | BindingFlags.Public);
                     }
                 }
                 return _DefaultCheckAck;
+            }
+        }
+        private static MethodInfo _DefaultCheckMicroService = null;
+        /// <summary>
+        /// 全局DefaultCheckMicroService方法
+        /// </summary>
+        public static MethodInfo DefaultCheckMicroService
+        {
+            get
+            {
+                if (_DefaultCheckMicroService == null)
+                {
+                    Type t = GetController(Const.Default);
+                    if (t != null)
+                    {
+                        _DefaultCheckMicroService = t.GetMethod(Const.CheckMicroService, BindingFlags.Static | BindingFlags.Public);
+                    }
+                }
+                return _DefaultCheckMicroService;
             }
         }
 
@@ -290,7 +352,7 @@ namespace Taurus.Core
             {
                 if (_DefaultCheckToken == null)
                 {
-                    Type t = GetController(Const.DefaultController);
+                    Type t = GetController(Const.Default);
                     if (t != null)
                     {
                         _DefaultCheckToken = t.GetMethod(Const.CheckToken, BindingFlags.Static | BindingFlags.Public);
@@ -309,7 +371,7 @@ namespace Taurus.Core
             {
                 if (_BeforeInvokeMethod == null)
                 {
-                    Type t = GetController(Const.DefaultController);
+                    Type t = GetController(Const.Default);
                     if (t != null)
                     {
                         _BeforeInvokeMethod = t.GetMethod(Const.BeforeInvoke, BindingFlags.Static | BindingFlags.Public);
@@ -328,7 +390,7 @@ namespace Taurus.Core
             {
                 if (_RouteMapInvokeMethod == null)
                 {
-                    Type t = GetController(Const.DefaultController);
+                    Type t = GetController(Const.Default);
                     if (t != null)
                     {
                         _RouteMapInvokeMethod = t.GetMethod(Const.RouteMapInvoke, BindingFlags.Static | BindingFlags.Public);
@@ -347,7 +409,7 @@ namespace Taurus.Core
             {
                 if (_EndInvokeMethod == null)
                 {
-                    Type t = GetController(Const.DefaultController);
+                    Type t = GetController(Const.Default);
                     if (t != null)
                     {
                         _EndInvokeMethod = t.GetMethod(Const.EndInvoke, BindingFlags.Static | BindingFlags.Public);
@@ -418,11 +480,13 @@ namespace Taurus.Core
                     {
                         bool hasToken = t.GetCustomAttributes(typeof(TokenAttribute), true).Length > 0;
                         bool hasAck = t.GetCustomAttributes(typeof(AckAttribute), true).Length > 0;
-                        if (hasToken || hasAck)
+                        bool hasMicroService = t.GetCustomAttributes(typeof(MicroServiceAttribute), true).Length > 0;
+                        if (hasToken || hasAck || hasMicroService)
                         {
                             AttributeList al = new AttributeList();
                             al.HasToken = hasToken;
                             al.HasAck = hasAck;
+                            al.HasMicroService = hasMicroService;
                             methodAttrs.Add(key, al);
                         }
                         MethodInfo[] items = t.GetMethods(BindingFlags.Instance | BindingFlags.Public | BindingFlags.DeclaredOnly);
@@ -445,6 +509,8 @@ namespace Taurus.Core
                                                 aFlags.HasToken = true; break;
                                             case Const.AckAttribute:
                                                 aFlags.HasAck = true; break;
+                                            case Const.MicroServiceAttribute:
+                                                aFlags.HasMicroService = true; break;
                                             case Const.HttpGetAttribute:
                                                 aFlags.HasGet = true; break;
                                             case Const.HttpPostAttribute:
@@ -484,6 +550,7 @@ namespace Taurus.Core
                 AttributeList al = methodAttrs[key];
                 attrFlags.HasToken = attrFlags.HasToken || al.HasToken;
                 attrFlags.HasAck = attrFlags.HasAck || al.HasAck;
+                attrFlags.HasMicroService = attrFlags.HasMicroService || al.HasMicroService;
             }
             if (dic.ContainsKey(methodName))
             {

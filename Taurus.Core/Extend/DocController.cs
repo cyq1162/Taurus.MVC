@@ -149,6 +149,7 @@ namespace Taurus.Core
                             case InvokeLogic.Const.DefaultController:
                             case InvokeLogic.Const.DocController:
                             case InvokeLogic.Const.AuthController:
+                            case InvokeLogic.Const.MicroServiceController:
                                 continue;
                         }
                     }
@@ -194,7 +195,7 @@ namespace Taurus.Core
                         #region 属性处理
 
                         object[] attrs = method.GetCustomAttributes(true);
-                        bool methodHasToken = false, methodHasAck = false;
+                        bool methodHasToken = false, methodHasAck = false, methodHasMicroService = false;
                         foreach (object attr in attrs)
                         {
                             string attrName = attr.GetType().Name;
@@ -210,6 +211,10 @@ namespace Taurus.Core
                             {
                                 methodHasAck = true;
                             }
+                            else if (attrName == InvokeLogic.Const.MicroServiceAttribute)
+                            {
+                                methodHasMicroService = true;
+                            }
                         }
                         if (string.IsNullOrEmpty(attrText))
                         {
@@ -222,6 +227,10 @@ namespace Taurus.Core
                         if (methodHasAck)
                         {
                             attrText += "[ack]";
+                        }
+                        if (methodHasMicroService)
+                        {
+                            attrText += "[microservice]";
                         }
                         #endregion
 
@@ -296,6 +305,22 @@ namespace Taurus.Core
         private void BindController()
         {
             ControllerTable.Bind(View);
+
+            #region MicroService
+            MDataTable table = null;
+            if (MicroService.IsServer)
+            {
+                table = MicroService.Server.Table.FindAll("time>" + DateTime.Now.AddSeconds(-30));
+            }
+            if (table != null && table.Rows.Count > 0)
+            {
+                table.Bind(View, "MicroServiceView");
+            }
+            else
+            {
+                View.Remove("Node_MicroService");
+            }
+            #endregion
         }
         private void BindAction()
         {
@@ -330,13 +355,13 @@ namespace Taurus.Core
                 {
                     MCellStruct mc = new MCellStruct("Num", SqlDbType.NVarChar);
                     dt.Columns.Insert(0, mc);
-                    int rowCount=dt.Rows.Count;
+                    int rowCount = dt.Rows.Count;
                     if (rowCount > 0)
                     {
-                        int padLeft=rowCount.ToString().Length;
+                        int padLeft = rowCount.ToString().Length;
                         for (int i = 0; i < rowCount; i++)
                         {
-                            string num = (i+1).ToString();
+                            string num = (i + 1).ToString();
                             dt.Rows[i].Set(0, num.PadLeft(padLeft, '0'));
                         }
                     }
@@ -394,16 +419,23 @@ namespace Taurus.Core
                     if (!string.IsNullOrEmpty(attr))
                     {
                         string name = attr.ToLower();
+                        
                         if (name == "get" || name == "post" || name == "head" || name == "put" || name == "delete")
                         {
                             View.Set("httpType", name.ToUpper());
                             continue;
                         }
+                        string value = Query<string>(attr);
+                        if (name == "microservice")
+                        {
+                            value = MicroService.Config.ServerKey;
+                        }
+                        
                         dt.NewRow(true, 0).Set(0, name)
                                 .Set(1, name)
                                 .Set(2, true)
                                 .Set(3, "header")
-                                .Set(4, Query<string>(attr));
+                                .Set(4, value);
                     }
 
                 }

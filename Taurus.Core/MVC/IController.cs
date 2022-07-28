@@ -32,6 +32,8 @@ namespace Taurus.Core
         string Para { get; }
         void Write(string msg);
         void Write(string msg, bool isSuccess);
+        void Write(object obj);
+        void Write(object obj, bool isSuccess);
         string GetJson();
         bool CheckFormat(string formatter, params string[] paras);
     }

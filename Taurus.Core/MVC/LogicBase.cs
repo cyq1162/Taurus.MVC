@@ -143,11 +143,19 @@ namespace Taurus.Core
             _IController.Write(msg);
         }
 
-        public void Write(string msg, bool isSucess)
+        public void Write(string msg, bool isSuccess)
         {
-            _IController.Write(msg, isSucess);
+            _IController.Write(msg, isSuccess);
+        }
+        public void Write(object obj)
+        {
+            _IController.Write(obj);
         }
 
+        public void Write(object obj, bool isSuccess)
+        {
+            _IController.Write(obj, isSuccess);
+        }
 
         public T GetEntity<T>() where T : class
         {

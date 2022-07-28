@@ -11,6 +11,7 @@ namespace Taurus.Core
     {
         public bool HasToken { get; set; }
         public bool HasAck { get; set; }
+        public bool HasMicroService { get; set; }
         public bool HasGet { get; set; }
         public bool HasPost { get; set; }
         public bool HasHead { get; set; }
@@ -32,6 +33,8 @@ namespace Taurus.Core
                     return HasToken;
                 case "ack":
                     return HasAck;
+                case "microservice":
+                    return HasMicroService;
                 default:
                     if (!HasGet && !HasPost && !HasHead && !HasPut && !HasDelete)//无配置，则都可以。
                     {

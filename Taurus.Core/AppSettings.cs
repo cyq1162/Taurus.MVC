@@ -56,5 +56,8 @@ namespace Taurus.Core
         /// </summary>
         public const string SubAppName = "Taurus.SubAppName";
 
+
+
+
     }
 }
