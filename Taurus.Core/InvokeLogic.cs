@@ -127,11 +127,11 @@ namespace Taurus.Core
 
         #region GetControllers
         /// <summary>
-        /// 存档一级名称的控制器
+        /// 存档一级名称的控制器[Controller]
         /// </summary>
         private static Dictionary<string, Type> _Lv1Controllers = new Dictionary<string, Type>(StringComparer.OrdinalIgnoreCase);
         /// <summary>
-        /// 存档二级名称的控制器
+        /// 存档二级名称的控制器[Module.Controller]
         /// </summary>
         private static Dictionary<string, Type> _Lv2Controllers = new Dictionary<string, Type>(StringComparer.OrdinalIgnoreCase);
         private static readonly object objLock = new object();
@@ -172,6 +172,14 @@ namespace Taurus.Core
                                         if (!_Lv1Controllers.ContainsKey(lv1Name))
                                         {
                                             _Lv1Controllers.Add(lv1Name, type);
+                                        }
+                                        else
+                                        {
+                                            int value = string.Compare(lv2Name, GetLevelName(_Lv1Controllers[lv1Name].FullName, 2), true);
+                                            if (value == -1)
+                                            {
+                                                _Lv1Controllers[lv1Name] = type;//值小的优化。
+                                            }
                                         }
                                         if (!_Lv2Controllers.ContainsKey(lv2Name))
                                         {
