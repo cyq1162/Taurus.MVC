@@ -71,10 +71,14 @@ namespace Microsoft.AspNetCore.Http
         public static IApplicationBuilder UseTaurusMvc(this IApplicationBuilder builder, IHostingEnvironment env)
         {
             //Net6新建的项目，WebRootPath竟然是空。
-            return UseTaurusMvc(builder, env.WebRootPath??env.ContentRootPath.TrimEnd('/','\\')+ "/wwwroot");
+            return UseTaurusMvc(builder, env.WebRootPath ?? env.ContentRootPath.TrimEnd('/', '\\') + "/wwwroot");
         }
         public static IApplicationBuilder UseTaurusMvc(this IApplicationBuilder builder, string webRootPath)
         {
+            if (!string.IsNullOrEmpty(MicroService.Config.ClientHost))
+            {
+                MicroService.Run.Start(MicroService.Config.ClientHost);//
+            }
             //System.Web.HttpContext.Configure(httpContextAccessor);
             AppConfig.WebRootPath = webRootPath;//设置根目录地址，ASPNETCore的根目录和其它应用不一样。
             //执行一次，用于注册事件
