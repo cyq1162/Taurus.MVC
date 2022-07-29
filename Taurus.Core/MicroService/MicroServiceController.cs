@@ -80,10 +80,9 @@ namespace Taurus.Core
                 }
             }
             #endregion
-            if (isChange)
+            if (isChange || MicroService.Server.Tick == 0)
             {
                 MicroService.Server.Tick = DateTime.Now.Ticks;
-
             }
             if (MicroService.Server.Host2LastRegTime < DateTime.Now.AddSeconds(-15))//超过15秒，备份链接无效化。
             {

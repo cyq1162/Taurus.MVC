@@ -25,14 +25,6 @@ namespace Taurus.Core
         {
             get { return _IController.APIResult; }
         }
-        public string Order
-        {
-            get { return _IController.Order; }
-        }
-        public string Sort
-        {
-            get { return _IController.Sort; }
-        }
         public int PageIndex
         {
             get { return _IController.PageIndex; }
@@ -170,13 +162,5 @@ namespace Taurus.Core
         {
             return _IController.GetJson();
         }
-
-
-        public bool CheckFormat(string formatter, params string[] paras)
-        {
-            return _IController.CheckFormat(formatter, paras);
-        }
-
-       
     }
 }

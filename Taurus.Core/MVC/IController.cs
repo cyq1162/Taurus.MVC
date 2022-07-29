@@ -8,8 +8,7 @@ namespace Taurus.Core
         string APIResult { get; }
         int PageIndex { get; }
         int PageSize { get; }
-        string Sort { get; }
-        string Order { get; }
+
         T Query<T>(Enum key);
         T Query<T>(string key);
         T Query<T>(string key, T defaultValue);
@@ -36,6 +35,5 @@ namespace Taurus.Core
         void Write(object obj);
         void Write(object obj, bool isSuccess);
         string GetJson();
-        bool CheckFormat(string formatter, params string[] paras);
     }
 }

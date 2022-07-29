@@ -251,15 +251,6 @@ namespace Taurus.Core
             {
                 className = Const.Default;
             }
-            else
-            {
-                #region 检测微服务 - 服务端优化
-                if (MicroService.Server.Contains(className))
-                {
-                    return typeof(MicroServiceController);
-                }
-                #endregion
-            }
             Dictionary<string, Type> controllers = GetControllers(1);
             string[] names = className.Split('.');//home/index
             if (RouteConfig.RouteMode == 1 || names.Length == 1)
@@ -290,14 +281,8 @@ namespace Taurus.Core
                 {
                     return controllers[names[0]];
                 }
+            }
 
-            }
-            #region 检测微服务 - 客户端后置
-            if (MicroService.Client.Contains(className))
-            {
-                return typeof(MicroServiceController);
-            }
-            #endregion
             if (controllers.ContainsKey(Const.Default))
             {
                 return controllers[Const.Default];

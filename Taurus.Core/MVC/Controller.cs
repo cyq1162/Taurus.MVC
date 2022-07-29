@@ -107,14 +107,6 @@ namespace Taurus.Core
             {
                 Type t = _ControllerType = this.GetType();
                 Init(t);
-                #region 处理微服务Proxy
-                if (t.Name == InvokeLogic.Const.MicroServiceController && firstPara.ToLower() != t.Name.Replace(InvokeLogic.Const.Controller, "").ToLower())
-                {
-                    MicroService.Run.Proxy(this);
-                    return;
-                    //methodName = InvokeLogic.Const.Proxy;
-                }
-                #endregion
 
                 bool isGoOn = true;
 
@@ -661,30 +653,6 @@ namespace Taurus.Core
                 return Query<int>("rows", 10);
             }
         }
-
-        /// <summary>
-        /// request["sort"]
-        /// <para>排序字段名</para>
-        /// </summary>
-        public string Sort
-        {
-            get
-            {
-                return Query<string>("sort", "");
-            }
-
-        }
-        /// <summary>
-        /// request["order"]
-        /// <para>排序类型（升或降） default desc</para>
-        /// </summary>
-        public string Order
-        {
-            get
-            {
-                return Query<string>("order", "desc");
-            }
-        }
         public HttpContext Context
         {
             get { return HttpContext.Current; }
@@ -933,67 +901,6 @@ namespace Taurus.Core
                 }
             }
             return _Json;
-        }
-
-        /// <summary>
-        /// 格式检测看是否满足验证条件(错误信息可获取APIResult属性)
-        /// </summary>
-        /// <param name="formatter">示例：{0}不能为空,{0}格式错误</param>
-        /// <param name="paras">示例：mobile,手机号,^1[3|4|5|8][0-9]\d{8}$</param>
-        /// <returns></returns>
-        public bool CheckFormat(string formatter, params string[] paras)
-        {
-            if (paras.Length > 0)
-            {
-                string json = GetJson();
-                foreach (string para in paras)
-                {
-                    if (!string.IsNullOrEmpty(para))
-                    {
-                        string[] items = para.Split(',', '&');//支持"user&用户名&正则表达式"这样的写法.
-                        string key = items[0];
-                        string value = Query<string>(key);
-                        if (string.IsNullOrEmpty(value))
-                        {
-                            value = JsonHelper.GetValue(json, key);
-                        }
-                        if (string.IsNullOrEmpty(value))//参数为空
-                        {
-                            if (!string.IsNullOrEmpty(formatter))
-                            {
-
-                                formatter = formatter.Split(',', '&')[0];
-                                Write(string.Format(formatter, items.Length > 1 ? items[1] : key), false);
-                            }
-                            return false;
-                        }
-                        else if (items.Length > 2)//有正则
-                        {
-                            if (value.IndexOf('%') > -1)
-                            {
-                                value = HttpUtility.UrlDecode(value);
-                            }
-                            if (!Regex.IsMatch(value, items[2]))//如果格式错误
-                            {
-                                if (!string.IsNullOrEmpty(formatter))
-                                {
-                                    if (formatter.IndexOfAny(new char[] { ',', '&' }) > 0)
-                                    {
-                                        formatter = formatter.Split(',', '&')[1];
-                                    }
-                                    Write(string.Format(formatter, items.Length > 1 ? items[1] : key), false);
-                                }
-                                return false;
-                            }
-                        }
-                        if (!queryCache.ContainsKey(key))
-                        {
-                            queryCache.Add(key, value);
-                        }
-                    }
-                }
-            }
-            return true;
         }
     }
 }

@@ -28,13 +28,23 @@ namespace Taurus.Core
             context.Error += context_Error;
         }
         HttpContext context;
+        bool isProxyCallSuccess = false;//微服务代理调用
         void context_BeginRequest(object sender, EventArgs e)
         {
             HttpApplication app = (HttpApplication)sender;
             context = app.Context;
+
+            #region 微服务检测与启动
             string urlAbs = context.Request.Url.AbsoluteUri;
             string urlPath = context.Request.Url.PathAndQuery;
             MicroService.Run.Start(urlAbs.Substring(0, urlAbs.Length - urlPath.Length));//微服务检测、启动。
+            if (MicroService.Run.Proxy(context, true))
+            {
+                isProxyCallSuccess = true;
+                return;
+            }
+            #endregion
+
             if (context.Request.Url.LocalPath == "/")//设置默认首页
             {
                 string defaultUrl = QueryTool.GetDefaultUrl();
@@ -60,7 +70,7 @@ namespace Taurus.Core
 
         void context_PostMapRequestHandler(object sender, EventArgs e)
         {
-            if (QueryTool.IsTaurusSuffix())
+            if (!isProxyCallSuccess && QueryTool.IsTaurusSuffix())
             {
                 context.Handler = SessionHandler.Instance;//注册Session
             }
@@ -69,7 +79,7 @@ namespace Taurus.Core
         {
             //if (RequestAPI.Record(context))
             //{
-            if (QueryTool.IsTaurusSuffix())
+            if (!isProxyCallSuccess && QueryTool.IsTaurusSuffix())
             {
                 CheckCORS();
                 ReplaceOutput();
@@ -136,15 +146,22 @@ namespace Taurus.Core
             //ViewController是由页面的前两个路径决定了。
             string[] items = QueryTool.GetLocalPath().Trim('/').Split('/');
             string className = InvokeLogic.Const.Default;
-            if (RouteConfig.RouteMode >0)
+            if (RouteConfig.RouteMode == 1)
             {
-            //    className = items[0];
-            //}
-            //else if (RouteConfig.RouteMode == 2)
-            //{
+                className = items.Length > 2 ? items[0] + "." + items[1] : items[0];
+            }
+            else if (RouteConfig.RouteMode == 2)
+            {
                 className = items.Length > 1 ? items[0] + "." + items[1] : items[0];
             }
             t = InvokeLogic.GetController(className);
+            if (t == null || t.Name == InvokeLogic.Const.DefaultController)
+            {
+                if (MicroService.Run.Proxy(context, false))//客户端做为网关。
+                {
+                    return;
+                }
+            }
             if (t == null)
             {
                 WriteError("You need a " + className + " controller for coding!");

@@ -349,19 +349,21 @@ namespace Taurus.Core
             /// <summary>
             /// 网关代理转发方法
             /// </summary>
-            internal static void Proxy(IController controller)
+            internal static bool Proxy(HttpContext context, bool isServerCall)
             {
-                string module = controller.Module;
+                if ((isServerCall && !IsServer) || (!isServerCall && !IsClient))
+                {
+                    return false;
+                }
+                string module = context.Request.Url.LocalPath.TrimStart('/').Split('/')[0];
                 if (string.IsNullOrEmpty(module))
                 {
                     module = QueryTool.GetLocalPath().Trim('/').Split('/')[0];
                 }
-                MDataTable dt = MicroService.Server.GetHostList(module);
+                MDataTable dt = isServerCall ? MicroService.Server.GetHostList(module) : MicroService.Client.GetHostList(module);
                 if (dt == null || dt.Rows.Count == 0)
                 {
-                    string msg = module + " server is stopped.";
-                    LogWrite(msg, "MicroService.Run.Proxy()", "", Config.ServerName);
-                    controller.Write(msg);
+                    return false;
                 }
                 else
                 {
@@ -370,10 +372,10 @@ namespace Taurus.Core
                     {
                         max--;
                         string host = row.Get<string>("host");
-                        if (Proxy(controller, host))
+                        if (Proxy(context, host))
                         {
                             row.Set("calltime", DateTime.Now);
-                            return;
+                            return true;
                         }
                         else
                         {
@@ -381,14 +383,15 @@ namespace Taurus.Core
                         }
                         if (max == 0)
                         {
-                            return;
+                            return false;
                         }
                     }
+                    return false;
                 }
             }
-            private static bool Proxy(IController controller, string host)
+            private static bool Proxy(HttpContext context, string host)
             {
-                HttpRequest request = controller.Context.Request;
+                HttpRequest request = context.Request;
                 string url = String.Empty;
                 try
                 {
@@ -416,14 +419,14 @@ namespace Taurus.Core
                                     break;
                             }
                         }
-                        if (controller.IsHttpGet)
+                        if (request.HttpMethod == "GET")
                         {
                             bytes = wc.DownloadData(url);
                         }
                         else
                         {
                             byte[] data = null;
-                            if (controller.IsHttpPost && request.ContentLength > 0)
+                            if (request.ContentLength > 0)
                             {
                                 data = new byte[(int)request.ContentLength];
                                 request.InputStream.Read(data, 0, data.Length);
@@ -434,7 +437,7 @@ namespace Taurus.Core
                         {
                             foreach (string key in wc.ResponseHeaders.Keys)
                             {
-                                controller.Context.Response.Headers.Set(key, wc.ResponseHeaders[key]);
+                                context.Response.Headers.Set(key, wc.ResponseHeaders[key]);
                             }
                         }
                         catch
@@ -442,13 +445,13 @@ namespace Taurus.Core
 
                         }
                     }
-                    controller.Write(bytes);
+                    context.Response.BinaryWrite(bytes);
                     return true;
                 }
                 catch (Exception err)
                 {
                     LogWrite(err.Message, url, request.HttpMethod, Config.ServerName);
-                    controller.Write(err.Message);
+                    context.Response.Write(err.Message);
                     return false;
                 }
             }
