@@ -41,7 +41,7 @@ namespace Taurus.Core
                     }
                     if (!string.IsNullOrEmpty(Config.ServerHost))
                     {
-                        if (Config.ServerHost.ToLower() == host.ToLower())
+                        if (Config.ServerHost.ToLower() == Config.ClientHost)
                         {
                             return;//主机指向自身时，不做任何处理。
                         }
@@ -232,6 +232,7 @@ namespace Taurus.Core
                     using (WebClient wc = new WebClient())
                     {
                         wc.Headers.Add(Const.HeaderKey, Config.ServerKey);
+                        wc.Headers.Add("Referer", Config.ClientHost);
                         string data = "name={0}&host={1}&version={2}";
                         string result = wc.UploadString(url, string.Format(data, Config.ClientName, Config.ClientHost, Config.ClientVersion));
                         Server.IsLive = true;
@@ -262,6 +263,7 @@ namespace Taurus.Core
                     using (WebClient wc = new WebClient())
                     {
                         wc.Headers.Add(Const.HeaderKey, Config.ServerKey);
+                        wc.Headers.Add("Referer", Config.ClientHost);
                         string data = "host={0}&tick=" + Server.Tick;
                         result = wc.UploadString(url, string.Format(data, Config.ClientHost));
                     }
@@ -289,6 +291,7 @@ namespace Taurus.Core
                     using (WebClient wc = new WebClient())
                     {
                         wc.Headers.Add(Const.HeaderKey, Config.ServerKey);
+                        wc.Headers.Add("Referer", Config.ClientHost);
                         wc.UploadString(url, data);
                     }
                     Server.IsLive = true;
@@ -311,6 +314,7 @@ namespace Taurus.Core
                     using (WebClient wc = new WebClient())
                     {
                         wc.Headers.Add(Const.HeaderKey, Config.ServerKey);
+                        wc.Headers.Set("Referer", Config.ClientHost);
                         string result = wc.DownloadString(url);
                         Server.IsLive = true;
                         return result;
@@ -395,7 +399,8 @@ namespace Taurus.Core
                     using (WebClient wc = new WebClient())
                     {
                         wc.Headers.Set(Const.HeaderKey, Config.ServerKey);
-                        wc.Headers.Set("X-real-ip", request.UserHostAddress);
+                        wc.Headers.Set("X-Real-IP", request.UserHostAddress);
+                        wc.Headers.Set("Referer", Config.ClientHost);
                         foreach (string key in request.Headers.Keys)
                         {
                             switch (key)
@@ -404,6 +409,7 @@ namespace Taurus.Core
                                 case "Host"://引发请求地址错乱。
                                 case "Accept-Encoding"://引发乱码
                                 case "Accept"://引发下载类型错乱
+                                case "Referer":
                                     break;
                                 default:
                                     wc.Headers.Set(key, request.Headers[key]);
