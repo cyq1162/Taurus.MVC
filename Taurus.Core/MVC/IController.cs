@@ -28,6 +28,7 @@ namespace Taurus.Core
         bool IsHttpDelete { get; }
         Type ControllerType { get; }
         string Module { get; }
+        string ControllerName { get; }
         string Action { get; }
         string Para { get; }
         void Write(string msg);

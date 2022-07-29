@@ -48,6 +48,7 @@ namespace Taurus.Core
         private string firstPara = string.Empty;
         private void Init(Type t)
         {
+            _ControllerName = t.Name.Replace(InvokeLogic.Const.Controller, "").ToLower();
             string[] items = QueryTool.GetLocalPath().Trim('/').Split('/');
             firstPara=items[0];
             int paraStartIndex = RouteConfig.RouteMode + 1;
@@ -60,8 +61,7 @@ namespace Taurus.Core
                 case 1:
                     if (items.Length > 1)
                     {
-                        string typeName = t.Name.Replace(InvokeLogic.Const.Controller, "").ToLower();
-                        if (items.Length > 2 && items[0].ToLower() != typeName && items[1].ToLower() == typeName && items[0] == MicroService.Config.ClientName.ToLower())
+                        if (items.Length > 2 && items[0].ToLower() != _ControllerName && items[1].ToLower() == _ControllerName && items[0] == MicroService.Config.ClientName.ToLower())
                         {
                             paraStartIndex++;
                             methodName = items[2];//往后兼容一格。
@@ -220,7 +220,7 @@ namespace Taurus.Core
                             {
                                 //追加几个全局标签变量
                                 _View.KeyValue.Add("module", Module.ToLower());
-                                _View.KeyValue.Add("controller", ControllerType.Name.ToLower());
+                                _View.KeyValue.Add("controller", _ControllerName);
                                 _View.KeyValue.Add("action", Action.ToLower());
                                 _View.KeyValue.Add("para", Para.ToLower());
                                 _View.KeyValue.Add("httphost", Request.Url.AbsoluteUri.Substring(0, Request.Url.AbsoluteUri.Length - Request.Url.PathAndQuery.Length));
@@ -579,7 +579,7 @@ namespace Taurus.Core
 
         private string _Module = "";
         /// <summary>
-        /// Module value
+        /// 请求路径中的：模块名称。
         /// </summary>
         public string Module
         {
@@ -588,17 +588,17 @@ namespace Taurus.Core
                 return _Module;
             }
         }
-        //private string _Controller = "";
-        ///// <summary>
-        ///// Module value
-        ///// </summary>
-        //public string Controller
-        //{
-        //    get
-        //    {
-        //        return _Controller;
-        //    }
-        //}
+        private string _ControllerName = "";
+        /// <summary>
+        /// 请求路径中的：控制器名称。
+        /// </summary>
+        public string ControllerName
+        {
+            get
+            {
+                return _ControllerName;
+            }
+        }
         private Type _ControllerType;
         /// <summary>
         /// Controller Type
@@ -612,7 +612,7 @@ namespace Taurus.Core
         }
         private string _Action = "";
         /// <summary>
-        /// MethodName - Action value
+        /// 请求路径中的：方法名称。
         /// </summary>
         public string Action
         {
@@ -630,7 +630,7 @@ namespace Taurus.Core
             }
         }
         /// <summary>
-        /// Para value
+        ///请求路径中的：参数的第一个值。
         /// </summary>
         public string Para
         {

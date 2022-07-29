@@ -127,7 +127,10 @@ namespace Taurus.Core
         {
             get { return _IController.Module; }
         }
-
+        public string ControllerName
+        {
+            get { return _IController.ControllerName; }
+        }
         public string Action
         {
             get { return _IController.Action; }
