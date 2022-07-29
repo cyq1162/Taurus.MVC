@@ -31,13 +31,15 @@ namespace Taurus.Core
         bool isProxyCallSuccess = false;//微服务代理调用
         void context_BeginRequest(object sender, EventArgs e)
         {
+            isProxyCallSuccess = false;//被单例复用了，每次需要重新赋值。
             HttpApplication app = (HttpApplication)sender;
             context = app.Context;
 
             #region 微服务检测与启动
             string urlAbs = context.Request.Url.AbsoluteUri;
             string urlPath = context.Request.Url.PathAndQuery;
-            MicroService.Run.Start(urlAbs.Substring(0, urlAbs.Length - urlPath.Length));//微服务检测、启动。
+            string host = urlAbs.Substring(0, urlAbs.Length - urlPath.Length);
+            MicroService.Run.Start(host);//微服务检测、启动。
             if (MicroService.Run.Proxy(context, true))
             {
                 isProxyCallSuccess = true;

@@ -355,11 +355,18 @@ namespace Taurus.Core
                 {
                     return false;
                 }
-                string module = context.Request.Url.LocalPath.TrimStart('/').Split('/')[0];
-                if (string.IsNullOrEmpty(module))
+                string module = string.Empty;
+                IPAddress iPAddress;
+                if (context.Request.Url.Host == "localhost" || IPAddress.TryParse(context.Request.Url.Host, out iPAddress))
                 {
-                    module = QueryTool.GetLocalPath().Trim('/').Split('/')[0];
+                    module = context.Request.Url.LocalPath.TrimStart('/').Split('/')[0];
                 }
+                else
+                {
+                    module = context.Request.Url.Host;//域名转发。
+                }
+
+
                 MDataTable dt = isServerCall ? MicroService.Server.GetHostList(module) : MicroService.Client.GetHostList(module);
                 if (dt == null || dt.Rows.Count == 0)
                 {

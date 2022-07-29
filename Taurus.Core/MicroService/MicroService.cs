@@ -168,7 +168,6 @@ namespace Taurus.Core
             {
                 if (!string.IsNullOrEmpty(name))
                 {
-                    name = name.Split('.')[0];
                     if (_Table != null && _Table.Rows.Count > 0)//微服务程序。
                     {
                         string time = IsMainRegCenter ? string.Format(" and time>'{0}',", DateTime.Now.AddSeconds(-10)) : "";
@@ -192,7 +191,6 @@ namespace Taurus.Core
             {
                 if (!string.IsNullOrEmpty(name))
                 {
-                    name = name.Split('.')[0];
                     if (_Table != null && _Table.Rows.Count > 0)//微服务程序。
                     {
                         string time = IsMainRegCenter ? string.Format(" and time>'{0}'", DateTime.Now.AddSeconds(-10)) : "";
@@ -212,8 +210,6 @@ namespace Taurus.Core
             {
                 if (!string.IsNullOrEmpty(name))
                 {
-                    name = name.Split('.')[0];
-
                     if (Server._Table != null && Server._Table.Rows.Count > 0)//注册中心主程序作为网关时。
                     {
                         string time = IsMainRegCenter ? string.Format(" and time>'{0}'", DateTime.Now.AddSeconds(-10)) : "";
@@ -284,7 +280,6 @@ namespace Taurus.Core
             {
                 if (!string.IsNullOrEmpty(name))
                 {
-                    name = name.Split('.')[0];
                     if (_Table != null && _Table.Rows.Count > 0)//微服务程序。
                     {
                         string where = string.Format("name='{0}' order by calltime asc", name);//触发负载均衡
@@ -307,7 +302,6 @@ namespace Taurus.Core
             {
                 if (!string.IsNullOrEmpty(name))
                 {
-                    name = name.Split('.')[0];
                     if (_Table != null && _Table.Rows.Count > 0)//微服务程序。
                     {
                         string where = string.Format("name='{0}' order by calltime asc", name);
@@ -325,7 +319,6 @@ namespace Taurus.Core
             {
                 if (!string.IsNullOrEmpty(name))
                 {
-                    name = name.Split('.')[0];
                     if (Client._Table != null && Client._Table.Rows.Count > 0)//网关、微服务程序
                     {
                         string where = string.Format("name='{0}'", name);
