@@ -41,38 +41,45 @@ namespace Taurus.Core
             }
             MDataTable MSTable = MicroService.Server.Table;
             bool isChange = false;
-            MDataTable table = MSTable.FindAll("name='" + name + "'");
-            if (table == null || table.Rows.Count == 0)
+
+            #region 注册名字
+            string[] names = name.ToLower().Split(',');//允许一次注册多个模块。
+            foreach (string module in names)
             {
-                //首次添加
-                isChange = true;
-                MSTable.NewRow(true).Sets(0, name, host, version, DateTime.Now);
-            }
-            else
-            {
-                //移除低版本号的服务。
-                MDataRowCollection rows = table.FindAll("version<" + version);
-                if (rows != null && rows.Count > 0)
+                MDataTable table = MSTable.FindAll("name='" + module + "'");
+                if (table == null || table.Rows.Count == 0)
                 {
-                    foreach (var item in rows)
-                    {
-                        table.Rows.Remove(item);
-                        MSTable.Rows.Remove(item);
-                        isChange = true;
-                    }
-                }
-                //新版本添加
-                MDataRow row = table.FindRow("host='" + host + "'");
-                if (row == null)
-                {
+                    //首次添加
                     isChange = true;
-                    MSTable.NewRow(true).Sets(0, name, host, version, DateTime.Now);
+                    MSTable.NewRow(true).Sets(0, module, host, version, DateTime.Now);
                 }
                 else
                 {
-                    row.Set("time", DateTime.Now);//更新时间。
+                    //移除低版本号的服务。
+                    MDataRowCollection rows = table.FindAll("version<" + version);
+                    if (rows != null && rows.Count > 0)
+                    {
+                        foreach (var item in rows)
+                        {
+                            table.Rows.Remove(item);
+                            MSTable.Rows.Remove(item);
+                            isChange = true;
+                        }
+                    }
+                    //新版本添加
+                    MDataRow row = table.FindRow("host='" + host + "'");
+                    if (row == null)
+                    {
+                        isChange = true;
+                        MSTable.NewRow(true).Sets(0, module, host, version, DateTime.Now);
+                    }
+                    else
+                    {
+                        row.Set("time", DateTime.Now);//更新时间。
+                    }
                 }
             }
+            #endregion
             if (isChange)
             {
                 MicroService.Server.Tick = DateTime.Now.Ticks;

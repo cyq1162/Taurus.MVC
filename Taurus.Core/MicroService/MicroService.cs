@@ -195,7 +195,7 @@ namespace Taurus.Core
                     name = name.Split('.')[0];
                     if (_Table != null && _Table.Rows.Count > 0)//微服务程序。
                     {
-                        string time = IsMainRegCenter ? string.Format(" and time>'{0}',", DateTime.Now.AddSeconds(-10)) : "";
+                        string time = IsMainRegCenter ? string.Format(" and time>'{0}'", DateTime.Now.AddSeconds(-10)) : "";
                         string where = string.Format("name='{0}' {1} order by calltime asc", name, time);
                         return _Table.FindAll(where);
                     }
@@ -216,7 +216,7 @@ namespace Taurus.Core
 
                     if (Server._Table != null && Server._Table.Rows.Count > 0)//注册中心主程序作为网关时。
                     {
-                        string time = IsMainRegCenter ? string.Format(" and time>'{0}',", DateTime.Now.AddSeconds(-10)) : "";
+                        string time = IsMainRegCenter ? string.Format(" and time>'{0}'", DateTime.Now.AddSeconds(-10)) : "";
                         string where = string.Format("name='{0}' {1}", name, time);
                         if (Server._Table.FindRow(where) != null)
                         {
