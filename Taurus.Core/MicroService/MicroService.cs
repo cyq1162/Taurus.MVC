@@ -266,8 +266,8 @@ namespace Taurus.Core
                                 {
                                     continue;//已经断开服务的。
                                 }
-                                firstInfo.CallIndex = i + 1;//指向下一个。
-                                return infoList[i].Host;
+                                firstInfo.CallIndex = callIndex + 1;//指向下一个。
+                                return infoList[callIndex].Host;
                             }
                         }
                     }
@@ -393,8 +393,8 @@ namespace Taurus.Core
                                 {
                                     continue;//已经断开服务的。
                                 }
-                                firstInfo.CallIndex = i + 1;//指向下一个。
-                                return infoList[i].Host;
+                                firstInfo.CallIndex = callIndex + 1;//指向下一个。
+                                return infoList[callIndex].Host;
                             }
                         }
                     }

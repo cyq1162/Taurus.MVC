@@ -412,7 +412,7 @@ namespace Taurus.Core
 
                         if (Proxy(context, info.Host))
                         {
-                            firstInfo.CallIndex = i + 1;//指向下一个。
+                            firstInfo.CallIndex = callIndex + 1;//指向下一个。
                             return true;
                         }
                         else
