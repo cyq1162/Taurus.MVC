@@ -312,7 +312,7 @@ namespace Taurus.Core
             {
                 table = new MDataTable();
                 table.Columns.Add("name,host");
-                foreach (var item in MicroService.Server.Table)
+                foreach (var item in MicroService.Server.HostList)
                 {
                     if (item.Value.Count > 0)
                     {

@@ -34,24 +34,6 @@ namespace Taurus.Core
         #endregion
         
         /// <summary>
-        /// 存档请求的客户端信息
-        /// </summary>
-        public class HostInfo
-        {
-            public string Host { get; set; }
-            public int Version { get; set; }
-            public DateTime RegTime { get; set; }
-            /// <summary>
-            /// 记录调用时间，用于隔离无法调用的服务，延时调用。
-            /// </summary>
-            public DateTime CallTime { get; set; }
-            /// <summary>
-            /// 记录调用顺序，用于负载均衡
-            /// </summary>
-            public int CallIndex { get; set; }
-
-        }
-        /// <summary>
         /// 当前程序是否作为服务端运行
         /// </summary>
         public static bool IsServer
@@ -71,6 +53,33 @@ namespace Taurus.Core
             {
                 return !string.IsNullOrEmpty(Config.ClientName) && !string.IsNullOrEmpty(Config.ServerHost) && Config.ServerHost != Config.ClientHost;
             }
+        }
+        /// <summary>
+        /// 存档请求的客户端信息
+        /// </summary>
+        public class HostInfo
+        {
+            /// <summary>
+            /// 主机地址：http://localhost:8080
+            /// </summary>
+            public string Host { get; set; }
+            /// <summary>
+            /// 版本号：用于版本升级。
+            /// </summary>
+            public int Version { get; set; }
+            /// <summary>
+            /// 注册时间（最新）
+            /// </summary>
+            public DateTime RegTime { get; set; }
+            /// <summary>
+            /// 记录调用时间，用于隔离无法调用的服务，延时调用。
+            /// </summary>
+            public DateTime CallTime { get; set; }
+            /// <summary>
+            /// 记录调用顺序，用于负载均衡
+            /// </summary>
+            public int CallIndex { get; set; }
+
         }
         /// <summary>
         /// 定义安全路径，防止存档数据被直接访问。
@@ -94,29 +103,7 @@ namespace Taurus.Core
                 IOHelper.Delete(path);
             }
         }
-        /// <summary>
-        /// 常量
-        /// </summary>
-        public class Const
-        {
-            /// <summary>
-            /// 请求头带上的Header的Key名称
-            /// </summary>
-            public const string HeaderKey = "microservice";
-            /// <summary>
-            /// 网关
-            /// </summary>
-            public const string Gateway = "gateway";
-            /// <summary>
-            /// 注册中心
-            /// </summary>
-            public const string RegCenter = "regcenter";
-
-            internal const string ServerTablePath = "MicroService_Server_Table.json";
-            internal const string ServerHost2Path = "MicroService_Server_Host2.json";
-            internal const string ClientTablePath = "MicroService_Client_Table.json";
-            internal const string ClientHost2Path = "MicroService_Client_Host2.json";
-        }
+      
 
         /// <summary>
         /// 服务端【网关Gateway或注册中心RegCenter】相关
@@ -145,28 +132,28 @@ namespace Taurus.Core
             /// 注册中心 - 数据是否发生改变
             /// </summary>
             internal static bool IsChange = false;
-            internal static string _TableJson = String.Empty;
+            internal static string _HostListJson = String.Empty;
             /// <summary>
             /// 注册中心 - 返回的表数据Json
             /// </summary>
-            internal static string TableJson
+            internal static string HostListJson
             {
                 get
                 {
-                    if (string.IsNullOrEmpty(_TableJson) && IsChange && _Table != null && _Table.Count > 0)
+                    if (string.IsNullOrEmpty(_HostListJson) && IsChange && _HostList != null && _HostList.Count > 0)
                     {
                         IsChange = false;
                         lock (tableLockObj)
                         {
-                            _TableJson = JsonHelper.ToJson(Table);
+                            _HostListJson = JsonHelper.ToJson(HostList);
                         }
-                        IO.Write(Const.ServerTablePath, _TableJson);
+                        IO.Write(Const.ServerHostListJsonPath, _HostListJson);
                     }
-                    return _TableJson;
+                    return _HostListJson;
                 }
                 set
                 {
-                    _TableJson = value;
+                    _HostListJson = value;
                 }
             }
             internal static string _Host2 = string.Empty;
@@ -194,17 +181,17 @@ namespace Taurus.Core
             internal static DateTime Host2LastRegTime = DateTime.MinValue;
 
 
-            internal static MDictionary<string, List<HostInfo>> _Table;
+            internal static MDictionary<string, List<HostInfo>> _HostList;
             /// <summary>
             /// 作为微服务主程序时，存档的微服务列表
             /// </summary>
-            public static MDictionary<string, List<HostInfo>> Table
+            public static MDictionary<string, List<HostInfo>> HostList
             {
                 get
                 {
-                    if (_Table == null)
+                    if (_HostList == null)
                     {
-                        string json = IO.Read(MicroService.Const.ServerTablePath);
+                        string json = IO.Read(MicroService.Const.ServerHostListJsonPath);
                         if (!string.IsNullOrEmpty(json))//数据恢复。
                         {
                             #region 从Json文件恢复数据
@@ -223,15 +210,15 @@ namespace Taurus.Core
                                     }
                                 }
                             }
-                            _Table = keys;
+                            _HostList = keys;
                             #endregion
                         }
-                        if (_Table == null)
+                        if (_HostList == null)
                         {
-                            _Table = new MDictionary<string, List<HostInfo>>(StringComparer.OrdinalIgnoreCase);
+                            _HostList = new MDictionary<string, List<HostInfo>>(StringComparer.OrdinalIgnoreCase);
                         }
                     }
-                    return _Table;
+                    return _HostList;
                 }
             }
             /// <summary>
@@ -241,28 +228,27 @@ namespace Taurus.Core
             /// <returns></returns>
             public static string GetHost(string name)
             {
-                //if (!string.IsNullOrEmpty(name))
-                //{
-                //    if (_Table != null && _Table.ContainsKey(name))//微服务程序。
-                //    {
-                //        List<ClientInfo> list = _Table[name];
-                //        if (list.Count > 0)
-                //        {
-                //            var firstInfo = list[0];
-                //            firstInfo.CallTime = DateTime.Now;
-                //            if (firstInfo.CallIndex >= list.Count)
-                //            {
-                //                firstInfo.CallIndex = 1;
-                //                return firstInfo.Host;
-                //            }
-                //            else
-                //            {
-                //                firstInfo.CallIndex++;
-                //                return list[firstInfo.CallIndex - 1].Host;
-                //            }
-                //        }
-                //    }
-                //}
+                if (!string.IsNullOrEmpty(name))
+                {
+                    if (_HostList != null && _HostList.ContainsKey(name))//微服务程序。
+                    {
+                        List<HostInfo> list = _HostList[name];
+                        if (list != null && list.Count > 0)
+                        {
+                            HostInfo firstInfo = list[0];
+                            if (firstInfo.CallIndex >= list.Count)
+                            {
+                                firstInfo.CallIndex = 1;//每次获取都自动标记下一位。
+                                return firstInfo.Host;
+                            }
+                            else
+                            {
+                                firstInfo.CallIndex++;//每次获取都自动标记下一位。
+                                return list[firstInfo.CallIndex - 1].Host;
+                            }
+                        }
+                    }
+                }
                 return string.Empty;
             }
             /// <summary>
@@ -274,9 +260,9 @@ namespace Taurus.Core
             {
                 if (!string.IsNullOrEmpty(name))
                 {
-                    if (_Table != null && _Table.ContainsKey(name))//微服务程序。
+                    if (_HostList != null && _HostList.ContainsKey(name))//微服务程序。
                     {
-                        return _Table[name];
+                        return _HostList[name];
                     }
                 }
                 return null;
@@ -313,24 +299,27 @@ namespace Taurus.Core
                     _Host2 = value;
                 }
             }
-            internal static MDictionary<string, List<HostInfo>> _Table;
+            internal static MDictionary<string, List<HostInfo>> _HostList;
             /// <summary>
             /// 从微服务主程序端获取的微服务列表【用于微服务间内部调用运转】
             /// </summary>
-            public static MDictionary<string, List<HostInfo>> Table
+            public static MDictionary<string, List<HostInfo>> HostList
             {
                 get
                 {
-                    if (_Table == null)
+                    if (_HostList == null)
                     {
-                        string json = IO.Read(MicroService.Const.ClientTablePath);
-                        _Table = JsonHelper.ToEntity<MDictionary<string, List<HostInfo>>>(json);
-                        if (_Table == null)
+                        string json = IO.Read(MicroService.Const.ClientHostListJsonPath);
+                        if (!string.IsNullOrEmpty(json))
                         {
-                            _Table = new MDictionary<string, List<HostInfo>>(StringComparer.OrdinalIgnoreCase);
+                            _HostList = JsonHelper.ToEntity<MDictionary<string, List<HostInfo>>>(json);
+                        }
+                        if (_HostList == null)
+                        {
+                            _HostList = new MDictionary<string, List<HostInfo>>(StringComparer.OrdinalIgnoreCase);
                         }
                     }
-                    return _Table;
+                    return _HostList;
                 }
             }
 
@@ -341,19 +330,27 @@ namespace Taurus.Core
             /// <returns></returns>
             public static string GetHost(string name)
             {
-                //if (!string.IsNullOrEmpty(name))
-                //{
-                //    if (_Table != null && _Table.Rows.Count > 0)//微服务程序。
-                //    {
-                //        string where = string.Format("name='{0}' order by calltime asc", name);//触发负载均衡
-                //        MDataRow row = _Table.FindRow(where);
-                //        if (row != null)
-                //        {
-                //            row.Set("calltime", DateTime.Now);//触发负载均衡
-                //            return row.Get<string>("host");
-                //        }
-                //    }
-                //}
+                if (!string.IsNullOrEmpty(name))
+                {
+                    if (_HostList != null && _HostList.ContainsKey(name))//微服务程序。
+                    {
+                        List<HostInfo> list = _HostList[name];
+                        if (list != null && list.Count > 0)
+                        {
+                            HostInfo firstInfo = list[0];
+                            if (firstInfo.CallIndex >= list.Count)
+                            {
+                                firstInfo.CallIndex = 1;//每次获取都自动标记下一位。
+                                return firstInfo.Host;
+                            }
+                            else
+                            {
+                                firstInfo.CallIndex++;//每次获取都自动标记下一位。
+                                return list[firstInfo.CallIndex - 1].Host;
+                            }
+                        }
+                    }
+                }
                 return string.Empty;
             }
             /// <summary>
@@ -365,111 +362,13 @@ namespace Taurus.Core
             {
                 if (!string.IsNullOrEmpty(name))
                 {
-                    if (_Table != null && _Table.ContainsKey(name))//微服务程序。
+                    if (_HostList != null && _HostList.ContainsKey(name))//微服务程序。
                     {
-                        return _Table[name];
+                        return _HostList[name];
                     }
                 }
                 return null;
             }
-        }
-
-
-        /// <summary>
-        /// 对应【AppSettings】可配置项
-        /// </summary>
-        public class Config
-        {
-            #region AppSetting 配置
-
-            /// <summary>
-            /// 微服务：服务端模块名称【可配置：GateWay或RegCenter】
-            /// </summary>
-            public static string ServerName
-            {
-                get
-                {
-                    return AppConfig.GetApp("MicroService.ServerName");
-                }
-                set
-                {
-                    AppConfig.SetApp("MicroService.ServerName", value);
-                }
-            }
-
-            /// <summary>
-            /// 微服务：注册中心地址【示例：http://localhost:9999】
-            /// </summary>
-            public static string ServerHost
-            {
-                get
-                {
-                    return AppConfig.GetApp("MicroService.ServerHost");
-                }
-                set
-                {
-                    AppConfig.SetApp("MicroService.ServerHost", value);
-                }
-            }
-            /// <summary>
-            /// 微服务：系统间调用密钥串【任意字符串】
-            /// </summary>
-            public static string ServerKey
-            {
-                get
-                {
-                    return AppConfig.GetApp("MicroService.ServerKey", "Taurus.MicroService.Key");
-                }
-                set
-                {
-                    AppConfig.SetApp("MicroService.ServerKey", value);
-                }
-            }
-            /// <summary>
-            /// 微服务：客户端模块名称【示例：Test】
-            /// </summary>
-            public static string ClientName
-            {
-                get
-                {
-                    return AppConfig.GetApp("MicroService.ClientName");
-                }
-                set
-                {
-                    AppConfig.SetApp("MicroService.ClientName", value);
-                }
-            }
-
-            /// <summary>
-            /// 微服务：当前运行Host【可不配置，系统自动读取】
-            /// </summary>
-            public static string ClientHost
-            {
-                get
-                {
-                    return AppConfig.GetApp("MicroService.ClientHost");
-                }
-                set
-                {
-                    AppConfig.SetApp("MicroService.ClientHost", value);
-                }
-            }
-
-            /// <summary>
-            /// 微服务：客户端模块版本号（用于版本间升级）【示例：1】
-            /// </summary>
-            public static int ClientVersion
-            {
-                get
-                {
-                    return AppConfig.GetAppInt("MicroService.ClientVersion", 1);
-                }
-                set
-                {
-                    AppConfig.SetApp("MicroService.ClientVersion", value.ToString());
-                }
-            }
-            #endregion
         }
     }
 }

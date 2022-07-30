@@ -170,13 +170,13 @@ namespace Taurus.Core
                     {
                         if (isServer)
                         {
-                            Server._Table = JsonHelper.ToEntity<MDictionary<string, List<HostInfo>>>(json);
-                            IO.Write(Const.ServerTablePath, json);
+                            Server._HostList = JsonHelper.ToEntity<MDictionary<string, List<HostInfo>>>(json);
+                            IO.Write(Const.ServerHostListJsonPath, json);
                         }
                         else
                         {
-                            Client._Table = JsonHelper.ToEntity<MDictionary<string, List<HostInfo>>>(json);
-                            IO.Write(Const.ClientTablePath, json);
+                            Client._HostList = JsonHelper.ToEntity<MDictionary<string, List<HostInfo>>>(json);
+                            IO.Write(Const.ClientHostListJsonPath, json);
                         }
                     }
                 }
@@ -298,7 +298,7 @@ namespace Taurus.Core
                 try
                 {
 
-                    string data = string.Format("json={0}&tick=" + Server.Tick, JsonHelper.ToJson(Server.Table));
+                    string data = string.Format("json={0}&tick=" + Server.Tick, JsonHelper.ToJson(Server.HostList));
                     using (WebClient wc = new WebClient())
                     {
                         wc.Headers.Add(Const.HeaderKey, Config.ServerKey);
@@ -498,9 +498,9 @@ namespace Taurus.Core
                     {
                         lock (tableLockObj)
                         {
-                            if (Server._Table != null && Server._Table.Count > 0)
+                            if (Server._HostList != null && Server._HostList.Count > 0)
                             {
-                                MDictionary<string, List<HostInfo>> keyValuePairs = Server._Table;//拿到引用
+                                MDictionary<string, List<HostInfo>> keyValuePairs = Server._HostList;//拿到引用
                                 MDictionary<string, List<HostInfo>> newKeyValuePairs = new MDictionary<string, List<HostInfo>>();
                                 foreach (var item in keyValuePairs)
                                 {
@@ -528,15 +528,15 @@ namespace Taurus.Core
                                     Server.Tick = DateTime.Now.Ticks;
                                     if (newKeyValuePairs.Count > 0)
                                     {
-                                        Server._TableJson = JsonHelper.ToJson(newKeyValuePairs);
-                                        IO.Write(Const.ServerTablePath, Server._TableJson);
+                                        Server._HostListJson = JsonHelper.ToJson(newKeyValuePairs);
+                                        IO.Write(Const.ServerHostListJsonPath, Server._HostListJson);
                                     }
                                     else
                                     {
-                                        Server._TableJson = String.Empty;
-                                        IO.Delete(Const.ServerTablePath);
+                                        Server._HostListJson = String.Empty;
+                                        IO.Delete(Const.ServerHostListJsonPath);
                                     }
-                                    Server._Table = newKeyValuePairs;
+                                    Server._HostList = newKeyValuePairs;
                                 }
                                 else
                                 {

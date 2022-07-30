@@ -42,7 +42,7 @@ namespace Taurus.Core
                 Write("Name and Host can't be empty", false);
                 return;
             }
-            var kvTable = MicroService.Server.Table;
+            var kvTable = MicroService.Server.HostList;
 
             #region 注册名字
             string[] names = name.ToLower().Split(',');//允许一次注册多个模块。
@@ -118,14 +118,14 @@ namespace Taurus.Core
             {
                 host = string.Empty;
             }
-            if (MicroService.Server.Table.Count == 0 || tick == MicroService.Server.Tick)
+            if (MicroService.Server.HostList.Count == 0 || tick == MicroService.Server.Tick)
             {
                 string result = JsonHelper.OutResult(true, "", "tick", MicroService.Server.Tick, "host2", MicroService.Server.Host2, "host", host);
                 Write(result);
             }
             else
             {
-                string json = MicroService.Server.TableJson;
+                string json = MicroService.Server.HostListJson;
                 string result = JsonHelper.OutResult(true, json, "tick", MicroService.Server.Tick, "host2", MicroService.Server.Host2, "host", host);
                 Write(result);
             }
@@ -163,7 +163,7 @@ namespace Taurus.Core
             if (!string.IsNullOrEmpty(json) && tick > MicroService.Server.Tick)
             {
                 MicroService.Server.Tick = tick;
-                MicroService.Server._Table = JsonHelper.ToEntity<MDictionary<string, List<MicroService.HostInfo>>>(json);
+                MicroService.Server._HostList = JsonHelper.ToEntity<MDictionary<string, List<MicroService.HostInfo>>>(json);
             }
             Write("", true);
         }
