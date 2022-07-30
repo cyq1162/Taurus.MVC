@@ -116,6 +116,7 @@ namespace Taurus.Core
         /// </summary>
         public class Const
         {
+            internal static readonly object tableLockObj = new object();
             /// <summary>
             /// 请求头带上的Header的Key名称
             /// </summary>

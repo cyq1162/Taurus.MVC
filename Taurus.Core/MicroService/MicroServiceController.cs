@@ -31,7 +31,7 @@ namespace Taurus.Core
                 return;//仅服务类型为注册中心，才允许接收注册。
             }
             #region 注册中心【从】检测到【主】恢复后，推送host，让后续的请求转回【主】
-            if (MicroService.Server.IsLive && MicroService.Config.ServerHost != MicroService.Config.ClientHost)
+            if (MicroService.Server.RegCenterIsLive && MicroService.Config.ServerHost != MicroService.Config.ClientHost)
             {
                 Write(JsonHelper.OutResult(true, "", "tick", MicroService.Server.Tick, "host", MicroService.Config.ServerHost));
                 return;
@@ -113,7 +113,7 @@ namespace Taurus.Core
             {
                 MicroService.Server.Host2 = String.Empty;
             }
-            string host = MicroService.Server.IsLive ? MicroService.Config.ServerHost : "";//注册中心【从】检测到【主】恢复后，推送host，让后续的请求转回【主】
+            string host = MicroService.Server.RegCenterIsLive ? MicroService.Config.ServerHost : "";//注册中心【从】检测到【主】恢复后，推送host，让后续的请求转回【主】
             if (host == MicroService.Config.ClientHost)//主机即是自己。
             {
                 host = string.Empty;

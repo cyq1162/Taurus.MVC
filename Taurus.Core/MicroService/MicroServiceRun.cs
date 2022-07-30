@@ -34,7 +34,7 @@ namespace Taurus.Core
                     {
                         Config.ClientHost = host.ToLower();//设置当前程序运行的请求网址。
                     }
-                    if (Server.IsMainRegCenter)
+                    if (Server.IsRegCenterOfMaster)
                     {
                         Thread thread = new Thread(new ThreadStart(ClearServerTable));
                         thread.Start();
@@ -246,13 +246,13 @@ namespace Taurus.Core
                         wc.Headers.Add("Referer", Config.ClientHost);
                         string data = "name={0}&host={1}&version={2}";
                         string result = wc.UploadString(url, string.Format(data, Config.ClientName, Config.ClientHost, Config.ClientVersion));
-                        Server.IsLive = true;
+                        Client.RegCenterIsLive = true;
                         return result;
                     }
                 }
                 catch (Exception err)
                 {
-                    Server.IsLive = false;
+                    Client.RegCenterIsLive = false;
                     if (!string.IsNullOrEmpty(Client.Host2))
                     {
                         Config.ServerHost = Client.Host2;//切换到备用库。
@@ -278,12 +278,12 @@ namespace Taurus.Core
                         string data = "host={0}&tick=" + Server.Tick;
                         result = wc.UploadString(url, string.Format(data, Config.ClientHost));
                     }
-                    Server.IsLive = true;
+                    Server.RegCenterIsLive = true;
                     return result;
                 }
                 catch (Exception err)
                 {
-                    Server.IsLive = false;
+                    Server.RegCenterIsLive = false;
                     LogWrite(err.Message, url, "POST", Config.ServerName);
                     return err.Message;
                 }
@@ -305,11 +305,11 @@ namespace Taurus.Core
                         wc.Headers.Add("Referer", Config.ClientHost);
                         wc.UploadString(url, data);
                     }
-                    Server.IsLive = true;
+                    Server.RegCenterIsLive = true;
                 }
                 catch (Exception err)
                 {
-                    Server.IsLive = false;
+                    Server.RegCenterIsLive = false;
                     LogWrite(err.Message, url, "POST", Config.ServerName);
                 }
             }
@@ -327,15 +327,22 @@ namespace Taurus.Core
                         wc.Headers.Add(Const.HeaderKey, Config.ServerKey);
                         wc.Headers.Set("Referer", Config.ClientHost);
                         string result = wc.DownloadString(url);
-                        Server.IsLive = true;
+                        if (isServer)
+                        {
+                            Server.RegCenterIsLive = true;
+                        }
+                        else
+                        {
+                            Client.RegCenterIsLive = true;
+                        }
                         return result;
                     }
                 }
                 catch (Exception err)
                 {
-                    Server.IsLive = false;
                     if (isServer)
                     {
+                        Server.RegCenterIsLive = false;
                         if (!string.IsNullOrEmpty(Server.Host2))
                         {
                             Config.ServerHost = Server.Host2;//切换到备用库。
@@ -343,6 +350,7 @@ namespace Taurus.Core
                     }
                     else
                     {
+                        Client.RegCenterIsLive = false;
                         if (!string.IsNullOrEmpty(Client.Host2))
                         {
                             Config.ServerHost = Client.Host2;//切换到备用库。
@@ -362,7 +370,7 @@ namespace Taurus.Core
             /// </summary>
             internal static bool Proxy(HttpContext context, bool isServerCall)
             {
-                if ((isServerCall && !IsServer) || (!isServerCall && !IsClient))
+                if ((isServerCall && !Server.IsServer) || (!isServerCall && !Client.IsClient))
                 {
                     return false;
                 }
@@ -386,7 +394,7 @@ namespace Taurus.Core
                 else
                 {
                     int max = 3;//最多循环3个节点，避免长时间循环卡机。
-                    bool isRegCenter = Server.IsMainRegCenter;
+                    bool isRegCenter = Server.IsRegCenterOfMaster;
                     HostInfo firstInfo = infoList[0];
                     for (int i = 0; i < infoList.Count; i++)
                     {
@@ -496,7 +504,7 @@ namespace Taurus.Core
                 {
                     try
                     {
-                        lock (tableLockObj)
+                        lock (Const.tableLockObj)
                         {
                             if (Server._HostList != null && Server._HostList.Count > 0)
                             {

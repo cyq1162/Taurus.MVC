@@ -12,12 +12,11 @@ namespace Taurus.Core
     /// <summary>
     /// 微服务的核心类
     /// </summary>
-    public partial class MicroService
+    public static partial class MicroService
     {
-        internal static readonly object tableLockObj = new object();
         #region 公共区域
         /// <summary>
-        /// 日志记录
+        /// 内部日志记录
         /// </summary>
         internal static void LogWrite(string msg, string url, string httpMethod, string moduleName)
         {
@@ -32,28 +31,9 @@ namespace Taurus.Core
             sysLogs.Write();
         }
         #endregion
-        
-        /// <summary>
-        /// 当前程序是否作为服务端运行
-        /// </summary>
-        public static bool IsServer
-        {
-            get
-            {
-                string name = Config.ServerName.ToLower();
-                return !string.IsNullOrEmpty(name) && (name == Const.RegCenter || (name == Const.Gateway && !string.IsNullOrEmpty(Config.ServerHost) && Config.ServerHost != Config.ClientHost));
-            }
-        }
-        /// <summary>
-        /// 当前程序是否作为客务端运行
-        /// </summary>
-        public static bool IsClient
-        {
-            get
-            {
-                return !string.IsNullOrEmpty(Config.ClientName) && !string.IsNullOrEmpty(Config.ServerHost) && Config.ServerHost != Config.ClientHost;
-            }
-        }
+
+
+
         /// <summary>
         /// 存档请求的客户端信息
         /// </summary>
@@ -103,27 +83,63 @@ namespace Taurus.Core
                 IOHelper.Delete(path);
             }
         }
-      
+
 
         /// <summary>
-        /// 服务端【网关Gateway或注册中心RegCenter】相关
+        /// 网关或注册中心端编码
         /// </summary>
         public class Server
         {
+            #region 对外开放接口或属性
+            /// <summary>
+            /// 当前程序是否作为服务端运行：网关或注册中心
+            /// </summary>
+            public static bool IsServer
+            {
+                get
+                {
+                    string name = Config.ServerName.ToLower();
+                    return !string.IsNullOrEmpty(name) && (name == Const.RegCenter || (name == Const.Gateway && !string.IsNullOrEmpty(Config.ServerHost) && Config.ServerHost != Config.ClientHost));
+                }
+            }
+            /// <summary>
+            /// 是否注册中心
+            /// </summary>
+            public static bool IsRegCenter
+            {
+                get
+                {
+                    return Config.ServerName.ToLower() == Const.RegCenter;
+                }
+            }
+            /// <summary>
+            /// 是否网关中心
+            /// </summary>
+            public static bool IsGateway
+            {
+                get
+                {
+                    return Config.ServerName.ToLower() == Const.Gateway && !string.IsNullOrEmpty(Config.ServerHost);
+                }
+            }
             /// <summary>
             /// 是否注册中心（主）
             /// </summary>
-            internal static bool IsMainRegCenter
+            public static bool IsRegCenterOfMaster
             {
                 get
                 {
                     return Config.ServerName.ToLower() == Const.RegCenter && (string.IsNullOrEmpty(Config.ServerHost) || Config.ServerHost == Config.ClientHost);
                 }
             }
+
             /// <summary>
-            /// 注册中心备份 - 检测状态。
+            /// 注册中心备份或网关 - 检测注册中心是否安在。
             /// </summary>
-            internal static bool IsLive = false;
+            public static bool RegCenterIsLive = false;
+
+            #endregion
+
             /// <summary>
             /// 作为注册中心时的最后更新标识.
             /// </summary>
@@ -143,7 +159,7 @@ namespace Taurus.Core
                     if (string.IsNullOrEmpty(_HostListJson) && IsChange && _HostList != null && _HostList.Count > 0)
                     {
                         IsChange = false;
-                        lock (tableLockObj)
+                        lock (Const.tableLockObj)
                         {
                             _HostListJson = JsonHelper.ToJson(HostList);
                         }
@@ -191,11 +207,11 @@ namespace Taurus.Core
                 {
                     if (_HostList == null)
                     {
-                        string json = IO.Read(MicroService.Const.ServerHostListJsonPath);
-                        if (!string.IsNullOrEmpty(json))//数据恢复。
+                        _HostListJson = IO.Read(MicroService.Const.ServerHostListJsonPath);
+                        if (!string.IsNullOrEmpty(_HostListJson))//数据恢复。
                         {
                             #region 从Json文件恢复数据
-                            MDictionary<string, List<HostInfo>> keys = JsonHelper.ToEntity<MDictionary<string, List<HostInfo>>>(json);
+                            MDictionary<string, List<HostInfo>> keys = JsonHelper.ToEntity<MDictionary<string, List<HostInfo>>>(_HostListJson);
                             if (keys != null && keys.Count > 0)
                             {
                                 //恢复时间，避免被清除。
@@ -222,7 +238,7 @@ namespace Taurus.Core
                 }
             }
             /// <summary>
-            /// 获取模块所在的对应主机网址。
+            /// 获取模块所在的对应主机网址【若存在多个：每次获取都会循环下一个】。
             /// </summary>
             /// <param name="name">服务模块名称</param>
             /// <returns></returns>
@@ -232,19 +248,26 @@ namespace Taurus.Core
                 {
                     if (_HostList != null && _HostList.ContainsKey(name))//微服务程序。
                     {
-                        List<HostInfo> list = _HostList[name];
-                        if (list != null && list.Count > 0)
+                        List<HostInfo> infoList = _HostList[name];
+                        if (infoList != null && infoList.Count > 0)
                         {
-                            HostInfo firstInfo = list[0];
-                            if (firstInfo.CallIndex >= list.Count)
+                            bool isRegCenter = Server.IsRegCenterOfMaster;
+                            HostInfo firstInfo = infoList[0];
+                            for (int i = 0; i < infoList.Count; i++)
                             {
-                                firstInfo.CallIndex = 1;//每次获取都自动标记下一位。
-                                return firstInfo.Host;
-                            }
-                            else
-                            {
-                                firstInfo.CallIndex++;//每次获取都自动标记下一位。
-                                return list[firstInfo.CallIndex - 1].Host;
+                                int callIndex = firstInfo.CallIndex + i;
+                                if (callIndex >= infoList.Count)
+                                {
+                                    callIndex = callIndex - infoList.Count;
+                                }
+                                HostInfo info = infoList[callIndex];
+
+                                if (info.Version < 0 || (info.CallTime > DateTime.Now && infoList.Count > 0) || (isRegCenter && info.RegTime < DateTime.Now.AddSeconds(-10)))//正常5-10秒注册1次。
+                                {
+                                    continue;//已经断开服务的。
+                                }
+                                firstInfo.CallIndex = i + 1;//指向下一个。
+                                return infoList[i].Host;
                             }
                         }
                     }
@@ -269,10 +292,29 @@ namespace Taurus.Core
             }
         }
         /// <summary>
-        /// 客户端【微服务模块】相关
+        /// 微服务应用程序编码
         /// </summary>
         public class Client
         {
+            #region 对外开放的方法或属性
+
+
+            /// <summary>
+            /// 当前程序是否作为客务端运行：微服务应用程序
+            /// </summary>
+            public static bool IsClient
+            {
+                get
+                {
+                    return !string.IsNullOrEmpty(Config.ClientName) && !string.IsNullOrEmpty(Config.ServerHost) && Config.ServerHost != Config.ClientHost;
+                }
+            }
+            /// <summary>
+            /// 微服务应用程序 - 检测注册中心是否安在。
+            /// </summary>
+            public static bool RegCenterIsLive = false;
+
+            #endregion
             /// <summary>
             /// 读取：注册中心时的最后更新标识.
             /// </summary>
@@ -324,7 +366,7 @@ namespace Taurus.Core
             }
 
             /// <summary>
-            /// 获取模块所在的对应主机网址。
+            /// 获取模块所在的对应主机网址【若存在多个：每次获取都会循环下一个】。
             /// </summary>
             /// <param name="name">服务模块名称</param>
             /// <returns></returns>
@@ -334,19 +376,25 @@ namespace Taurus.Core
                 {
                     if (_HostList != null && _HostList.ContainsKey(name))//微服务程序。
                     {
-                        List<HostInfo> list = _HostList[name];
-                        if (list != null && list.Count > 0)
+                        List<HostInfo> infoList = _HostList[name];
+                        if (infoList != null && infoList.Count > 0)
                         {
-                            HostInfo firstInfo = list[0];
-                            if (firstInfo.CallIndex >= list.Count)
+                            HostInfo firstInfo = infoList[0];
+                            for (int i = 0; i < infoList.Count; i++)
                             {
-                                firstInfo.CallIndex = 1;//每次获取都自动标记下一位。
-                                return firstInfo.Host;
-                            }
-                            else
-                            {
-                                firstInfo.CallIndex++;//每次获取都自动标记下一位。
-                                return list[firstInfo.CallIndex - 1].Host;
+                                int callIndex = firstInfo.CallIndex + i;
+                                if (callIndex >= infoList.Count)
+                                {
+                                    callIndex = callIndex - infoList.Count;
+                                }
+                                HostInfo info = infoList[callIndex];
+
+                                if (info.Version < 0)//正常5-10秒注册1次。
+                                {
+                                    continue;//已经断开服务的。
+                                }
+                                firstInfo.CallIndex = i + 1;//指向下一个。
+                                return infoList[i].Host;
                             }
                         }
                     }

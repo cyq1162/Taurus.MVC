@@ -308,7 +308,7 @@ namespace Taurus.Core
 
             #region MicroService
             MDataTable table = null;
-            if (MicroService.IsServer)
+            if (MicroService.Server.IsServer)
             {
                 table = new MDataTable();
                 table.Columns.Add("name,host");
