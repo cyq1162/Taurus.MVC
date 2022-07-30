@@ -310,7 +310,15 @@ namespace Taurus.Core
             MDataTable table = null;
             if (MicroService.IsServer)
             {
-                table = MicroService.Server.Table.FindAll("time>" + DateTime.Now.AddSeconds(-30));
+                table = new MDataTable();
+                table.Columns.Add("name,host");
+                foreach (var item in MicroService.Server.Table)
+                {
+                    if (item.Value.Count > 0)
+                    {
+                        table.NewRow(true).Sets(0, item.Key, item.Value[0].Host);
+                    }
+                }
             }
             if (table != null && table.Rows.Count > 0)
             {
@@ -419,7 +427,7 @@ namespace Taurus.Core
                     if (!string.IsNullOrEmpty(attr))
                     {
                         string name = attr.ToLower();
-                        
+
                         if (name == "get" || name == "post" || name == "head" || name == "put" || name == "delete")
                         {
                             View.Set("httpType", name.ToUpper());
@@ -430,7 +438,7 @@ namespace Taurus.Core
                         {
                             value = MicroService.Config.ServerKey;
                         }
-                        
+
                         dt.NewRow(true, 0).Set(0, name)
                                 .Set(1, name)
                                 .Set(2, true)

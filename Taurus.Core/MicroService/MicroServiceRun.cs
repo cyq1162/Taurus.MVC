@@ -85,11 +85,11 @@ namespace Taurus.Core
                                 AfterRegHost2(RegHost2());
                                 break;
                         }
-                        Thread.Sleep(5000);
+                        Thread.Sleep(new Random().Next(5000, 10000));//5-10秒循环1次。
                     }
                     catch (Exception err)
                     {
-                        Thread.Sleep(5000);
+                        Thread.Sleep(new Random().Next(5000, 10000));//5-10秒循环1次。
                         Log.Write(err.Message, "MicroService");
                     }
                 }
@@ -103,12 +103,22 @@ namespace Taurus.Core
                 {
                     try
                     {
+                        ////测试并发与大数据量
+                        //for (int i = 0; i < 10000; i++)
+                        //{
+                        //    string hostName = Config.ClientName;
+                        //    if (i > 0)
+                        //    {
+                        //        hostName = "test" + i;
+                        //    }
+                            
+                        //}
                         AfterRegHost(RegHost());
-                        Thread.Sleep(5000);
+                        Thread.Sleep(new Random().Next(5000, 10000));//5-10秒循环1次。
                     }
                     catch (Exception err)
                     {
-                        Thread.Sleep(5000);
+                        Thread.Sleep(new Random().Next(5000, 10000));//5-10秒循环1次。
                         Log.Write(err.Message, "MicroService");
                     }
                 }
@@ -160,12 +170,12 @@ namespace Taurus.Core
                     {
                         if (isServer)
                         {
-                            Server._Table = MDataTable.CreateFrom(json);
+                            Server._Table = JsonHelper.ToEntity<MDictionary<string, List<HostInfo>>>(json);
                             IO.Write(Const.ServerTablePath, json);
                         }
                         else
                         {
-                            Client._Table = MDataTable.CreateFrom(json);
+                            Client._Table = JsonHelper.ToEntity<MDictionary<string, List<HostInfo>>>(json);
                             IO.Write(Const.ClientTablePath, json);
                         }
                     }
@@ -226,6 +236,7 @@ namespace Taurus.Core
             private static string RegHost()
             {
                 string url = Config.ServerHost + "/MicroService/Reg";
+
                 try
                 {
 
@@ -287,7 +298,7 @@ namespace Taurus.Core
                 try
                 {
 
-                    string data = string.Format("json={0}&tick=" + Server.Tick, Server.Table.ToJson(false, true));
+                    string data = string.Format("json={0}&tick=" + Server.Tick, JsonHelper.ToJson(Server.Table));
                     using (WebClient wc = new WebClient())
                     {
                         wc.Headers.Add(Const.HeaderKey, Config.ServerKey);
@@ -355,43 +366,57 @@ namespace Taurus.Core
                 {
                     return false;
                 }
+                List<HostInfo> infoList = null;
                 string module = string.Empty;
                 IPAddress iPAddress;
-                if (context.Request.Url.Host == "localhost" || IPAddress.TryParse(context.Request.Url.Host, out iPAddress))
+                if (context.Request.Url.Host != "localhost" && !IPAddress.TryParse(context.Request.Url.Host, out iPAddress))
+                {
+                    module = context.Request.Url.Host;//域名转发优先。
+                    infoList = isServerCall ? MicroService.Server.GetHostList(module) : MicroService.Client.GetHostList(module);
+                }
+                if (infoList == null || infoList.Count == 0)
                 {
                     module = context.Request.Url.LocalPath.TrimStart('/').Split('/')[0];
+                    infoList = isServerCall ? MicroService.Server.GetHostList(module) : MicroService.Client.GetHostList(module);
                 }
-                else
-                {
-                    module = context.Request.Url.Host;//域名转发。
-                }
-
-
-                MDataTable dt = isServerCall ? MicroService.Server.GetHostList(module) : MicroService.Client.GetHostList(module);
-                if (dt == null || dt.Rows.Count == 0)
+                if (infoList == null || infoList.Count == 0)
                 {
                     return false;
                 }
                 else
                 {
                     int max = 3;//最多循环3个节点，避免长时间循环卡机。
-                    foreach (MDataRow row in dt.Rows)
+                    bool isRegCenter = Server.IsMainRegCenter;
+                    HostInfo firstInfo = infoList[0];
+                    for (int i = 0; i < infoList.Count; i++)
                     {
-                        max--;
-                        string host = row.Get<string>("host");
-                        if (Proxy(context, host))
+                        int callIndex = firstInfo.CallIndex + i;
+                        if (callIndex >= infoList.Count)
                         {
-                            row.Set("calltime", DateTime.Now);
+                            callIndex = callIndex - infoList.Count;
+                        }
+                        HostInfo info = infoList[callIndex];
+
+                        if (info.Version < 0 || (info.CallTime > DateTime.Now && infoList.Count > 0) || (isRegCenter && info.RegTime < DateTime.Now.AddSeconds(-10)))//正常5-10秒注册1次。
+                        {
+                            continue;//已经断开服务的。
+                        }
+
+                        if (Proxy(context, info.Host))
+                        {
+                            firstInfo.CallIndex = i + 1;//指向下一个。
                             return true;
                         }
                         else
                         {
-                            row.Set("calltime", DateTime.Now.AddMinutes(1));//网络异常的，延时1分钟检测。
+                            info.CallTime = DateTime.Now.AddMinutes(1);//网络异常的，延时1分钟检测。
+                            max--;
+                            if (max == 0)
+                            {
+                                return false;
+                            }
                         }
-                        if (max == 0)
-                        {
-                            return false;
-                        }
+
                     }
                     return false;
                 }
@@ -471,43 +496,62 @@ namespace Taurus.Core
                 {
                     try
                     {
-                        if (Server.Table.Rows.Count > 0)
+                        lock (tableLockObj)
                         {
-                            string where = string.Format("time<'{0}'", DateTime.Now.AddSeconds(-30));
-                            MDataRowCollection rows = Server.Table.FindAll(where);
-                            if (rows != null && rows.Count > 0)
+                            if (Server._Table != null && Server._Table.Count > 0)
                             {
-                                foreach (MDataRow row in rows)
+                                MDictionary<string, List<HostInfo>> keyValuePairs = Server._Table;//拿到引用
+                                MDictionary<string, List<HostInfo>> newKeyValuePairs = new MDictionary<string, List<HostInfo>>();
+                                foreach (var item in keyValuePairs)
                                 {
-                                    Server.Table.Rows.Remove(row);
+                                    List<HostInfo> newList = new List<HostInfo>();
+                                    foreach (var info in item.Value)
+                                    {
+                                        if (info.RegTime < DateTime.Now.AddSeconds(-15) || info.Version < 0)
+                                        {
+                                            Server.IsChange = true;
+                                        }
+                                        else
+                                        {
+                                            newList.Add(info);
+                                        }
+                                    }
+                                    if (newList.Count > 0)
+                                    {
+                                        newKeyValuePairs.Add(item.Key, newList);
+                                    }
                                 }
-                                Server.Tick = DateTime.Now.Ticks;
-                            }
 
+                                if (Server.IsChange)
+                                {
+                                    Server.IsChange = false;
+                                    Server.Tick = DateTime.Now.Ticks;
+                                    if (newKeyValuePairs.Count > 0)
+                                    {
+                                        Server._TableJson = JsonHelper.ToJson(newKeyValuePairs);
+                                        IO.Write(Const.ServerTablePath, Server._TableJson);
+                                    }
+                                    else
+                                    {
+                                        Server._TableJson = String.Empty;
+                                        IO.Delete(Const.ServerTablePath);
+                                    }
+                                    Server._Table = newKeyValuePairs;
+                                }
+                                else
+                                {
+                                    newKeyValuePairs.Clear();
+                                    newKeyValuePairs = null;
+                                }
+                            }
                         }
                     }
                     catch (Exception err)
                     {
                         LogWrite(err.Message, "MicroService.Run.ClearServerTable()", "", Config.ServerName);
                     }
-                    Thread.Sleep(30000);
+                    Thread.Sleep(5000);//测试并发。
                 }
-            }
-
-            /// <summary>
-            /// 日志记录
-            /// </summary>
-            private static void LogWrite(string msg, string url, string httpMethod, string moduleName)
-            {
-                SysLogs sysLogs = new SysLogs();
-                sysLogs.LogType = "MicroService";
-                sysLogs.Message = msg;
-                sysLogs.PageUrl = url;
-                sysLogs.HttpMethod = httpMethod;
-                sysLogs.ClientIP = sysLogs.Host;
-                sysLogs.Host = Config.ClientHost;
-                sysLogs.HostName = moduleName;
-                sysLogs.Write();
             }
             #endregion
         }

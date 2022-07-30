@@ -14,6 +14,43 @@ namespace Taurus.Core
     /// </summary>
     public partial class MicroService
     {
+        internal static readonly object tableLockObj = new object();
+        #region 公共区域
+        /// <summary>
+        /// 日志记录
+        /// </summary>
+        internal static void LogWrite(string msg, string url, string httpMethod, string moduleName)
+        {
+            SysLogs sysLogs = new SysLogs();
+            sysLogs.LogType = "MicroService";
+            sysLogs.Message = msg;
+            sysLogs.PageUrl = url;
+            sysLogs.HttpMethod = httpMethod;
+            sysLogs.ClientIP = sysLogs.Host;
+            sysLogs.Host = Config.ClientHost;
+            sysLogs.HostName = moduleName;
+            sysLogs.Write();
+        }
+        #endregion
+        
+        /// <summary>
+        /// 存档请求的客户端信息
+        /// </summary>
+        public class HostInfo
+        {
+            public string Host { get; set; }
+            public int Version { get; set; }
+            public DateTime RegTime { get; set; }
+            /// <summary>
+            /// 记录调用时间，用于隔离无法调用的服务，延时调用。
+            /// </summary>
+            public DateTime CallTime { get; set; }
+            /// <summary>
+            /// 记录调用顺序，用于负载均衡
+            /// </summary>
+            public int CallIndex { get; set; }
+
+        }
         /// <summary>
         /// 当前程序是否作为服务端运行
         /// </summary>
@@ -104,6 +141,34 @@ namespace Taurus.Core
             /// 作为注册中心时的最后更新标识.
             /// </summary>
             internal static long Tick = 0;
+            /// <summary>
+            /// 注册中心 - 数据是否发生改变
+            /// </summary>
+            internal static bool IsChange = false;
+            internal static string _TableJson = String.Empty;
+            /// <summary>
+            /// 注册中心 - 返回的表数据Json
+            /// </summary>
+            internal static string TableJson
+            {
+                get
+                {
+                    if (string.IsNullOrEmpty(_TableJson) && IsChange && _Table != null && _Table.Count > 0)
+                    {
+                        IsChange = false;
+                        lock (tableLockObj)
+                        {
+                            _TableJson = JsonHelper.ToJson(Table);
+                        }
+                        IO.Write(Const.ServerTablePath, _TableJson);
+                    }
+                    return _TableJson;
+                }
+                set
+                {
+                    _TableJson = value;
+                }
+            }
             internal static string _Host2 = string.Empty;
             /// <summary>
             /// 注册中心【存档】故障转移备用链接。
@@ -128,11 +193,12 @@ namespace Taurus.Core
             /// </summary>
             internal static DateTime Host2LastRegTime = DateTime.MinValue;
 
-            internal static MDataTable _Table;
+
+            internal static MDictionary<string, List<HostInfo>> _Table;
             /// <summary>
             /// 作为微服务主程序时，存档的微服务列表
             /// </summary>
-            public static MDataTable Table
+            public static MDictionary<string, List<HostInfo>> Table
             {
                 get
                 {
@@ -141,19 +207,28 @@ namespace Taurus.Core
                         string json = IO.Read(MicroService.Const.ServerTablePath);
                         if (!string.IsNullOrEmpty(json))//数据恢复。
                         {
-                            _Table = MDataTable.CreateFrom(json);
-                            if (_Table.Columns.Contains("time"))
+                            #region 从Json文件恢复数据
+                            MDictionary<string, List<HostInfo>> keys = JsonHelper.ToEntity<MDictionary<string, List<HostInfo>>>(json);
+                            if (keys != null && keys.Count > 0)
                             {
-                                _Table.Columns["time"].Set(DateTime.Now);//恢复时间，避免被清除。
+                                //恢复时间，避免被清除。
+                                foreach (var item in keys)
+                                {
+                                    if (item.Value != null)
+                                    {
+                                        foreach (var ci in item.Value)
+                                        {
+                                            ci.RegTime = DateTime.Now;
+                                        }
+                                    }
+                                }
                             }
+                            _Table = keys;
+                            #endregion
                         }
-                        else
+                        if (_Table == null)
                         {
-                            _Table = new MDataTable();
-                            _Table.Columns.Add("name,host");
-                            _Table.Columns.Add("version", System.Data.SqlDbType.Int);
-                            _Table.Columns.Add("time", System.Data.SqlDbType.DateTime);
-                            _Table.Columns.Add("calltime", System.Data.SqlDbType.DateTime);
+                            _Table = new MDictionary<string, List<HostInfo>>(StringComparer.OrdinalIgnoreCase);
                         }
                     }
                     return _Table;
@@ -166,20 +241,28 @@ namespace Taurus.Core
             /// <returns></returns>
             public static string GetHost(string name)
             {
-                if (!string.IsNullOrEmpty(name))
-                {
-                    if (_Table != null && _Table.Rows.Count > 0)//微服务程序。
-                    {
-                        string time = IsMainRegCenter ? string.Format(" and time>'{0}',", DateTime.Now.AddSeconds(-10)) : "";
-                        string where = string.Format("name='{0}' {1} order by calltime asc", name, time);
-                        MDataRow row = _Table.FindRow(where);
-                        if (row != null)
-                        {
-                            row.Set("calltime", DateTime.Now);//触发负载均衡
-                            return row.Get<string>("host");
-                        }
-                    }
-                }
+                //if (!string.IsNullOrEmpty(name))
+                //{
+                //    if (_Table != null && _Table.ContainsKey(name))//微服务程序。
+                //    {
+                //        List<ClientInfo> list = _Table[name];
+                //        if (list.Count > 0)
+                //        {
+                //            var firstInfo = list[0];
+                //            firstInfo.CallTime = DateTime.Now;
+                //            if (firstInfo.CallIndex >= list.Count)
+                //            {
+                //                firstInfo.CallIndex = 1;
+                //                return firstInfo.Host;
+                //            }
+                //            else
+                //            {
+                //                firstInfo.CallIndex++;
+                //                return list[firstInfo.CallIndex - 1].Host;
+                //            }
+                //        }
+                //    }
+                //}
                 return string.Empty;
             }
             /// <summary>
@@ -187,40 +270,16 @@ namespace Taurus.Core
             /// </summary>
             /// <param name="name">服务模块名称</param>
             /// <returns></returns>
-            public static MDataTable GetHostList(string name)
+            public static List<HostInfo> GetHostList(string name)
             {
                 if (!string.IsNullOrEmpty(name))
                 {
-                    if (_Table != null && _Table.Rows.Count > 0)//微服务程序。
+                    if (_Table != null && _Table.ContainsKey(name))//微服务程序。
                     {
-                        string time = IsMainRegCenter ? string.Format(" and time>'{0}'", DateTime.Now.AddSeconds(-10)) : "";
-                        string where = string.Format("name='{0}' {1} order by calltime asc", name, time);
-                        return _Table.FindAll(where);
+                        return _Table[name];
                     }
                 }
                 return null;
-            }
-
-            /// <summary>
-            /// 检测是否在微服务程序中。
-            /// </summary>
-            /// <param name="name">服务模块名称</param>
-            /// <returns></returns>
-            public static bool Contains(string name)
-            {
-                if (!string.IsNullOrEmpty(name))
-                {
-                    if (Server._Table != null && Server._Table.Rows.Count > 0)//注册中心主程序作为网关时。
-                    {
-                        string time = IsMainRegCenter ? string.Format(" and time>'{0}'", DateTime.Now.AddSeconds(-10)) : "";
-                        string where = string.Format("name='{0}' {1}", name, time);
-                        if (Server._Table.FindRow(where) != null)
-                        {
-                            return true;
-                        }
-                    }
-                }
-                return false;
             }
         }
         /// <summary>
@@ -254,18 +313,22 @@ namespace Taurus.Core
                     _Host2 = value;
                 }
             }
-            internal static MDataTable _Table;
+            internal static MDictionary<string, List<HostInfo>> _Table;
             /// <summary>
             /// 从微服务主程序端获取的微服务列表【用于微服务间内部调用运转】
             /// </summary>
-            public static MDataTable Table
+            public static MDictionary<string, List<HostInfo>> Table
             {
                 get
                 {
                     if (_Table == null)
                     {
                         string json = IO.Read(MicroService.Const.ClientTablePath);
-                        _Table = MDataTable.CreateFrom(json);
+                        _Table = JsonHelper.ToEntity<MDictionary<string, List<HostInfo>>>(json);
+                        if (_Table == null)
+                        {
+                            _Table = new MDictionary<string, List<HostInfo>>(StringComparer.OrdinalIgnoreCase);
+                        }
                     }
                     return _Table;
                 }
@@ -278,19 +341,19 @@ namespace Taurus.Core
             /// <returns></returns>
             public static string GetHost(string name)
             {
-                if (!string.IsNullOrEmpty(name))
-                {
-                    if (_Table != null && _Table.Rows.Count > 0)//微服务程序。
-                    {
-                        string where = string.Format("name='{0}' order by calltime asc", name);//触发负载均衡
-                        MDataRow row = _Table.FindRow(where);
-                        if (row != null)
-                        {
-                            row.Set("calltime", DateTime.Now);//触发负载均衡
-                            return row.Get<string>("host");
-                        }
-                    }
-                }
+                //if (!string.IsNullOrEmpty(name))
+                //{
+                //    if (_Table != null && _Table.Rows.Count > 0)//微服务程序。
+                //    {
+                //        string where = string.Format("name='{0}' order by calltime asc", name);//触发负载均衡
+                //        MDataRow row = _Table.FindRow(where);
+                //        if (row != null)
+                //        {
+                //            row.Set("calltime", DateTime.Now);//触发负载均衡
+                //            return row.Get<string>("host");
+                //        }
+                //    }
+                //}
                 return string.Empty;
             }
             /// <summary>
@@ -298,34 +361,16 @@ namespace Taurus.Core
             /// </summary>
             /// <param name="name">服务模块名称</param>
             /// <returns></returns>
-            public static MDataTable GetHostList(string name)
+            public static List<HostInfo> GetHostList(string name)
             {
                 if (!string.IsNullOrEmpty(name))
                 {
-                    if (_Table != null && _Table.Rows.Count > 0)//微服务程序。
+                    if (_Table != null && _Table.ContainsKey(name))//微服务程序。
                     {
-                        string where = string.Format("name='{0}' order by calltime asc", name);
-                        return _Table.FindAll(where);
+                        return _Table[name];
                     }
                 }
                 return null;
-            }
-            /// <summary>
-            /// 检测模块是否在微服务程序中。
-            /// </summary>
-            /// <param name="name">服务模块名称</param>
-            /// <returns></returns>
-            public static bool Contains(string name)
-            {
-                if (!string.IsNullOrEmpty(name))
-                {
-                    if (Client._Table != null && Client._Table.Rows.Count > 0)//网关、微服务程序
-                    {
-                        string where = string.Format("name='{0}'", name);
-                        return Client._Table.FindRow(where) != null;
-                    }
-                }
-                return false;
             }
         }
 

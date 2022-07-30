@@ -1,6 +1,8 @@
 ﻿using System;
 using CYQ.Data.Tool;
 using CYQ.Data.Table;
+using System.Collections.Generic;
+
 namespace Taurus.Core
 {
     /// <summary>
@@ -25,6 +27,7 @@ namespace Taurus.Core
         {
             if (MicroService.Config.ServerName.ToLower() != MicroService.Const.RegCenter)
             {
+                MicroService.LogWrite("MicroService.Reg : This is not RegCenter", Convert.ToString(Request.UrlReferrer), "POST", MicroService.Config.ServerName);
                 return;//仅服务类型为注册中心，才允许接收注册。
             }
             #region 注册中心【从】检测到【主】恢复后，推送host，让后续的请求转回【主】
@@ -39,48 +42,55 @@ namespace Taurus.Core
                 Write("Name and Host can't be empty", false);
                 return;
             }
-            MDataTable MSTable = MicroService.Server.Table;
-            bool isChange = false;
+            var kvTable = MicroService.Server.Table;
 
             #region 注册名字
             string[] names = name.ToLower().Split(',');//允许一次注册多个模块。
             foreach (string module in names)
             {
-                MDataTable table = MSTable.FindAll("name='" + module + "'");
-                if (table == null || table.Rows.Count == 0)
+                if (!kvTable.ContainsKey(module))
                 {
                     //首次添加
-                    isChange = true;
-                    MSTable.NewRow(true).Sets(0, module, host, version, DateTime.Now);
+                    MicroService.Server.IsChange = true;
+                    List<MicroService.HostInfo> list = new List<MicroService.HostInfo>();
+                    MicroService.HostInfo info = new MicroService.HostInfo();
+                    info.Host = host;
+                    info.RegTime = DateTime.Now;
+                    info.Version = version;
+                    list.Add(info);
+                    kvTable.Add(module, list);
                 }
                 else
                 {
-                    //移除低版本号的服务。
-                    MDataRowCollection rows = table.FindAll("version<" + version);
-                    if (rows != null && rows.Count > 0)
+                    bool hasHost = false;
+                    List<MicroService.HostInfo> list = kvTable[module];
+                    for (int i = 0; i < list.Count; i++)
                     {
-                        foreach (var item in rows)
+                        MicroService.HostInfo info = list[i];
+                        if (info.Version < version)
                         {
-                            table.Rows.Remove(item);
-                            MSTable.Rows.Remove(item);
-                            isChange = true;
+                            info.Version = -1;//标识为-1，由任务清除。
+                        }
+                        else if (info.Host == host)
+                        {
+                            hasHost = true;
+                            info.RegTime = DateTime.Now;//更新时间。
                         }
                     }
-                    //新版本添加
-                    MDataRow row = table.FindRow("host='" + host + "'");
-                    if (row == null)
+                    if (!hasHost) //新版本添加
                     {
-                        isChange = true;
-                        MSTable.NewRow(true).Sets(0, module, host, version, DateTime.Now);
-                    }
-                    else
-                    {
-                        row.Set("time", DateTime.Now);//更新时间。
+                        MicroService.Server.IsChange = true;
+                        MicroService.HostInfo info = new MicroService.HostInfo();
+                        info.Host = host;
+                        info.RegTime = DateTime.Now;
+                        info.Version = version;
+                        list.Add(info);
                     }
                 }
             }
+
             #endregion
-            if (isChange || MicroService.Server.Tick == 0)
+            if (MicroService.Server.Tick == 0)
             {
                 MicroService.Server.Tick = DateTime.Now.Ticks;
             }
@@ -108,15 +118,14 @@ namespace Taurus.Core
             {
                 host = string.Empty;
             }
-            if (MicroService.Server.Table.Rows.Count == 0 || tick == MicroService.Server.Tick)
+            if (MicroService.Server.Table.Count == 0 || tick == MicroService.Server.Tick)
             {
                 string result = JsonHelper.OutResult(true, "", "tick", MicroService.Server.Tick, "host2", MicroService.Server.Host2, "host", host);
                 Write(result);
             }
             else
             {
-                string json = MicroService.Server.Table.ToJson(false, true);
-                MicroService.IO.Write(MicroService.Const.ServerTablePath, json);
+                string json = MicroService.Server.TableJson;
                 string result = JsonHelper.OutResult(true, json, "tick", MicroService.Server.Tick, "host2", MicroService.Server.Host2, "host", host);
                 Write(result);
             }
@@ -154,7 +163,7 @@ namespace Taurus.Core
             if (!string.IsNullOrEmpty(json) && tick > MicroService.Server.Tick)
             {
                 MicroService.Server.Tick = tick;
-                MicroService.Server._Table = MDataTable.CreateFrom(json);
+                MicroService.Server._Table = JsonHelper.ToEntity<MDictionary<string, List<MicroService.HostInfo>>>(json);
             }
             Write("", true);
         }
