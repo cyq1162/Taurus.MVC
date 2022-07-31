@@ -77,7 +77,7 @@ namespace Taurus.Core
                 if (string.IsNullOrEmpty(_DllNames))
                 {
                     _DllNames = AppConfig.GetApp(AppSettings.Controllers, "");
-                    if (string.IsNullOrEmpty(_DllNames))
+                    if (string.IsNullOrEmpty(_DllNames) || _DllNames == "*")
                     {
                         string[] files = Directory.GetFiles(AppConfig.AssemblyPath, "*Controllers.dll", SearchOption.AllDirectories);
                         if (files == null || files.Length == 0)

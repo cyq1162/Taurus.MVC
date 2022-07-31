@@ -29,9 +29,11 @@ namespace Taurus.Core
         }
         HttpContext context;
         bool isProxyCallSuccess = false;//微服务代理调用
+        bool isUseMvc = false;
         void context_BeginRequest(object sender, EventArgs e)
         {
             isProxyCallSuccess = false;//被单例复用了，每次需要重新赋值。
+            isUseMvc = !string.IsNullOrEmpty(AppConfig.GetApp(AppSettings.Controllers));//有配置时才启动MVC，否则默认仅启动微服务。
             HttpApplication app = (HttpApplication)sender;
             context = app.Context;
 
@@ -47,24 +49,27 @@ namespace Taurus.Core
             }
             #endregion
 
-            if (context.Request.Url.LocalPath == "/")//设置默认首页
+            if (isUseMvc)
             {
-                string defaultUrl = QueryTool.GetDefaultUrl();
-                if (!string.IsNullOrEmpty(defaultUrl))
+                if (context.Request.Url.LocalPath == "/")//设置默认首页
                 {
-                    context.RewritePath(defaultUrl);
-                    return;
-                }
-            }
-            if (QueryTool.IsTaurusSuffix())
-            {
-                MethodInfo routeMapInvoke = InvokeLogic.RouteMapInvokeMethod;
-                if (routeMapInvoke != null)
-                {
-                    string url = Convert.ToString(routeMapInvoke.Invoke(null, new object[] { context.Request }));
-                    if (!string.IsNullOrEmpty(url))
+                    string defaultUrl = QueryTool.GetDefaultUrl();
+                    if (!string.IsNullOrEmpty(defaultUrl))
                     {
-                        context.RewritePath(url);
+                        context.RewritePath(defaultUrl);
+                        return;
+                    }
+                }
+                if (QueryTool.IsTaurusSuffix())
+                {
+                    MethodInfo routeMapInvoke = InvokeLogic.RouteMapInvokeMethod;
+                    if (routeMapInvoke != null)
+                    {
+                        string url = Convert.ToString(routeMapInvoke.Invoke(null, new object[] { context.Request }));
+                        if (!string.IsNullOrEmpty(url))
+                        {
+                            context.RewritePath(url);
+                        }
                     }
                 }
             }
@@ -72,7 +77,7 @@ namespace Taurus.Core
 
         void context_PostMapRequestHandler(object sender, EventArgs e)
         {
-            if (!isProxyCallSuccess && QueryTool.IsTaurusSuffix())
+            if (isUseMvc && !isProxyCallSuccess && QueryTool.IsTaurusSuffix())
             {
                 context.Handler = SessionHandler.Instance;//注册Session
             }
@@ -81,7 +86,7 @@ namespace Taurus.Core
         {
             //if (RequestAPI.Record(context))
             //{
-            if (!isProxyCallSuccess && QueryTool.IsTaurusSuffix())
+            if (isUseMvc && !isProxyCallSuccess && QueryTool.IsTaurusSuffix())
             {
                 CheckCORS();
                 ReplaceOutput();
@@ -92,7 +97,7 @@ namespace Taurus.Core
 
         void context_Error(object sender, EventArgs e)
         {
-            if (QueryTool.IsTaurusSuffix())
+            if (isUseMvc && QueryTool.IsTaurusSuffix())
             {
                 Log.WriteLogToTxt(HttpContext.Current.Error);
             }

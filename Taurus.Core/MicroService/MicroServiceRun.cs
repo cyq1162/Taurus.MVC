@@ -376,7 +376,14 @@ namespace Taurus.Core
                 }
                 if (infoList == null || infoList.Count == 0)
                 {
-                    module = context.Request.Url.LocalPath.TrimStart('/').Split('/')[0];
+                    if (context.Request.Url.LocalPath == "/")
+                    {
+                        module=QueryTool.GetDefaultUrl().TrimStart('/').Split('/')[0];
+                    }
+                    else
+                    {
+                        module = context.Request.Url.LocalPath.TrimStart('/').Split('/')[0];
+                    }
                     infoList = isServerCall ? MicroService.Server.GetHostList(module) : MicroService.Client.GetHostList(module);
                 }
                 if (infoList == null || infoList.Count == 0)
@@ -467,10 +474,18 @@ namespace Taurus.Core
                         }
                         try
                         {
+                            //context.Response.AppendHeader("Content-Length", bytes.Length.ToString());
                             foreach (string key in wc.ResponseHeaders.Keys)
                             {
-                                context.Response.Headers.Set(key, wc.ResponseHeaders[key]);
+                                switch (key)
+                                {
+                                    case "Transfer-Encoding"://输出这个会造成时不时的503
+                                    case "Content-Type":
+                                        continue;
+                                }
+                                context.Response.AppendHeader(key, wc.ResponseHeaders[key]);
                             }
+
                         }
                         catch
                         {
@@ -501,13 +516,13 @@ namespace Taurus.Core
                             if (Server._HostList != null && Server._HostList.Count > 0)
                             {
                                 MDictionary<string, List<HostInfo>> keyValuePairs = Server._HostList;//拿到引用
-                                MDictionary<string, List<HostInfo>> newKeyValuePairs = new MDictionary<string, List<HostInfo>>();
+                                MDictionary<string, List<HostInfo>> newKeyValuePairs = new MDictionary<string, List<HostInfo>>(StringComparer.OrdinalIgnoreCase);
                                 foreach (var item in keyValuePairs)
                                 {
                                     List<HostInfo> newList = new List<HostInfo>();
                                     foreach (var info in item.Value)
                                     {
-                                        if (info.RegTime < DateTime.Now.AddSeconds(-15) || info.Version < 0)
+                                        if (info.RegTime < DateTime.Now.AddSeconds(-10000) || info.Version < 0)
                                         {
                                             Server.IsChange = true;
                                         }
