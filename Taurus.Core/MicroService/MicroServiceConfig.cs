@@ -57,7 +57,7 @@ namespace Taurus.Core
             {
                 get
                 {
-                    return AppConfig.GetApp("MicroService.ServerKey", "Taurus.MicroService.Key");
+                    return AppConfig.GetApp("MicroService.ServerKey", "Taurus.MicroService");
                 }
                 set
                 {

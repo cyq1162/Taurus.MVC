@@ -498,7 +498,7 @@ namespace Taurus.Core
             /// <summary>
             /// 清理服务主机。
             /// </summary>
-            public static void ClearServerTable()
+            internal static void ClearServerTable()
             {
                 while (true)
                 {
