@@ -22,90 +22,119 @@ namespace Taurus.Core
             #region AppSetting 配置
 
             /// <summary>
-            /// 微服务：服务端模块名称【可配置：GateWay或RegCenter】
+            /// 网关或注册中心配置：服务端模块名称【可配置：GateWay或RegCenter】
             /// </summary>
             public static string ServerName
             {
                 get
                 {
-                    return AppConfig.GetApp("MicroService.ServerName");
+                    return AppConfig.GetApp("MicroService.Server.Name");
                 }
                 set
                 {
-                    AppConfig.SetApp("MicroService.ServerName", value);
+                    AppConfig.SetApp("MicroService.Server.Name", value);
                 }
             }
 
             /// <summary>
-            /// 微服务：注册中心地址【示例：http://localhost:9999】
+            /// 网关或注册中心配置：注册中心地址【示例：http://localhost:9999】
             /// </summary>
-            public static string ServerHost
+            public static string ServerRegUrl
             {
                 get
                 {
-                    return AppConfig.GetApp("MicroService.ServerHost");
+                    return AppConfig.GetApp("MicroService.Server.RegUrl");
                 }
                 set
                 {
-                    AppConfig.SetApp("MicroService.ServerHost", value);
+                    AppConfig.SetApp("MicroService.Server.RegUrl", value);
                 }
             }
             /// <summary>
-            /// 微服务：系统间调用密钥串【任意字符串】
+            /// 网关或注册中心配置：系统间调用密钥串【任意字符串】
             /// </summary>
             public static string ServerKey
             {
                 get
                 {
-                    return AppConfig.GetApp("MicroService.ServerKey", "Taurus.MicroService");
+                    return AppConfig.GetApp("MicroService.Server.Key", "Taurus.MicroService");
                 }
                 set
                 {
-                    AppConfig.SetApp("MicroService.ServerKey", value);
+                    AppConfig.SetApp("MicroService.Server.Key", value);
                 }
             }
             /// <summary>
-            /// 微服务：客户端模块名称【示例：Test】
+            /// 微服务应用配置：系统间调用密钥串【任意字符串】
+            /// </summary>
+            public static string ClientKey
+            {
+                get
+                {
+                    return AppConfig.GetApp("MicroService.Client.Key", "Taurus.MicroService");
+                }
+                set
+                {
+                    AppConfig.SetApp("MicroService.Client.Key", value);
+                }
+            }
+            /// <summary>
+            /// 微服务应用配置：客户端模块名称【示例：Test】
             /// </summary>
             public static string ClientName
             {
                 get
                 {
-                    return AppConfig.GetApp("MicroService.ClientName");
+                    return AppConfig.GetApp("MicroService.Client.Name");
                 }
                 set
                 {
-                    AppConfig.SetApp("MicroService.ClientName", value);
+                    AppConfig.SetApp("MicroService.Client.Name", value);
                 }
             }
 
             /// <summary>
-            /// 微服务：当前运行Host【可不配置，系统自动读取】
+            /// 微服务应用配置：注册中心的Url
             /// </summary>
-            public static string ClientHost
+            public static string ClientRegUrl
             {
                 get
                 {
-                    return AppConfig.GetApp("MicroService.ClientHost");
+                    return AppConfig.GetApp("MicroService.Client.RegUrl");
                 }
                 set
                 {
-                    AppConfig.SetApp("MicroService.ClientHost", value);
+                    AppConfig.SetApp("MicroService.Client.RegUrl", value);
                 }
             }
 
             /// <summary>
-            /// 微服务：客户端模块版本号（用于版本间升级）【示例：1】
+            /// 微服务应用配置：客户端模块版本号（用于版本间升级）【示例：1】
             /// </summary>
             public static int ClientVersion
             {
                 get
                 {
-                    return AppConfig.GetAppInt("MicroService.ClientVersion", 1);
+                    return AppConfig.GetAppInt("MicroService.Client.Version", 1);
                 }
                 set
                 {
-                    AppConfig.SetApp("MicroService.ClientVersion", value.ToString());
+                    AppConfig.SetApp("MicroService.Client.Version", value.ToString());
+                }
+            }
+
+            /// <summary>
+            /// 应用配置：当前运行Url【Kestrel启动运行需要】
+            /// </summary>
+            public static string RunUrl
+            {
+                get
+                {
+                    return AppConfig.GetApp("MicroService.RunUrl");
+                }
+                set
+                {
+                    AppConfig.SetApp("MicroService.RunUrl", value);
                 }
             }
             #endregion

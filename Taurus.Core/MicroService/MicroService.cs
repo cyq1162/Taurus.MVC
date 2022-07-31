@@ -26,7 +26,7 @@ namespace Taurus.Core
             sysLogs.PageUrl = url;
             sysLogs.HttpMethod = httpMethod;
             sysLogs.ClientIP = sysLogs.Host;
-            sysLogs.Host = Config.ClientHost;
+            sysLogs.Host = Config.RunUrl;
             sysLogs.HostName = moduleName;
             sysLogs.Write();
         }
@@ -98,8 +98,7 @@ namespace Taurus.Core
             {
                 get
                 {
-                    string name = Config.ServerName.ToLower();
-                    return !string.IsNullOrEmpty(name) && (name == Const.RegCenter || (name == Const.Gateway && !string.IsNullOrEmpty(Config.ServerHost) && Config.ServerHost != Config.ClientHost));
+                    return IsRegCenter || IsGateway;
                 }
             }
             /// <summary>
@@ -119,7 +118,7 @@ namespace Taurus.Core
             {
                 get
                 {
-                    return Config.ServerName.ToLower() == Const.Gateway && !string.IsNullOrEmpty(Config.ServerHost);
+                    return Config.ServerName.ToLower() == Const.Gateway;
                 }
             }
             /// <summary>
@@ -129,7 +128,7 @@ namespace Taurus.Core
             {
                 get
                 {
-                    return Config.ServerName.ToLower() == Const.RegCenter && (string.IsNullOrEmpty(Config.ServerHost) || Config.ServerHost == Config.ClientHost);
+                    return Config.ServerName.ToLower() == Const.RegCenter && (string.IsNullOrEmpty(Config.ServerRegUrl) || Config.ServerRegUrl == Config.RunUrl);
                 }
             }
 
@@ -172,7 +171,7 @@ namespace Taurus.Core
                     _HostListJson = value;
                 }
             }
-            internal static string _Host2 = string.Empty;
+            internal static string _Host2 = null;
             /// <summary>
             /// 注册中心【存档】故障转移备用链接。
             /// </summary>
@@ -246,9 +245,9 @@ namespace Taurus.Core
             {
                 if (!string.IsNullOrEmpty(name))
                 {
-                    if (_HostList != null && _HostList.ContainsKey(name))//微服务程序。
+                    if (HostList != null && HostList.ContainsKey(name))//微服务程序。
                     {
-                        List<HostInfo> infoList = _HostList[name];
+                        List<HostInfo> infoList = HostList[name];
                         if (infoList != null && infoList.Count > 0)
                         {
                             bool isRegCenter = Server.IsRegCenterOfMaster;
@@ -283,9 +282,9 @@ namespace Taurus.Core
             {
                 if (!string.IsNullOrEmpty(name))
                 {
-                    if (_HostList != null && _HostList.ContainsKey(name))//微服务程序。
+                    if (HostList != null && HostList.ContainsKey(name))//微服务程序。
                     {
-                        return _HostList[name];
+                        return HostList[name];
                     }
                 }
                 return null;
@@ -306,7 +305,7 @@ namespace Taurus.Core
             {
                 get
                 {
-                    return !string.IsNullOrEmpty(Config.ClientName) && !string.IsNullOrEmpty(Config.ServerHost) && Config.ServerHost != Config.ClientHost;
+                    return !string.IsNullOrEmpty(Config.ClientName) && !string.IsNullOrEmpty(Config.ClientRegUrl) && Config.ClientRegUrl != Config.RunUrl;
                 }
             }
             /// <summary>
@@ -374,9 +373,9 @@ namespace Taurus.Core
             {
                 if (!string.IsNullOrEmpty(name))
                 {
-                    if (_HostList != null && _HostList.ContainsKey(name))//微服务程序。
+                    if (HostList != null && HostList.ContainsKey(name))//微服务程序。
                     {
-                        List<HostInfo> infoList = _HostList[name];
+                        List<HostInfo> infoList = HostList[name];
                         if (infoList != null && infoList.Count > 0)
                         {
                             HostInfo firstInfo = infoList[0];
@@ -410,9 +409,9 @@ namespace Taurus.Core
             {
                 if (!string.IsNullOrEmpty(name))
                 {
-                    if (_HostList != null && _HostList.ContainsKey(name))//微服务程序。
+                    if (HostList != null && HostList.ContainsKey(name))//微服务程序。
                     {
-                        return _HostList[name];
+                        return HostList[name];
                     }
                 }
                 return null;

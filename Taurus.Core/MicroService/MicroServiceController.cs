@@ -23,25 +23,21 @@ namespace Taurus.Core
         /// </summary>
         [HttpPost]
         [MicroService]
+        [Require("name,host")]
         public void Reg(string name, string host, int version)
         {
-            if (MicroService.Config.ServerName.ToLower() != MicroService.Const.RegCenter)
+            if (!MicroService.Server.IsRegCenter)
             {
                 MicroService.LogWrite("MicroService.Reg : This is not RegCenter", Convert.ToString(Request.UrlReferrer), "POST", MicroService.Config.ServerName);
                 return;//仅服务类型为注册中心，才允许接收注册。
             }
             #region 注册中心【从】检测到【主】恢复后，推送host，让后续的请求转回【主】
-            if (MicroService.Server.RegCenterIsLive && MicroService.Config.ServerHost != MicroService.Config.ClientHost)
+            if (MicroService.Server.RegCenterIsLive && !MicroService.Server.IsRegCenterOfMaster)
             {
-                Write(JsonHelper.OutResult(true, "", "tick", MicroService.Server.Tick, "host", MicroService.Config.ServerHost));
+                Write(JsonHelper.OutResult(true, "", "tick", MicroService.Server.Tick, "host", MicroService.Config.ServerRegUrl));
                 return;
             }
             #endregion
-            if (string.IsNullOrEmpty(name) || string.IsNullOrEmpty(host))
-            {
-                Write("Name and Host can't be empty", false);
-                return;
-            }
             var kvTable = MicroService.Server.HostList;
 
             #region 注册名字
@@ -113,8 +109,8 @@ namespace Taurus.Core
             {
                 MicroService.Server.Host2 = String.Empty;
             }
-            string host = MicroService.Server.RegCenterIsLive ? MicroService.Config.ServerHost : "";//注册中心【从】检测到【主】恢复后，推送host，让后续的请求转回【主】
-            if (host == MicroService.Config.ClientHost)//主机即是自己。
+            string host = MicroService.Server.RegCenterIsLive ? MicroService.Config.ServerRegUrl : "";//注册中心【从】检测到【主】恢复后，推送host，让后续的请求转回【主】
+            if (host == MicroService.Config.RunUrl)//主机即是自己。
             {
                 host = string.Empty;
             }
@@ -137,14 +133,9 @@ namespace Taurus.Core
         /// <param name="host">地址</param>
         [HttpPost]
         [MicroService]
+        [Require("host")]
         public void Reg2(string host)
         {
-            if (string.IsNullOrEmpty(host))
-            {
-                Write("Host can't be null", false);
-                return;
-            }
-
             MicroService.Server.Host2 = host;
             MicroService.Server.Host2LastRegTime = DateTime.Now;
             string result = JsonHelper.OutResult(true, "", "tick", MicroService.Server.Tick);
@@ -158,9 +149,10 @@ namespace Taurus.Core
         /// <param name="tick">标识</param>
         [HttpPost]
         [MicroService]
+        [Require("json")]
         public void SyncList(string json, long tick)
         {
-            if (!string.IsNullOrEmpty(json) && tick > MicroService.Server.Tick)
+            if (tick > MicroService.Server.Tick)
             {
                 MicroService.Server.Tick = tick;
                 MicroService.Server._HostList = JsonHelper.ToEntity<MDictionary<string, List<MicroService.HostInfo>>>(json);

@@ -30,38 +30,31 @@ namespace Taurus.Core
                 if (!isStart)
                 {
                     isStart = true;
-                    if (string.IsNullOrEmpty(Config.ClientHost))
+                    if (string.IsNullOrEmpty(Config.RunUrl))
                     {
-                        Config.ClientHost = host.ToLower();//设置当前程序运行的请求网址。
+                        Config.RunUrl = host.ToLower();//设置当前程序运行的请求网址。
                     }
                     if (Server.IsRegCenterOfMaster)
                     {
                         Thread thread = new Thread(new ThreadStart(ClearServerTable));
                         thread.Start();
                     }
-                    if (!string.IsNullOrEmpty(Config.ServerHost))
-                    {
-                        if (Config.ServerHost.ToLower() == Config.ClientHost)
-                        {
-                            return;//主机指向自身时，不做任何处理。
-                        }
 
-                        if (!string.IsNullOrEmpty(Config.ServerName))
+                    if (!string.IsNullOrEmpty(Config.ServerName) && !string.IsNullOrEmpty(Config.ServerRegUrl) && Config.ServerRegUrl != Config.RunUrl)
+                    {
+                        switch (Config.ServerName.ToLower())
                         {
-                            switch (Config.ServerName.ToLower())
-                            {
-                                case Const.RegCenter:
-                                case Const.Gateway:
-                                    Thread thread = new Thread(new ThreadStart(ServerRunByLoop));
-                                    thread.Start();
-                                    break;
-                            }
+                            case Const.RegCenter:
+                            case Const.Gateway:
+                                Thread thread = new Thread(new ThreadStart(ServerRunByLoop));
+                                thread.Start();
+                                break;
                         }
-                        if (!string.IsNullOrEmpty(Config.ClientName))
-                        {
-                            Thread thread = new Thread(new ThreadStart(ClientRunByLoop));
-                            thread.Start();
-                        }
+                    }
+                    if (!string.IsNullOrEmpty(Config.ClientName) && !string.IsNullOrEmpty(Config.ClientRegUrl) && Config.ClientRegUrl != Config.RunUrl)
+                    {
+                        Thread thread = new Thread(new ThreadStart(ClientRunByLoop));
+                        thread.Start();
                     }
                 }
             }
@@ -76,14 +69,13 @@ namespace Taurus.Core
                 {
                     try
                     {
-                        switch (Config.ServerName.ToLower())
+                        if (Server.IsGateway)
                         {
-                            case Const.Gateway://网关
-                                AfterGetList(GetHostList(true), true);//仅读取服务列表
-                                break;
-                            case Const.RegCenter://注册中心（备用节点、走数据同步）
-                                AfterRegHost2(RegHost2());
-                                break;
+                            AfterGetList(GetHostList(true), true);//仅读取服务列表
+                        }
+                        else if (Server.IsRegCenter)
+                        {
+                            AfterRegHost2(RegHost2());//注册中心（备用节点、走数据同步）
                         }
                         Thread.Sleep(new Random().Next(5000, 10000));//5-10秒循环1次。
                     }
@@ -111,7 +103,7 @@ namespace Taurus.Core
                         //    {
                         //        hostName = "test" + i;
                         //    }
-                            
+
                         //}
                         AfterRegHost(RegHost());
                         Thread.Sleep(new Random().Next(5000, 10000));//5-10秒循环1次。
@@ -134,9 +126,9 @@ namespace Taurus.Core
                 {
                     string host2 = JsonHelper.GetValue<string>(result, "host2");
                     string host = JsonHelper.GetValue<string>(result, "host");
-                    if (!string.IsNullOrEmpty(host) && host != Config.ServerHost)
+                    if (!string.IsNullOrEmpty(host) && host != Config.ServerRegUrl)
                     {
-                        Config.ServerHost = host;//从备份请求切回主程序
+                        Config.ServerRegUrl = host;//从备份请求切回主程序
                     }
                     long tick = JsonHelper.GetValue<long>(result, "tick");
                     if (isServer)
@@ -215,9 +207,9 @@ namespace Taurus.Core
                         IO.Delete(Const.ClientHost2Path);
                     }
                     string host = JsonHelper.GetValue<string>(result, "host");
-                    if (!string.IsNullOrEmpty(host) && host != Config.ServerHost)
+                    if (!string.IsNullOrEmpty(host) && host != Config.ServerRegUrl)
                     {
-                        Config.ServerHost = host;//从备份请求切回主程序
+                        Config.ServerRegUrl = host;//从备份请求切回主程序
                     }
                     if (tick > Client.Tick)
                     {
@@ -230,22 +222,22 @@ namespace Taurus.Core
             #region 网络请求
 
             /// <summary>
-            /// 注册中心 - 地址注册。
+            /// 微服务应用中心调用：服务注册。
             /// </summary>
             /// <returns></returns>
             private static string RegHost()
             {
-                string url = Config.ServerHost + "/MicroService/Reg";
+                string url = Config.ClientRegUrl + "/MicroService/Reg";
 
                 try
                 {
 
                     using (WebClient wc = new WebClient())
                     {
-                        wc.Headers.Add(Const.HeaderKey, Config.ServerKey);
-                        wc.Headers.Add("Referer", Config.ClientHost);
+                        wc.Headers.Add(Const.HeaderKey, Config.ClientKey);
+                        wc.Headers.Add("Referer", Config.RunUrl);
                         string data = "name={0}&host={1}&version={2}";
-                        string result = wc.UploadString(url, string.Format(data, Config.ClientName, Config.ClientHost, Config.ClientVersion));
+                        string result = wc.UploadString(url, string.Format(data, Config.ClientName, Config.RunUrl, Config.ClientVersion));
                         Client.RegCenterIsLive = true;
                         return result;
                     }
@@ -255,28 +247,28 @@ namespace Taurus.Core
                     Client.RegCenterIsLive = false;
                     if (!string.IsNullOrEmpty(Client.Host2))
                     {
-                        Config.ServerHost = Client.Host2;//切换到备用库。
+                        Config.ClientRegUrl = Client.Host2;//切换到备用库。
                     }
                     LogWrite(err.Message, url, "POST", Config.ClientName);
                     return err.Message;
                 }
             }
             /// <summary>
-            /// 注册中心-地址注册（备用）。
+            /// （备用）注册中心调用：备用地址注册。
             /// </summary>
             /// <returns></returns>
             private static string RegHost2()
             {
-                string url = Config.ServerHost + "/MicroService/Reg2";
+                string url = Config.ServerRegUrl + "/MicroService/Reg2";
                 try
                 {
                     string result = string.Empty;
                     using (WebClient wc = new WebClient())
                     {
                         wc.Headers.Add(Const.HeaderKey, Config.ServerKey);
-                        wc.Headers.Add("Referer", Config.ClientHost);
+                        wc.Headers.Add("Referer", Config.RunUrl);
                         string data = "host={0}&tick=" + Server.Tick;
-                        result = wc.UploadString(url, string.Format(data, Config.ClientHost));
+                        result = wc.UploadString(url, string.Format(data, Config.RunUrl));
                     }
                     Server.RegCenterIsLive = true;
                     return result;
@@ -294,7 +286,7 @@ namespace Taurus.Core
             /// <returns></returns>
             private static void SyncHostList()
             {
-                string url = Config.ServerHost + "/MicroService/SyncList";
+                string url = Config.ServerRegUrl + "/MicroService/SyncList";
                 try
                 {
 
@@ -302,7 +294,7 @@ namespace Taurus.Core
                     using (WebClient wc = new WebClient())
                     {
                         wc.Headers.Add(Const.HeaderKey, Config.ServerKey);
-                        wc.Headers.Add("Referer", Config.ClientHost);
+                        wc.Headers.Add("Referer", Config.RunUrl);
                         wc.UploadString(url, data);
                     }
                     Server.RegCenterIsLive = true;
@@ -319,13 +311,13 @@ namespace Taurus.Core
             /// <param name="isServer">请求端</param>
             internal static string GetHostList(bool isServer)
             {
-                string url = Config.ServerHost + "/MicroService/GetList?tick=" + (isServer ? Server.Tick : Client.Tick);
+                string url = (isServer ? Config.ServerRegUrl : Config.ClientRegUrl) + "/MicroService/GetList?tick=" + (isServer ? Server.Tick : Client.Tick);
                 try
                 {
                     using (WebClient wc = new WebClient())
                     {
-                        wc.Headers.Add(Const.HeaderKey, Config.ServerKey);
-                        wc.Headers.Set("Referer", Config.ClientHost);
+                        wc.Headers.Add(Const.HeaderKey, (isServer ? Config.ServerKey : Config.ClientKey));
+                        wc.Headers.Set("Referer", Config.RunUrl);
                         string result = wc.DownloadString(url);
                         if (isServer)
                         {
@@ -345,7 +337,7 @@ namespace Taurus.Core
                         Server.RegCenterIsLive = false;
                         if (!string.IsNullOrEmpty(Server.Host2))
                         {
-                            Config.ServerHost = Server.Host2;//切换到备用库。
+                            Config.ServerRegUrl = Server.Host2;//切换到备用库。
                         }
                     }
                     else
@@ -353,7 +345,7 @@ namespace Taurus.Core
                         Client.RegCenterIsLive = false;
                         if (!string.IsNullOrEmpty(Client.Host2))
                         {
-                            Config.ServerHost = Client.Host2;//切换到备用库。
+                            Config.ServerRegUrl = Client.Host2;//切换到备用库。
                         }
                     }
                     LogWrite(err.Message, url, "GET", isServer ? Config.ServerName : Config.ClientName);
@@ -410,7 +402,7 @@ namespace Taurus.Core
                             continue;//已经断开服务的。
                         }
 
-                        if (Proxy(context, info.Host))
+                        if (Proxy(context, info.Host, isServerCall))
                         {
                             firstInfo.CallIndex = callIndex + 1;//指向下一个。
                             return true;
@@ -429,7 +421,7 @@ namespace Taurus.Core
                     return false;
                 }
             }
-            private static bool Proxy(HttpContext context, string host)
+            private static bool Proxy(HttpContext context, string host, bool isServerCall)
             {
                 HttpRequest request = context.Request;
                 string url = String.Empty;
@@ -441,9 +433,9 @@ namespace Taurus.Core
 
                     using (WebClient wc = new WebClient())
                     {
-                        wc.Headers.Set(Const.HeaderKey, Config.ServerKey);
+                        wc.Headers.Set(Const.HeaderKey, (isServerCall ? Config.ServerKey : Config.ClientKey));
                         wc.Headers.Set("X-Real-IP", request.UserHostAddress);
-                        wc.Headers.Set("Referer", Config.ClientHost);
+                        wc.Headers.Set("Referer", Config.RunUrl);
                         foreach (string key in request.Headers.Keys)
                         {
                             switch (key)
@@ -490,7 +482,7 @@ namespace Taurus.Core
                 }
                 catch (Exception err)
                 {
-                    LogWrite(err.Message, url, request.HttpMethod, Config.ServerName);
+                    LogWrite(err.Message, url, request.HttpMethod, isServerCall ? Config.ServerName : Config.ClientName);
                     context.Response.Write(err.Message);
                     return false;
                 }
