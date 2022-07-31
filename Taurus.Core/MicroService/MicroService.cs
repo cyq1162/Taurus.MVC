@@ -26,7 +26,7 @@ namespace Taurus.Core
             sysLogs.PageUrl = url;
             sysLogs.HttpMethod = httpMethod;
             sysLogs.ClientIP = sysLogs.Host;
-            sysLogs.Host = Config.RunUrl;
+            sysLogs.Host = Config.AppRunUrl;
             sysLogs.HostName = moduleName;
             sysLogs.Write();
         }
@@ -128,7 +128,7 @@ namespace Taurus.Core
             {
                 get
                 {
-                    return Config.ServerName.ToLower() == Const.RegCenter && (string.IsNullOrEmpty(Config.ServerRegUrl) || Config.ServerRegUrl == Config.RunUrl);
+                    return Config.ServerName.ToLower() == Const.RegCenter && (string.IsNullOrEmpty(Config.ServerRegUrl) || Config.ServerRegUrl == Config.AppRunUrl);
                 }
             }
 
@@ -305,7 +305,7 @@ namespace Taurus.Core
             {
                 get
                 {
-                    return !string.IsNullOrEmpty(Config.ClientName) && !string.IsNullOrEmpty(Config.ClientRegUrl) && Config.ClientRegUrl != Config.RunUrl;
+                    return !string.IsNullOrEmpty(Config.ClientName) && !string.IsNullOrEmpty(Config.ClientRegUrl) && Config.ClientRegUrl != Config.AppRunUrl;
                 }
             }
             /// <summary>

@@ -30,9 +30,9 @@ namespace Taurus.Core
                 if (!isStart)
                 {
                     isStart = true;
-                    if (string.IsNullOrEmpty(Config.RunUrl))
+                    if (string.IsNullOrEmpty(Config.AppRunUrl))
                     {
-                        Config.RunUrl = host.ToLower();//设置当前程序运行的请求网址。
+                        Config.AppRunUrl = host.ToLower();//设置当前程序运行的请求网址。
                     }
                     if (Server.IsRegCenterOfMaster)
                     {
@@ -40,7 +40,7 @@ namespace Taurus.Core
                         thread.Start();
                     }
 
-                    if (!string.IsNullOrEmpty(Config.ServerName) && !string.IsNullOrEmpty(Config.ServerRegUrl) && Config.ServerRegUrl != Config.RunUrl)
+                    if (!string.IsNullOrEmpty(Config.ServerName) && !string.IsNullOrEmpty(Config.ServerRegUrl) && Config.ServerRegUrl != Config.AppRunUrl)
                     {
                         switch (Config.ServerName.ToLower())
                         {
@@ -51,7 +51,7 @@ namespace Taurus.Core
                                 break;
                         }
                     }
-                    if (!string.IsNullOrEmpty(Config.ClientName) && !string.IsNullOrEmpty(Config.ClientRegUrl) && Config.ClientRegUrl != Config.RunUrl)
+                    if (!string.IsNullOrEmpty(Config.ClientName) && !string.IsNullOrEmpty(Config.ClientRegUrl) && Config.ClientRegUrl != Config.AppRunUrl)
                     {
                         Thread thread = new Thread(new ThreadStart(ClientRunByLoop));
                         thread.Start();
@@ -235,9 +235,9 @@ namespace Taurus.Core
                     using (WebClient wc = new WebClient())
                     {
                         wc.Headers.Add(Const.HeaderKey, Config.ClientKey);
-                        wc.Headers.Add("Referer", Config.RunUrl);
+                        wc.Headers.Add("Referer", Config.AppRunUrl);
                         string data = "name={0}&host={1}&version={2}";
-                        string result = wc.UploadString(url, string.Format(data, Config.ClientName, Config.RunUrl, Config.ClientVersion));
+                        string result = wc.UploadString(url, string.Format(data, Config.ClientName, Config.AppRunUrl, Config.ClientVersion));
                         Client.RegCenterIsLive = true;
                         return result;
                     }
@@ -266,9 +266,9 @@ namespace Taurus.Core
                     using (WebClient wc = new WebClient())
                     {
                         wc.Headers.Add(Const.HeaderKey, Config.ServerKey);
-                        wc.Headers.Add("Referer", Config.RunUrl);
+                        wc.Headers.Add("Referer", Config.AppRunUrl);
                         string data = "host={0}&tick=" + Server.Tick;
-                        result = wc.UploadString(url, string.Format(data, Config.RunUrl));
+                        result = wc.UploadString(url, string.Format(data, Config.AppRunUrl));
                     }
                     Server.RegCenterIsLive = true;
                     return result;
@@ -294,7 +294,7 @@ namespace Taurus.Core
                     using (WebClient wc = new WebClient())
                     {
                         wc.Headers.Add(Const.HeaderKey, Config.ServerKey);
-                        wc.Headers.Add("Referer", Config.RunUrl);
+                        wc.Headers.Add("Referer", Config.AppRunUrl);
                         wc.UploadString(url, data);
                     }
                     Server.RegCenterIsLive = true;
@@ -317,7 +317,7 @@ namespace Taurus.Core
                     using (WebClient wc = new WebClient())
                     {
                         wc.Headers.Add(Const.HeaderKey, (isServer ? Config.ServerKey : Config.ClientKey));
-                        wc.Headers.Set("Referer", Config.RunUrl);
+                        wc.Headers.Set("Referer", Config.AppRunUrl);
                         string result = wc.DownloadString(url);
                         if (isServer)
                         {
@@ -435,7 +435,7 @@ namespace Taurus.Core
                     {
                         wc.Headers.Set(Const.HeaderKey, (isServerCall ? Config.ServerKey : Config.ClientKey));
                         wc.Headers.Set("X-Real-IP", request.UserHostAddress);
-                        wc.Headers.Set("Referer", Config.RunUrl);
+                        wc.Headers.Set("Referer", Config.AppRunUrl);
                         foreach (string key in request.Headers.Keys)
                         {
                             switch (key)

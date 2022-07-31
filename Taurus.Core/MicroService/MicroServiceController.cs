@@ -110,7 +110,7 @@ namespace Taurus.Core
                 MicroService.Server.Host2 = String.Empty;
             }
             string host = MicroService.Server.RegCenterIsLive ? MicroService.Config.ServerRegUrl : "";//注册中心【从】检测到【主】恢复后，推送host，让后续的请求转回【主】
-            if (host == MicroService.Config.RunUrl)//主机即是自己。
+            if (host == MicroService.Config.AppRunUrl)//主机即是自己。
             {
                 host = string.Empty;
             }

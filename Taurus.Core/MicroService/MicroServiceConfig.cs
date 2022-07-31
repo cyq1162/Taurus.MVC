@@ -126,15 +126,15 @@ namespace Taurus.Core
             /// <summary>
             /// 应用配置：当前运行Url【Kestrel启动运行需要】
             /// </summary>
-            public static string RunUrl
+            public static string AppRunUrl
             {
                 get
                 {
-                    return AppConfig.GetApp("MicroService.RunUrl");
+                    return AppConfig.GetApp("MicroService.App.RunUrl");
                 }
                 set
                 {
-                    AppConfig.SetApp("MicroService.RunUrl", value);
+                    AppConfig.SetApp("MicroService.App.RunUrl", value);
                 }
             }
             #endregion
