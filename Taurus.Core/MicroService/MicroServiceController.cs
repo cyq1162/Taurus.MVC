@@ -96,6 +96,7 @@ namespace Taurus.Core
             }
             string result = JsonHelper.OutResult(true, "", "tick", MicroService.Server.Tick, "host2", MicroService.Server.Host2);
             Write(result);
+            Console.WriteLine(DateTime.Now.ToString("HH:mm:ss") + " : Server.API.Call.Reg : " + string.Format("Host : {0} Name : {1}", host, name));
         }
 
         /// <summary>
@@ -125,6 +126,7 @@ namespace Taurus.Core
                 string result = JsonHelper.OutResult(true, json, "tick", MicroService.Server.Tick, "host2", MicroService.Server.Host2, "host", host);
                 Write(result);
             }
+            Console.WriteLine(DateTime.Now.ToString("HH:mm:ss") + " : Server.API.Call.GetList : From :" + Request.UrlReferrer);
         }
 
         /// <summary>
@@ -140,6 +142,7 @@ namespace Taurus.Core
             MicroService.Server.Host2LastRegTime = DateTime.Now;
             string result = JsonHelper.OutResult(true, "", "tick", MicroService.Server.Tick);
             Write(result);
+            Console.WriteLine(DateTime.Now.ToString("HH:mm:ss") + " : Server.API.Call.Reg2 : Host :" + host);
         }
 
         /// <summary>
@@ -158,6 +161,7 @@ namespace Taurus.Core
                 MicroService.Server._HostList = JsonHelper.ToEntity<MDictionary<string, List<MicroService.HostInfo>>>(json);
             }
             Write("", true);
+            Console.WriteLine(DateTime.Now.ToString("HH:mm:ss") + " : Server.API.Call.SyncList : Tick :" + tick);
         }
     }
 }

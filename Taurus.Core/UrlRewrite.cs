@@ -33,14 +33,15 @@ namespace Taurus.Core
         void context_BeginRequest(object sender, EventArgs e)
         {
             isProxyCallSuccess = false;//被单例复用了，每次需要重新赋值。
-            isUseMvc = !string.IsNullOrEmpty(AppConfig.GetApp(AppSettings.Controllers));//有配置时才启动MVC，否则默认仅启动微服务。
+            
             HttpApplication app = (HttpApplication)sender;
             context = app.Context;
-
+            Uri uri = context.Request.Url;
             #region 微服务检测与启动
-            string urlAbs = context.Request.Url.AbsoluteUri;
-            string urlPath = context.Request.Url.PathAndQuery;
+            string urlAbs = uri.AbsoluteUri;
+            string urlPath = uri.PathAndQuery;
             string host = urlAbs.Substring(0, urlAbs.Length - urlPath.Length);
+            isUseMvc = !string.IsNullOrEmpty(AppConfig.GetApp(AppSettings.Controllers)) || uri.LocalPath.ToLower().Contains("/microservice/");//有配置时才启动MVC，否则默认仅启动微服务。
             MicroService.Run.Start(host);//微服务检测、启动。
             if (MicroService.Run.Proxy(context, true))
             {

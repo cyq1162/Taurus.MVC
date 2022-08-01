@@ -50,7 +50,7 @@ namespace Taurus.Core
         {
             _ControllerName = t.Name.Replace(InvokeLogic.Const.Controller, "").ToLower();
             string[] items = QueryTool.GetLocalPath().Trim('/').Split('/');
-            firstPara=items[0];
+            firstPara = items[0];
             int paraStartIndex = RouteConfig.RouteMode + 1;
             string methodName = string.Empty;
             switch (RouteConfig.RouteMode)
@@ -276,9 +276,9 @@ namespace Taurus.Core
                     string outResult = apiResult.ToString();
                     if (string.IsNullOrEmpty(context.Response.ContentType))
                     {
-                        context.Response.ContentType = "text/html";
+                        context.Response.ContentType = "text/html;charset=" + context.Response.Charset;
                     }
-                    if (context.Response.ContentType == "text/html")
+                    if (context.Response.ContentType.StartsWith("text/html"))
                     {
                         if (apiResult[0] == '{' && apiResult[apiResult.Length - 1] == '}')
                         {
@@ -289,6 +289,7 @@ namespace Taurus.Core
                             context.Response.ContentType = "application/xml";
                         }
                     }
+
                     context.Response.Write(outResult);
                 }
             }
@@ -859,7 +860,7 @@ namespace Taurus.Core
                         }
                         _Json = JsonHelper.ToJson(Context.Request.Form);
                     }
-                    else if (Context.Request.Files == null || Context.Request.Files.Count == 0)
+                    else if (Context.Request.Files == null || Context.Request.Files.Count == 0)//请求头忘了带Http Type
                     {
                         Stream stream = Context.Request.InputStream;
                         if (stream != null && stream.CanRead)

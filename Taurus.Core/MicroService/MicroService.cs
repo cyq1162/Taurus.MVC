@@ -16,6 +16,16 @@ namespace Taurus.Core
     {
         #region 公共区域
         /// <summary>
+        /// 获取当前Dll的版本号
+        /// </summary>
+        public static string Version
+        {
+            get
+            {
+                return System.Reflection.Assembly.GetExecutingAssembly().GetName().Version.ToString();
+            }
+        }
+        /// <summary>
         /// 内部日志记录
         /// </summary>
         internal static void LogWrite(string msg, string url, string httpMethod, string moduleName)

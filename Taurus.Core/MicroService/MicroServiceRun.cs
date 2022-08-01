@@ -30,12 +30,14 @@ namespace Taurus.Core
                 if (!isStart)
                 {
                     isStart = true;
+                    Console.WriteLine("MicroService.Run.Start.V" + Version + "...");
                     if (string.IsNullOrEmpty(Config.AppRunUrl))
                     {
                         Config.AppRunUrl = host.ToLower();//设置当前程序运行的请求网址。
                     }
                     if (Server.IsRegCenterOfMaster)
                     {
+                        Console.WriteLine("Run As MicroService.Server : RegCenterOfMaster");
                         Thread thread = new Thread(new ThreadStart(ClearServerTable));
                         thread.Start();
                     }
@@ -46,6 +48,8 @@ namespace Taurus.Core
                         {
                             case Const.RegCenter:
                             case Const.Gateway:
+                                Console.WriteLine("Run As MicroService.Server : " + Config.ServerName);
+                                Console.WriteLine("MicroService.Server.RegUrl : " + Config.ServerRegUrl);
                                 Thread thread = new Thread(new ThreadStart(ServerRunByLoop));
                                 thread.Start();
                                 break;
@@ -53,6 +57,8 @@ namespace Taurus.Core
                     }
                     if (!string.IsNullOrEmpty(Config.ClientName) && !string.IsNullOrEmpty(Config.ClientRegUrl) && Config.ClientRegUrl != Config.AppRunUrl)
                     {
+                        Console.WriteLine("Run As MicroService.Client : " + Config.ClientName);
+                        Console.WriteLine("MicroService.Client.RegUrl : " + Config.ClientRegUrl);
                         Thread thread = new Thread(new ThreadStart(ClientRunByLoop));
                         thread.Start();
                     }
@@ -65,6 +71,7 @@ namespace Taurus.Core
             /// </summary>
             private static void ServerRunByLoop()
             {
+                Console.WriteLine("MicroService.Run.ServerRunByLoop.");
                 while (true)
                 {
                     try
@@ -91,6 +98,7 @@ namespace Taurus.Core
             /// </summary>
             private static void ClientRunByLoop()
             {
+                Console.WriteLine("MicroService.Run.ClientRunByLoop.");
                 while (true)
                 {
                     try
@@ -236,14 +244,18 @@ namespace Taurus.Core
                     {
                         wc.Headers.Add(Const.HeaderKey, Config.ClientKey);
                         wc.Headers.Add("Referer", Config.AppRunUrl);
+                        wc.Headers.Add("Content-Type", "application/x-www-form-urlencoded");
+                        //Content - Type: multipart / form - data; boundary = ----WebKitFormBoundaryxSUOuGdhfM6ceac8
                         string data = "name={0}&host={1}&version={2}";
                         string result = wc.UploadString(url, string.Format(data, Config.ClientName, Config.AppRunUrl, Config.ClientVersion));
                         Client.RegCenterIsLive = true;
+                        Console.WriteLine(DateTime.Now.ToString("HH:mm:ss") + " : Client.RegHost OK : " + result);
                         return result;
                     }
                 }
                 catch (Exception err)
                 {
+                    Console.WriteLine(DateTime.Now.ToString("HH:mm:ss") + " : Client.RegHost Error : " + err.Message);
                     Client.RegCenterIsLive = false;
                     if (!string.IsNullOrEmpty(Client.Host2))
                     {
@@ -267,14 +279,17 @@ namespace Taurus.Core
                     {
                         wc.Headers.Add(Const.HeaderKey, Config.ServerKey);
                         wc.Headers.Add("Referer", Config.AppRunUrl);
+                        wc.Headers.Add("Content-Type", "application/x-www-form-urlencoded");
                         string data = "host={0}&tick=" + Server.Tick;
                         result = wc.UploadString(url, string.Format(data, Config.AppRunUrl));
                     }
+                    Console.WriteLine(DateTime.Now.ToString("HH:mm:ss") + " : Server.RegHost2 OK : " + result);
                     Server.RegCenterIsLive = true;
                     return result;
                 }
                 catch (Exception err)
                 {
+                    Console.WriteLine(DateTime.Now.ToString("HH:mm:ss") + " : Server.RegHost2 Error : " + err.Message);
                     Server.RegCenterIsLive = false;
                     LogWrite(err.Message, url, "POST", Config.ServerName);
                     return err.Message;
@@ -295,12 +310,15 @@ namespace Taurus.Core
                     {
                         wc.Headers.Add(Const.HeaderKey, Config.ServerKey);
                         wc.Headers.Add("Referer", Config.AppRunUrl);
+                        wc.Headers.Add("Content-Type", "application/x-www-form-urlencoded");
                         wc.UploadString(url, data);
                     }
                     Server.RegCenterIsLive = true;
+                    Console.WriteLine(DateTime.Now.ToString("HH:mm:ss") + " : Server.SyncHostList OK.");
                 }
                 catch (Exception err)
                 {
+                    Console.WriteLine(DateTime.Now.ToString("HH:mm:ss") + " : Server.SyncHostList Error : " + err.Message);
                     Server.RegCenterIsLive = false;
                     LogWrite(err.Message, url, "POST", Config.ServerName);
                 }
@@ -327,11 +345,13 @@ namespace Taurus.Core
                         {
                             Client.RegCenterIsLive = true;
                         }
+                        Console.WriteLine(DateTime.Now.ToString("HH:mm:ss") + string.Format(" : {0}.GetHostList OK : Tick : {1}", (isServer ? "Server" : "Client"), (isServer ? Server.Tick : Client.Tick)));
                         return result;
                     }
                 }
                 catch (Exception err)
                 {
+                    Console.WriteLine(DateTime.Now.ToString("HH:mm:ss") + " : GetHostList Error : " + err.Message);
                     if (isServer)
                     {
                         Server.RegCenterIsLive = false;
@@ -461,7 +481,7 @@ namespace Taurus.Core
                                     wc.Headers.Set(key, request.Headers[key]);
                                     break;
                             }
-                            
+
                         }
                         if (request.HttpMethod == "GET")
                         {
@@ -472,6 +492,7 @@ namespace Taurus.Core
                             byte[] data = null;
                             if (request.ContentLength > 0)
                             {
+                                //Synchronous operations are disallowed. Call ReadAsync or set AllowSynchronousIO to true instead.”
                                 data = new byte[(int)request.ContentLength];
                                 request.InputStream.Read(data, 0, data.Length);
                             }
@@ -485,8 +506,11 @@ namespace Taurus.Core
                                 switch (key)
                                 {
                                     case "Transfer-Encoding"://输出这个会造成时不时的503
-                                    case "Content-Type":
                                         continue;
+                                }
+                                if (key == "Content-Type" && wc.ResponseHeaders[key].Split(';').Length == 1)
+                                {
+                                    continue;
                                 }
                                 context.Response.AppendHeader(key, wc.ResponseHeaders[key]);
                             }
