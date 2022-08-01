@@ -369,7 +369,8 @@ namespace Taurus.Core
                 List<HostInfo> infoList = null;
                 string module = string.Empty;
                 IPAddress iPAddress;
-                if (context.Request.Url.Host != "localhost" && !IPAddress.TryParse(context.Request.Url.Host, out iPAddress))
+                bool isDomain = context.Request.Url.Host != "localhost" && !IPAddress.TryParse(context.Request.Url.Host, out iPAddress);
+                if (isDomain)
                 {
                     module = context.Request.Url.Host;//域名转发优先。
                     infoList = isServerCall ? MicroService.Server.GetHostList(module) : MicroService.Client.GetHostList(module);
@@ -378,7 +379,7 @@ namespace Taurus.Core
                 {
                     if (context.Request.Url.LocalPath == "/")
                     {
-                        module=QueryTool.GetDefaultUrl().TrimStart('/').Split('/')[0];
+                        module = QueryTool.GetDefaultUrl().TrimStart('/').Split('/')[0];
                     }
                     else
                     {
@@ -409,7 +410,7 @@ namespace Taurus.Core
                             continue;//已经断开服务的。
                         }
 
-                        if (Proxy(context, info.Host, isServerCall))
+                        if (Proxy(context, info.Host, isServerCall, isDomain))
                         {
                             firstInfo.CallIndex = callIndex + 1;//指向下一个。
                             return true;
@@ -428,7 +429,7 @@ namespace Taurus.Core
                     return false;
                 }
             }
-            private static bool Proxy(HttpContext context, string host, bool isServerCall)
+            private static bool Proxy(HttpContext context, string host, bool isServerCall, bool isDomain)
             {
                 HttpRequest request = context.Request;
                 string url = String.Empty;
@@ -442,13 +443,16 @@ namespace Taurus.Core
                     {
                         wc.Headers.Set(Const.HeaderKey, (isServerCall ? Config.ServerKey : Config.ClientKey));
                         wc.Headers.Set("X-Real-IP", request.UserHostAddress);
-                        wc.Headers.Set("Referer", Config.AppRunUrl);
+                        wc.Headers.Set("Referer", Config.AppRunUrl);//当前运行地址。
                         foreach (string key in request.Headers.Keys)
                         {
+                            //if (!isDomain && key == "Host")//host即原始请求地址。
+                            //{
+                            //    continue;                               // case "Host"://引发请求地址错乱。
+                            //}
                             switch (key)
                             {
                                 case "Connection"://引发异常 链接已关闭
-                                case "Host"://引发请求地址错乱。
                                 case "Accept-Encoding"://引发乱码
                                 case "Accept"://引发下载类型错乱
                                 case "Referer":
@@ -457,6 +461,7 @@ namespace Taurus.Core
                                     wc.Headers.Set(key, request.Headers[key]);
                                     break;
                             }
+                            
                         }
                         if (request.HttpMethod == "GET")
                         {
@@ -498,7 +503,6 @@ namespace Taurus.Core
                 catch (Exception err)
                 {
                     LogWrite(err.Message, url, request.HttpMethod, isServerCall ? Config.ServerName : Config.ClientName);
-                    context.Response.Write(err.Message);
                     return false;
                 }
             }
@@ -522,7 +526,7 @@ namespace Taurus.Core
                                     List<HostInfo> newList = new List<HostInfo>();
                                     foreach (var info in item.Value)
                                     {
-                                        if (info.RegTime < DateTime.Now.AddSeconds(-10000) || info.Version < 0)
+                                        if (info.RegTime < DateTime.Now.AddSeconds(-10) || info.Version < 0)
                                         {
                                             Server.IsChange = true;
                                         }
