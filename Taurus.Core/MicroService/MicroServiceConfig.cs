@@ -22,7 +22,7 @@ namespace Taurus.Core
             #region AppSetting 配置
 
             /// <summary>
-            /// 网关或注册中心配置：服务端模块名称【可配置：GateWay或RegCenter】
+            /// 网关或注册中心配置：服务端模块名称【可配置：Gateway或RegCenter】
             /// </summary>
             public static string ServerName
             {

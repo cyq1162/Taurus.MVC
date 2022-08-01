@@ -30,29 +30,34 @@ namespace Taurus.Core
                 if (!isStart)
                 {
                     isStart = true;
-                    Console.WriteLine("MicroService.Run.Start.V" + Version + "...");
+                    Console.WriteLine("MicroService.Run.Start.V" + Version + " : ");
                     if (string.IsNullOrEmpty(Config.AppRunUrl))
                     {
                         Config.AppRunUrl = host.ToLower();//设置当前程序运行的请求网址。
                     }
                     if (Server.IsRegCenterOfMaster)
                     {
-                        Console.WriteLine("Run As MicroService.Server : RegCenterOfMaster");
+                        Console.WriteLine("Run As MicroService.Server : Master.RegCenter");
                         Thread thread = new Thread(new ThreadStart(ClearServerTable));
                         thread.Start();
                     }
 
                     if (!string.IsNullOrEmpty(Config.ServerName) && !string.IsNullOrEmpty(Config.ServerRegUrl) && Config.ServerRegUrl != Config.AppRunUrl)
                     {
-                        switch (Config.ServerName.ToLower())
+                        if (Server.IsRegCenter || Server.IsGateway)
                         {
-                            case Const.RegCenter:
-                            case Const.Gateway:
-                                Console.WriteLine("Run As MicroService.Server : " + Config.ServerName);
-                                Console.WriteLine("MicroService.Server.RegUrl : " + Config.ServerRegUrl);
-                                Thread thread = new Thread(new ThreadStart(ServerRunByLoop));
-                                thread.Start();
-                                break;
+                            if (Server.IsRegCenter)
+                            {
+                                Console.WriteLine("Run As MicroService.Server : Slave.RegCenter");
+                            }
+                            else
+                            {
+                                Console.WriteLine("Run As MicroService.Server : Gateway");
+                            }
+                            Console.WriteLine("MicroService.Server.RegUrl : " + Config.ServerRegUrl);
+                            Thread thread = new Thread(new ThreadStart(ServerRunByLoop));
+                            thread.Start();
+
                         }
                     }
                     if (!string.IsNullOrEmpty(Config.ClientName) && !string.IsNullOrEmpty(Config.ClientRegUrl) && Config.ClientRegUrl != Config.AppRunUrl)
