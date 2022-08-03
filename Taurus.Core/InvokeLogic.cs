@@ -52,7 +52,7 @@ namespace Taurus.Core
             {
                 get
                 {
-                    return AppConfig.GetAppBool(AppSettings.IsStartDoc, false);
+                    return AppConfig.GetAppBool(AppSettings.IsStartDoc, true);
                 }
             }
 
