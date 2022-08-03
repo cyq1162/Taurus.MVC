@@ -3,6 +3,7 @@ using CYQ.Data.Tool;
 using System;
 using System.Collections.Generic;
 using System.IO;
+using System.Net;
 using System.Reflection;
 using System.Text;
 using System.Threading;
@@ -18,7 +19,7 @@ namespace Taurus.Core
     {
         public void Dispose()
         {
-
+            
         }
         public void Init(HttpApplication context)
         {
@@ -41,9 +42,10 @@ namespace Taurus.Core
             string urlAbs = uri.AbsoluteUri;
             string urlPath = uri.PathAndQuery;
             string host = urlAbs.Substring(0, urlAbs.Length - urlPath.Length);
-            isUseMvc = !string.IsNullOrEmpty(AppConfig.GetApp(AppSettings.Controllers)) || uri.LocalPath.ToLower().Contains("/microservice/");//有配置时才启动MVC，否则默认仅启动微服务。
+            bool isCallMicroService = uri.LocalPath.ToLower().Contains("/microservice/");
+            isUseMvc = !string.IsNullOrEmpty(AppConfig.GetApp(AppSettings.Controllers)) || isCallMicroService;//有配置时才启动MVC，否则默认仅启动微服务。
             MicroService.Run.Start(host);//微服务检测、启动。
-            if (MicroService.Run.Proxy(context, true))
+            if (!isCallMicroService && MicroService.Run.Proxy(context, true))
             {
                 isProxyCallSuccess = true;
                 return;

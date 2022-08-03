@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Text;
 using CYQ.Data.Tool;
 using CYQ.Data.Table;
 using System.Collections.Generic;
@@ -42,7 +43,8 @@ namespace Taurus.Core
             #endregion
             var kvTable = MicroService.Server.HostList;
 
-            #region 注册名字
+            StringBuilder sb = new StringBuilder();
+            #region 注册名字[版本号检测]
             string[] names = name.ToLower().Split(',');//允许一次注册多个模块。
             foreach (string module in names)
             {
@@ -61,19 +63,27 @@ namespace Taurus.Core
                 else
                 {
                     bool hasHost = false;
-                    List<MicroService.HostInfo> list = kvTable[module];
+                    bool isDomain = module.Split('.').Length > 1;//域名不区分版本号。  ms,a.com 1    m2,a.com 2
+                    List<MicroService.HostInfo> list = kvTable[module];//ms,a.com
                     for (int i = 0; i < list.Count; i++)
                     {
                         MicroService.HostInfo info = list[i];
-                        if (info.Version < version)
+                        if (info.Version < version && !isDomain)
                         {
                             info.Version = -1;//标识为-1，由任务清除。
+                        }
+                        else if (info.Version > version && !isDomain)
+                        {
+                            hasHost = true;
+                            sb.AppendFormat("[{0}] Reg Fail:【Version : {1}<{2}】。", module, version, info.Version);
+                            break;
                         }
                         else if (info.Host == host)
                         {
                             hasHost = true;
                             info.RegTime = DateTime.Now;//更新时间。
                         }
+
                     }
                     if (!hasHost) //新版本添加
                     {
@@ -96,9 +106,9 @@ namespace Taurus.Core
             {
                 MicroService.Server.Host2 = String.Empty;
             }
-            string result = JsonHelper.OutResult(true, "", "tick", MicroService.Server.Tick, "host2", MicroService.Server.Host2);
+            string result = JsonHelper.OutResult(sb.Length == 0, sb.ToString(), "tick", MicroService.Server.Tick, "host2", MicroService.Server.Host2);
             Write(result);
-           
+
         }
 
         /// <summary>
@@ -130,7 +140,7 @@ namespace Taurus.Core
                 string result = JsonHelper.OutResult(true, json, "tick", MicroService.Server.Tick, "host2", MicroService.Server.Host2, "host", host);
                 Write(result);
             }
-            
+
         }
 
         /// <summary>

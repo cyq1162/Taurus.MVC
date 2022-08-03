@@ -17,7 +17,7 @@ namespace Taurus.Core
         /// <summary>
         /// 运行中心
         /// </summary>
-        internal class Run
+        internal partial class Run
         {
             #region 微服务线程启动 - 自循环
 
@@ -254,7 +254,7 @@ namespace Taurus.Core
                         string data = "name={0}&host={1}&version={2}";
                         string result = wc.UploadString(url, string.Format(data, Config.ClientName, Config.AppRunUrl, Config.ClientVersion));
                         Client.RegCenterIsLive = true;
-                        Console.WriteLine(DateTime.Now.ToString("HH:mm:ss") + " : Client.RegHost OK : " + result);
+                        Console.WriteLine(DateTime.Now.ToString("HH:mm:ss") + " : Client.RegHost : " + result);
                         return result;
                     }
                 }
@@ -288,7 +288,7 @@ namespace Taurus.Core
                         string data = "host={0}&tick=" + Server.Tick;
                         result = wc.UploadString(url, string.Format(data, Config.AppRunUrl));
                     }
-                    Console.WriteLine(DateTime.Now.ToString("HH:mm:ss") + " : Server.RegHost2 OK : " + result);
+                    Console.WriteLine(DateTime.Now.ToString("HH:mm:ss") + " : Server.RegHost2 : " + result);
                     Server.RegCenterIsLive = true;
                     return result;
                 }
@@ -319,7 +319,7 @@ namespace Taurus.Core
                         wc.UploadString(url, data);
                     }
                     Server.RegCenterIsLive = true;
-                    Console.WriteLine(DateTime.Now.ToString("HH:mm:ss") + " : Server.SyncHostList OK.");
+                    Console.WriteLine(DateTime.Now.ToString("HH:mm:ss") + " : Server.SyncHostList : ");
                 }
                 catch (Exception err)
                 {
@@ -391,28 +391,48 @@ namespace Taurus.Core
                 {
                     return false;
                 }
-                List<HostInfo> infoList = null;
+                List<HostInfo> infoList = new List<HostInfo>();
                 string module = string.Empty;
                 IPAddress iPAddress;
-                bool isDomain = context.Request.Url.Host != "localhost" && !IPAddress.TryParse(context.Request.Url.Host, out iPAddress);
-                if (isDomain)
+                List<HostInfo> domainList = null;
+                if (context.Request.Url.Host != "localhost" && !IPAddress.TryParse(context.Request.Url.Host, out iPAddress))
                 {
                     module = context.Request.Url.Host;//域名转发优先。
-                    infoList = isServerCall ? MicroService.Server.GetHostList(module) : MicroService.Client.GetHostList(module);
+                    domainList = isServerCall ? MicroService.Server.GetHostList(module) : MicroService.Client.GetHostList(module);
+                    if (domainList == null || domainList.Count == 0)
+                    {
+                        return false;
+                    }
                 }
-                if (infoList == null || infoList.Count == 0)
+
+                if (context.Request.Url.LocalPath == "/")
                 {
-                    if (context.Request.Url.LocalPath == "/")
-                    {
-                        module = QueryTool.GetDefaultUrl().TrimStart('/').Split('/')[0];
-                    }
-                    else
-                    {
-                        module = context.Request.Url.LocalPath.TrimStart('/').Split('/')[0];
-                    }
-                    infoList = isServerCall ? MicroService.Server.GetHostList(module) : MicroService.Client.GetHostList(module);
+                    module = QueryTool.GetDefaultUrl().TrimStart('/').Split('/')[0];
                 }
-                if (infoList == null || infoList.Count == 0)
+                else
+                {
+                    module = context.Request.Url.LocalPath.TrimStart('/').Split('/')[0];
+                }
+                List<HostInfo> moduleList = isServerCall ? MicroService.Server.GetHostList(module) : MicroService.Client.GetHostList(module);
+
+                if (domainList == null || domainList.Count == 0) { infoList = moduleList; }
+                else if (moduleList == null || moduleList.Count == 0) { infoList = domainList; }
+                else
+                {
+                    foreach (var item in domainList)//过滤掉不在域名下的主机
+                    {
+                        foreach (var keyValue in moduleList)
+                        {
+                            if (item.Host == keyValue.Host)
+                            {
+                                infoList.Add(item);
+                                break;
+                            }
+                        }
+                    }
+                }
+
+                if (infoList.Count == 0)
                 {
                     return false;
                 }
@@ -421,6 +441,10 @@ namespace Taurus.Core
                     int max = 3;//最多循环3个节点，避免长时间循环卡机。
                     bool isRegCenter = Server.IsRegCenterOfMaster;
                     HostInfo firstInfo = infoList[0];
+                    if (firstInfo.CallIndex >= infoList.Count)
+                    {
+                        firstInfo.CallIndex = 0;//处理节点移除后，CallIndex最大值的问题。
+                    }
                     for (int i = 0; i < infoList.Count; i++)
                     {
                         int callIndex = firstInfo.CallIndex + i;
@@ -435,7 +459,7 @@ namespace Taurus.Core
                             continue;//已经断开服务的。
                         }
 
-                        if (Proxy(context, info.Host, isServerCall, isDomain))
+                        if (Proxy(context, info.Host, isServerCall))
                         {
                             firstInfo.CallIndex = callIndex + 1;//指向下一个。
                             return true;
@@ -454,7 +478,8 @@ namespace Taurus.Core
                     return false;
                 }
             }
-            private static bool Proxy(HttpContext context, string host, bool isServerCall, bool isDomain)
+
+            private static bool Proxy(HttpContext context, string host, bool isServerCall)
             {
                 HttpRequest request = context.Request;
                 string url = String.Empty;
@@ -471,10 +496,6 @@ namespace Taurus.Core
                         wc.Headers.Set("Referer", Config.AppRunUrl);//当前运行地址。
                         foreach (string key in request.Headers.Keys)
                         {
-                            //if (!isDomain && key == "Host")//host即原始请求地址。
-                            //{
-                            //    continue;                               // case "Host"://引发请求地址错乱。
-                            //}
                             switch (key)
                             {
                                 case "Connection"://引发异常 链接已关闭
@@ -535,6 +556,8 @@ namespace Taurus.Core
                     return false;
                 }
             }
+
+
             /// <summary>
             /// 清理服务主机。
             /// </summary>
@@ -555,7 +578,7 @@ namespace Taurus.Core
                                     List<HostInfo> newList = new List<HostInfo>();
                                     foreach (var info in item.Value)
                                     {
-                                        if (info.RegTime < DateTime.Now.AddSeconds(-10) || info.Version < 0)
+                                        if (info.RegTime < DateTime.Now.AddSeconds(-11) || info.Version < 0)
                                         {
                                             Server.IsChange = true;
                                         }
@@ -604,4 +627,5 @@ namespace Taurus.Core
             #endregion
         }
     }
+
 }

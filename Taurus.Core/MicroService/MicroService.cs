@@ -253,32 +253,26 @@ namespace Taurus.Core
             /// <returns></returns>
             public static string GetHost(string name)
             {
-                if (!string.IsNullOrEmpty(name))
+                List<HostInfo> infoList = GetHostList(name);//微服务程序。
+                if (infoList != null && infoList.Count > 0)
                 {
-                    if (HostList != null && HostList.ContainsKey(name))//微服务程序。
+                    bool isRegCenter = Server.IsRegCenterOfMaster;
+                    HostInfo firstInfo = infoList[0];
+                    for (int i = 0; i < infoList.Count; i++)
                     {
-                        List<HostInfo> infoList = HostList[name];
-                        if (infoList != null && infoList.Count > 0)
+                        int callIndex = firstInfo.CallIndex + i;
+                        if (callIndex >= infoList.Count)
                         {
-                            bool isRegCenter = Server.IsRegCenterOfMaster;
-                            HostInfo firstInfo = infoList[0];
-                            for (int i = 0; i < infoList.Count; i++)
-                            {
-                                int callIndex = firstInfo.CallIndex + i;
-                                if (callIndex >= infoList.Count)
-                                {
-                                    callIndex = callIndex - infoList.Count;
-                                }
-                                HostInfo info = infoList[callIndex];
-
-                                if (info.Version < 0 || (info.CallTime > DateTime.Now && infoList.Count > 0) || (isRegCenter && info.RegTime < DateTime.Now.AddSeconds(-10)))//正常5-10秒注册1次。
-                                {
-                                    continue;//已经断开服务的。
-                                }
-                                firstInfo.CallIndex = callIndex + 1;//指向下一个。
-                                return infoList[callIndex].Host;
-                            }
+                            callIndex = 0;
                         }
+                        HostInfo info = infoList[callIndex];
+
+                        if (info.Version < 0 || (info.CallTime > DateTime.Now && infoList.Count > 0) || (isRegCenter && info.RegTime < DateTime.Now.AddSeconds(-10)))//正常5-10秒注册1次。
+                        {
+                            continue;//已经断开服务的。
+                        }
+                        firstInfo.CallIndex = callIndex + 1;//指向下一个。
+                        return infoList[callIndex].Host;
                     }
                 }
                 return string.Empty;
@@ -290,12 +284,28 @@ namespace Taurus.Core
             /// <returns></returns>
             public static List<HostInfo> GetHostList(string name)
             {
-                if (!string.IsNullOrEmpty(name))
+                if (!string.IsNullOrEmpty(name) && HostList != null)
                 {
-                    if (HostList != null && HostList.ContainsKey(name))//微服务程序。
+                    List<HostInfo> list = new List<HostInfo>();
+                    if (HostList.ContainsKey(name))//微服务程序。
                     {
-                        return HostList[name];
+                        list.AddRange(HostList[name]);
                     }
+                    if (name.Contains("."))//域名
+                    {
+                        if (name != "*.*" && HostList.ContainsKey("*.*"))
+                        {
+                            list.AddRange(HostList["*.*"]);//增加“*.*”域名模块的通用符号处理。
+                        }
+                    }
+                    else //普通模块
+                    {
+                        if (name != "*" && HostList.ContainsKey("*"))
+                        {
+                            list.AddRange(HostList["*"]);//增加“*”模块的通用符号处理。
+                        }
+                    }
+                    return list;
                 }
                 return null;
             }
@@ -381,31 +391,25 @@ namespace Taurus.Core
             /// <returns></returns>
             public static string GetHost(string name)
             {
-                if (!string.IsNullOrEmpty(name))
+                List<HostInfo> infoList = GetHostList(name);
+                if (infoList != null && infoList.Count > 0)
                 {
-                    if (HostList != null && HostList.ContainsKey(name))//微服务程序。
+                    HostInfo firstInfo = infoList[0];
+                    for (int i = 0; i < infoList.Count; i++)
                     {
-                        List<HostInfo> infoList = HostList[name];
-                        if (infoList != null && infoList.Count > 0)
+                        int callIndex = firstInfo.CallIndex + i;
+                        if (callIndex >= infoList.Count)
                         {
-                            HostInfo firstInfo = infoList[0];
-                            for (int i = 0; i < infoList.Count; i++)
-                            {
-                                int callIndex = firstInfo.CallIndex + i;
-                                if (callIndex >= infoList.Count)
-                                {
-                                    callIndex = callIndex - infoList.Count;
-                                }
-                                HostInfo info = infoList[callIndex];
-
-                                if (info.Version < 0)//正常5-10秒注册1次。
-                                {
-                                    continue;//已经断开服务的。
-                                }
-                                firstInfo.CallIndex = callIndex + 1;//指向下一个。
-                                return infoList[callIndex].Host;
-                            }
+                            callIndex = 0;
                         }
+                        HostInfo info = infoList[callIndex];
+
+                        if (info.Version < 0)//正常5-10秒注册1次。
+                        {
+                            continue;//已经断开服务的。
+                        }
+                        firstInfo.CallIndex = callIndex + 1;//指向下一个。
+                        return infoList[callIndex].Host;
                     }
                 }
                 return string.Empty;
@@ -419,10 +423,26 @@ namespace Taurus.Core
             {
                 if (!string.IsNullOrEmpty(name))
                 {
-                    if (HostList != null && HostList.ContainsKey(name))//微服务程序。
+                    List<HostInfo> list = new List<HostInfo>();
+                    if (HostList.ContainsKey(name))//微服务程序。
                     {
-                        return HostList[name];
+                        list.AddRange(HostList[name]);
                     }
+                    if (name.Contains("."))//域名
+                    {
+                        if (name != "*.*" && HostList.ContainsKey("*.*"))
+                        {
+                            list.AddRange(HostList["*.*"]);//增加“*.*”域名模块的通用符号处理。
+                        }
+                    }
+                    else //普通模块
+                    {
+                        if (name != "*" && HostList.ContainsKey("*"))
+                        {
+                            list.AddRange(HostList["*"]);//增加“*”模块的通用符号处理。
+                        }
+                    }
+                    return list;
                 }
                 return null;
             }
