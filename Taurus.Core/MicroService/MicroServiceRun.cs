@@ -432,7 +432,7 @@ namespace Taurus.Core
                     }
                 }
 
-                if (infoList.Count == 0)
+                if (infoList==null || infoList.Count == 0)
                 {
                     return false;
                 }
