@@ -9,21 +9,14 @@ namespace Taurus.Controllers
     /// <summary>
     /// 全局控制器（适全全局事件处理）
     /// </summary>
-    public partial class DefaultController : Controller
+    public partial class DefaultController : Taurus.Core.Controller
     {
         /// <summary>
         /// 所有寻址不到的请求都集中执行到此方法。
         /// </summary>
         public override void Default()
         {
-            if (RouteConfig.RouteMode == 2 && Module == "api")
-            {
-                Context.RewritePath("/text" + Context.Request.RawUrl);
-            }
-            else
-            {
-                Write("DefaultController : Hello world");
-            }
+            Write("DefaultController : Hello world");
         }
         /// <summary>
         /// 用于所有的请求合法性验证，配合[Ack]属性
@@ -32,7 +25,7 @@ namespace Taurus.Controllers
         public static bool CheckAck(IController controller, string methodName)
         {
             //需要自己实现Ack验证
-            return controller.CheckFormat("ack Can't be Empty", "ack");
+            return !string.IsNullOrEmpty(controller.Query<string>("ack"));
 
         }
 
@@ -43,7 +36,7 @@ namespace Taurus.Controllers
         public static bool CheckToken(IController controller, string methodName)
         {
             //需要自己实现，或者通过配置Taurus.Auth启动自带的验证（自带的注释掉此方法即可）。
-            return controller.CheckFormat("token Can't be Empty", "token");
+            return !string.IsNullOrEmpty(controller.Query<string>("token"));
         }
 
         /// <summary>
@@ -52,7 +45,7 @@ namespace Taurus.Controllers
         /// </summary>
         public static bool CheckMicroService(IController controller, string methodName)
         {
-            return MicroService.Config.ServerKey == controller.Request.Headers[MicroService.Const.HeaderKey];
+            return MicroService.Config.ServerKey == controller.Query<string>(MicroService.Const.HeaderKey);
         }
 
         /// <summary>
@@ -61,10 +54,10 @@ namespace Taurus.Controllers
         /// </summary>
         public static string RouteMapInvoke(HttpRequest request)
         {
-            if (request.Url.LocalPath.StartsWith("/api/") && RouteConfig.RouteMode == 2)
-            {
-                return "/test" + request.RawUrl;
-            }
+            //if (request.Url.LocalPath.StartsWith("/api/") && RouteConfig.RouteMode == 2)
+            //{
+            //    return "/test" + request.RawUrl;
+            //}
             return string.Empty;
         }
         /// <summary>
@@ -73,19 +66,9 @@ namespace Taurus.Controllers
         /// </summary>
         public static bool BeforeInvoke(IController controller, string methodName)
         {
-            //MAction action = new MAction("Test1", "server=.;database=demo;uid=sa;pwd=123456");
-
-            //action.BeginTransation();
-            //action.Set("name", "google");
-            //if (action.Insert())
+            //if (controller.ControllerName == "doc")
             //{
-            //    throw new Exception("aa");
-            //}
-
-            //if (controller.IsHttpPost)
-            //{
-            //    //拦截全局处理
-            //    controller.Write(methodName + " NoACK");
+            //    controller.SetQuery("msg", "初始msg参数值。");
             //}
 
             return true;
