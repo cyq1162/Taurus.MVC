@@ -31,7 +31,9 @@ namespace Taurus.Core
             Console.WriteLine(DateTime.Now.ToString("HH:mm:ss") + string.Format(" : Server.API.Call.Reg : Host : {0} Name : {1}", host, name));
             if (!MicroService.Server.IsRegCenter)
             {
-                MicroService.LogWrite("MicroService.Reg : This is not RegCenter", Convert.ToString(Request.UrlReferrer), "POST", MicroService.Config.ServerName);
+                string tip = "MicroService.Reg : This is not RegCenter";
+                MicroService.LogWrite(tip, Convert.ToString(Request.UrlReferrer), "POST", MicroService.Config.ServerName);
+                Write(tip, false);
                 return;//仅服务类型为注册中心，才允许接收注册。
             }
             #region 注册中心【从】检测到【主】恢复后，推送host，让后续的请求转回【主】
