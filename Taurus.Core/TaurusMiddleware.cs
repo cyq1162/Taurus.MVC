@@ -75,7 +75,7 @@ namespace Microsoft.AspNetCore.Http
         }
         public static IApplicationBuilder UseTaurusMvc(this IApplicationBuilder builder, string webRootPath)
         {
-            if (!string.IsNullOrEmpty(MicroService.Config.AppRunUrl))
+            if (!string.IsNullOrEmpty(MicroService.Config.AppRunUrl) || MicroService.Server.IsRegCenterOfMaster)
             {
                 MicroService.Run.Start(MicroService.Config.AppRunUrl);//
             }

@@ -282,11 +282,11 @@ namespace Taurus.Core
                     {
                         if (apiResult[0] == '{' && apiResult[apiResult.Length - 1] == '}')
                         {
-                            context.Response.ContentType = "application/json";
+                            context.Response.ContentType = "application/json;charset=" + context.Response.Charset;
                         }
                         else if (outResult.StartsWith("<?xml") && apiResult[apiResult.Length - 1] == '>')
                         {
-                            context.Response.ContentType = "application/xml";
+                            context.Response.ContentType = "application/xml;charset=" + context.Response.Charset;
                         }
                     }
 

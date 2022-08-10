@@ -6,6 +6,7 @@ using System.Threading;
 using CYQ.Data;
 using CYQ.Data.Table;
 using CYQ.Data.Tool;
+using System.Net.Sockets;
 
 namespace Taurus.Core
 {
@@ -18,17 +19,30 @@ namespace Taurus.Core
         /// <summary>
         /// 获取当前Dll的版本号
         /// </summary>
-        public static string Version
+        internal static string Version
         {
             get
             {
                 return System.Reflection.Assembly.GetExecutingAssembly().GetName().Version.ToString();
             }
         }
-        /// <summary>
-        /// 内部日志记录
-        /// </summary>
-        internal static void LogWrite(string msg, string url, string httpMethod, string moduleName)
+        ///// <summary>
+        ///// 获取可用的监听端口。
+        ///// </summary>
+        ///// <returns></returns>
+        //public static int GetAvailablePort()
+        //{
+        //    TcpListener l = new TcpListener(IPAddress.Any, 0);
+        //    l.Start();
+        //    int port = ((IPEndPoint)l.LocalEndpoint).Port;
+        //    l.Stop();
+        //    return port;
+
+        //}
+            /// <summary>
+            /// 内部日志记录
+            /// </summary>
+            internal static void LogWrite(string msg, string url, string httpMethod, string moduleName)
         {
             SysLogs sysLogs = new SysLogs();
             sysLogs.LogType = "MicroService";

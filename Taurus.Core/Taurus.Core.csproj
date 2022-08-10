@@ -70,6 +70,7 @@
     <Compile Include="MicroService\MicroServiceAttribute.cs" />
     <Compile Include="MicroService\MicroServiceConfig.cs" />
     <Compile Include="MicroService\MicroServiceController.cs" />
+    <Compile Include="MicroService\MicroServiceProxy.cs" />
     <Compile Include="MicroService\MicroServiceRun.cs" />
     <Compile Include="MVC\Attribute\AckAttribute.cs" />
     <Compile Include="MVC\Attribute\AttributeList.cs" />

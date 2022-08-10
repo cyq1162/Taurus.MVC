@@ -48,6 +48,15 @@ namespace Taurus.Core
             if (!isCallMicroService && MicroService.Run.Proxy(context, true))
             {
                 isProxyCallSuccess = true;
+                try
+                {
+                    context.Response.End();
+                }
+                catch (ThreadAbortException)
+                {
+                    
+                }
+                
                 return;
             }
             #endregion
