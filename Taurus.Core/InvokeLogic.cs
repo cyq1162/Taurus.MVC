@@ -295,6 +295,25 @@ namespace Taurus.Core
         #region GetMethods
 
         #region 4个全局方法
+        private static MethodInfo _GlobalDefault = null;
+        /// <summary>
+        /// 全局Default方法
+        /// </summary>
+        public static MethodInfo GlobalDefault
+        {
+            get
+            {
+                if (_GlobalDefault == null)
+                {
+                    Type t = GetController(Const.Default);
+                    if (t != null)
+                    {
+                        _GlobalDefault = t.GetMethod(Const.Default, BindingFlags.Instance | BindingFlags.Public);
+                    }
+                }
+                return _GlobalDefault;
+            }
+        }
 
         private static MethodInfo _DefaultCheckAck = null;
         /// <summary>

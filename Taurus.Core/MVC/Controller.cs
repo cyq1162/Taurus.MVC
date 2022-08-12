@@ -263,6 +263,18 @@ namespace Taurus.Core
                         #endregion
                     }
                 }
+                else
+                {
+                    //检测全局Default方法
+                    MethodInfo globalDefault = InvokeLogic.GlobalDefault;
+                    if (globalDefault != null)
+                    {
+                        object o = Activator.CreateInstance(globalDefault.DeclaringType);//实例化
+                        globalDefault.DeclaringType.GetMethod("ProcessRequest").Invoke(o, new object[] { context });
+                        return;
+                    }
+
+                }
                 if (string.IsNullOrEmpty(context.Response.Charset))
                 {
                     context.Response.Charset = "utf-8";
