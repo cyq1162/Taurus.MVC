@@ -1,25 +1,20 @@
 ﻿using CYQ.Data;
 using CYQ.Data.Tool;
 using System;
-using System.Collections.Generic;
-using System.IO;
-using System.Net;
 using System.Reflection;
-using System.Text;
 using System.Threading;
 using System.Web;
-using System.Web.SessionState;
 
 namespace Taurus.Core
 {
     /// <summary>
-    /// 权限检测模块
+    /// 权限检测模块（NetCore 下处理成单例模式）
     /// </summary>
     public class UrlRewrite : IHttpModule
     {
         public void Dispose()
         {
-            
+
         }
         public void Init(HttpApplication context)
         {
@@ -28,40 +23,33 @@ namespace Taurus.Core
             context.AcquireRequestState += context_AcquireRequestState;
             context.Error += context_Error;
         }
-        HttpContext context;
-        bool isProxyCallSuccess = false;//微服务代理调用
-        bool isUseMvc = false;
         void context_BeginRequest(object sender, EventArgs e)
         {
-            isProxyCallSuccess = false;//被单例复用了，每次需要重新赋值。
-            
             HttpApplication app = (HttpApplication)sender;
-            context = app.Context;
+            HttpContext context = app.Context;
             Uri uri = context.Request.Url;
             #region 微服务检测与启动
             string urlAbs = uri.AbsoluteUri;
             string urlPath = uri.PathAndQuery;
             string host = urlAbs.Substring(0, urlAbs.Length - urlPath.Length);
-            bool isCallMicroService = uri.LocalPath.ToLower().Contains("/microservice/");
-            isUseMvc = !string.IsNullOrEmpty(AppConfig.GetApp(AppSettings.Controllers)) || isCallMicroService;//有配置时才启动MVC，否则默认仅启动微服务。
             MicroService.Run.Start(host);//微服务检测、启动。
-            if (!isCallMicroService && MicroService.Run.Proxy(context, true))
+            if (!QueryTool.IsCallMicroServiceReg(uri) && MicroService.Run.Proxy(context, true))
             {
-                isProxyCallSuccess = true;
+                QueryTool.IsRunProxySuccess = true;
                 try
                 {
                     context.Response.End();
                 }
                 catch (ThreadAbortException)
                 {
-                    
+
                 }
-                
+
                 return;
             }
             #endregion
 
-            if (isUseMvc)
+            if (QueryTool.IsCallMvc(uri))
             {
                 if (context.Request.Url.LocalPath == "/")//设置默认首页
                 {
@@ -72,7 +60,7 @@ namespace Taurus.Core
                         return;
                     }
                 }
-                if (QueryTool.IsTaurusSuffix())
+                if (QueryTool.IsTaurusSuffix(uri))
                 {
                     MethodInfo routeMapInvoke = InvokeLogic.RouteMapInvokeMethod;
                     if (routeMapInvoke != null)
@@ -89,34 +77,34 @@ namespace Taurus.Core
 
         void context_PostMapRequestHandler(object sender, EventArgs e)
         {
-            if (isUseMvc && !isProxyCallSuccess && QueryTool.IsTaurusSuffix())
+            HttpContext cont = ((HttpApplication)sender).Context;
+            if (cont != null && QueryTool.IsCallMvc(cont.Request.Url) && !QueryTool.IsRunProxySuccess && QueryTool.IsTaurusSuffix(cont.Request.Url))
             {
-                context.Handler = SessionHandler.Instance;//注册Session
+                cont.Handler = SessionHandler.Instance;//注册Session
             }
         }
         void context_AcquireRequestState(object sender, EventArgs e)
         {
-            //if (RequestAPI.Record(context))
-            //{
-            if (isUseMvc && !isProxyCallSuccess && QueryTool.IsTaurusSuffix())
+            HttpContext cont = ((HttpApplication)sender).Context;
+            if (cont != null && QueryTool.IsCallMvc(cont.Request.Url) && !QueryTool.IsRunProxySuccess && QueryTool.IsTaurusSuffix(cont.Request.Url))
             {
-                CheckCORS();
-                ReplaceOutput();
-                InvokeClass();
+                CheckCORS(cont);
+                ReplaceOutput(cont);
+                InvokeClass(cont);
             }
-            //}
         }
 
         void context_Error(object sender, EventArgs e)
         {
-            if (isUseMvc && QueryTool.IsTaurusSuffix())
+            HttpContext cont = ((HttpApplication)sender).Context;
+            if (cont != null && QueryTool.IsCallMvc(cont.Request.Url) && QueryTool.IsTaurusSuffix(cont.Request.Url))
             {
-                Log.WriteLogToTxt(HttpContext.Current.Error);
+                Log.WriteLogToTxt(cont.Error);
             }
         }
 
         #region 检测CORS跨域请求
-        private void CheckCORS()
+        private void CheckCORS(HttpContext context)
         {
             if (QueryTool.IsAllowCORS())
             {
@@ -148,9 +136,9 @@ namespace Taurus.Core
 
 
         #region 替换输出，仅对子目录部署时有效
-        void ReplaceOutput()
+        void ReplaceOutput(HttpContext context)
         {
-            if (QueryTool.IsSubAppSite)
+            if (QueryTool.IsSubAppSite(context.Request.Url))
             {
                 //如果项目需要部署成子应用程序，则开启，否则不需要开启（可注释掉下面一行代码）
                 context.Response.Filter = new HttpResponseFilter(context.Response.Filter);
@@ -159,11 +147,11 @@ namespace Taurus.Core
         #endregion
 
         #region 逻辑反射调用Controlls的方法
-        private void InvokeClass()
+        private void InvokeClass(HttpContext context)
         {
             Type t = null;
             //ViewController是由页面的前两个路径决定了。
-            string[] items = QueryTool.GetLocalPath().Trim('/').Split('/');
+            string[] items = QueryTool.GetLocalPath(context.Request.Url).Trim('/').Split('/');
             string className = InvokeLogic.Const.Default;
             if (RouteConfig.RouteMode == 1)
             {
@@ -183,7 +171,7 @@ namespace Taurus.Core
             }
             if (t == null)
             {
-                WriteError("You need a " + className + " controller for coding!");
+                WriteError("You need a " + className + " controller for coding!", context);
             }
             else
             {
@@ -200,12 +188,12 @@ namespace Taurus.Core
                 }
                 catch (Exception err)
                 {
-                    WriteError(err.Message);
+                    WriteError(err.Message, context);
                 }
             }
             //context.Response.End();
         }
-        private void WriteError(string tip)
+        private void WriteError(string tip, HttpContext context)
         {
             context.Response.Write(JsonHelper.OutResult(false, tip));
         }

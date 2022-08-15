@@ -1,11 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Text;
 using System.Web;
-using System.IO;
-using System.Web.UI;
-using System.Net;
-using System.Data;
 using CYQ.Data;
 using CYQ.Data.Tool;
 
@@ -19,9 +14,9 @@ namespace Taurus.Core
             return AppConfig.GetApp(AppSettings.DefaultUrl, "");
         }
 
-        public static string GetLocalPath()
+        public static string GetLocalPath(Uri uri)
         {
-            string localPath = HttpContext.Current.Request.Url.LocalPath;
+            string localPath = uri.LocalPath;
             string suffix = AppConfig.GetApp(AppSettings.Suffix, "");
             if (suffix != "" && localPath.EndsWith(suffix))
             {
@@ -29,9 +24,51 @@ namespace Taurus.Core
             }
             return localPath;
         }
-        public static bool IsTaurusSuffix()
+        public static bool IsRunProxySuccess
         {
-            string localPath = HttpContext.Current.Request.Url.LocalPath;
+            get
+            {
+                if (HttpContext.Current != null)
+                {
+                    return HttpContext.Current.Items.Contains("IsRunProxySuccess");
+                }
+                return false;
+            }
+            set
+            {
+
+                if (value)
+                {
+                    if (!HttpContext.Current.Items.Contains("IsRunProxySuccess"))
+                    {
+                        HttpContext.Current.Items.Add("IsRunProxySuccess", 1);
+                    }
+                }
+                else if (HttpContext.Current.Items.Contains("IsRunProxySuccess"))
+                {
+                    HttpContext.Current.Items.Remove("IsRunProxySuccess");
+                }
+            }
+        }
+        /// <summary>
+        /// 是否请求微服务注册中心
+        /// </summary>
+        /// <returns></returns>
+        public static bool IsCallMicroServiceReg(Uri uri)
+        {
+            return uri.LocalPath.ToLower().Contains("/microservice/");
+        }
+        /// <summary>
+        /// 是否常规走MVC调用流程
+        /// </summary>
+        /// <returns></returns>
+        public static bool IsCallMvc(Uri uri)
+        {
+            return !string.IsNullOrEmpty(AppConfig.GetApp(AppSettings.Controllers)) || IsCallMicroServiceReg(uri);//有配置时才启动MVC，否则默认仅启动微服务。
+        }
+        public static bool IsTaurusSuffix(Uri uri)
+        {
+            string localPath = uri.LocalPath;
             string suffix = AppConfig.GetApp(AppSettings.Suffix, "");
             if (suffix != "" && localPath.EndsWith(suffix))
             {
@@ -47,19 +84,16 @@ namespace Taurus.Core
         /// <summary>
         /// 是否使用子目录部署网站
         /// </summary>
-        public static bool IsSubAppSite
+        public static bool IsSubAppSite(Uri uri)
         {
-            get
+            string ui = AppConfig.GetApp(AppSettings.SubAppName, string.Empty).ToLower();
+            if (ui != string.Empty)
             {
-                string ui = AppConfig.GetApp(AppSettings.SubAppName, string.Empty).ToLower();
-                if (ui != string.Empty)
-                {
-                    ui = ui.Trim('/');
-                    string localPath = HttpContext.Current.Request.Url.LocalPath.Trim('/').ToLower();
-                    return localPath == ui || localPath.StartsWith(ui + "/");
-                }
-                return false;
+                ui = ui.Trim('/');
+                string localPath = uri.LocalPath.Trim('/').ToLower();
+                return localPath == ui || localPath.StartsWith(ui + "/");
             }
+            return false;
         }
 
         public static T Query<T>(string key)
@@ -68,7 +102,7 @@ namespace Taurus.Core
         }
         public static T Query<T>(string key, T defaultValue, bool filter)
         {
-            string value = HttpContext.Current.Request[key]?? HttpContext.Current.Request.QueryString[key]?? HttpContext.Current.Request.Headers[key];
+            string value = HttpContext.Current.Request[key] ?? HttpContext.Current.Request.QueryString[key] ?? HttpContext.Current.Request.Headers[key];
             if (value == null && HttpContext.Current.Request.Files != null && HttpContext.Current.Request.Files[key] != null)
             {
                 object o = HttpContext.Current.Request.Files[key];

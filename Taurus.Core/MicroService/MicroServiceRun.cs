@@ -27,11 +27,15 @@ namespace Taurus.Core
             {
                 if (!isStart)
                 {
-                    if (ServicePointManager.DefaultConnectionLimit == 2)
-                    {
-                        ServicePointManager.DefaultConnectionLimit = 1024;//对.net framework有效。
-                    }
                     isStart = true;
+                    if (Server.IsServer)
+                    {
+                        if (ServicePointManager.DefaultConnectionLimit == 2)
+                        {
+                            ServicePointManager.DefaultConnectionLimit = 2048;//对.net framework有效。
+                            ThreadPool.SetMinThreads(30, 50);
+                        }
+                    }
                     Console.WriteLine("MicroService.Run.Start.V" + Version + " : ");
                     if (Server.IsRegCenterOfMaster)
                     {

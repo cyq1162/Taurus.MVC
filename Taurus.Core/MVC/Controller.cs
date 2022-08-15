@@ -49,7 +49,7 @@ namespace Taurus.Core
         private void Init(Type t)
         {
             _ControllerName = t.Name.Replace(InvokeLogic.Const.Controller, "").ToLower();
-            string[] items = QueryTool.GetLocalPath().Trim('/').Split('/');
+            string[] items = QueryTool.GetLocalPath(Request.Url).Trim('/').Split('/');
             firstPara = items[0];
             int paraStartIndex = RouteConfig.RouteMode + 1;
             string methodName = string.Empty;
@@ -282,6 +282,7 @@ namespace Taurus.Core
                 if (View != null)
                 {
                     context.Response.Write(View.OutXml);
+                    View = null;
                 }
                 else if (apiResult.Length > 0)
                 {
@@ -303,6 +304,8 @@ namespace Taurus.Core
                     }
 
                     context.Response.Write(outResult);
+                    outResult = null;
+                    apiResult = null;
                 }
             }
             catch (System.Threading.ThreadAbortException)

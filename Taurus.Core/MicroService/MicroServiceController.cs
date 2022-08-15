@@ -11,6 +11,12 @@ namespace Taurus.Core
     /// </summary>
     public partial class MicroServiceController : Controller
     {
+        private void WriteLine(string msg)
+        {
+#if DEBUG
+            Console.WriteLine(msg);
+#endif
+        }
         /// <summary>
         /// 授权检测。
         /// </summary>
@@ -27,8 +33,9 @@ namespace Taurus.Core
         [Require("name,host")]
         public void Reg(string name, string host, int version)
         {
-            Console.WriteLine(Environment.NewLine + "--------------------------------------");
-            Console.WriteLine(DateTime.Now.ToString("HH:mm:ss") + string.Format(" : Server.API.Call.Reg : Host : {0} Name : {1}", host, name));
+            WriteLine(Environment.NewLine);
+            WriteLine("--------------------------------------");
+            WriteLine(DateTime.Now.ToString("HH:mm:ss") + string.Format(" : Server.API.Call.Reg : Host : {0} Name : {1}", host, name));
             if (!MicroService.Server.IsRegCenter)
             {
                 string tip = "MicroService.Reg : This is not RegCenter";
@@ -120,8 +127,8 @@ namespace Taurus.Core
         [MicroService]
         public void GetList(long tick)
         {
-            Console.WriteLine(Environment.NewLine + "--------------------------------------");
-            Console.WriteLine(DateTime.Now.ToString("HH:mm:ss") + " : Server.API.Call.GetList : From :" + Request.UrlReferrer);
+            WriteLine(Environment.NewLine + "--------------------------------------");
+            WriteLine(DateTime.Now.ToString("HH:mm:ss") + " : Server.API.Call.GetList : From :" + Request.UrlReferrer);
             if (MicroService.Server.Host2LastRegTime < DateTime.Now.AddSeconds(-15))//超过15秒，备份链接无效化。
             {
                 MicroService.Server.Host2 = String.Empty;
@@ -154,8 +161,8 @@ namespace Taurus.Core
         [Require("host")]
         public void Reg2(string host)
         {
-            Console.WriteLine(Environment.NewLine + "--------------------------------------");
-            Console.WriteLine(DateTime.Now.ToString("HH:mm:ss") + " : Server.API.Call.Reg2 : Host :" + host);
+            WriteLine(Environment.NewLine + "--------------------------------------");
+            WriteLine(DateTime.Now.ToString("HH:mm:ss") + " : Server.API.Call.Reg2 : Host :" + host);
             MicroService.Server.Host2 = host;
             MicroService.Server.Host2LastRegTime = DateTime.Now;
             string result = JsonHelper.OutResult(true, "", "tick", MicroService.Server.Tick);
@@ -172,8 +179,8 @@ namespace Taurus.Core
         [Require("json")]
         public void SyncList(string json, long tick)
         {
-            Console.WriteLine(Environment.NewLine + "--------------------------------------");
-            Console.WriteLine(DateTime.Now.ToString("HH:mm:ss") + " : Server.API.Call.SyncList : Tick :" + tick);
+            WriteLine(Environment.NewLine + "--------------------------------------");
+            WriteLine(DateTime.Now.ToString("HH:mm:ss") + " : Server.API.Call.SyncList : Tick :" + tick);
             if (tick > MicroService.Server.Tick)
             {
                 MicroService.Server.Tick = tick;
