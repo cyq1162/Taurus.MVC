@@ -59,7 +59,7 @@ namespace Taurus.Core
             {
                 string[] items = item.Split('|');//允许模块域名带优先级版本号
                 int ver = 0;
-                if (item.Length < 2 || !int.TryParse(items[1], out ver))
+                if (items.Length < 2 || !int.TryParse(items[1], out ver))
                 {
                     ver = version;
                 }
