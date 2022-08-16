@@ -54,6 +54,22 @@ namespace Taurus.Core
 
             StringBuilder sb = new StringBuilder();
             #region 注册名字[版本号检测]
+            if (name.Contains("."))//包含域名
+            {
+                bool hasModule = false;
+                foreach (var item in name.Split(','))
+                {
+                    if (!item.Contains("."))
+                    {
+                        hasModule = true;
+                        break;
+                    }
+                }
+                if (!hasModule)
+                {
+                    name += ",*";//对于仅绑定域名的，追加通用模块。
+                }
+            }
             string[] names = name.ToLower().Split(',');//允许一次注册多个模块。
             foreach (string item in names)
             {

@@ -39,10 +39,10 @@ namespace Taurus.Core
         //    return port;
 
         //}
-            /// <summary>
-            /// 内部日志记录
-            /// </summary>
-            internal static void LogWrite(string msg, string url, string httpMethod, string moduleName)
+        /// <summary>
+        /// 内部日志记录
+        /// </summary>
+        internal static void LogWrite(string msg, string url, string httpMethod, string moduleName)
         {
             SysLogs sysLogs = new SysLogs();
             sysLogs.LogType = "MicroService";
@@ -309,14 +309,28 @@ namespace Taurus.Core
                     {
                         if (name != "*.*" && HostList.ContainsKey("*.*"))
                         {
-                            list.AddRange(HostList["*.*"]);//增加“*.*”域名模块的通用符号处理。
+                            List<HostInfo> commList = HostList["*.*"];
+                            if (commList.Count > 0)
+                            {
+                                if (list.Count == 0 || commList[0].Version >= list[0].Version)//版本号比较处理
+                                {
+                                    list.AddRange(commList);//增加“*.*”模块的通用符号处理。
+                                }
+                            }
                         }
                     }
                     else //普通模块
                     {
                         if (name != "*" && HostList.ContainsKey("*"))
                         {
-                            list.AddRange(HostList["*"]);//增加“*”模块的通用符号处理。
+                            List<HostInfo> commList = HostList["*"];
+                            if (commList.Count > 0)
+                            {
+                                if (list.Count == 0 || commList[0].Version >= list[0].Version)//版本号比较处理
+                                {
+                                    list.AddRange(commList);//增加“*”模块的通用符号处理。
+                                }
+                            }
                         }
                     }
                     return list;
@@ -446,14 +460,28 @@ namespace Taurus.Core
                     {
                         if (name != "*.*" && HostList.ContainsKey("*.*"))
                         {
-                            list.AddRange(HostList["*.*"]);//增加“*.*”域名模块的通用符号处理。
+                            List<HostInfo> commList = HostList["*.*"];
+                            if (commList.Count > 0)
+                            {
+                                if (list.Count == 0 || commList[0].Version >= list[0].Version)//版本号比较处理
+                                {
+                                    list.AddRange(commList);//增加“*.*”模块的通用符号处理。
+                                }
+                            }
                         }
                     }
                     else //普通模块
                     {
                         if (name != "*" && HostList.ContainsKey("*"))
                         {
-                            list.AddRange(HostList["*"]);//增加“*”模块的通用符号处理。
+                            List<HostInfo> commList = HostList["*"];
+                            if (commList.Count > 0)
+                            {
+                                if (list.Count == 0 || commList[0].Version >= list[0].Version)//版本号比较处理
+                                {
+                                    list.AddRange(commList);//增加“*”模块的通用符号处理。
+                                }
+                            }
                         }
                     }
                     return list;
