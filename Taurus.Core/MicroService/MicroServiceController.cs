@@ -79,28 +79,64 @@ namespace Taurus.Core
                 else
                 {
                     bool hasHost = false;
+                    bool isRemove = false;
+                    bool clearOne = false;
+                    bool hasBiggerVersion = false;
                     List<MicroService.HostInfo> list = kvTable[module];//ms,a.com
+                    StringBuilder sb2 = new StringBuilder();
                     for (int i = 0; i < list.Count; i++)
                     {
                         MicroService.HostInfo info = list[i];
-                        if (info.Version < ver)
+                        if (info.Version == -1)
                         {
-                            info.Version = -1;//标识为-1，由任务清除。
+                            if (info.Host == host)
+                            {
+                                isRemove = true;
+                                sb2.Clear();//优先提示级别高
+                                sb2.AppendFormat("[{0}] wait to remove。", module);
+                                break;
+                            }
+                            continue;
                         }
-                        else if (info.Version > ver)
-                        {
-                            hasHost = true;
-                            sb.AppendFormat("[{0}] Reg Fail:【Version : {1}<{2}】。", module, ver, info.Version);
-                            break;
-                        }
-                        else if (info.Host == host)
+                        if (info.Host == host)
                         {
                             hasHost = true;
                             info.RegTime = DateTime.Now;//更新时间。
                         }
+                        if (info.Version < ver)
+                        {
+                            if (!clearOne)
+                            {
+                                info.Version = -1;//标识为-1，由任务清除。
+                                clearOne = true;//每次注册仅清除1个，用于平滑版本过渡版本升级。
+                            }
+                        }
+                        else
+                        {
+                            if (info.Version > ver && !hasBiggerVersion)
+                            {
+                                hasBiggerVersion = true;
+                                if (sb2.Length == 0)
+                                {
+                                    sb2.AppendFormat("[{0}] reg fail:【Version : {1}<{2}】。", module, ver, info.Version);
+                                }
+                            }
+                        }
+
 
                     }
-                    if (!hasHost) //新版本添加
+                    if (hasHost)
+                    {
+                        if (isRemove)
+                        {
+                            sb.Append(sb2);
+                        }
+                    }
+                    else if (hasBiggerVersion)//新添旧版本
+                    {
+                        sb.Append(sb2);//提示已有新版本。
+                    }
+                    else //新版本添加
                     {
                         MicroService.Server.IsChange = true;
                         MicroService.HostInfo info = new MicroService.HostInfo();
