@@ -55,8 +55,15 @@ namespace Taurus.Core
             StringBuilder sb = new StringBuilder();
             #region 注册名字[版本号检测]
             string[] names = name.ToLower().Split(',');//允许一次注册多个模块。
-            foreach (string module in names)
+            foreach (string item in names)
             {
+                string[] items = item.Split('|');//允许模块域名带优先级版本号
+                int ver = 0;
+                if (item.Length < 2 || !int.TryParse(items[1], out ver))
+                {
+                    ver = version;
+                }
+                string module = items[0];
                 if (!kvTable.ContainsKey(module))
                 {
                     //首次添加
@@ -65,7 +72,7 @@ namespace Taurus.Core
                     MicroService.HostInfo info = new MicroService.HostInfo();
                     info.Host = host;
                     info.RegTime = DateTime.Now;
-                    info.Version = version;
+                    info.Version = ver;
                     list.Add(info);
                     kvTable.Add(module, list);
                 }
@@ -77,14 +84,14 @@ namespace Taurus.Core
                     for (int i = 0; i < list.Count; i++)
                     {
                         MicroService.HostInfo info = list[i];
-                        if (info.Version < version && !isDomain)
+                        if (info.Version < ver && !isDomain)
                         {
                             info.Version = -1;//标识为-1，由任务清除。
                         }
-                        else if (info.Version > version && !isDomain)
+                        else if (info.Version > ver && !isDomain)
                         {
                             hasHost = true;
-                            sb.AppendFormat("[{0}] Reg Fail:【Version : {1}<{2}】。", module, version, info.Version);
+                            sb.AppendFormat("[{0}] Reg Fail:【Version : {1}<{2}】。", module, ver, info.Version);
                             break;
                         }
                         else if (info.Host == host)
@@ -100,7 +107,7 @@ namespace Taurus.Core
                         MicroService.HostInfo info = new MicroService.HostInfo();
                         info.Host = host;
                         info.RegTime = DateTime.Now;
-                        info.Version = version;
+                        info.Version = ver;
                         list.Add(info);
                     }
                 }
