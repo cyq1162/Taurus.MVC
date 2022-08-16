@@ -79,16 +79,15 @@ namespace Taurus.Core
                 else
                 {
                     bool hasHost = false;
-                    bool isDomain = module.Split('.').Length > 1;//域名不区分版本号。  ms,a.com 1    m2,a.com 2
                     List<MicroService.HostInfo> list = kvTable[module];//ms,a.com
                     for (int i = 0; i < list.Count; i++)
                     {
                         MicroService.HostInfo info = list[i];
-                        if (info.Version < ver && !isDomain)
+                        if (info.Version < ver)
                         {
                             info.Version = -1;//标识为-1，由任务清除。
                         }
-                        else if (info.Version > ver && !isDomain)
+                        else if (info.Version > ver)
                         {
                             hasHost = true;
                             sb.AppendFormat("[{0}] Reg Fail:【Version : {1}<{2}】。", module, ver, info.Version);
