@@ -92,7 +92,7 @@ namespace Taurus.Core
                             if (info.Host == host)
                             {
                                 isRemove = true;
-                                sb2.Clear();//优先提示级别高
+                                sb2.Length = 0;//优先提示级别高
                                 sb2.AppendFormat("【{0}】 wait to remove。", module);
                                 break;
                             }
