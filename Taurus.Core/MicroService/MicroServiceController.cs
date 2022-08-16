@@ -93,7 +93,7 @@ namespace Taurus.Core
                             {
                                 isRemove = true;
                                 sb2.Clear();//优先提示级别高
-                                sb2.AppendFormat("[{0}] wait to remove。", module);
+                                sb2.AppendFormat("【{0}】 wait to remove。", module);
                                 break;
                             }
                             continue;
@@ -118,7 +118,7 @@ namespace Taurus.Core
                                 hasBiggerVersion = true;
                                 if (sb2.Length == 0)
                                 {
-                                    sb2.AppendFormat("[{0}] reg fail:【Version : {1}<{2}】。", module, ver, info.Version);
+                                    sb2.AppendFormat("Reg 【{0}】 fail:【Version : {1}<{2}】。", module, ver, info.Version);
                                 }
                             }
                         }
