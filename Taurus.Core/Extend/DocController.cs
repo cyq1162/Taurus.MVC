@@ -149,8 +149,16 @@ namespace Taurus.Core
                             case InvokeLogic.Const.DefaultController:
                             case InvokeLogic.Const.DocController:
                             case InvokeLogic.Const.AuthController:
-                            case InvokeLogic.Const.MicroServiceController:
                                 continue;
+                            case InvokeLogic.Const.MicroServiceController:
+                                if (MicroService.Server.IsServer)
+                                {
+                                    break;
+                                }
+                                else
+                                {
+                                    continue;
+                                }
                         }
                     }
                     string desc = GetDescription(GetXml(), item.Value.FullName, "T:").Trim();

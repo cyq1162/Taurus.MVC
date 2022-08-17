@@ -7,7 +7,7 @@ using System.Collections.Generic;
 namespace Taurus.Core
 {
     /// <summary>
-    /// 微服务 - 主程序 - 注册中心。
+    /// 微服务 - 注册中心。
     /// </summary>
     public partial class MicroServiceController : Controller
     {
@@ -17,17 +17,17 @@ namespace Taurus.Core
             Console.WriteLine(msg);
 #endif
         }
-        /// <summary>
-        /// 授权检测。
-        /// </summary>
-        /// <returns></returns>
+
         public override bool CheckMicroService()
         {
             return base.CheckMicroService();
         }
         /// <summary>
-        /// 服务注册接口 - 注册中心（ServerName配置为：RegCenter）类型才允许被触发。
+        /// 注册中心 - 注册服务。
         /// </summary>
+        /// <param name="name">服务名称，多个用逗号分隔，【可绑定域名】【模块追加版本号|号分隔。】</param>
+        /// <param name="host">服务的可访问地址</param>
+        /// <param name="version">服务的版本号【用于版本升级】</param>
         [HttpPost]
         [MicroService]
         [Require("name,host")]
@@ -179,8 +179,9 @@ namespace Taurus.Core
         }
 
         /// <summary>
-        /// 获取微服务列表
+        /// 注册中心 - 获取服务列表。
         /// </summary>
+        /// <param name="tick">最后获取的时间Tick，首次请求可传0</param>
         [HttpGet]
         [MicroService]
         public void GetList(long tick)
@@ -211,7 +212,7 @@ namespace Taurus.Core
         }
 
         /// <summary>
-        /// 服务注册接口 - 注册中心 - 设置备用地址
+        /// 注册中心 - 设置【从】的备用地址。
         /// </summary>
         /// <param name="host">地址</param>
         [HttpPost]
@@ -228,7 +229,7 @@ namespace Taurus.Core
         }
 
         /// <summary>
-        /// 服务注册接口 - 注册中心 - 同步数据【备用=》主机】。
+        /// 注册中心 - 同步数据【备用=》主机】。
         /// </summary>
         /// <param name="json">数据</param>
         /// <param name="tick">标识</param>
