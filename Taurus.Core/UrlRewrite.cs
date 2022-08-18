@@ -35,7 +35,7 @@ namespace Taurus.Core
             MicroService.Run.Start(host);//微服务检测、启动。
             if (!QueryTool.IsCallMicroServiceReg(uri) && MicroService.Run.Proxy(context, true))
             {
-                QueryTool.IsRunProxySuccess = true;
+                QueryTool.SetRunProxySuccess(context);
                 try
                 {
                     context.Response.End();
@@ -78,7 +78,7 @@ namespace Taurus.Core
         void context_PostMapRequestHandler(object sender, EventArgs e)
         {
             HttpContext cont = ((HttpApplication)sender).Context;
-            if (cont != null && QueryTool.IsCallMvc(cont.Request.Url) && !QueryTool.IsRunProxySuccess && QueryTool.IsTaurusSuffix(cont.Request.Url))
+            if (cont != null && QueryTool.IsCallMvc(cont.Request.Url) && !QueryTool.IsProxyCall(cont) && QueryTool.IsTaurusSuffix(cont.Request.Url))
             {
                 cont.Handler = SessionHandler.Instance;//注册Session
             }
@@ -86,7 +86,7 @@ namespace Taurus.Core
         void context_AcquireRequestState(object sender, EventArgs e)
         {
             HttpContext cont = ((HttpApplication)sender).Context;
-            if (cont != null && QueryTool.IsCallMvc(cont.Request.Url) && !QueryTool.IsRunProxySuccess && QueryTool.IsTaurusSuffix(cont.Request.Url))
+            if (cont != null && QueryTool.IsCallMvc(cont.Request.Url) && !QueryTool.IsProxyCall(cont) && QueryTool.IsTaurusSuffix(cont.Request.Url))
             {
                 CheckCORS(cont);
                 ReplaceOutput(cont);

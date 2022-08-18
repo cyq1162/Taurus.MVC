@@ -22,6 +22,17 @@ namespace Taurus.Core
         {
             return base.CheckMicroService();
         }
+        public override void EndInvoke(string methodName)
+        {
+            if (string.IsNullOrEmpty(MicroService.Config.AppRunUrl))
+            {
+                Uri uri = Context.Request.Url;
+                string urlAbs = uri.AbsoluteUri;
+                string urlPath = uri.PathAndQuery;
+                string host = urlAbs.Substring(0, urlAbs.Length - urlPath.Length);
+                MicroService.Config.AppRunUrl = host;
+            }
+        }
         /// <summary>
         /// 注册中心 - 注册服务。
         /// </summary>

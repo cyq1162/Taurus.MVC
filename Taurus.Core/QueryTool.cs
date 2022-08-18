@@ -24,32 +24,23 @@ namespace Taurus.Core
             }
             return localPath;
         }
-        public static bool IsRunProxySuccess
+        public static bool IsProxyCall(HttpContext context)
         {
-            get
+            if (context != null)
             {
-                if (HttpContext.Current != null)
-                {
-                    return HttpContext.Current.Items.Contains("IsRunProxySuccess");
-                }
-                return false;
+                return context.Items.Contains("IsRunProxySuccess");
             }
-            set
-            {
-
-                if (value)
-                {
-                    if (!HttpContext.Current.Items.Contains("IsRunProxySuccess"))
-                    {
-                        HttpContext.Current.Items.Add("IsRunProxySuccess", 1);
-                    }
-                }
-                else if (HttpContext.Current.Items.Contains("IsRunProxySuccess"))
-                {
-                    HttpContext.Current.Items.Remove("IsRunProxySuccess");
-                }
-            }
+            return false;
         }
+        public static void SetRunProxySuccess(HttpContext context)
+        {
+            if (context!=null && !context.Items.Contains("IsRunProxySuccess"))
+            {
+                context.Items.Add("IsRunProxySuccess", 1);
+            }
+
+        }
+
         /// <summary>
         /// 是否请求微服务注册中心
         /// </summary>
