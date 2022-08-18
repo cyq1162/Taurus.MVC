@@ -231,9 +231,9 @@ namespace Taurus.Core
                         IO.Delete(Const.ClientHost2Path);
                     }
                     string host = JsonHelper.GetValue<string>(result, "host");
-                    if (!string.IsNullOrEmpty(host) && host != Config.ServerRegUrl)
+                    if (!string.IsNullOrEmpty(host) && host != Config.ClientRegUrl)
                     {
-                        Config.ServerRegUrl = host;//从备份请求切回主程序
+                        Config.ClientRegUrl = host;//从备份请求切回主程序
                     }
                     if (tick > Client.Tick)
                     {
