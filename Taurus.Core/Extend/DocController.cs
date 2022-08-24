@@ -71,7 +71,7 @@ namespace Taurus.Core
             if (actions == null)
             {
                 actions = new List<XHtmlAction>();
-                string[] dllNames = ("Taurus.Core," + InvokeLogic.DllNames).Split(',');
+                string[] dllNames = ("Taurus.Core," + ControllerCollector.DllNames).Split(',');
                 foreach (string dll in dllNames)
                 {
                     if (File.Exists(AppConfig.AssemblyPath + dll + ".xml"))
@@ -139,18 +139,18 @@ namespace Taurus.Core
                 ControllerTable.Columns.Add("Type", SqlDbType.Variant);
 
                 //搜集参数
-                Dictionary<string, Type> cType = InvokeLogic.GetControllers(2);
+                Dictionary<string, Type> cType = ControllerCollector.GetControllers(2);
                 foreach (KeyValuePair<string, Type> item in cType)
                 {
                     if (item.Value.FullName.StartsWith("Taurus.Core."))
                     {
                         switch (item.Value.Name)
                         {
-                            case InvokeLogic.Const.DefaultController:
-                            case InvokeLogic.Const.DocController:
-                            case InvokeLogic.Const.AuthController:
+                            case Const.DefaultController:
+                            case Const.DocController:
+                            case Const.AuthController:
                                 continue;
-                            case InvokeLogic.Const.MicroServiceController:
+                            case Const.MicroServiceController:
                                 if (MicroService.Server.IsServer)
                                 {
                                     break;
@@ -192,10 +192,10 @@ namespace Taurus.Core
                     {
                         switch (method.Name)
                         {
-                            case InvokeLogic.Const.BeforeInvoke:
-                            case InvokeLogic.Const.EndInvoke:
-                            case InvokeLogic.Const.CheckToken:
-                            case InvokeLogic.Const.Default:
+                            case Const.BeforeInvoke:
+                            case Const.EndInvoke:
+                            case Const.CheckToken:
+                            case Const.Default:
                                 continue;
                         }
                         hasMehtod = true;
@@ -211,15 +211,15 @@ namespace Taurus.Core
                             {
                                 attrText += "[" + attrName.Replace("Attribute", "] ").Replace("Http", "").ToLower();
                             }
-                            else if (attrName == InvokeLogic.Const.TokenAttribute)
+                            else if (attrName == Const.TokenAttribute)
                             {
                                 methodHasToken = true;
                             }
-                            else if (attrName == InvokeLogic.Const.AckAttribute)
+                            else if (attrName == Const.AckAttribute)
                             {
                                 methodHasAck = true;
                             }
-                            else if (attrName == InvokeLogic.Const.MicroServiceAttribute)
+                            else if (attrName == Const.MicroServiceAttribute)
                             {
                                 methodHasMicroService = true;
                             }

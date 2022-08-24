@@ -20,7 +20,7 @@ namespace Taurus.Core
                 path = System.Web.HttpContext.Current.Server.MapPath(path);
             }
             
-            if (AppConfig.IsAspNetCore)
+            if (AppConfig.IsNetCore)
             {
                 return NetCoreCreate(path);
             }

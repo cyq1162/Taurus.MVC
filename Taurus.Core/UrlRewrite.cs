@@ -62,7 +62,7 @@ namespace Taurus.Core
                 }
                 if (QueryTool.IsTaurusSuffix(uri))
                 {
-                    MethodInfo routeMapInvoke = InvokeLogic.RouteMapInvokeMethod;
+                    MethodInfo routeMapInvoke = MethodCollector.RouteMapInvokeMethod;
                     if (routeMapInvoke != null)
                     {
                         string url = Convert.ToString(routeMapInvoke.Invoke(null, new object[] { context.Request }));
@@ -152,7 +152,7 @@ namespace Taurus.Core
             Type t = null;
             //ViewController是由页面的前两个路径决定了。
             string[] items = QueryTool.GetLocalPath(context.Request.Url).Trim('/').Split('/');
-            string className = InvokeLogic.Const.Default;
+            string className = Const.Default;
             if (RouteConfig.RouteMode == 1)
             {
                 className = items.Length > 2 ? items[0] + "." + items[1] : items[0];
@@ -161,8 +161,8 @@ namespace Taurus.Core
             {
                 className = items.Length > 1 ? items[0] + "." + items[1] : items[0];
             }
-            t = InvokeLogic.GetController(className);
-            if (t == null || t.Name == InvokeLogic.Const.DefaultController)
+            t = ControllerCollector.GetController(className);
+            if (t == null || t.Name == Const.DefaultController)
             {
                 if (MicroService.Run.Proxy(context, false))//客户端做为网关。
                 {

@@ -48,7 +48,7 @@ namespace Taurus.Core
         private string firstPara = string.Empty;
         private void Init(Type t)
         {
-            _ControllerName = t.Name.Replace(InvokeLogic.Const.Controller, "").ToLower();
+            _ControllerName = t.Name.Replace(Const.Controller, "").ToLower();
             string[] items = QueryTool.GetLocalPath(Request.Url).Trim('/').Split('/');
             firstPara = items[0];
             int paraStartIndex = RouteConfig.RouteMode + 1;
@@ -111,7 +111,7 @@ namespace Taurus.Core
                 bool isGoOn = true;
 
                 AttributeList attrFlags;
-                MethodInfo method = InvokeLogic.GetMethod(t, Action, out attrFlags);
+                MethodInfo method = MethodCollector.GetMethod(t, Action, out attrFlags);
                 if (method != null)
                 {
                     if (isGoOn)//配置了HttpGet或HttpPost
@@ -125,14 +125,14 @@ namespace Taurus.Core
                     if (isGoOn && attrFlags.HasAck)//有[Ack]
                     {
                         #region Validate CheckAck
-                        MethodInfo checkAck = InvokeLogic.GetMethod(t, InvokeLogic.Const.CheckAck);
-                        if (checkAck != null && checkAck.Name == InvokeLogic.Const.CheckAck)
+                        MethodInfo checkAck = MethodCollector.GetMethod(t, Const.CheckAck);
+                        if (checkAck != null && checkAck.Name == Const.CheckAck)
                         {
                             isGoOn = Convert.ToBoolean(checkAck.Invoke(this, null));
                         }
-                        else if (InvokeLogic.DefaultCheckAck != null)
+                        else if (MethodCollector.DefaultCheckAck != null)
                         {
-                            isGoOn = Convert.ToBoolean(InvokeLogic.DefaultCheckAck.Invoke(null, new object[] { this, Action }));
+                            isGoOn = Convert.ToBoolean(MethodCollector.DefaultCheckAck.Invoke(null, new object[] { this, Action }));
                         }
                         if (!isGoOn)
                         {
@@ -143,14 +143,14 @@ namespace Taurus.Core
                     if (isGoOn && attrFlags.HasMicroService)//有[MicroService]
                     {
                         #region Validate CheckMicroService 【如果开启全局，即需要调整授权机制，则原有局部机制失效。】
-                        if (InvokeLogic.DefaultCheckMicroService != null)
+                        if (MethodCollector.DefaultCheckMicroService != null)
                         {
-                            isGoOn = Convert.ToBoolean(InvokeLogic.DefaultCheckMicroService.Invoke(null, new object[] { this, Action }));
+                            isGoOn = Convert.ToBoolean(MethodCollector.DefaultCheckMicroService.Invoke(null, new object[] { this, Action }));
                         }
                         else
                         {
-                            MethodInfo checkMicroService = InvokeLogic.GetMethod(t, InvokeLogic.Const.CheckMicroService);
-                            if (checkMicroService != null && checkMicroService.Name == InvokeLogic.Const.CheckMicroService)
+                            MethodInfo checkMicroService = MethodCollector.GetMethod(t, Const.CheckMicroService);
+                            if (checkMicroService != null && checkMicroService.Name == Const.CheckMicroService)
                             {
                                 isGoOn = Convert.ToBoolean(checkMicroService.Invoke(this, null));
                             }
@@ -164,18 +164,18 @@ namespace Taurus.Core
                     if (isGoOn && attrFlags.HasToken)//有[Token]
                     {
                         #region Validate CheckToken
-                        MethodInfo checkToken = InvokeLogic.GetMethod(t, InvokeLogic.Const.CheckToken);
-                        if (checkToken != null && checkToken.Name == InvokeLogic.Const.CheckToken)
+                        MethodInfo checkToken = MethodCollector.GetMethod(t, Const.CheckToken);
+                        if (checkToken != null && checkToken.Name == Const.CheckToken)
                         {
                             isGoOn = Convert.ToBoolean(checkToken.Invoke(this, null));
                         }
-                        else if (InvokeLogic.DefaultCheckToken != null)
+                        else if (MethodCollector.DefaultCheckToken != null)
                         {
-                            isGoOn = Convert.ToBoolean(InvokeLogic.DefaultCheckToken.Invoke(null, new object[] { this, Action }));
+                            isGoOn = Convert.ToBoolean(MethodCollector.DefaultCheckToken.Invoke(null, new object[] { this, Action }));
                         }
-                        else if (InvokeLogic.AuthCheckToken != null)
+                        else if (MethodCollector.AuthCheckToken != null)
                         {
-                            isGoOn = Convert.ToBoolean(InvokeLogic.AuthCheckToken.Invoke(null, new object[] { this }));
+                            isGoOn = Convert.ToBoolean(MethodCollector.AuthCheckToken.Invoke(null, new object[] { this }));
                         }
                         if (!isGoOn)
                         {
@@ -189,14 +189,14 @@ namespace Taurus.Core
 
 
                         #region BeforeInvoke
-                        if (InvokeLogic.BeforeInvokeMethod != null)//先调用全局
+                        if (MethodCollector.BeforeInvokeMethod != null)//先调用全局
                         {
-                            isGoOn = Convert.ToBoolean(InvokeLogic.BeforeInvokeMethod.Invoke(null, new object[] { this, Action }));
+                            isGoOn = Convert.ToBoolean(MethodCollector.BeforeInvokeMethod.Invoke(null, new object[] { this, Action }));
                         }
                         if (isGoOn)
                         {
-                            MethodInfo beforeInvoke = InvokeLogic.GetMethod(t, InvokeLogic.Const.BeforeInvoke);
-                            if (beforeInvoke != null && beforeInvoke.Name == InvokeLogic.Const.BeforeInvoke)
+                            MethodInfo beforeInvoke = MethodCollector.GetMethod(t, Const.BeforeInvoke);
+                            if (beforeInvoke != null && beforeInvoke.Name == Const.BeforeInvoke)
                             {
                                 isGoOn = Convert.ToBoolean(beforeInvoke.Invoke(this, new object[] { method.Name }));
                             }
@@ -231,8 +231,8 @@ namespace Taurus.Core
                                     string name = GetBtnName();
                                     if (!string.IsNullOrEmpty(name))
                                     {
-                                        MethodInfo postBtnMethod = InvokeLogic.GetMethod(t, name);
-                                        if (postBtnMethod != null && postBtnMethod.Name != InvokeLogic.Const.Default)
+                                        MethodInfo postBtnMethod = MethodCollector.GetMethod(t, name);
+                                        if (postBtnMethod != null && postBtnMethod.Name != Const.Default)
                                         {
                                             GetInvokeParas(postBtnMethod, out paras);
                                             postBtnMethod.Invoke(this, paras);
@@ -243,14 +243,14 @@ namespace Taurus.Core
                                 if (isGoOn)
                                 {
                                     #region EndInvoke
-                                    MethodInfo endInvoke = InvokeLogic.GetMethod(t, InvokeLogic.Const.EndInvoke);
-                                    if (endInvoke != null && endInvoke.Name == InvokeLogic.Const.EndInvoke)
+                                    MethodInfo endInvoke = MethodCollector.GetMethod(t, Const.EndInvoke);
+                                    if (endInvoke != null && endInvoke.Name == Const.EndInvoke)
                                     {
                                         endInvoke.Invoke(this, new object[] { method.Name });
                                     }
-                                    if (InvokeLogic.EndInvokeMethod != null)
+                                    if (MethodCollector.EndInvokeMethod != null)
                                     {
-                                        InvokeLogic.EndInvokeMethod.Invoke(null, new object[] { this, Action });
+                                        MethodCollector.EndInvokeMethod.Invoke(null, new object[] { this, Action });
                                     }
                                     #endregion
                                     //if (InvokeLogic.DocRecord != null)
@@ -266,7 +266,7 @@ namespace Taurus.Core
                 else
                 {
                     //检测全局Default方法
-                    MethodInfo globalDefault = InvokeLogic.GlobalDefault;
+                    MethodInfo globalDefault = MethodCollector.GlobalDefault;
                     if (globalDefault != null)
                     {
                         object o = Activator.CreateInstance(globalDefault.DeclaringType);//实例化
