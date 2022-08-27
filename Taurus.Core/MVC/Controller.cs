@@ -1,15 +1,11 @@
 ﻿using System;
-using System.Collections.Generic;
 using System.Reflection;
 using System.Text;
 using System.Web;
-using System.Web.SessionState;
 using CYQ.Data.Xml;
 using CYQ.Data;
 using System.IO;
-using System.Xml;
 using CYQ.Data.Tool;
-using CYQ.Data.Table;
 using System.Text.RegularExpressions;
 namespace Taurus.Core
 {
@@ -30,11 +26,7 @@ namespace Taurus.Core
                 return apiResult.ToString();
             }
         }
-        /// <summary>
-        /// to stop invoke method
-        /// <para>取消继续调用事件（可以在重载BeforeInvoke方法内使用）</para>
-        /// </summary>
-        protected bool CancelInvoke = false;
+
         /// <summary>
         /// to stop load view html
         /// <para>是否取消加载Html文件</para>
@@ -45,12 +37,10 @@ namespace Taurus.Core
         {
             get { return true; }
         }
-        private string firstPara = string.Empty;
         private void Init(Type t)
         {
             _ControllerName = t.Name.Replace(Const.Controller, "").ToLower();
             string[] items = QueryTool.GetLocalPath(Request.Url).Trim('/').Split('/');
-            firstPara = items[0];
             int paraStartIndex = RouteConfig.RouteMode + 1;
             string methodName = string.Empty;
             switch (RouteConfig.RouteMode)
@@ -102,7 +92,7 @@ namespace Taurus.Core
         }
         public void ProcessRequest(HttpContext context)
         {
-            this.context = context;
+            this.context = context; 
             try
             {
                 Type t = _ControllerType = this.GetType();
@@ -130,9 +120,9 @@ namespace Taurus.Core
                         {
                             isGoOn = Convert.ToBoolean(checkAck.Invoke(this, null));
                         }
-                        else if (MethodCollector.DefaultCheckAck != null)
+                        else if (MethodCollector.GlobalCheckAck != null)
                         {
-                            isGoOn = Convert.ToBoolean(MethodCollector.DefaultCheckAck.Invoke(null, new object[] { this, Action }));
+                            isGoOn = Convert.ToBoolean(MethodCollector.GlobalCheckAck.Invoke(null, new object[] { this, Action }));
                         }
                         if (!isGoOn)
                         {
@@ -143,9 +133,9 @@ namespace Taurus.Core
                     if (isGoOn && attrFlags.HasMicroService)//有[MicroService]
                     {
                         #region Validate CheckMicroService 【如果开启全局，即需要调整授权机制，则原有局部机制失效。】
-                        if (MethodCollector.DefaultCheckMicroService != null)
+                        if (MethodCollector.GlobalCheckMicroService != null)
                         {
-                            isGoOn = Convert.ToBoolean(MethodCollector.DefaultCheckMicroService.Invoke(null, new object[] { this, Action }));
+                            isGoOn = Convert.ToBoolean(MethodCollector.GlobalCheckMicroService.Invoke(null, new object[] { this, Action }));
                         }
                         else
                         {
@@ -169,9 +159,9 @@ namespace Taurus.Core
                         {
                             isGoOn = Convert.ToBoolean(checkToken.Invoke(this, null));
                         }
-                        else if (MethodCollector.DefaultCheckToken != null)
+                        else if (MethodCollector.GlobalCheckToken != null)
                         {
-                            isGoOn = Convert.ToBoolean(MethodCollector.DefaultCheckToken.Invoke(null, new object[] { this, Action }));
+                            isGoOn = Convert.ToBoolean(MethodCollector.GlobalCheckToken.Invoke(null, new object[] { this, Action }));
                         }
                         else if (MethodCollector.AuthCheckToken != null)
                         {
@@ -189,9 +179,9 @@ namespace Taurus.Core
 
 
                         #region BeforeInvoke
-                        if (MethodCollector.BeforeInvokeMethod != null)//先调用全局
+                        if (MethodCollector.GlobalBeforeInvoke != null)//先调用全局
                         {
-                            isGoOn = Convert.ToBoolean(MethodCollector.BeforeInvokeMethod.Invoke(null, new object[] { this, Action }));
+                            isGoOn = Convert.ToBoolean(MethodCollector.GlobalBeforeInvoke.Invoke(null, new object[] { this, Action }));
                         }
                         if (isGoOn)
                         {
@@ -248,9 +238,9 @@ namespace Taurus.Core
                                     {
                                         endInvoke.Invoke(this, new object[] { method.Name });
                                     }
-                                    if (MethodCollector.EndInvokeMethod != null)
+                                    if (MethodCollector.GlobalEndInvoke != null)
                                     {
-                                        MethodCollector.EndInvokeMethod.Invoke(null, new object[] { this, Action });
+                                        MethodCollector.GlobalEndInvoke.Invoke(null, new object[] { this, Action });
                                     }
                                     #endregion
                                     //if (InvokeLogic.DocRecord != null)
@@ -272,6 +262,11 @@ namespace Taurus.Core
                         object o = Activator.CreateInstance(globalDefault.DeclaringType);//实例化
                         globalDefault.DeclaringType.GetMethod("ProcessRequest").Invoke(o, new object[] { context });
                         return;
+                    }
+                    else
+                    {
+                        Response.StatusCode = 404;
+                        Write("404 : Invalid method for url.", false);
                     }
 
                 }

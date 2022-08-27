@@ -5,14 +5,15 @@
     <AssemblyName>Taurus.Core</AssemblyName>
     <RootNamespace>Taurus.Core</RootNamespace>
     <Description>Taurus.mvc is a high-performance mvc and webapi framework for asp.net or asp.net core（适合场景：对性能和并发有较高要求的电商、站点、WebAPI等系统，支持.Net Core）(开源地址：https://github.com/cyq1162/cyqdata)</Description>
-    <Company>路过秋天 （2020-07-31）</Company>
+    <Company>路过秋天 （2020-08-18）</Company>
     <Authors>路过秋天</Authors>
     <Copyright>Copyright ©  路过秋天 2016-2096</Copyright>
     <Version>2.3.4</Version>
     <Product>Taurus.Core .NET Core 版本</Product>
     <PackageProjectUrl>https://github.com/cyq1162/Taurus.MVC</PackageProjectUrl>
     <PackageId>Taurus.MVC.Core</PackageId>
-    <GeneratePackageOnBuild>true</GeneratePackageOnBuild>
+	<AssemblyTitle>Taurus.MVC.Core 内置微服务：网关与注册中心</AssemblyTitle>
+    <GeneratePackageOnBuild>False</GeneratePackageOnBuild>
     <PackageReleaseNotes>同一种开发，支持两种（win or linux) 部署。
 V2.3.4(2019-07-31)
 1、CYQ.Data升级到V5.8.3.5
@@ -21,8 +22,8 @@ V2.3.4(2019-07-31)
 4、增加[Ack]属性（机制和Token一样）
 5、Doc功能增强：增加自动化API执行功能。</PackageReleaseNotes>
     <PackageTags>Taurus.MVC Core ASP.NET aspnetcore webapi</PackageTags>
-    <AssemblyVersion>2.3.4.0</AssemblyVersion>
-    <FileVersion>2.3.4.0</FileVersion>
+    <AssemblyVersion>3.0.4.8</AssemblyVersion>
+    <FileVersion>3.0.4.8</FileVersion>
   </PropertyGroup>
 
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|AnyCPU'">
@@ -52,7 +53,7 @@ V2.3.4(2019-07-31)
   </ItemGroup>
 
   <ItemGroup>
-    <ProjectReference Include="..\..\..\CYQ.Data\trunk\CYQ.Data_NetCore.csproj" />
+    <ProjectReference Include="..\..\..\cyqdata\trunk\CYQ.Data_NetCore.csproj" />
   </ItemGroup>
 
 </Project>

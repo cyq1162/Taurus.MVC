@@ -62,7 +62,7 @@ namespace Taurus.Core
                 }
                 if (QueryTool.IsTaurusSuffix(uri))
                 {
-                    MethodInfo routeMapInvoke = MethodCollector.RouteMapInvokeMethod;
+                    MethodInfo routeMapInvoke = MethodCollector.GlobalRouteMapInvoke;
                     if (routeMapInvoke != null)
                     {
                         string url = Convert.ToString(routeMapInvoke.Invoke(null, new object[] { context.Request }));
