@@ -1,12 +1,12 @@
 # Taurus.MVC
 Taurus.mvc is a high-performance mvc and webapi framework for asp.net or asp.net core（适合场景：对性能和并发有较高要求的电商、站点、WebAPI等系统，支持.Net Core，自带微服务）,created by Aster（路过秋天）<hr />
 
-QQ交流群：6033006<br />
-
-Windows 部署：http://taurus.cyqdata.com/ <br />
-Linux（CentOS7) 部署：http://mvc.taurus.cyqdata.com
-<hr />
-Demo：https://github.com/cyq1162/Taurus.MVC.Demo <br />
+Java 版本开源：https://github.com/cyq1162/Taurus.MVC-java<br /><hr />
+教程或示例<hr />
+Taurus.MVC 大杂汇 ：https://www.cnblogs.com/cyq1162/category/863014.html<br />
+Taurus.MVC WebAPI 入门系列教程 ：https://www.cnblogs.com/cyq1162/category/2205667.html <br />
+Taurus.MVC 微服务 入门系列教程  ：https://www.cnblogs.com/cyq1162/category/2205668.html <br />
+Taurus.MVC Web 应用程序  Demo  ：https://github.com/cyq1162/Taurus.MVC.Demo <br />
 
 <hr />
 <h1><span style="vertical-align: inherit;"><span style="vertical-align: inherit;">Why create Taurus.MVC:</span></span></h1>
