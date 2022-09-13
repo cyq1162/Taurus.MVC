@@ -1,2 +1,0 @@
-{"ColumnName":"ID","SqlType":"System.Int32","IsAutoIncrement":true,"IsCanNull":false,"MaxSize":10,"Scale":0,"IsPrimaryKey":true,"DefaultValue":"","Description":"","TableName":"","IsUniqueKey":false,"IsForeignKey":false,"FKTableName":""},
-{"ColumnName":"TypeName","SqlType":"System.String","IsAutoIncrement":false,"IsCanNull":true,"MaxSize":2000,"Scale":0,"IsPrimaryKey":false,"DefaultValue":"","Description":"","TableName":"","IsUniqueKey":false,"IsForeignKey":false,"FKTableName":""}
