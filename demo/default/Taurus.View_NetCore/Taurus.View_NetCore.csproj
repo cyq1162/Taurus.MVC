@@ -1,0 +1,58 @@
+﻿<Project Sdk="Microsoft.NET.Sdk.Web">
+
+  <PropertyGroup>
+    <TargetFramework>net6.0</TargetFramework>
+    <AssemblyName>Taurus.View</AssemblyName>
+    <RootNamespace>Taurus.View</RootNamespace>
+    <StartupObject></StartupObject>
+    <DockerDefaultTargetOS>Linux</DockerDefaultTargetOS>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <Compile Remove="wwwroot2\**" />
+    <Content Remove="wwwroot2\**" />
+    <EmbeddedResource Remove="wwwroot2\**" />
+    <None Remove="wwwroot2\**" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <None Include="wwwroot\Setting\DTD\xhtml-lat1.ent" />
+    <None Include="wwwroot\Setting\DTD\xhtml-special.ent" />
+    <None Include="wwwroot\Setting\DTD\xhtml-symbol.ent" />
+    <None Include="wwwroot\Setting\DTD\xhtml1-transitional.dtd" />
+    <None Include="wwwroot\style\js\bootstrap.min.js" />
+    <None Include="wwwroot\style\js\jquery.min.js" />
+    <None Include="wwwroot\style\js\master.js" />
+    <None Include="wwwroot\style\js\webapidemo.js" />
+    <None Include="wwwroot\Views\Doc\js\doc.js" />
+    <None Include="wwwroot\Views\Doc\js\jquery.min.js" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <PackageReference Include="System.Data.SqlClient" Version="4.6.0" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <ProjectReference Include="..\..\..\src\Taurus.Core\Taurus.Core_NetCore.csproj" />
+    <ProjectReference Include="..\Taurus.Controllers\Taurus.Controllers_NetCore.csproj" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <Reference Include="CYQ.Data">
+      <HintPath>..\..\..\Packages\netcoreapp2.1\CYQ.Data.dll</HintPath>
+    </Reference>
+  </ItemGroup>
+
+  <ItemGroup>
+    <TypeScriptCompile Include="wwwroot\App_Data\Users.ts" />
+    <TypeScriptCompile Include="wwwroot\App_Data\users2.ts" />
+    <TypeScriptCompile Include="wwwroot\App_Data\UserType.ts" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <Content Update="appsettings.json">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
+  </ItemGroup>
+
+</Project>

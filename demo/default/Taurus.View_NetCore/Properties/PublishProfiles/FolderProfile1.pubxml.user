@@ -1,0 +1,12 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!--
+此文件由 Web 项目的发布/打包过程使用。可以通过编辑此 MSBuild 文件
+自定义此过程的行为。为了解与此相关的更多内容，请访问 https://go.microsoft.com/fwlink/?LinkID=208121。 
+-->
+<Project ToolsVersion="4.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <PropertyGroup>
+    <TimeStampOfAssociatedLegacyPublishXmlFile />
+    <_PublishTargetUrl>D:\Code\taurus\trunk\Taurus.View_NetCore\bin\Release\PublishOutput</_PublishTargetUrl>
+    <History>True|2022-09-13T10:06:16.1487701Z;True|2022-09-13T03:26:53.6415891+08:00;True|2022-09-13T03:26:28.0625876+08:00;True|2022-09-13T03:25:15.4251005+08:00;True|2022-09-13T03:24:21.8043220+08:00;True|2022-09-13T03:20:18.5138743+08:00;True|2022-09-11T14:39:15.7454441+08:00;True|2022-09-11T13:20:10.5060416+08:00;True|2022-09-09T23:46:40.3841713+08:00;False|2022-09-09T23:46:16.2801320+08:00;False|2022-09-09T23:45:41.7871307+08:00;True|2022-09-09T23:41:56.8487197+08:00;True|2022-08-16T01:55:39.2861347+08:00;True|2022-08-16T01:45:50.6827514+08:00;True|2022-08-16T01:34:11.7972843+08:00;True|2022-08-16T01:23:34.7589023+08:00;</History>
+  </PropertyGroup>
+</Project>
