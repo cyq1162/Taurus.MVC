@@ -1,0 +1,5 @@
+{"ID":"System.Int32","TypeName":"System.String"},
+{"ID":1,"TypeName":"Type1"},
+{"ID":2,"TypeName":"Type2"},
+{"ID":3,"TypeName":"Type3"},
+{"ID":4,"TypeName":"Type4"}

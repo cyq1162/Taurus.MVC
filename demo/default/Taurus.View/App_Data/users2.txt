@@ -1,0 +1,2 @@
+{"ID":"System.Int32","Name":"System.String","IsEnabled":"System.Boolean","Sex":"System.Int32","HeadImgUrl":"System.String","UserType":"System.Int32","CreateTime":"System.DateTime"},
+{"ID":1,"Name":"","IsEnabled":false,"Sex":0,"HeadImgUrl":null,"UserType":1,"CreateTime":"2022-09-14 03:53:50"}
