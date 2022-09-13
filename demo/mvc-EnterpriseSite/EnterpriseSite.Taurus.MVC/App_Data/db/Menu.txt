@@ -1,0 +1,7 @@
+{"ID":"System.Int32","Name":"System.String","MenuUrl":"System.String","IsNewWindow":"System.Boolean","OrderNum":"System.Int32"},
+{"ID":"1","Name":"首页","MenuUrl":"/","IsNewWindow":"False","OrderNum":"1"},
+{"ID":"2","Name":"公司简介","MenuUrl":"/articledetail?id=1","IsNewWindow":"","OrderNum":"2"},
+{"ID":"3","Name":"文化中心","MenuUrl":"/articledetail?id=2","IsNewWindow":"False","OrderNum":"3"},
+{"ID":"7","Name":"产品中心","MenuUrl":"/photolist?id=1","IsNewWindow":"False","OrderNum":"4"},
+{"ID":"8","Name":"联系我们","MenuUrl":"/articledetail?id=3","IsNewWindow":"","OrderNum":"5"},
+{"ID":"9","Name":"行业资讯","MenuUrl":"/articlelist?id=4","IsNewWindow":"False","OrderNum":"6"}

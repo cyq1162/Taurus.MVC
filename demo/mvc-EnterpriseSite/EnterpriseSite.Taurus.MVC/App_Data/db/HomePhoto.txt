@@ -1,0 +1,7 @@
+{"ID":"System.Int32","TypeName":"System.String","ImgUrl":"System.String","LinkUrl":"System.String","OrderNum":"System.Int32"},
+{"ID":"1","TypeName":"Ê×Ò³×ó²àÍ¼","ImgUrl":"/style/a1.jpg","LinkUrl":"#","OrderNum":"1"},
+{"ID":"2","TypeName":"Ê×Ò³×ó²àÍ¼","ImgUrl":"/style/a2.jpg","LinkUrl":"#","OrderNum":"1"},
+{"ID":"3","TypeName":"Ê×Ò³×ó²àÍ¼","ImgUrl":"/style/a3.jpg","LinkUrl":"#","OrderNum":"1"},
+{"ID":"4","TypeName":"Ê×Ò³×ó²àÍ¼","ImgUrl":"/style/a4.jpg","LinkUrl":"#","OrderNum":"1"},
+{"ID":"5","TypeName":"Ê×Ò³ÓÒ²àÍ¼","ImgUrl":"/style/b1.jpg","LinkUrl":"#","OrderNum":"1"},
+{"ID":"6","TypeName":"Ê×Ò³ÓÒ²àÍ¼","ImgUrl":"/style/b2.jpg","LinkUrl":"#","OrderNum":"1"}

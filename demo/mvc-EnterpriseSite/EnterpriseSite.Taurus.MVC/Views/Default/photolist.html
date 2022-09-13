@@ -1,0 +1,51 @@
+﻿<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head itemref="master.head">
+    <title>图片列表</title>
+</head>
+<body>
+    <div itemref="master.header">
+
+    </div>
+    <div class="block clearfix">
+        <div class="AreaL">
+            <div itemref="master.photoCate"></div>
+        </div>
+        <div class="AreaR">
+            <div class="box">
+                <div class="box_1 box_s">
+                    <div class="blank20">
+                    </div>
+                    <div class="blank8">
+                    </div>
+                    <div class="title" style="font-weight: normal;">
+                        商品中心 <a name="goods_list"></a>
+                    </div>
+                    <div class="bgline1">
+                    </div>
+                    <div class="blank">
+                    </div>
+                    <div id="centerPadd">
+                        <div class="clearfix goodsBox" id="photoView" clearflag="0">
+                            <div class="goodsItem">
+                                <div class="goodsimg">
+                                    <a href="${ImgUrl}" rel="lightbox[plants]" title="${Title}:${Description}">
+                                        <img src="${ImgUrl}" /></a>
+                                </div>
+                            </div>
+
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="blank5">
+            </div>
+        </div>
+    </div>
+    <div itemref="master.footer">
+    </div>
+    <script src="/style/lightbox/prototype.js" type="text/javascript"></script>
+	<script src="/style/lightbox/scriptaculous.js?load=effects" type="text/javascript"></script>
+	<script src="/style/lightbox/lightbox.js" type="text/javascript"></script>
+</body>
+</html>

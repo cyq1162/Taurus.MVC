@@ -1,0 +1,141 @@
+<?xml version="1.0"?>
+<doc>
+    <assembly>
+        <name>Taurus.Core</name>
+    </assembly>
+    <members>
+        <member name="T:Taurus.Core.RouteConfig">
+            <summary>
+            路由系统
+            </summary>
+        </member>
+        <member name="P:Taurus.Core.RouteConfig.RouteMode">
+            <summary>
+            配置模式【值为1或2】
+            值为1：匹配{Controller}/{Action}/{Para}
+            值为2：匹配{Module}/{Controller}/{Action}/{Para}
+            </summary>
+        </member>
+        <member name="T:Taurus.Core.Controller">
+            <summary>
+            视图控制器基类
+            </summary>
+        </member>
+        <member name="F:Taurus.Core.Controller.CancelInvoke">
+            <summary>
+            取消继续调用事件（可以在重载BeforeInvoke方法内使用）
+            </summary>
+        </member>
+        <member name="F:Taurus.Core.Controller.CancelLoadHtml">
+            <summary>
+            是否取消加载Html文件
+            </summary>
+        </member>
+        <member name="M:Taurus.Core.Controller.IsClick(System.String)">
+            <summary>
+            是否点击了某事件
+            </summary>
+            <param name="btnName">按钮名称</param>
+        </member>
+        <member name="P:Taurus.Core.Controller.View">
+            <summary>
+            视图模板引擎
+            </summary>
+        </member>
+        <member name="P:Taurus.Core.Controller.PageIndex">
+            <summary>
+            datagrid分页的页码数
+            </summary>
+        </member>
+        <member name="P:Taurus.Core.Controller.PageSize">
+            <summary>
+            datagrid分页的页容量
+            </summary>
+        </member>
+        <member name="P:Taurus.Core.Controller.Sort">
+            <summary>
+            排序字段名
+            </summary>
+        </member>
+        <member name="P:Taurus.Core.Controller.Order">
+            <summary>
+            排序类型（升或降）
+            </summary>
+        </member>
+        <member name="P:Taurus.Core.Controller.AjaxResult">
+            <summary>
+            Ajax发起的请求，需要返回值时，对此赋值即可。
+            </summary>
+        </member>
+        <member name="T:Taurus.Core.ViewEngine">
+            <summary>
+            视图引擎
+            </summary>
+        </member>
+        <member name="M:Taurus.Core.ViewEngine.Create(System.String,System.String)">
+            <summary>
+            创建视图对象
+            </summary>
+        </member>
+        <member name="M:Taurus.Core.ViewEngine.Create(System.String)">
+            <summary>
+            创建视图对象
+            </summary>
+            <param name="path">相对路径，如：/abc/cyq/a.html</param>
+        </member>
+        <member name="M:Taurus.Core.ViewEngine.GetSharedView(System.String)">
+            <summary>
+            获取Shared文件View
+            </summary>
+            <param name="htmlName"></param>
+            <returns></returns>
+        </member>
+        <member name="T:Taurus.Core.HttpResponseFilter">
+            <summary>
+            处理本项目部署成子应用程序时，多了一个目录的问题。
+            </summary>
+        </member>
+        <member name="M:Taurus.Core.HttpResponseFilter.#ctor(System.IO.Stream)">
+            <summary>
+            构造函数
+            </summary>
+            <param name="stream">参数为：HttpContext.Current.Response.Filter</param>
+            <param name="replaceHtmlTextList">字典集合：key为被替换正则表达式,value为替换的字符串</param>
+        </member>
+        <member name="T:Taurus.Core.InvokeLogic">
+            <summary>
+            反射Controller类
+            </summary>
+        </member>
+        <member name="M:Taurus.Core.InvokeLogic.GetControllers">
+            <summary>
+            获取控制器
+            </summary>
+            <param name="typeFlag">0：Ajax控制器；1：View控制器</param>
+            <returns></returns>
+        </member>
+        <member name="M:Taurus.Core.InvokeLogic.GetType(System.String)">
+            <summary>
+            通过className类名获得对应的Controller类
+            </summary>
+            <returns></returns>
+        </member>
+        <member name="M:Taurus.Core.QueryTool.FilterValue(System.String)">
+            <summary>
+            过滤一般的字符串
+            </summary>
+            <param name="strFilter"></param>
+            <returns></returns>
+        </member>
+        <member name="P:Taurus.Core.QueryTool.IsUseUISite">
+            <summary>
+            是否使用子目录部署网站
+            </summary>
+        </member>
+        <member name="T:Taurus.Core.UrlRewrite">
+            <summary>
+            权限检测模块
+            </summary>
+        </member>
+    </members>
+</doc>

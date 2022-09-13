@@ -1,0 +1,27 @@
+{"ID":"System.Int32","CateID":"System.Int32","Title":"System.String","Description":"System.String","ImgUrl":"System.String","CreateTime":"System.DateTime"},
+{"ID":"3","CateID":"2","Title":"水印春意","Description":"产品名称：水印春意
+产品规格：3600*2400mm（产品尺寸可定制）
+产品材质：环保PU中纤复合板
+工    艺：雕刻印彩
+分    件：宽600mm/块
+标准规格的产品，不接受材料、图案、色彩、工艺的修改，
+非标准规格产品可定制(定制价格上浮30-50%)","ImgUrl":"/style/a1.jpg","CreateTime":"2014-2-22 14:03:22"},
+{"ID":"4","CateID":"2","Title":"谈笑古今","Description":"产品名称：谈笑古今 产品规格：3600*2400mm（产品尺寸可定制） 产品材质：环保PU中纤复合板 工 艺：雕刻印彩 分 件：宽600mm/块 标准规格的产品，不接受材料、图案、色彩、工艺的修改， 非标准规格产品可定制(定制价格上浮30-50%)","ImgUrl":"/style/a3.jpg","CreateTime":"2014-2-22 14:47:34"},
+{"ID":"5","CateID":"2","Title":"绽放","Description":"","ImgUrl":"/style/a2.jpg","CreateTime":"2014-2-22 15:09:09"},
+{"ID":"6","CateID":"2","Title":"竹韵","Description":"","ImgUrl":"/style/a3.jpg","CreateTime":"2014-2-22 15:09:18"},
+{"ID":"7","CateID":"2","Title":"出水芙蓉","Description":"","ImgUrl":"/style/a4.jpg","CreateTime":"2014-2-22 15:09:35"},
+{"ID":"8","CateID":"2","Title":"荣华富贵","Description":"","ImgUrl":"/style/a3.jpg","CreateTime":"2014-2-22 15:12:01"},
+{"ID":"9","CateID":"2","Title":"爱莲说","Description":"","ImgUrl":"/style/a1.jpg","CreateTime":"2014-2-22 15:19:26"},
+{"ID":"10","CateID":"2","Title":"禅语","Description":"","ImgUrl":"/style/a2.jpg","CreateTime":"2014-2-22 15:19:58"},
+{"ID":"11","CateID":"2","Title":"现代","Description":"","ImgUrl":"/style/a3.jpg","CreateTime":"2014-2-22 15:23:14"},
+{"ID":"12","CateID":"2","Title":"红缨","Description":"产品名称：红缨 产品规格：3600*2400mm（产品尺寸可定制） 产品材质：环保PU中纤复合板 工 艺：雕刻印彩 分 件：宽600mm/块 标准规格的产品，不接受材料、图案、色彩、工艺的修改， 非标准规格产品可定制(定制价格上浮30-50%)","ImgUrl":"/style/a1.jpg","CreateTime":"2014-2-22 22:58:45"},
+{"ID":"13","CateID":"2","Title":"家和万事兴","Description":"","ImgUrl":"/style/a4.jpg","CreateTime":"2014-2-24 19:25:52"},
+{"ID":"14","CateID":"2","Title":"雅芸","Description":"","ImgUrl":"/style/a3.jpg","CreateTime":"2014-2-24 19:27:55"},
+{"ID":"15","CateID":"1","Title":"安居乐业","Description":"产品名称：安居乐于 
+产品规格：1200*2400（产品尺寸可定制）
+产品材质：超白瓷砖
+产品工艺：精雕幻彩
+产品用途：玄关背景墙","ImgUrl":"/style/a1.jpg","CreateTime":"2014-2-24 20:24:17"},
+{"ID":"16","CateID":"1","Title":"玄关清莲","Description":"产品名称：青莲
+产品规格：1200*2400（产品尺寸可定制）
+产品材质：全抛釉瓷砖","ImgUrl":"/style/a2.jpg","CreateTime":"2014-2-27 23:29:51"}

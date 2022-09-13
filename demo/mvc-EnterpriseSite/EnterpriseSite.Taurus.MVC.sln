@@ -1,0 +1,32 @@
+﻿
+Microsoft Visual Studio Solution File, Format Version 12.00
+# Visual Studio 2012
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "EnterpriseSite.View", "EnterpriseSite.Taurus.MVC\EnterpriseSite.View.csproj", "{6CF2CDA6-97BE-4250-A26C-3ECEC004BF3D}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Taurus.Controllers", "Taurus.Controllers\Taurus.Controllers.csproj", "{DE216EE2-441F-4668-BEE0-9DA7EEBCE666}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Taurus.Core", "..\..\src\Taurus.Core\Taurus.Core.csproj", "{ADF7675F-36F0-4AD5-8D20-83AE72BB4C99}"
+EndProject
+Global
+	GlobalSection(SolutionConfigurationPlatforms) = preSolution
+		Debug|Any CPU = Debug|Any CPU
+		Release|Any CPU = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(ProjectConfigurationPlatforms) = postSolution
+		{6CF2CDA6-97BE-4250-A26C-3ECEC004BF3D}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{6CF2CDA6-97BE-4250-A26C-3ECEC004BF3D}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{6CF2CDA6-97BE-4250-A26C-3ECEC004BF3D}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{6CF2CDA6-97BE-4250-A26C-3ECEC004BF3D}.Release|Any CPU.Build.0 = Release|Any CPU
+		{DE216EE2-441F-4668-BEE0-9DA7EEBCE666}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{DE216EE2-441F-4668-BEE0-9DA7EEBCE666}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{DE216EE2-441F-4668-BEE0-9DA7EEBCE666}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{DE216EE2-441F-4668-BEE0-9DA7EEBCE666}.Release|Any CPU.Build.0 = Release|Any CPU
+		{ADF7675F-36F0-4AD5-8D20-83AE72BB4C99}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{ADF7675F-36F0-4AD5-8D20-83AE72BB4C99}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{ADF7675F-36F0-4AD5-8D20-83AE72BB4C99}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{ADF7675F-36F0-4AD5-8D20-83AE72BB4C99}.Release|Any CPU.Build.0 = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(SolutionProperties) = preSolution
+		HideSolutionNode = FALSE
+	EndGlobalSection
+EndGlobal

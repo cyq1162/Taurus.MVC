@@ -1,0 +1,102 @@
+<h1>前言：</h1>
+<p>不要问我框架为什么从收费授权转到免费开源，人生没有那么多为什么，这些年我开源的东西并不少，虽然这个是最核心的，看淡了就也没什么了。</p>
+<p>群里的网友：太平说：</p>
+<p>
+  <span>
+    记得一年前你开源另一个项目的时候我就说过&nbsp;<br />这么多年&nbsp;秋天有两点没变&nbsp;一是还是单身&nbsp;另外一个就是cyq.data还没开源&nbsp;<br />终于等到开源了！
+  </span>
+</p>
+<p>
+  <strong>也许吧，只有把cyq.data最终开源了，才能解决单身问题，不然我在这上面花的时间太多，都没时间和妹子聊天了。</strong>
+</p>
+<p>&nbsp;</p>
+<h1>几个重要网址：</h1>
+<p>
+  <strong>
+    <span style="color: #000000;">源码SVN地址：</span>
+    <a href="https://github.com/cyq1162/cyqdata" target="_blank">https://github.com/cyq1162/cyqdata.git</a>
+  </strong>
+</p>
+<p>框架下载地址：</p>
+<p>1：VS高版本：Nuget上搜cyqdata</p>
+<p>
+  2：VS低版本：<a href="http://www.cyqdata.com/download/article-detail-426" target="_blank">http://www.cyqdata.com/download/article-detail-426</a>
+</p>
+<p>
+  3：最新介绍：<a id="homepage1_HomePageDays_DaysList_ctl01_DayList_TitleUrl_0" class="postTitle2" href="http://www.cnblogs.com/cyq1162/p/5634414.html">CYQ.Data 从入门到放弃ORM系列：开篇：自动化框架编程思维</a>
+</p>
+<p>
+  4：（新系列教程未出前的）教程学习网址：<a href="http://www.cyqdata.com/cyqdata/article-cate-33">http://www.cyqdata.com/cyqdata/article-cate-33</a><a href="http://www.cyqdata.com/cyqdata/article-cate-33-2">
+    <br />
+  </a>
+</p>
+<p>
+  5：项目Demo示例SVN地址：<a href="http://code.taobao.org/p/cyqopen/src/trunk/CYQ.Data.GettingStarted/" target="_blank">http://code.taobao.org/svn/cyqopen/trunk/CYQ.Data.GettingStarted/</a>
+</p>
+<p>当前的版本为：V5.6.1.6</p>
+<h1>V5系列的更新记录：</h1>
+<p>
+  -----------------------------V5.0开始（刚开始过滤版本：有些更新功能迁到V4，所以记录在V4那）-----------------------------<br />7：Insert方法增加InsertOption选项及重载方法，可根据需求设置是否需要填充数据。
+</p>
+<p>14：启用二级数据库配置，当第一数据库链接失败时，转第二链接数据库(第二链接配置名为&ldquo;第一配置名_bak&ldquo;）；</p>
+<p>18：DbBase中的方法增加可配置的ExeNonQuery是否加锁</p>
+<p>
+  20：处理json类对单个，号分隔的bug,修正返加载无头部数据的bug,即"},{"的分隔符号<br />21：准备增加框架扩展映射Xml内容功能<br />22：CellValue最小单元从IsChanged变更为State，优化按需更新或插入<br />23：MDataTable 增加读写Xml功能
+</p>
+<p>25：对于缓存手动指定非缓存SetChange时，如果缓存不存在，则默认会产生6秒的临时缓存</p>
+<p>
+  26：对CYQ.Data.Table名称空间下的类多数增加了Tojson方法，同时优化Json类，性能提升。<br />27：MDataTable 增加 Select相关方法<br />28：MDataTable 增加批量插入和批量更新方法<br />29：MDataTable 批量更新方法支持DataGridView编辑修改。<br />32：修正MySql下的多数据库替换标签：DateDiff和移除"[]"符号<br />33：修正Oracle下的多数据库替换标签：GetDate()函数，DateDiff函数,修正分页存储过程[多表时有问题]，增加简单的DateDiff函数<br />35：MActionUI增加对Image和RadioButtonList控件的取值/赋值<br />36：增加DBToll类，可从MDataTable中反向工程创建表结构。<br />37：MProc的ResetProc增加重载方法，允许不清除参数。<br />38：MDataCell表结构增加默认值,相关读取默认值<br />39：增加IField语法,可不用拼Sql字符串<br />40：对表名增加关键字处理。
+</p>
+<p>
+  41：将表架构外置到txt中，节省一次查询。<br />42：扩展SetType.Custom,可以传递多个属性，同时允许获取InnerText,InnerXml属性，如：Document.GetAttrValue(ID,"InnerText");<br />43：对表架构获取，增加或去除表名的关键字符号。<br />44：调整AOP功能，增加四种返回值,可以跳过AopEnd事件，并将默认Aop变为单例。
+</p>
+<p>
+  <br />56：MDataRow增加LoadValue方法，避开直接行的引用赋值引起需要调用ResetRow方法。<br />57：MDataTable在ReadFromDbDataReader时，由于增加指定查询，导致查询列与原始表结构不一致，因此增加列调整。<br />57：Select方法，Mssql/Oracle非分页查询不再调用存储过程，转用直接sql语句。<br />58：MDataColumn的列名判断和删除，判断不区分大小写。<br />59：JsonHelper输出时，增加RowOp过滤出只需要的数据，最大程序减少更新或插入的数据。<br />60：增加Tool.ThreadBreak类，可以解决ASP.NET中产生多个进程时，多个线程互相影响<br />61：大的改动：MDataTable 的 Select 与 FindRow 操作方式支持sql语句及IField语法。<br />62：继续大改动：MAction支持Txt文本和Xml，涉及很多内部代码调整，继续调整整合。<br />63：优化细节判断代码，如ToLower-&gt;String.Compare IndexOf('',StringComparison.OrdinalIgnoreCase)等。<br />64：Xml测试通过，同时解决线程和进程并发操作问题及大量细节！<br />64：Aop 大调整，使用AopInfo实体传递参数<br />//65：增加SetPara来参数化传值,Where检测到参数化时，不进行过滤。<br />//66：增加Access的LDB锁表解决机制，增加GC.Collect()<br />67：修正AOP问题，克隆实例，避免多线程冲突。<br />68：更新时，如果没可更新的，也返回true。<br />69：修正AOP下，更新时IsSuccess结果未重置导致后续结果和上次一样的bug。<br />70：MDataTable 的Select增加简单的字段比较，如 a&gt;b (a列的值&gt;b列的值)<br />71：调整Aop的RealProxy方法，兼容Release下的问题。<br />72：调整formatwhere，对like in is判断加前后空格，支持string主键。<br />73：为CacheManage类增加CacheTable属性，方便获取内存表信息。<br />74：为MDataTable和DataTable的转换增状RowState状态互转。
+</p>
+<p>
+  75：MySql 的图片类型不能指定长度，修正兼容。(否则会报索引超出了数组界限错误。)<br />76：修改XHtmlAction：增加无效字符的过滤，SetForeach的string.format不支持{$标签}{1}问题。<br />77：MDataTable的指量插入，增加mssql的SqlBulkCopy处理，NoSql模式时，取消ID重复检测，以加快速度。<br />78：增加ODP.NET 组件的支持，并增加OracleBulkCopy处理，加快批量插入的速度。<br />79：去掉ICommon接口，增加了Select方法的重截。<br />80：文本数据库增加简单SQL语法支持（MProc可以执行SQL），同时优化MDataTable的内部查询。<br />81：批量插入小调整（sqlite,mysql的time类型在转到access时批量更亲的类型错误问题，文本数据库的表名，去掉.txt或.xml后缀）<br />82：调整sqlite读取不了表的bug,重整数据库结构读取（去掉只读，增加主键和自增识别，生成脚本重整）<br />83：SetToAll增加先设置前缀支持方式。<br />84：文件数据库CodeFirst允许不生成表结构，链接语句增加&ldquo;ts=0&rdquo;来识别是否创建.ts后缀的表结构。<br />85：对于默认order by id 优化成order by 关键字段。<br />86：增加对WPF UI的支持（同时UI的方式变更为反射机制）。(2013-08-09)<br />87：对MDataTalle增加Distinct()过滤重复行支持。(2013-08-11)<br />88：批量插入增加关键字表名支持。<br />89：调整MActionUI的相关方法(2013-08-13)<br />90：兼容文本数据库的表结构检测（允许从.txt或.xml读取结构）<br />91：支持exists(UI取值判断)<br />92：处理创建表结构时MySql的DateTime-&gt;Timestamp默认值问题。(2013-08-29)<br />93：减少where 1=1和 and 1=1的存在，修正SQLite的ID表结构自增加ID创建问题。<br />93：优化Oracle的自定义语句对分页存储过程的兼容。<br />94：调整JsonHelper的个别字段名称，加强对easyui的交互。<br />95：调整Json加载表结构（自增ID+默认日期）<br />96：增加DBFast类。（同时配置工具增加相应的生成纯实体的功能）(2013-10-01)<br />97：数据库链接取法支持从名称空间的最后一位+Conn，如Web.Enum.Demo下的类的数据库链接为：DemoConn<br />98：XmlAction增加自动批量赋值功能（CMS的标签功能）<br />99：处理存储过程调用时的&ldquo;表名&rdquo;关键字处理<br />100：处理MProc的OutPutValue如果有多个值的时候则返回Dictionary（2013-10-22）<br />101：MAction处理分页查询的where条件，默认没传排序条件时检测：id时传第一个关键字或第一个字段做为排序条件。（2013-10-22）<br />102：JsonHelper小优化，新增Add重载方法<br />103：MDataTableFilter 处理FindAll方法，增加orderby处理排序。（2013-11-09）<br />104：MDataTable 增加 List&lt;MDataRow&gt; 的隐式转换<br />105：MDataTableFilter 增加In和Not In 查询支持。<br />106：增加实体类后缀处理（避免与枚举生成同名）-配置工具同步更新（2013-11-15）<br />107：处理Guid类型的Insert问题（GroupID从string【1】的值独立到4）。<br />108：强化JsonHelper，新增一些实用方法。（2013-12-23）<br />109：MDataTable 增加GetChanges方法，ToJson增加重载方法，参数（RowOp）（2014-01-04）<br />110：MSSQL数据转换增加对xml，varbinary等类型的等价转换。<br />111：增加跨库切换功能（mssql,mysql支持跨库事务，其它不支持跨库事务,但可切换数据库链接）（2014-01-06）<br />112：增加Appconfig.DB.DefaultConn项，可以在代码级配置全局的默认数据库链接。（2014-01-09）<br />113：去除首列必须为Primary列的限制。（2014-01-11）<br />114：AppConfig类，全部允许直接赋值。<br />115：MDataTable和MDataRow 屏蔽部分内部实现接口（2014-01-16）<br />116：MDataTable AcceptChange方法参数AcceptOp增加Auto（批量检测数据，存在就更新，不存在就增加）（2014-01-19）<br />117：自动取值相关的小细节优化调整（Delete方法和Update方法无参数时，若主键无赋值，则尝试自动从UI取值）（2014-01-20）<br />118：增加 CYQ.Data.Extension.RegisterUI类，让第三方控件可以注册（以便支持自动取值和自动赋值）（2014-01-21）<br />119：为了兼容MSSQL数据库的数据转换（避免日期溢出）：<br />     对DateTime类型字段直接赋字符值："{0001/1/1 0:00:00}"，则会变更为：{1753/1/1 0:00:00}（2014-01-21）其它情况则不会改变。（2014-01-21）<br />     追加优化：对于MSSQL，对字段赋值DateTime.MinValue，在执行SQL命令的参数会自动优化成System.Data.SqlTypes.SqlDateTime.MinValue {1753/1/1 0:00:00} （2014-03-09）<br />120：OrmBase增加FieldSource枚举属性，适用于字段数据结构的来源切换。（2014-02-18）<br />121：增加StaticTool类：处理Type获取属性的继承属性分支（实体继承自OrmBase问题）。（2014-02-20）<br />122：处理一些细节（UI的Get与Set异常不抛出，仅记录日志）NoSqlAction的插入行去掉静态属性，避免并发引发错误的插入。（2014-02-22）<br />123：优化action.Bind(下拉列表）当文本和值为同一个时的情况，Sql语句优化为一个字段查询。（2014-03-02）<br />124：MDataTable增加GetColumnItems&lt;T&gt;(string columnName) 方法，可以方便获取某一列的集合。（2014-03-09）<br />125：Oracle的序列从整个库默认一个，变更为默认一个表一个序列。如果需要自定义，可以配置AppConfig.DB.AutoID参数。（2014-03-09）<br />126：JsonHelper输出ToString()时，若是Web环境（自动转义\t \n \r）（2014-03-17）<br />126：JsonHelper 静态方法调整（2014-03-18）<br />127：Emit转实体处理自动属性（自动属性的名称格式为 &lt;id&gt;k__BackingField ）（2014-03-25）<br />128：DBTool的CreateTable返回值修正（2014-03-25）<br />129：优化AppConfig.GetConn （链接字符串如果没有空格，会返回空;默认传Null或空值，则取Conn项的值）（2014-03-25）<br />130：优化MSSQL2008下的数据元数据结构获取语句（2014-03-29）<br />131：优化MDataTable的AcceptChanges批量功能允许设置联合主键为检测重复或更新条件（2014-03-29）<br />132：支持联合主键的处理（2014-03-29）<br />133：MDataTable.Select和Find查询条件不区分大小写（2014-03-30）<br />134：规范重命名一些内部变量，MDataCell开放属性State（Value的状态）（2014-03-30）<br />135：新增CYQ.Data.Log.LogTableName属性，允许配置表名（默认ErrorLogs）（2014-04-11）<br />136：MProc新增ExeMDataTableList，允许执行多个结果集的数据（2014-04-11）<br />137：新增CYQ.Data.Log.LogTableName属性，允许配置表名（默认ErrorLogs）（2014-04-11）<br />138：MDataRow的SetState方法增加重载方法（允许不设置空值和Null值的状态）（2014-04-11）<br />139：Log和MDataRow优化日志输出（2014-04-12）<br />140：JsonHelper优化输出格式（2014-04-12）<br />141：oracle分页取消存储过程，转成内置（2014-04-21）<br />142：将SQL注释的符号替换外置为可配置：AppConfig.DB.ReplaceSqlInjection（2014-04-21）<br />143：MAction的SetSelectColumns 设置错误的列名时，不再抛异常，而是忽略错误的列，并将列名错误记录在调试语句中。（2014-05-12）<br />144：JsonHelper 优化大调整（过半代码重写），支持多级嵌套Entity输出Json。（2014-05-15）<br />145：MDataColumn 增加SetOrdinal函数，可以对MDataTable的列进行排序，解决（MAction SetSelectColumns自定义列查询的顺序问题。（2014-05-15）<br />146：JsonHelper 优化大调整（过半代码重写），支持多级嵌套Json转出Entity。（2014-05-19）<br />147：MDataTable 批量从Json接收后，自动识别主键。（2014-05-24）<br />148：元数据增加浮点数精度小数位返回。（2014-05-30）<br />149：处理多数据库间表切换（2014-05-31）<br />150：增加MSSQL、MySql、Oracle的字段描述转移（2014-05-31）<br />151：处理各种数据库间的类型转换（转换更加精准，增加各种不常用的数据类型支持），代码量调整较大（2014-06-01=》2014-06-02）<br />152：MDataColumn 增加 CheckDuplicate 属性，允许重复列。（2014-05-31）<br />153：增加SimpleOrmBase基类，该基类只处理简单ORM的功能，不带AOP和UI交互功能。（2014-06-11）<br />154：MSSQL、Oracle 增加同义词的支持。（2014-06-13）<br />155：增加AppConfig.DB.DeleteField 配置删除字段标识（可以将MAction的删除操作变更为Update标识操作）（2014-06-14）<br />156：内置的ErrorLogs=》变更为开放的SysLogs，可以对外使用。（2014-06-14）<br />157：MDataRow的批量设置值方式，统一方法名称为：LoadFrom(不同的重截【Json、字典、实体对象】）（2014-06-18）<br />158：去掉：MAction的三个不常用方法：SetIdentityInsertOn、SetIdentityInsertOff、GetFromJson（这个可以由action.Data.LoadFrom(json)处理）（2014-06-18）<br />158：AOP去掉一个无需要实现的GetFromConfig接口、增加返回MAction、MProc自身引用的参数、是否事务中参数）（2014-06-26）<br />159：MAction 可以隐式转换成 MProc（2014-06-26）<br />160：增加Sybase数据库支持（2014-07-02）<br />161：优化分页支持（2014-07-04）<br />162：Json 实现 与 Xml 互转 （XHtmlAction 增加ToJson、JsonHelper增加ToXml）（2014-07-08 =&gt; 2014-07-12）<br />163：修正161调整分页导致查询条件丢失问题。（2014-07-30）<br />164：调整2个Json输出的小细节 1：{}空数组输出不带引号；2：MDataTable输出Json，只有一行时也带[]括号。（2014-08-01）<br />165：调整MDataTable读取数据为空时显示为Null的问题。（2014-08-08）<br />166：处理Oracle下的Insert返回值问题。（2014-08-20）<br />167：处理Json返回null、和增加重载方法，及ToDataTable的细节问题。（2014-08-31）<br />168：支持MSSQL的char36并设置默认值为newid时的主键细节处理。（2014-09-02）<br />169：修正查询MDataTable无数据时返回时未对指定列过滤问题。（2014-09-02）<br />170：修正转实体时处理Nullable类型转换问题。（2014-09-04）<br />171：表结构类增加TableName属性、行和列头两个类增加Insert重写方法（2014-09-14）<br />172：处理Json细节（2014-09-23）<br />173：JsonHelper.OutResult，优化（2014-09-28）<br />174：重写MDataCell的Equals方法，方便比较两个值是否相等。（2014-10-09）<br />175：增加Oracle 12 的ODP.NET处理。（2014-11-19）<br />176：MDataRow.Create(Hashtable) 转换的列头类型，按实际值的类型处理。（2014-11-19）<br />177：自动取值，Post空值时，对非字符串转DBNull.Value。（2014-12-01,2014-12-11）<br />178：GUID主键的批量插入，默认生成ID。（2014-12-05）<br />179：修正（事务中时）ResetTable(视图语句)的问题。（2015-01-02）<br />180：MDataTable的批量操作（DynamicData属性允许接收外部的MProc或MAction，以便同一个事务中进行）（2015-01-08、2015-01-10）<br />181：优化数据表结构生成语句的GUID函数问题。（2015-01-10）<br />182：MAction、MProc增加RecordsAffected只读属性(执行SQL命令时受影响的行数（-2为异常）)。（2015-01-11）<br />183：MSSQL增加跨库的同义词处理。（2015-01-11）<br />184：优化给GUID字段可赋值："newid"字符串。（2015-01-15）<br />185：优化JsonHelper.ToJson(List&lt;Dictionary...)方法。（2015-01-17）<br />186：MDataTable增加Max、Min、Sum、Avg四个列的计算方法。（2015-01-18）<br />187：优化【获取表结构失败时的错误信息显示】（2015-01-26）<br />188：处理【MDataTable的AcceptChanges的Auto参数，若没主键的列时，自动补充主键列、错误信息显示】（2015-01-30）<br />189：MAction的Fill方法之后【所有行的非Null值的状态变更为1，之前为0】（2015-02-04）<br />190：修正（事务中时）ResetTable(Sqlite数据库)的问题（2015-03-05）<br />191：修正查询语句：Like 带逗号（非存储过程下）分页查询时产生的问题（2015-03-10）<br />192：处理Access下Null值的报参数没有默认值错误问题（2015-03-20）<br />193：小细节调整（参数化）、自动取值，避开Cookie（2015-04-03）<br />194：小细节调整，自动取值的状态判断条件变更为：只要状态不是2，都可以自动取值（对应189引发的Bug）（2015-04-08）<br />195：DBTool.GetColumns方法处理跨库时的枚举支持。（2015-04-16）<br />196：新增：DBTool.GetSchemaCacheKey可以获取缓存表结构的Key，从而可以取消表结构缓存（当表结构修改，需要刷新缓存时可用）。（2015-04-20）<br />197：Oracle的主键（自增识别，从原来的单int判断，扩展到数字范围）。（2015-04-24）<br />198：新增：DBTool.AlterTable方法支持表结构的修改（2015-05-12补充：增加字段描述输出）（支持MSSQL、MySQL、Oracle、Sybase、Access）。（2015-04-24）<br />199：加强Oracle 对于ODP.Net的识别（2015-04-26）<br />200：AppConfig增加IsEnumToInt配置（默认表枚举转Int方式，变更为需要配置才启用，适应表结构的动态修改）（2015-04-27）<br />201：分页时兼容对于【order by a,b,c asc】这样的查询排序条件（2015-04-27）<br />202：Log和AppDebug两个类的可配置属性，统一移到AppConfig下（2015-04-28）<br />203：优化备用链接机制（当一个主链接挂掉时，切换到从链接）（2015-04-30）<br />204：新增加：AppConfig.DB.HiddenFields 可以对某些字段进行全局隐藏（默认隐藏cyqrownum（框架存储过程分页标识）、rowguid（发布订阅机制时自动产生的列）、AppConfig.DB.DeleteField（所指定的列））（2015-04-30）<br />205：内部优化Dictionary非线程安全处理（2015-04-30）<br />206：处理Oracle下视图语句子查询的问题（2015-05-05）<br />207：优化日志输出，（包含把长时间执行语句单独出日志文件存储）（2015-05-07）<br />208：自动取值部门自动去掉右空格。TrimEnd(' ')（2015-05-08）<br />209：Winform下绑定DataGrid列表时，列头自动显示中文（描述中获取）（2015-05-09）<br />210：JsonHelper.Split("{a:null}")对于Null值时，转成字典保留Key，同时值为空（之前是忽略该Key）（2015-05-11）<br />211：调整MAction的Fill后对状态置1时（若指定列查询时，只修改指定列状态）（2015-05-11）<br />212：RowOp枚举中的All名称变更为IgnoreNull。（2015-05-12）<br />213：MDataRow的LoadFrom()增加重载：默认无参时，自动从Web Post表单中取值。（2015-05-12）<br />214：对MDataTable的Select方法进行算法优化，操作后不改变原有数据（2015-05-24）<br />215：CacheManage增加Get&lt;T&gt;重载方法（2015-05-24）<br />216：MAction的SetToAll方法增加对Html控件在Runat=server下的支持（2015-05-27）<br />217：优化MDataTable、MDataRow、MDataColumn相关IList接口的重载方法（机制优化，改动较大）【对MDataTable某一个行进行增加或移除列操作，会触发整个表的列操作】（2015-05-28）<br />218：优化MDataTable的行集合的添加事件（屏蔽构造函数、增加重载方法等）（2015-05-29）<br />219：MDataTable为GetColumnItems方法增加重载，参数isDistinct去掉重复数据。（2015-05-30）<br />220：处理MDataTable的空列名时转成&ldquo;Empty_索引"。（2015-06-01）<br />221：优化MDataTable创建行（NewRow方法）的速度。（2015-07-29）<br />222：优化Log类的使用（开放WriteLogToDB方法和增加日志类型LogType）。（2015-07-30）<br />223：处理自定义视图语句带注释的问题（原来不支持，改为支持）。（2015-08-04）<br />224：增加AppConfig.DB.CommandTimeout属性设置全局命令超时时间。（2015-08-04）<br />225：优化JsonHelper的转化性能（2015-08-26）<br />225：修正对221优化引起的文本数据库功能的Bug。（2015-08-26）<br />226：内部类IOHelper增加文件编码自动识别（减少读Json文件产生的乱码问题）。（2015-09-08）<br />227：事务的提交和回滚方法的返回类型变更为bool。（2015-09-10）<br />228：修正217引发的表结构归属的问题。（2015-09-18）<br />229：MDataRow的SetToAll增加重载方法。（2015-09-18）<br />230：优化单元格值的类型转换错误时的日志输出。（2015-09-20）<br />231：JsonHelper.ToJson方法增加对NameValueCollection的转换支持（2016-02-18）<br />232：JsonHelper.ToEntity方法增加对集合的转换支持（2016-02-18）<br />233：MAction和MProc去掉增删改查和执行等方法中的(param object[] AopPara)可选参数，简化方法（2016-02-20）<br />234：MAction和Mproc增加SetAopPara来设置额外的Aop参数（对应233的处理）。（2016-02-20）<br />235: mysql double 转 mssql real 类型问题（2016-03-18）<br />236：mysql (0001/1/1 0:00:00)日期转mssql问题，链接字符串可补充（Convert Zero Datetime=True）（2016-03-18）<br />237: mysql(MySQL.Data.dll）使用新版本（避开向信号量添加给定计数将导致其超出它的最大计数）（2016-03-18）<br />238: MAction的SetPara方法增加参数检测避免重复设置（2016-03-30）<br />239：增加表和字段映射支持（即忽略表名或字段名中的"_"，如new MAction("SysUser"）,数据库原表名可以是Sys_User（2016-04-10）<br />240：MDataTable增加Join方法（可以在两个表间实现LeftJoin关联）（2016-04-20）<br />241：MAction、MProc、MDataTable等的Set方法的返回值void变更为this（2016-04-20）<br />242：MSSQL转Mysql的默认值多了个()号处理。（2016-04-23）<br />243：增加参数化的多数据库支持"=:?UserName" 中的"=:?"为兼容语法，可自动被格式化成 =@ =: =? 等。（2016-04-23）<br />244：视图语句增加对数据库的识别：(select a.*,b.* from xxxx) 数据库.v 会映射到 数据库Conn 配置的数据库链接（2016-04-25）<br />245：DBTool 开放两个方法（Keyword 和NotKeyword)（2016-05-04）<br />246：修正Mysql的表是否存在判断问题（2016-05-05）<br />247：DBTool.CreateTable 内部去掉表是否存在判断，减少1次判断（2016-05-06）<br />248：增加ISNULL函数多数据库翻译（2016-05-07）<br />249：缩短在DBTool.TestConn的等待时间为3秒（2016-05-08）<br />250：MDataTable批量插入对Mssql增加允许触发触发器（2016-05-09）<br />251：内部增加对Mysql bit类型where条件的格式化 xx='0' 变为xx=0（2016-05-13）<br />252：处理MySql内部细节（日期和Binary字段）（2016-05-19）<br />253：处理一些小细节（如提示的错别字：fine =&gt; find）（2016-05-31）<br />254：处理一些小细节（SQL注入的过滤关键词取消&lsquo;char(&rsquo;等函数）（2016-06-02）<br />255：where条件的格式化支持多条件方式，并处理分号等细节，如action.Delete("'123',323")（2016-06-04）<br />256：MAction(sql)兼容sql语句处理。（2016-06-05）<br />257：自动取值对于空格的处理由TrimEnd变更更为Trim（2016-06-05）<br />258：增加MySql的批量语句支持（2016-06-16）<br />259：MDataTable增加Pivot行转列方法（2016-06-17）<br />260：增加读写分离支持（直接配置web.config或app.config则可启用）<br />如默认链接配置为&ldquo;Conn&rdquo;，增加配置项则可：Conn_Slave1、Conn_Slave2、 ... Conn_SlaveN（2016-06-24）<br />261：MProc和MAction关闭SetAop方法（2016-06-24）<br />262：MAction和MProc的EndTransation方法提交结束事务后，关闭链接，若失败则自动回滚事务（2016-06-24）<br />263：Cache的Contains检查Key时，如果已过期，自动移除并返回Null（2016-06-24）<br />264：为读写分离增加一致性业务处理功能。（2016-06-24）<br />265：增加AppConfig.DB.MasterSlaveTime 默认值10秒（处理主从库时的操作业务缓存时间）（2016-06-24）<br />266：增加分布式缓存MemCached功能，原有Cache使用方式不变，只需要配置AppConfig.Cache.MemCacheServers则自动启用（2016-06-26）<br />267：修改默认缓存时间为1小时，去掉两个不常用的缓存配置项AppConfig.Cache.CacheClearCallCount和AppConfig.Cache.CacheClearTime（2016-06-26）<br />268：优化本地缓存的定时清理机制、取消AppConfig.Cache.CacheClearCallCount配置项。（2016-06-28）<br />269：MSSQL查询表列表时过滤掉系统自动产生的表，如复制订阅功能启用时产生的表（2016-06-28）<br />270：取消AppConfig.DB.ReplaceSqlInjection配置项，新增加AppConfig.DB.EditTimeFields项，指定字段时，MAction的Update方法会自动更新该时间字段为当前时间（2016-06-29）<br />271：数据结构MCellStruct增加IsUniqueKey,IsForeignKey,FKTableName三个属性，对于where条件的单值，增加内部推导功能：action.Exists("路过秋天") 值为字符串，主键为int或guid，会切为唯一键字段去处理（2016-07-01）<br />272：MDataRow的LoadFrom(MDataRow row)：改为默认不影响表结构，即不追加字段（2016-07-02）<br />273：增加MDataRow和MDataColumn的调试可视化查看：源码SVN下载地址：http://code.taobao.org/svn/cyqopen/trunk/CYQ.Visualizer/  （2016-07-02）<br />274：处理mysql批量导数据的分隔符问题（2016-07-03）<br />275：为MDataTable的相关查询方法增加智能推导【原本只有MAction有】（2016-07-03）<br />276：处理处理mysql批量导数据的符号转义问题（2016-07-03）<br />277：将MAction的UI操作部分接口抽取到UI属性、将Extension名称空间的下IUIValue和RegisterUI移到CYQ.Data.UI下（2016-07-04）
+</p>
+<p>278：修正：内部SysLogs系统写日志；（2016-07-04）</p>
+<p>
+  <em id="__mceDel">
+    279：修正：事务时ADO.NET对GUID='123'的不抛异常但关掉事务引发的：事务回滚循环和后续业务不在事务中的问题。（2016-07-04）<br />280：修正Oracle时的链接字符串密码被转小写问题和优化ProviderName不区分大小写。（2016-07-04）
+  </em>
+</p>
+<h1>项目的解决方案：</h1>
+<h2>&nbsp;1：项目解决方案：Action及Cache</h2>
+<p>
+  <img src="http://images2015.cnblogs.com/blog/17408/201607/17408-20160704012852265-2005282814.jpg" alt="" />
+  <img src="http://images2015.cnblogs.com/blog/17408/201607/17408-20160704012923562-623205801.jpg" alt="" />
+  <img src="http://images2015.cnblogs.com/blog/17408/201607/17408-20160704012931312-221520997.jpg" alt="" />
+</p>
+<h2>2：DAl层、Extension、ORM、SQL、UI</h2>
+<p>
+  <img src="http://images2015.cnblogs.com/blog/17408/201607/17408-20160704012945812-975041094.jpg" alt="" />
+  <img src="http://images2015.cnblogs.com/blog/17408/201607/17408-20160704013233812-47669022.jpg" alt="" />
+  <img src="http://images2015.cnblogs.com/blog/17408/201607/17408-20160704013252202-529517899.jpg" alt="" />
+</p>
+<h3>3：Table、Tool</h3>
+<p>
+  <img src="http://images2015.cnblogs.com/blog/17408/201607/17408-20160704013430421-1780089122.jpg" alt="" />
+  <img src="http://images2015.cnblogs.com/blog/17408/201607/17408-20160704013437531-984501834.jpg" alt="" />
+</p>
+<h1>项目类关系图：</h1>
+<h2>1：继承关系的：</h2>
+<p>
+  &nbsp;<img src="http://images2015.cnblogs.com/blog/17408/201607/17408-20160704014255874-75226601.jpg" alt="" />
+</p>
+<h2>2：组合关系的：</h2>
+<p>
+  <img src="http://images2015.cnblogs.com/blog/17408/201607/17408-20160704014406702-1707355484.jpg" alt="" />
+</p>
+<p>
+  <img src="http://images2015.cnblogs.com/blog/17408/201607/17408-20160704014418546-1315099626.jpg" alt="" />
+</p>
+<p>
+  <img src="http://images2015.cnblogs.com/blog/17408/201607/17408-20160704014428202-2139977415.jpg" alt="" />
+</p>
+<p>
+  <img src="http://images2015.cnblogs.com/blog/17408/201607/17408-20160704014541640-1578065860.jpg" alt="" />
+</p>
+<h1>最后：</h1>
+<p>谢谢大伙几年来一惯的支持！！以后框架的发扬光大就靠你们了！！</p>

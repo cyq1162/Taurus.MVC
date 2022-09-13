@@ -1,0 +1,5 @@
+{"ID":"System.Int32","Name":"System.String","Count":"System.Int32","LastArticleID":"System.Int32","OrderNum":"System.Int32"},
+{"ID":"1","Name":"公司简介","Count":"1","LastArticleID":"1","OrderNum":"1"},
+{"ID":"2","Name":"文化中心","Count":"1","LastArticleID":"2","OrderNum":"2"},
+{"ID":"3","Name":"联系我们","Count":"1","LastArticleID":"3","OrderNum":"3"},
+{"ID":"4","Name":"行业资讯","Count":"6","LastArticleID":"8","OrderNum":"4"}

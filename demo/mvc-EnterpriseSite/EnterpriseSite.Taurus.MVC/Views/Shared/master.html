@@ -1,0 +1,73 @@
+﻿<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+    <title itemref="title">EnterpriseSite.Taurus.MVC</title>
+    <meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />
+    <link href="/style/style.css" rel="stylesheet" type="text/css" />
+    <link href="/style/skin.css" rel="stylesheet" type="text/css" />
+    <link rel="stylesheet" href="/style/lightbox/lightbox.css" type="text/css" media="screen" />
+</head>
+<body>
+    <div id="header">
+        <div class="top">
+            <div class="f_l logo">
+                <a href="/">
+                    <img src="/style/logo.png" /></a><span style="vertical-align: text-top">Taurus.MVC</span>
+            </div>
+            <div class="f_r log">
+                <div class="clearfix">
+                    <span style="font-size: medium; vertical-align: top;"></span><a target="_blank" href="http://wpa.qq.com/msgrd?v=3&uin=272657997&site=qq&menu=yes">
+                        <img
+                            src="/style/400.gif" /></a>
+                </div>
+                <div class="blank5">
+                </div>
+                <div class="f_r top_user">
+                </div>
+            </div>
+        </div>
+        <div class="blank">
+        </div>
+        <div class="block">
+            <div id="mainNav" name="menuView">
+                <a href="${MenuUrl}">${Name}</a>
+            </div>
+        </div>
+        <div class="bgline">
+        </div>
+        <div class="blank15">
+        </div>
+        <div class="blank15">
+        </div>
+    </div>
+    <div id="footer">
+        <div class="text">
+            © 2016-2024 秋式软件 版权所有，并保留所有权利。 作者:<a href="http://www.cyqdata.com/cyq1162" target="_blank">路过秋天</a>&nbsp;&nbsp;使用框架：<a
+                href="http://Taurus.cyqdata.com/" target="_blank">Taurus.MVC</a><br />
+        </div>
+    </div>
+    <div id="articlecate">
+        <div class="aa_b">
+            文章分类
+        </div>
+        <div class="RelaArticle clearfix" id="articleclassView">
+            <li><a onmouseover="setUrl(this,${Count},${ID},${LastArticleID})">${Name}
+            </a></li>
+        </div>
+        <script>
+            function setUrl(obj, count, id, lastArticleID) {
+                obj.href = count > 1 ? "articlelist?id=" + id : "articledetail?id=" + lastArticleID;
+            }
+        </script>
+    </div>
+    <div id="photocate">
+        <div class="aa_b">
+            产品分类
+        </div>
+        <div class="RelaArticle clearfix" id="photoclassView">
+            <li><a href='photolist?id=${ID}'>${Name}
+            </a></li>
+        </div>
+    </div>
+</body>
+</html>

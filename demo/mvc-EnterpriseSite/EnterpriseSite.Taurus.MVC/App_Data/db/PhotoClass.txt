@@ -1,0 +1,3 @@
+{"ID":"System.Int32","Name":"System.String"},
+{"ID":"1","Name":"´É×©±³¾°Ç½"},
+{"ID":"2","Name":"Æ¤µñ±³¾°Ç½"}
