@@ -1,11 +1,10 @@
 ﻿using CYQ.Data;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
-using Microsoft.AspNetCore.Http;
 using System;
-using System.Collections.Generic;
-using System.Text;
 using System.Threading.Tasks;
+using Taurus.MicroService;
+using Taurus.Mvc;
 using Taurus.Core;
 
 namespace Microsoft.AspNetCore.Http
@@ -75,15 +74,16 @@ namespace Microsoft.AspNetCore.Http
         }
         public static IApplicationBuilder UseTaurusMvc(this IApplicationBuilder builder, string webRootPath)
         {
-            if (!string.IsNullOrEmpty(MicroService.Config.AppRunUrl) || MicroService.Server.IsRegCenterOfMaster)
+            if (!string.IsNullOrEmpty(MSConfig.AppRunUrl) || MSConfig.IsRegCenterOfMaster)
             {
-                MicroService.Run.Start(MicroService.Config.AppRunUrl);//
+                MSRun.Start(MSConfig.AppRunUrl);//
             }
             //System.Web.HttpContext.Configure(httpContextAccessor);
             AppConfig.WebRootPath = webRootPath;//设置根目录地址，ASPNETCore的根目录和其它应用不一样。
             //执行一次，用于注册事件
             UrlRewrite url = new UrlRewrite();
             url.Init(System.Web.HttpApplication.Instance);
+            ControllerCollector.InitControllers();
             return builder.UseMiddleware<TaurusMiddleware>();
         }
     }
