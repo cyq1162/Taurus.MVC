@@ -1,166 +1,126 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Text;
-using Taurus.Core;
+using Taurus.Mvc;
 using System.Web;
 using CYQ.Data.Xml;
 
-namespace Taurus.Core
+namespace Taurus.Mvc
 {
-    public abstract partial class LogicBase : IController
+    public abstract partial class LogicBase
     {
-        IController _IController;
-
-        public LogicBase(IController controller)
+        protected Controller Controller;
+        /// <summary>
+        /// 需要传递控制器进来
+        /// </summary>
+        public LogicBase(Controller controller)
         {
-            _IController = controller;
+            Controller = controller;
         }
         private LogicBase()
         {
 
         }
 
-        #region _ICommon
-        public string APIResult
-        {
-            get { return _IController.APIResult; }
-        }
-        public int PageIndex
-        {
-            get { return _IController.PageIndex; }
-        }
-
-        public int PageSize
-        {
-            get { return _IController.PageSize; }
-        }
-        public T Query<T>(Enum key)
-        {
-            return _IController.Query<T>(key);
-        }
         public T Query<T>(string key)
         {
-            return _IController.Query<T>(key);
+            return Controller.Query<T>(key);
         }
 
         public T Query<T>(string key, T defaultValue)
         {
-            return _IController.Query<T>(key, defaultValue);
+            return Controller.Query<T>(key, defaultValue);
         }
-        public T Query<T>(int paraIndex)
-        {
-            return _IController.Query<T>(paraIndex);
-        }
-
-        public T Query<T>(int paraIndex, T defaultValue)
-        {
-            return _IController.Query<T>(paraIndex, defaultValue);
-        }
-        public void SetQuery(string name, string value)
-        {
-            _IController.SetQuery(name, value);
-        }
+       
         public HttpContext Context
         {
             get
             {
-                return _IController.Context;
+                return Controller.Context;
             }
         }
         public HttpRequest Request
         {
-            get { return _IController.Request; }
+            get { return Controller.Request; }
         }
 
         public HttpResponse Response
         {
-            get { return _IController.Response; }
+            get { return Controller.Response; }
         }
         public bool IsHttpGet
         {
-            get { return _IController.IsHttpGet; }
+            get { return Controller.IsHttpGet; }
         }
 
         public bool IsHttpPost
         {
-            get { return _IController.IsHttpPost; }
+            get { return Controller.IsHttpPost; }
         }
         public bool IsHttpHead
         {
-            get { return _IController.IsHttpHead; }
+            get { return Controller.IsHttpHead; }
         }
         public bool IsHttpPut
         {
-            get { return _IController.IsHttpPut; }
+            get { return Controller.IsHttpPut; }
         }
         public bool IsHttpDelete
         {
-            get { return _IController.IsHttpDelete; }
+            get { return Controller.IsHttpDelete; }
         }
         public XHtmlAction View
         {
             get
             {
-                return _IController.View;
+                return Controller.View;
             }
             set
             {
-                _IController.View = value;
+                Controller.View = value;
             }
         }
-        #endregion
 
 
         public Type ControllerType
         {
-            get { return _IController.ControllerType; }
+            get { return Controller.ControllerType; }
         }
-        public string Module
+        public string ModuleName
         {
-            get { return _IController.Module; }
+            get { return Controller.ModuleName; }
         }
         public string ControllerName
         {
-            get { return _IController.ControllerName; }
+            get { return Controller.ControllerName; }
         }
-        public string Action
+        public string MethodName
         {
-            get { return _IController.Action; }
+            get { return Controller.MethodName; }
         }
 
         public string Para
         {
-            get { return _IController.Para; }
+            get { return Controller.Para; }
         }
 
         public void Write(string msg)
         {
-            _IController.Write(msg);
+            Controller.Write(msg);
         }
 
         public void Write(string msg, bool isSuccess)
         {
-            _IController.Write(msg, isSuccess);
+            Controller.Write(msg, isSuccess);
         }
         public void Write(object obj)
         {
-            _IController.Write(obj);
+            Controller.Write(obj);
         }
 
         public void Write(object obj, bool isSuccess)
         {
-            _IController.Write(obj, isSuccess);
-        }
-
-        public T GetEntity<T>() where T : class
-        {
-            return _IController.GetEntity<T>();
-        }
-
-
-        public string GetJson()
-        {
-            return _IController.GetJson();
+            Controller.Write(obj, isSuccess);
         }
     }
 }

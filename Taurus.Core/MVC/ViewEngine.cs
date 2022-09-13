@@ -6,7 +6,7 @@ using CYQ.Data;
 using CYQ.Data.Tool;
 using System.IO;
 using System.Xml;
-namespace Taurus.Core
+namespace Taurus.Mvc
 {
     /// <summary>
     /// 视图引擎
@@ -19,7 +19,7 @@ namespace Taurus.Core
         public static XHtmlAction Create(string controlName, string actionName)
         {
             string path = AppConfig.GetApp("Views", "Views") + "/"
-                          + controlName.Replace(Const.Controller, "")
+                          + controlName.Replace(ReflectConst.Controller, "")
                           + "/" + actionName + ".html";
             return Create(path);
         }

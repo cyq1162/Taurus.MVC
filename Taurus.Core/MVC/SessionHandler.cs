@@ -2,7 +2,7 @@
 using System.Web;
 using System.Web.SessionState;
 
-namespace Taurus.Core
+namespace Taurus.Mvc
 {
     /// <summary>
     /// 实现IHttpModule中使用Session

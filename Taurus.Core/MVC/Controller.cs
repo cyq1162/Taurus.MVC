@@ -7,7 +7,10 @@ using CYQ.Data;
 using System.IO;
 using CYQ.Data.Tool;
 using System.Text.RegularExpressions;
-namespace Taurus.Core
+using Taurus.Plugin.Doc;
+using Taurus.Mvc.Attr;
+
+namespace Taurus.Mvc
 {
     /// <summary>
     /// the base of Controller
@@ -37,13 +40,14 @@ namespace Taurus.Core
         {
             get { return true; }
         }
-        private void Init(Type t)
+        private void InitNameFromUrl()
         {
-            _ControllerName = t.Name.Replace(Const.Controller, "").ToLower();
-            string[] items = QueryTool.GetLocalPath(Request.Url).Trim('/').Split('/');
-            int paraStartIndex = RouteConfig.RouteMode + 1;
+            _ControllerType = this.GetType();
+            _ControllerName = _ControllerType.Name.Replace(ReflectConst.Controller, "").ToLower();
+            string[] items = WebTool.GetLocalPath(Request.Url).Trim('/').Split('/');
+            int paraStartIndex = MvcConfig.RouteMode + 1;
             string methodName = string.Empty;
-            switch (RouteConfig.RouteMode)
+            switch (MvcConfig.RouteMode)
             {
                 case 0:
                     methodName = items[0];
@@ -51,7 +55,7 @@ namespace Taurus.Core
                 case 1:
                     if (items.Length > 1)
                     {
-                        if (items.Length > 2 && items[0].ToLower() != _ControllerName && items[1].ToLower() == _ControllerName && items[0] == MicroService.Config.ClientName.ToLower())
+                        if (items.Length > 2 && items[0].ToLower() != _ControllerName && items[1].ToLower() == _ControllerName && items[0] == MicroService.MSConfig.ClientName.ToLower())
                         {
                             paraStartIndex++;
                             methodName = items[2];//往后兼容一格。
@@ -63,7 +67,7 @@ namespace Taurus.Core
                     }
                     break;
                 case 2:
-                    _Module = items[0];
+                    _ModuleName = items[0];
                     if (items.Length > 2)
                     {
                         methodName = items[2];
@@ -75,8 +79,11 @@ namespace Taurus.Core
                     }
                     break;
             }
-            _Action = methodName;
-
+            _MethodName = methodName;
+            if (string.IsNullOrEmpty(_MethodName))
+            {
+                _MethodName = ReflectConst.Default;
+            }
 
             if (items.Length > paraStartIndex)
             {
@@ -92,215 +99,42 @@ namespace Taurus.Core
         }
         public void ProcessRequest(HttpContext context)
         {
-            this.context = context; 
+            this.context = context;
             try
             {
-                Type t = _ControllerType = this.GetType();
-                Init(t);
-
-                bool isGoOn = true;
-
-                AttributeList attrFlags;
-                MethodInfo method = MethodCollector.GetMethod(t, Action, out attrFlags);
-                if (method != null)
-                {
-                    if (isGoOn)//配置了HttpGet或HttpPost
-                    {
-                        isGoOn = attrFlags.HasKey(Request.HttpMethod);
-                        if (!isGoOn)
-                        {
-                            Write("Http method not support " + Request.HttpMethod, false);
-                        }
-                    }
-                    if (isGoOn && attrFlags.HasAck)//有[Ack]
-                    {
-                        #region Validate CheckAck
-                        MethodInfo checkAck = MethodCollector.GetMethod(t, Const.CheckAck);
-                        if (checkAck != null && checkAck.Name == Const.CheckAck)
-                        {
-                            isGoOn = Convert.ToBoolean(checkAck.Invoke(this, null));
-                        }
-                        else if (MethodCollector.GlobalCheckAck != null)
-                        {
-                            isGoOn = Convert.ToBoolean(MethodCollector.GlobalCheckAck.Invoke(null, new object[] { this, Action }));
-                        }
-                        if (!isGoOn)
-                        {
-                            Write("Check AckAttribute is illegal.", false);
-                        }
-                        #endregion
-                    }
-                    if (isGoOn && attrFlags.HasMicroService)//有[MicroService]
-                    {
-                        #region Validate CheckMicroService 【如果开启全局，即需要调整授权机制，则原有局部机制失效。】
-                        if (MethodCollector.GlobalCheckMicroService != null)
-                        {
-                            isGoOn = Convert.ToBoolean(MethodCollector.GlobalCheckMicroService.Invoke(null, new object[] { this, Action }));
-                        }
-                        else
-                        {
-                            MethodInfo checkMicroService = MethodCollector.GetMethod(t, Const.CheckMicroService);
-                            if (checkMicroService != null && checkMicroService.Name == Const.CheckMicroService)
-                            {
-                                isGoOn = Convert.ToBoolean(checkMicroService.Invoke(this, null));
-                            }
-                        }
-                        if (!isGoOn)
-                        {
-                            Write("Check MicroServiceAttribute is illegal.", false);
-                        }
-                        #endregion
-                    }
-                    if (isGoOn && attrFlags.HasToken)//有[Token]
-                    {
-                        #region Validate CheckToken
-                        MethodInfo checkToken = MethodCollector.GetMethod(t, Const.CheckToken);
-                        if (checkToken != null && checkToken.Name == Const.CheckToken)
-                        {
-                            isGoOn = Convert.ToBoolean(checkToken.Invoke(this, null));
-                        }
-                        else if (MethodCollector.GlobalCheckToken != null)
-                        {
-                            isGoOn = Convert.ToBoolean(MethodCollector.GlobalCheckToken.Invoke(null, new object[] { this, Action }));
-                        }
-                        else if (MethodCollector.AuthCheckToken != null)
-                        {
-                            isGoOn = Convert.ToBoolean(MethodCollector.AuthCheckToken.Invoke(null, new object[] { this }));
-                        }
-                        if (!isGoOn)
-                        {
-                            Write("Check TokenAttribute is illegal.", false);
-                        }
-                        #endregion
-                    }
-                    if (isGoOn)
-                    {
-                        #region Method Invoke
-
-
-                        #region BeforeInvoke
-                        if (MethodCollector.GlobalBeforeInvoke != null)//先调用全局
-                        {
-                            isGoOn = Convert.ToBoolean(MethodCollector.GlobalBeforeInvoke.Invoke(null, new object[] { this, Action }));
-                        }
-                        if (isGoOn)
-                        {
-                            MethodInfo beforeInvoke = MethodCollector.GetMethod(t, Const.BeforeInvoke);
-                            if (beforeInvoke != null && beforeInvoke.Name == Const.BeforeInvoke)
-                            {
-                                isGoOn = Convert.ToBoolean(beforeInvoke.Invoke(this, new object[] { method.Name }));
-                            }
-                        }
-                        #endregion
-
-                        //BeforeInvoke(method.Name);
-
-                        if (!CancelLoadHtml)
-                        {
-                            _View = ViewEngine.Create(t.Name, method.Name);
-                            if (_View != null)
-                            {
-                                //追加几个全局标签变量
-                                _View.KeyValue.Add("module", Module.ToLower());
-                                _View.KeyValue.Add("controller", _ControllerName);
-                                _View.KeyValue.Add("action", Action.ToLower());
-                                _View.KeyValue.Add("para", Para.ToLower());
-                                _View.KeyValue.Add("httphost", Request.Url.AbsoluteUri.Substring(0, Request.Url.AbsoluteUri.Length - Request.Url.PathAndQuery.Length));
-                            }
-                        }
-
-                        if (isGoOn)
-                        {
-                            object[] paras;
-                            if (GetInvokeParas(method, out paras))
-                            {
-                                method.Invoke(this, paras);
-                                if (IsHttpPost && _View != null)
-                                {
-                                    #region Button Invoke
-                                    string name = GetBtnName();
-                                    if (!string.IsNullOrEmpty(name))
-                                    {
-                                        MethodInfo postBtnMethod = MethodCollector.GetMethod(t, name);
-                                        if (postBtnMethod != null && postBtnMethod.Name != Const.Default)
-                                        {
-                                            GetInvokeParas(postBtnMethod, out paras);
-                                            postBtnMethod.Invoke(this, paras);
-                                        }
-                                    }
-                                    #endregion
-                                }
-                                if (isGoOn)
-                                {
-                                    #region EndInvoke
-                                    MethodInfo endInvoke = MethodCollector.GetMethod(t, Const.EndInvoke);
-                                    if (endInvoke != null && endInvoke.Name == Const.EndInvoke)
-                                    {
-                                        endInvoke.Invoke(this, new object[] { method.Name });
-                                    }
-                                    if (MethodCollector.GlobalEndInvoke != null)
-                                    {
-                                        MethodCollector.GlobalEndInvoke.Invoke(null, new object[] { this, Action });
-                                    }
-                                    #endregion
-                                    //if (InvokeLogic.DocRecord != null)
-                                    //{
-                                    //    InvokeLogic.DocRecord.Invoke(null, new object[] { this, methodName });
-                                    //}
-                                }
-                            }
-                        }
-                        #endregion
-                    }
-                }
-                else
+                InitNameFromUrl();
+                MethodEntity methodEntity = MethodCollector.GetMethod(_ControllerType, MethodName);
+                if (methodEntity == null)
                 {
                     //检测全局Default方法
-                    MethodInfo globalDefault = MethodCollector.GlobalDefault;
+                    MethodEntity globalDefault = MethodCollector.GlobalDefault;
                     if (globalDefault != null)
                     {
-                        object o = Activator.CreateInstance(globalDefault.DeclaringType);//实例化
-                        globalDefault.DeclaringType.GetMethod("ProcessRequest").Invoke(o, new object[] { context });
-                        return;
+                        Controller o = (Controller)Activator.CreateInstance(globalDefault.Method.DeclaringType);//实例化
+                        o.ProcessRequest(context);
                     }
                     else
                     {
                         Response.StatusCode = 404;
                         Write("404 : Invalid method for url.", false);
                     }
+                    return;
 
                 }
-                if (string.IsNullOrEmpty(context.Response.Charset))
+                else
                 {
-                    context.Response.Charset = "utf-8";
-                }
-                if (View != null)
-                {
-                    context.Response.Write(View.OutXml);
-                    View = null;
-                }
-                else if (apiResult.Length > 0)
-                {
-                    string outResult = apiResult.ToString();
-                    if (string.IsNullOrEmpty(context.Response.ContentType))
+                    if (CheckMethodAttributeLimit(methodEntity))
                     {
-                        context.Response.ContentType = "text/html;charset=" + context.Response.Charset;
-                    }
-                    if (context.Response.ContentType.StartsWith("text/html"))
-                    {
-                        if (apiResult[0] == '{' && apiResult[apiResult.Length - 1] == '}')
+                        if (ExeBeforeInvoke(methodEntity.AttrEntity.HasIgnoreDefaultController))
                         {
-                            context.Response.ContentType = "application/json;charset=" + context.Response.Charset;
-                        }
-                        else if (outResult.StartsWith("<?xml") && apiResult[apiResult.Length - 1] == '>')
-                        {
-                            context.Response.ContentType = "application/xml;charset=" + context.Response.Charset;
+                            LoadHtmlView();
+                            if (ExeMethodInvoke(methodEntity))
+                            {
+                                ExeEndInvoke(methodEntity.AttrEntity.HasIgnoreDefaultController);
+                            }
                         }
                     }
-
-                    context.Response.Write(outResult);
-                    outResult = null;
-                    apiResult = null;
+                    WriteExeResult();
                 }
             }
             catch (System.Threading.ThreadAbortException)
@@ -342,6 +176,279 @@ namespace Taurus.Core
             }
 
         }
+
+        #region 方法分解
+
+        private bool CheckMethodAttributeLimit(MethodEntity methodEntity)
+        {
+            AttributeEntity attrEntity = methodEntity.AttrEntity;
+            if (!attrEntity.HasWebSocket)
+            {
+                if (Request.Headers["Connection"] == "Upgrade" && Request.Headers["Upgrade"] == "websocket")
+                {
+                    Write("Current method not support WebSocket.", false);
+                    return false;
+                }
+            }
+            bool isGoOn = true;
+
+            if (!attrEntity.IsAllowHttpMethod(Request.HttpMethod))
+            {
+                Write("Http method not support " + Request.HttpMethod, false);
+                return false;
+            }
+
+            if (attrEntity.HasAck)//有[Ack]
+            {
+                #region Validate CheckAck
+                MethodEntity checkAck = MethodCollector.GetMethod(_ControllerType, ReflectConst.CheckAck, false);
+                if (checkAck != null)
+                {
+                    isGoOn = Convert.ToBoolean(checkAck.Method.Invoke(this, new object[] { Query<string>("ack") }));
+                }
+                else if (!attrEntity.HasIgnoreDefaultController)
+                {
+                    checkAck = MethodCollector.GlobalCheckAck;
+                    if (checkAck != null)
+                    {
+                        isGoOn = Convert.ToBoolean(checkAck.Method.Invoke(null, new object[] { this, Query<string>("ack") }));
+                    }
+                }
+                if (!isGoOn)
+                {
+                    Write("Check AckAttribute is illegal.", false);
+                    return false;
+                }
+                #endregion
+            }
+            if (attrEntity.HasToken)//有[Token]
+            {
+                #region Validate CheckToken
+                MethodEntity checkToken = MethodCollector.GetMethod(_ControllerType, ReflectConst.CheckToken, false);
+                if (checkToken != null)
+                {
+                    isGoOn = Convert.ToBoolean(checkToken.Method.Invoke(this, new object[] { Query<string>("token") }));
+                }
+                else if (!attrEntity.HasIgnoreDefaultController)
+                {
+                    checkToken = MethodCollector.GlobalCheckToken;
+                    if (checkToken != null)
+                    {
+                        isGoOn = Convert.ToBoolean(checkToken.Method.Invoke(null, new object[] { this, Query<string>("token") }));
+                    }
+                }
+                if (!isGoOn)
+                {
+                    Write("Check TokenAttribute is illegal.", false);
+                    return false;
+                }
+                #endregion
+            }
+            if (attrEntity.HasMicroService)//有[MicroService]
+            {
+                #region Validate CheckMicroService 【如果开启全局，即需要调整授权机制，则原有局部机制失效。】
+                MethodEntity checkMicroService = null;
+                if (!attrEntity.HasIgnoreDefaultController)
+                {
+                    checkMicroService = MethodCollector.GlobalCheckMicroService;
+                    if (checkMicroService != null)
+                    {
+                        isGoOn = Convert.ToBoolean(checkMicroService.Method.Invoke(null, new object[] { this, Query<string>(MicroService.MSConst.HeaderKey) }));
+                    }
+                }
+                if (isGoOn && checkMicroService == null)
+                {
+                    checkMicroService = MethodCollector.GetMethod(_ControllerType, ReflectConst.CheckMicroService, false);
+                    if (checkMicroService != null)
+                    {
+                        isGoOn = Convert.ToBoolean(checkMicroService.Method.Invoke(this, new object[] { Query<string>(MicroService.MSConst.HeaderKey) }));
+                    }
+                }
+                if (!isGoOn)
+                {
+                    Write("Check MicroServiceAttribute is illegal.", false);
+                    return false;
+                }
+                #endregion
+            }
+
+            if (attrEntity.HasRequire)
+            {
+                RequireAttribute[] requires = methodEntity.AttrEntity.RequireAttributes;
+                if (requires != null && requires.Length > 0)
+                {
+                    foreach (RequireAttribute require in requires)
+                    {
+                        if (require.paraName.IndexOf(',') > -1)
+                        {
+                            foreach (String name in require.paraName.Split(','))
+                            {
+                                if (string.IsNullOrEmpty(Query<string>(name)))
+                                {
+                                    Write(string.Format(require.emptyTip, name), false);
+                                    return false;
+                                }
+                            }
+                        }
+                        else if (!RequireValidate(require, Query<string>(require.paraName)))
+                        {
+                            return false;
+                        }
+                    }
+                }
+            }
+            return true;
+        }
+        private bool RequireValidate(RequireAttribute require, string paraValue)
+        {
+            if (require.paraName.Contains(".") && !string.IsNullOrEmpty(paraValue))//json字集
+            {
+                paraValue = JsonHelper.GetValue(paraValue, require.paraName);
+            }
+            if (require.isRequired && string.IsNullOrEmpty(paraValue))
+            {
+                Write(require.emptyTip, false);
+                return false;
+            }
+            else if (!string.IsNullOrEmpty(require.regex) && !string.IsNullOrEmpty(paraValue))
+            {
+                if (paraValue.IndexOf('%') > -1)
+                {
+                    paraValue = HttpUtility.UrlDecode(paraValue);
+                }
+                if (!Regex.IsMatch(paraValue, require.regex))//如果格式错误
+                {
+                    Write(require.regexTip, false);
+                    return false;
+                }
+            }
+
+            return true;
+        }
+
+        private bool ExeBeforeInvoke(bool isIgnoreGlobal)
+        {
+            bool isGoOn = true;
+            MethodEntity beforeInvoke = null;
+            if (!isIgnoreGlobal)
+            {
+                beforeInvoke = MethodCollector.GlobalBeforeInvoke;
+                if (beforeInvoke != null)//先调用全局
+                {
+                    isGoOn = Convert.ToBoolean(beforeInvoke.Method.Invoke(null, new object[] { this }));
+                }
+            }
+            if (isGoOn)
+            {
+                beforeInvoke = MethodCollector.GetMethod(_ControllerType, ReflectConst.BeforeInvoke, false);
+                if (beforeInvoke != null)
+                {
+                    isGoOn = Convert.ToBoolean(beforeInvoke.Method.Invoke(this, null));
+                }
+            }
+            #endregion
+            return isGoOn;
+        }
+        private void ExeEndInvoke(bool isIgnoreGlobal)
+        {
+            #region EndInvoke
+            MethodEntity endInvoke = MethodCollector.GetMethod(_ControllerType, ReflectConst.EndInvoke, false);
+            if (endInvoke != null)
+            {
+                endInvoke.Method.Invoke(this, null);
+            }
+            if (!isIgnoreGlobal)
+            {
+                endInvoke = MethodCollector.GlobalEndInvoke;
+                if (endInvoke != null)
+                {
+                    endInvoke.Method.Invoke(null, new object[] { this });
+                }
+            }
+        }
+        private void LoadHtmlView()
+        {
+            if (!CancelLoadHtml)
+            {
+                _View = ViewEngine.Create(ControllerName, MethodName);
+                if (_View != null)
+                {
+                    //追加几个全局标签变量
+                    _View.KeyValue.Add("module", ModuleName.ToLower());
+                    _View.KeyValue.Add("controller", _ControllerName);
+                    _View.KeyValue.Add("action", MethodName.ToLower());
+                    _View.KeyValue.Add("para", Para.ToLower());
+                    _View.KeyValue.Add("httphost", Request.Url.AbsoluteUri.Substring(0, Request.Url.AbsoluteUri.Length - Request.Url.PathAndQuery.Length));
+                }
+            }
+        }
+        private bool ExeMethodInvoke(MethodEntity methodEntity)
+        {
+            object[] paras;
+            if (!GetInvokeParas(methodEntity, out paras))
+            {
+                return false;
+            }
+
+            methodEntity.Method.Invoke(this, paras);
+            if (IsHttpPost && _View != null)
+            {
+                #region Button Invoke
+                string name = GetBtnName();
+                if (!string.IsNullOrEmpty(name))
+                {
+                    MethodEntity postBtnMethod = MethodCollector.GetMethod(_ControllerType, name, false);
+                    if (postBtnMethod != null)
+                    {
+                        if (!GetInvokeParas(postBtnMethod, out paras))
+                        {
+                            return false;
+                        }
+                        postBtnMethod.Method.Invoke(this, paras);
+                    }
+                }
+                #endregion
+            }
+            return true;
+        }
+        private void WriteExeResult()
+        {
+            if (string.IsNullOrEmpty(context.Response.Charset))
+            {
+                context.Response.Charset = "utf-8";
+            }
+            if (View != null)
+            {
+                context.Response.Write(View.OutXml);
+                View = null;
+            }
+            else if (apiResult.Length > 0)
+            {
+                string outResult = apiResult.ToString();
+                if (string.IsNullOrEmpty(context.Response.ContentType))
+                {
+                    context.Response.ContentType = "text/html;charset=" + context.Response.Charset;
+                }
+                if (context.Response.ContentType.StartsWith("text/html"))
+                {
+                    if (apiResult[0] == '{' && apiResult[apiResult.Length - 1] == '}')
+                    {
+                        context.Response.ContentType = "application/json;charset=" + context.Response.Charset;
+                    }
+                    else if (outResult.StartsWith("<?xml") && apiResult[apiResult.Length - 1] == '>')
+                    {
+                        context.Response.ContentType = "application/xml;charset=" + context.Response.Charset;
+                    }
+                }
+
+                context.Response.Write(outResult);
+                outResult = null;
+                apiResult = null;
+            }
+        }
+        #endregion
+
+
         /// <summary>
         /// Write log to txt
         /// </summary>
@@ -349,11 +456,11 @@ namespace Taurus.Core
         {
             Log.Write(msg, LogType.Taurus);
         }
-        public virtual bool BeforeInvoke(string methodName)
+        public virtual bool BeforeInvoke()
         {
             return true;
         }
-        public virtual void EndInvoke(string methodName)
+        public virtual void EndInvoke()
         {
 
         }
@@ -366,7 +473,7 @@ namespace Taurus.Core
         /// <para>检测身份是否通过</para>
         /// </summary>
         /// <returns></returns>
-        public virtual bool CheckToken()
+        public virtual bool CheckToken(string token)
         {
             return true;
         }
@@ -375,7 +482,7 @@ namespace Taurus.Core
         /// <para>检测请求是否合法</para>
         /// </summary>
         /// <returns></returns>
-        public virtual bool CheckAck()
+        public virtual bool CheckAck(string ack)
         {
             return true;
         }
@@ -385,9 +492,9 @@ namespace Taurus.Core
         /// <para>检测微服务间的请求是否合法</para>
         /// </summary>
         /// <returns></returns>
-        public virtual bool CheckMicroService()
+        public virtual bool CheckMicroService(string msKey)
         {
-            return MicroService.Config.ServerKey == Context.Request.Headers[MicroService.Const.HeaderKey];
+            return MicroService.MSConfig.ServerKey == Context.Request.Headers[MicroService.MSConst.HeaderKey];
         }
 
         /// <summary>
@@ -417,12 +524,11 @@ namespace Taurus.Core
             }
             return null;
         }
-        private bool GetInvokeParas(MethodInfo method, out object[] paras)
+        private bool GetInvokeParas(MethodEntity methodEntity, out object[] paras)
         {
             paras = null;
             #region 增加处理参数支持
-            ParameterInfo[] piList = method.GetParameters();
-            object[] validateList = method.GetCustomAttributes(typeof(RequireAttribute), true);
+            ParameterInfo[] piList = methodEntity.Parameters;
             if (piList != null && piList.Length > 0)
             {
                 paras = new object[piList.Length];
@@ -433,10 +539,6 @@ namespace Taurus.Core
                     if (t.Name == "HttpFileCollection")
                     {
                         paras[i] = Request.Files;
-                        if (!ValidateParas(validateList, pi.Name, (Request.Files != null && Request.Files.Count > 0) ? "1" : null))
-                        {
-                            return false;
-                        }
                         continue;
                     }
                     object value = Query<object>(pi.Name, null);
@@ -459,25 +561,19 @@ namespace Taurus.Core
                             value = GetJson();
                         }
                     }
-                    //检测是否允许为空，是否满足正则格式。
-                    if (!ValidateParas(validateList, pi.Name, Convert.ToString(value)))
-                    {
-                        return false;
-                    }
                     try
                     {
                         //特殊值处理
-                        if (t.Name == "HttpPostedFile" && value is string && Convert.ToString(value) == DocSettings.DocDefaultImg.ToLower())
+                        if (t.Name == "HttpPostedFile" && value is string && Convert.ToString(value) == DocConfig.DefaultImg.ToLower())
                         {
-                            string path = DocSettings.DefaultImg;
-                            if (!string.IsNullOrEmpty(path))
+                            if (!string.IsNullOrEmpty(DocConfig.DefaultImg))
                             {
-                                paras[i] = HttpPostedFileExtend.Create(path);
+                                paras[i] = DocConfig.DefaultImgHttpPostedFile;
                             }
                         }
                         else
                         {
-                            paras[i] = QueryTool.ChangeType(value, t);//类型转换（基础或实体）
+                            paras[i] = ConvertTool.ChangeType(value, t);//类型转换（基础或实体）
                         }
                     }
                     catch (Exception err)
@@ -495,73 +591,154 @@ namespace Taurus.Core
 
                 }
             }
-            //对未验证过的参数，再进行一次验证。
-            foreach (object item in validateList)
-            {
-                RequireAttribute valid = item as RequireAttribute;
-                if (!valid.isValidated)
-                {
-                    if (valid.paraName.IndexOf(',') > -1)
-                    {
-                        foreach (string name in valid.paraName.Split(','))
-                        {
-                            if (string.IsNullOrEmpty(Query<string>(name)))
-                            {
-                                Write(string.Format(valid.emptyTip, name), false);
-                                return false;
-                            }
-                        }
-                    }
-                    else if (!ValidateParas(validateList, valid.paraName, Query<string>(valid.paraName)))
-                    {
-                        return false;
-                    }
-                }
-            }
-            validateList = null;
             #endregion
             return true;
         }
-        private bool ValidateParas(object[] validateList, string paraName, string paraValue)
-        {
-            if (validateList != null)
-            {
-                foreach (object item in validateList)
-                {
-                    RequireAttribute valid = item as RequireAttribute;
-                    if (!valid.isValidated && (valid.paraName == paraName || valid.paraName.StartsWith(paraName + ".")))
-                    {
-                        valid.isValidated = true;//设置已经验证过此参数，后续可以跳过。
-                        if (valid.paraName.StartsWith(paraName + ".") && !string.IsNullOrEmpty(paraValue))//json字集
-                        {
-                            paraValue = JsonHelper.GetValue(paraValue, valid.paraName.Substring(paraName.Length + 1));
-                        }
-                        if (valid.isRequired && string.IsNullOrEmpty(paraValue))
-                        {
-                            Write(valid.emptyTip, false);
-                            return false;
-                        }
-                        else if (!string.IsNullOrEmpty(valid.regex) && !string.IsNullOrEmpty(paraValue))
-                        {
-                            if (paraValue.IndexOf('%') > -1)
-                            {
-                                paraValue = HttpUtility.UrlDecode(paraValue);
-                            }
-                            if (!Regex.IsMatch(paraValue, valid.regex))//如果格式错误
-                            {
-                                Write(valid.regexTip, false);
-                                return false;
-                            }
-                        }
-                    }
-                }
+        //private bool GetInvokeParas(MethodInfo method, out object[] paras)
+        //{
+        //    paras = null;
+        //    #region 增加处理参数支持
+        //    ParameterInfo[] piList = method.GetParameters();
+        //    object[] validateList = method.GetCustomAttributes(typeof(RequireAttribute), true);
+        //    if (piList != null && piList.Length > 0)
+        //    {
+        //        paras = new object[piList.Length];
+        //        for (int i = 0; i < piList.Length; i++)
+        //        {
+        //            ParameterInfo pi = piList[i];
+        //            Type t = pi.ParameterType;
+        //            if (t.Name == "HttpFileCollection")
+        //            {
+        //                paras[i] = Request.Files;
+        //                if (!ValidateParas(validateList, pi.Name, (Request.Files != null && Request.Files.Count > 0) ? "1" : null))
+        //                {
+        //                    return false;
+        //                }
+        //                continue;
+        //            }
+        //            object value = Query<object>(pi.Name, null);
+        //            if (value == null)
+        //            {
+        //                if (t.IsValueType && t.IsGenericType && t.FullName.StartsWith("System.Nullable"))
+        //                {
+        //                    continue;
+        //                }
+        //                if (t.Name == "HttpPostedFile")
+        //                {
+        //                    if (Request.Files != null && Request.Files.Count == 1)
+        //                    {
+        //                        value = Request.Files[0];
+        //                    }
+        //                }
 
-            }
+        //                else if (piList.Length == 1 && ReflectTool.GetSystemType(ref t) != SysType.Base)//基础值类型
+        //                {
+        //                    value = GetJson();
+        //                }
+        //            }
+        //            //检测是否允许为空，是否满足正则格式。
+        //            if (!ValidateParas(validateList, pi.Name, Convert.ToString(value)))
+        //            {
+        //                return false;
+        //            }
+        //            try
+        //            {
+        //                //特殊值处理
+        //                if (t.Name == "HttpPostedFile" && value is string && Convert.ToString(value) == DocSettings.DocDefaultImg.ToLower())
+        //                {
+        //                    string path = DocSettings.DefaultImg;
+        //                    if (!string.IsNullOrEmpty(path))
+        //                    {
+        //                        paras[i] = HttpPostedFileExtend.Create(path);
+        //                    }
+        //                }
+        //                else
+        //                {
+        //                    paras[i] = QueryTool.ChangeType(value, t);//类型转换（基础或实体）
+        //                }
+        //            }
+        //            catch (Exception err)
+        //            {
+        //                string typeName = t.Name;
+        //                if (typeName.StartsWith("Nullable"))
+        //                {
+        //                    typeName = Nullable.GetUnderlyingType(t).Name;
+        //                }
+        //                string outMsg = string.Format("[{0} {1} = {2}]  [Error : {3}]", typeName, pi.Name, value, err.Message);
+        //                WriteLog(outMsg);
+        //                Write(outMsg, false);
+        //                return false;
+        //            }
 
-            return true;
-        }
+        //        }
+        //    }
+        //    //对未验证过的参数，再进行一次验证。
+        //    foreach (object item in validateList)
+        //    {
+        //        RequireAttribute valid = item as RequireAttribute;
+        //        if (!valid.isValidated)
+        //        {
+        //            if (valid.paraName.IndexOf(',') > -1)
+        //            {
+        //                foreach (string name in valid.paraName.Split(','))
+        //                {
+        //                    if (string.IsNullOrEmpty(Query<string>(name)))
+        //                    {
+        //                        Write(string.Format(valid.emptyTip, name), false);
+        //                        return false;
+        //                    }
+        //                }
+        //            }
+        //            else if (!ValidateParas(validateList, valid.paraName, Query<string>(valid.paraName)))
+        //            {
+        //                return false;
+        //            }
+        //        }
+        //    }
+        //    validateList = null;
+        //    #endregion
+        //    return true;
+        //}
+        //private bool ValidateParas(object[] validateList, string paraName, string paraValue)
+        //{
+        //    if (validateList != null)
+        //    {
+        //        foreach (object item in validateList)
+        //        {
+        //            RequireAttribute valid = item as RequireAttribute;
+        //            if (!valid.isValidated && (valid.paraName == paraName || valid.paraName.StartsWith(paraName + ".")))
+        //            {
+        //                valid.isValidated = true;//设置已经验证过此参数，后续可以跳过。
+        //                if (valid.paraName.StartsWith(paraName + ".") && !string.IsNullOrEmpty(paraValue))//json字集
+        //                {
+        //                    paraValue = JsonHelper.GetValue(paraValue, valid.paraName.Substring(paraName.Length + 1));
+        //                }
+        //                if (valid.isRequired && string.IsNullOrEmpty(paraValue))
+        //                {
+        //                    Write(valid.emptyTip, false);
+        //                    return false;
+        //                }
+        //                else if (!string.IsNullOrEmpty(valid.regex) && !string.IsNullOrEmpty(paraValue))
+        //                {
+        //                    if (paraValue.IndexOf('%') > -1)
+        //                    {
+        //                        paraValue = HttpUtility.UrlDecode(paraValue);
+        //                    }
+        //                    if (!Regex.IsMatch(paraValue, valid.regex))//如果格式错误
+        //                    {
+        //                        Write(valid.regexTip, false);
+        //                        return false;
+        //                    }
+        //                }
+        //            }
+        //        }
+
+        //    }
+
+        //    return true;
+        //}
     }
-    public abstract partial class Controller : IController
+    public abstract partial class Controller
     {
         private XHtmlAction _View;
         /// <summary>
@@ -580,15 +757,15 @@ namespace Taurus.Core
             }
         }
 
-        private string _Module = "";
+        private string _ModuleName = "";
         /// <summary>
         /// 请求路径中的：模块名称。
         /// </summary>
-        public string Module
+        public string ModuleName
         {
             get
             {
-                return _Module;
+                return _ModuleName;
             }
         }
         private string _ControllerName = "";
@@ -613,15 +790,15 @@ namespace Taurus.Core
                 return _ControllerType;
             }
         }
-        private string _Action = "";
+        private string _MethodName = "";
         /// <summary>
         /// 请求路径中的：方法名称。
         /// </summary>
-        public string Action
+        public string MethodName
         {
             get
             {
-                return _Action;
+                return _MethodName;
             }
         }
         private string[] _ParaItems;
@@ -727,7 +904,7 @@ namespace Taurus.Core
         {
             if (queryCache.ContainsKey(key))
             {
-                return QueryTool.ChangeValueType<T>(queryCache[key], defaultValue, false);
+                return WebTool.ChangeValueType<T>(queryCache[key], defaultValue, false);
             }
 
             T value = default(T);
@@ -740,12 +917,12 @@ namespace Taurus.Core
                     string result = JsonHelper.GetValue(GetJson(), newKey);
                     if (!string.IsNullOrEmpty(result))
                     {
-                        value = QueryTool.ChangeValueType<T>(result, defaultValue, false);
+                        value = WebTool.ChangeValueType<T>(result, defaultValue, false);
                         break;
                     }
                     else if (Context.Request.Headers[newKey] != null)
                     {
-                        value = QueryTool.ChangeValueType<T>(Context.Request.Headers[newKey], defaultValue, false);
+                        value = WebTool.ChangeValueType<T>(Context.Request.Headers[newKey], defaultValue, false);
                         break;
                     }
                     else
@@ -755,15 +932,10 @@ namespace Taurus.Core
                 }
                 else
                 {
-                    value = QueryTool.Query<T>(newKey, defaultValue, false);//这里不设置默认值(值类型除外）
+                    value = WebTool.Query<T>(newKey, defaultValue, false);//这里不设置默认值(值类型除外）
                     break;
                 }
 
-            }
-
-            if (value != null && !queryCache.ContainsKey(key))
-            {
-                queryCache.Add(key, value.ToString());
             }
             return value;
         }
@@ -778,7 +950,7 @@ namespace Taurus.Core
         {
             if (ParaItems.Length > paraIndex)
             {
-                return QueryTool.ChangeValueType<T>(ParaItems[paraIndex], defaultValue, false);
+                return WebTool.ChangeValueType<T>(ParaItems[paraIndex], defaultValue, false);
             }
             return defaultValue;
         }

@@ -4,14 +4,16 @@ using System.Collections.Generic;
 using System.Reflection;
 using System.Text;
 using System.IO;
-namespace Taurus.Core
+using Taurus.Plugin.Doc;
+using Taurus.MicroService;
+
+namespace Taurus.Mvc
 {
     /// <summary>
     /// 反射Controller类
     /// </summary>
     internal static class ControllerCollector
     {
-       
 
         #region GetAssembly
         private static string _DllNames;
@@ -24,19 +26,20 @@ namespace Taurus.Core
             {
                 if (string.IsNullOrEmpty(_DllNames))
                 {
-                    _DllNames = AppConfig.GetApp(AppSettings.Controllers, "");
+                    _DllNames = MvcConfig.Controllers;
                     if (string.IsNullOrEmpty(_DllNames) || _DllNames == "*")
                     {
+                        _DllNames = string.Empty;
                         string[] files = Directory.GetFiles(AppConfig.AssemblyPath, "*Controllers.dll", SearchOption.AllDirectories);
                         if (files == null || files.Length == 0)
                         {
-                            files = Directory.GetFiles(AppConfig.AssemblyPath, "*.dll", SearchOption.TopDirectoryOnly);//没有配置，搜索所有的dll。
+                            files = Directory.GetFiles(AppConfig.AssemblyPath, "*.dll", SearchOption.AllDirectories);//没有配置，搜索所有的dll。
                         }
                         if (files != null)
                         {
                             foreach (string file in files)
                             {
-                                _DllNames += Path.GetFileNameWithoutExtension(file) + ",";
+                                _DllNames += file + ",";
                             }
                             _DllNames = _DllNames.TrimEnd(',');
                         }
@@ -52,18 +55,18 @@ namespace Taurus.Core
             {
                 string[] dllItems = DllNames.Split(',');
                 _Assemblys = new List<Assembly>(dllItems.Length);
-                foreach (string item in dllItems)
+                foreach (string dll in dllItems)
                 {
-                    _Assemblys.Add(Assembly.Load(item)); // 可直接抛异常。
+                    //_Assemblys.Add(Assembly.LoadFrom(dll)); // 可直接抛异常。
+                    if (dll.IndexOfAny(new char[] { '\\', '/' })>0 )
+                    {
+                        _Assemblys.Add(Assembly.LoadFile(dll)); // 可直接抛异常。
+                    }
+                    else
+                    {
+                        _Assemblys.Add(Assembly.Load(dll.Replace(".dll",""))); // 可直接抛异常。
+                    }
                 }
-                //try
-                //{
-                //_Assemblys = 
-                //}
-                //catch (Exception err)
-                //{
-                //    Log.WriteLogToTxt(err);
-                //}
             }
             return _Assemblys;
         }
@@ -83,10 +86,7 @@ namespace Taurus.Core
         /// </summary>
         private static Dictionary<string, Type> _Lv2Controllers = new Dictionary<string, Type>(StringComparer.OrdinalIgnoreCase);
         private static readonly object objLock = new object();
-        /// <summary>
-        /// 获取控制器
-        /// </summary>
-        public static Dictionary<string, Type> GetControllers(int level)
+        public static bool InitControllers()
         {
             if (_Lv1Controllers.Count == 0)
             {
@@ -95,22 +95,19 @@ namespace Taurus.Core
                     if (_Lv1Controllers.Count == 0)
                     {
                         List<Assembly> assList = GetAssemblys();
-                        if (assList == null)
+                        if (assList != null && assList.Count > 0)
                         {
-                            throw new Exception(Const.NeedConfigController);
-                        }
-                        foreach (Assembly ass in assList)
-                        {
-                            Type[] typeList = ass.GetExportedTypes();
-                            foreach (Type type in typeList)
+                            foreach (Assembly ass in assList)
                             {
-                                if (type.Name.EndsWith(Const.Controller))
+                                Type[] typeList = ass.GetExportedTypes();
+                                foreach (Type type in typeList)
                                 {
+
                                     //三层继承判断，应该够用了。
-                                    if (type.BaseType != null && (type.BaseType.FullName == Const.TaurusCoreController
-                                        || (type.BaseType.BaseType != null && (type.BaseType.BaseType.FullName == Const.TaurusCoreController
-                                        || (type.BaseType.BaseType.BaseType != null && (type.BaseType.BaseType.BaseType.FullName == Const.TaurusCoreController
-                                        || (type.BaseType.BaseType.BaseType.BaseType != null && type.BaseType.BaseType.BaseType.BaseType.FullName == Const.TaurusCoreController)
+                                    if (type.BaseType != null && (type.BaseType.FullName == ReflectConst.TaurusMvcController
+                                        || (type.BaseType.BaseType != null && (type.BaseType.BaseType.FullName == ReflectConst.TaurusMvcController
+                                        || (type.BaseType.BaseType.BaseType != null && (type.BaseType.BaseType.BaseType.FullName == ReflectConst.TaurusMvcController
+                                        || (type.BaseType.BaseType.BaseType.BaseType != null && type.BaseType.BaseType.BaseType.BaseType.FullName == ReflectConst.TaurusMvcController)
                                         ))
                                          ))
                                          ))
@@ -134,44 +131,56 @@ namespace Taurus.Core
                                             _Lv2Controllers.Add(lv2Name, type);
                                         }
                                     }
+
                                 }
                             }
                         }
                         //追加APIHelp
-                        if (Const.IsStartDoc)
+                        if (DocConfig.IsStartDoc)
                         {
-                            if (!_Lv1Controllers.ContainsKey(Const.Doc))
+                            if (!_Lv1Controllers.ContainsKey(ReflectConst.Doc))
                             {
-                                _Lv1Controllers.Add(Const.Doc, typeof(Taurus.Core.DocController));
+                                _Lv1Controllers.Add(ReflectConst.Doc, typeof(Taurus.Plugin.Doc.DocController));
                             }
-                            if (!_Lv2Controllers.ContainsKey(Const.CoreDoc))
+                            if (!_Lv2Controllers.ContainsKey(ReflectConst.CoreDoc))
                             {
-                                _Lv2Controllers.Add(Const.CoreDoc, typeof(Taurus.Core.DocController));
-                            }
-                        }
-                        if (Const.IsStartAuth)
-                        {
-                            if (!_Lv1Controllers.ContainsKey(Const.Auth))
-                            {
-                                _Lv1Controllers.Add(Const.Auth, typeof(Taurus.Core.AuthController));
-                            }
-                            if (!_Lv2Controllers.ContainsKey(Const.CoreAuth))
-                            {
-                                _Lv2Controllers.Add(Const.CoreAuth, typeof(Taurus.Core.AuthController));
+                                _Lv2Controllers.Add(ReflectConst.CoreDoc, typeof(Taurus.Plugin.Doc.DocController));
                             }
                         }
-                        //微服务API
-                        if (!_Lv1Controllers.ContainsKey(Const.MicroService))
+                        //if (ReflectConst.IsStartAuth)
+                        //{
+                        //    if (!_Lv1Controllers.ContainsKey(ReflectConst.Auth))
+                        //    {
+                        //        _Lv1Controllers.Add(ReflectConst.Auth, typeof(Taurus.Mvc.AuthController));
+                        //    }
+                        //    if (!_Lv2Controllers.ContainsKey(ReflectConst.CoreAuth))
+                        //    {
+                        //        _Lv2Controllers.Add(ReflectConst.CoreAuth, typeof(Taurus.Mvc.AuthController));
+                        //    }
+                        //}
+                        if (MSConfig.IsRegCenter)
                         {
-                            _Lv1Controllers.Add(Const.MicroService, typeof(Taurus.Core.MicroServiceController));
-                        }
-                        if (!_Lv2Controllers.ContainsKey(Const.CoreMicroService))
-                        {
-                            _Lv2Controllers.Add(Const.CoreMicroService, typeof(Taurus.Core.MicroServiceController));
+                            //微服务API
+                            if (!_Lv1Controllers.ContainsKey(ReflectConst.MicroService))
+                            {
+                                _Lv1Controllers.Add(ReflectConst.MicroService, typeof(Taurus.MicroService.MicroServiceController));
+                            }
+                            if (!_Lv2Controllers.ContainsKey(ReflectConst.CoreMicroService))
+                            {
+                                _Lv2Controllers.Add(ReflectConst.CoreMicroService, typeof(Taurus.MicroService.MicroServiceController));
+                            }
                         }
                     }
                 }
             }
+            return _Lv1Controllers.Count > 0;
+        }
+        /// <summary>
+        /// 获取控制器
+        /// </summary>
+        public static Dictionary<string, Type> GetControllers(int level)
+        {
+            InitControllers();
             return level == 1 ? _Lv1Controllers : _Lv2Controllers;
         }
         /// <summary>
@@ -182,7 +191,7 @@ namespace Taurus.Core
         private static string GetLevelName(string fullName, int level)
         {
             string[] items = fullName.Split('.');
-            string lv1Name = items[items.Length - 1].Replace(Const.Controller, "");
+            string lv1Name = items[items.Length - 1].Replace(ReflectConst.Controller, "");
             if (level == 2)
             {
                 return items[items.Length - 2] + "." + lv1Name;
@@ -197,11 +206,11 @@ namespace Taurus.Core
         {
             if (string.IsNullOrEmpty(className))
             {
-                className = Const.Default;
+                className = ReflectConst.Default;
             }
             Dictionary<string, Type> controllers = GetControllers(1);
             string[] names = className.Split('.');//home/index
-            if (RouteConfig.RouteMode == 1 || names.Length == 1)
+            if (MvcConfig.RouteMode == 1 || names.Length == 1)
             {
                 if (controllers.ContainsKey(names[0]))
                 {
@@ -212,7 +221,7 @@ namespace Taurus.Core
                     return controllers[names[1]];
                 }
             }
-            else if (RouteConfig.RouteMode == 2)
+            else if (MvcConfig.RouteMode == 2)
             {
                 Dictionary<string, Type> controllers2 = GetControllers(2);
                 if (controllers2.ContainsKey(className))
@@ -231,15 +240,15 @@ namespace Taurus.Core
                 }
             }
 
-            if (controllers.ContainsKey(Const.Default))
+            if (controllers.ContainsKey(ReflectConst.Default))
             {
-                return controllers[Const.Default];
+                return controllers[ReflectConst.Default];
             }
             return null;
         }
 
         #endregion
 
-      
+
     }
 }
