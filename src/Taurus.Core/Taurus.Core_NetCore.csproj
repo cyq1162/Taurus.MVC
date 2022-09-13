@@ -68,7 +68,9 @@ V2.3.4(2019-07-31)
   </ItemGroup>
 
   <ItemGroup>
-    <ProjectReference Include="..\..\..\cyqdata\trunk\CYQ.Data_NetCore.csproj" />
+    <Reference Include="CYQ.Data">
+      <HintPath>..\..\Packages\netcoreapp2.1\CYQ.Data.dll</HintPath>
+    </Reference>
   </ItemGroup>
 
 </Project>
