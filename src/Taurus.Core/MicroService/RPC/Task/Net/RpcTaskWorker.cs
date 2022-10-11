@@ -38,15 +38,15 @@ namespace Taurus.MicroService
             try
             {
                 wc = RpcClientPool.Create(task.Request.Uri);
-                wc.Headers.Add(MSConst.HeaderKey, (MSConfig.IsClient ? MSConfig.ClientKey : MSConfig.ServerKey));
+                wc.Headers.Add(MsConst.HeaderKey, (MsConfig.IsClient ? MsConfig.ClientKey : MsConfig.ServerKey));
                 wc.Headers.Add("X-Real-IP", MvcConfig.HostIP);
                 if (HttpContext.Current != null && HttpContext.Current.Request != null)
                 {
                     wc.Headers.Add("Referer", HttpContext.Current.Request.Url.AbsoluteUri);//当前运行地址。
                 }
-                else if (!string.IsNullOrEmpty(MSConfig.AppRunUrl))
+                else if (!string.IsNullOrEmpty(MsConfig.AppRunUrl))
                 {
-                    wc.Headers.Add("Referer", MSConfig.AppRunUrl);//当前运行地址。
+                    wc.Headers.Add("Referer", MsConfig.AppRunUrl);//当前运行地址。
                 }
                 if (task.Request.Header != null && task.Request.Header.Count > 0)
                 {
@@ -91,7 +91,7 @@ namespace Taurus.MicroService
             {
                 rpcResult.IsSuccess = false;
                 rpcResult.Error = err;
-                MSLog.Write(err.Message, task.Request.Url, task.Request.Method, "Rpc.RpcTaskWorker.ExeTask()");
+                MsLog.Write(err.Message, task.Request.Url, task.Request.Method, "Rpc.RpcTaskWorker.ExeTask()");
             }
             finally
             {

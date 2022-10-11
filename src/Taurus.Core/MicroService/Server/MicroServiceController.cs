@@ -25,13 +25,13 @@ namespace Taurus.MicroService
         }
         public override void EndInvoke()
         {
-            if (string.IsNullOrEmpty(MicroService.MSConfig.AppRunUrl))
+            if (string.IsNullOrEmpty(MsConfig.AppRunUrl))
             {
                 Uri uri = Context.Request.Url;
                 string urlAbs = uri.AbsoluteUri;
                 string urlPath = uri.PathAndQuery;
                 string host = urlAbs.Substring(0, urlAbs.Length - urlPath.Length);
-                MicroService.MSConfig.AppRunUrl = host;
+                MsConfig.AppRunUrl = host;
             }
         }
         /// <summary>
@@ -48,21 +48,21 @@ namespace Taurus.MicroService
             WriteLine(Environment.NewLine);
             WriteLine("--------------------------------------");
             WriteLine(DateTime.Now.ToString("HH:mm:ss") + string.Format(" : Server.API.Call.Reg : Host : {0} Name : {1}", host, name));
-            if (!MicroService.MSConfig.IsRegCenter)
+            if (!MsConfig.IsRegCenter)
             {
                 string tip = "MicroService.Reg : This is not RegCenter";
-                MSLog.Write(tip, Convert.ToString(Request.UrlReferrer), "POST", MicroService.MSConfig.ServerName);
+                MsLog.Write(tip, Convert.ToString(Request.UrlReferrer), "POST", MsConfig.ServerName);
                 Write(tip, false);
                 return;//仅服务类型为注册中心，才允许接收注册。
             }
             #region 注册中心【从】检测到【主】恢复后，推送host，让后续的请求转回【主】
-            if (MicroService.Server.RegCenterIsLive && !MicroService.MSConfig.IsRegCenterOfMaster)
+            if (Server.RegCenterIsLive && !MsConfig.IsRegCenterOfMaster)
             {
-                Write(JsonHelper.OutResult(true, "", "tick", MicroService.Server.Tick, "host", MicroService.MSConfig.ServerRegUrl));
+                Write(JsonHelper.OutResult(true, "", "tick", Server.Tick, "host", MsConfig.ServerRegUrl));
                 return;
             }
             #endregion
-            var kvTable = MicroService.Server.HostList;
+            var kvTable = Server.HostList;
 
             StringBuilder sb = new StringBuilder();
             #region 注册名字[版本号检测]
@@ -95,9 +95,9 @@ namespace Taurus.MicroService
                 if (!kvTable.ContainsKey(module))
                 {
                     //首次添加
-                    MicroService.Server.IsChange = true;
-                    List<MicroService.HostInfo> list = new List<MicroService.HostInfo>();
-                    MicroService.HostInfo info = new MicroService.HostInfo();
+                    Server.IsChange = true;
+                    List<HostInfo> list = new List<HostInfo>();
+                    HostInfo info = new HostInfo();
                     info.Host = host;
                     info.RegTime = DateTime.Now;
                     info.Version = ver;
@@ -110,11 +110,11 @@ namespace Taurus.MicroService
                     bool isRemove = false;
                     bool clearOne = false;
                     bool hasBiggerVersion = false;
-                    List<MicroService.HostInfo> list = kvTable[module];//ms,a.com
+                    List<HostInfo> list = kvTable[module];//ms,a.com
                     StringBuilder sb2 = new StringBuilder();
                     for (int i = 0; i < list.Count; i++)
                     {
-                        MicroService.HostInfo info = list[i];
+                        HostInfo info = list[i];
                         if (info.Version == -1)
                         {
                             if (info.Host == host)
@@ -166,8 +166,8 @@ namespace Taurus.MicroService
                     }
                     else //新版本添加
                     {
-                        MicroService.Server.IsChange = true;
-                        MicroService.HostInfo info = new MicroService.HostInfo();
+                        Server.IsChange = true;
+                        HostInfo info = new HostInfo();
                         info.Host = host;
                         info.RegTime = DateTime.Now;
                         info.Version = ver;
@@ -177,15 +177,15 @@ namespace Taurus.MicroService
             }
 
             #endregion
-            if (MicroService.Server.Tick == 0)
+            if (Server.Tick == 0)
             {
-                MicroService.Server.Tick = DateTime.Now.Ticks;
+                Server.Tick = DateTime.Now.Ticks;
             }
-            if (MicroService.Server.Host2LastRegTime < DateTime.Now.AddSeconds(-15))//超过15秒，备份链接无效化。
+            if (Server.Host2LastRegTime < DateTime.Now.AddSeconds(-15))//超过15秒，备份链接无效化。
             {
-                MicroService.Server.Host2 = String.Empty;
+                Server.Host2 = String.Empty;
             }
-            string result = JsonHelper.OutResult(sb.Length == 0, sb.ToString(), "tick", MicroService.Server.Tick, "host2", MicroService.Server.Host2);
+            string result = JsonHelper.OutResult(sb.Length == 0, sb.ToString(), "tick", Server.Tick, "host2", Server.Host2);
             Write(result);
 
         }
@@ -200,24 +200,24 @@ namespace Taurus.MicroService
         {
             WriteLine(Environment.NewLine + "--------------------------------------");
             WriteLine(DateTime.Now.ToString("HH:mm:ss") + " : Server.API.Call.GetList : From :" + Request.UrlReferrer);
-            if (MicroService.Server.Host2LastRegTime < DateTime.Now.AddSeconds(-15))//超过15秒，备份链接无效化。
+            if (Server.Host2LastRegTime < DateTime.Now.AddSeconds(-15))//超过15秒，备份链接无效化。
             {
-                MicroService.Server.Host2 = String.Empty;
+                Server.Host2 = String.Empty;
             }
-            string host = MicroService.Server.RegCenterIsLive ? MicroService.MSConfig.ServerRegUrl : "";//注册中心【从】检测到【主】恢复后，推送host，让后续的请求转回【主】
-            if (host == MicroService.MSConfig.AppRunUrl)//主机即是自己。
+            string host = Server.RegCenterIsLive ? MsConfig.ServerRegUrl : "";//注册中心【从】检测到【主】恢复后，推送host，让后续的请求转回【主】
+            if (host == MsConfig.AppRunUrl)//主机即是自己。
             {
                 host = string.Empty;
             }
-            if (MicroService.Server.HostList.Count == 0 || tick == MicroService.Server.Tick)
+            if (Server.HostList.Count == 0 || tick == Server.Tick)
             {
-                string result = JsonHelper.OutResult(true, "", "tick", MicroService.Server.Tick, "host2", MicroService.Server.Host2, "host", host);
+                string result = JsonHelper.OutResult(true, "", "tick", Server.Tick, "host2", Server.Host2, "host", host);
                 Write(result);
             }
             else
             {
-                string json = MicroService.Server.HostListJson;
-                string result = JsonHelper.OutResult(true, json, "tick", MicroService.Server.Tick, "host2", MicroService.Server.Host2, "host", host);
+                string json = Server.HostListJson;
+                string result = JsonHelper.OutResult(true, json, "tick", Server.Tick, "host2", Server.Host2, "host", host);
                 Write(result);
             }
 
@@ -234,9 +234,9 @@ namespace Taurus.MicroService
         {
             WriteLine(Environment.NewLine + "--------------------------------------");
             WriteLine(DateTime.Now.ToString("HH:mm:ss") + " : Server.API.Call.Reg2 : Host :" + host);
-            MicroService.Server.Host2 = host;
-            MicroService.Server.Host2LastRegTime = DateTime.Now;
-            string result = JsonHelper.OutResult(true, "", "tick", MicroService.Server.Tick);
+            Server.Host2 = host;
+            Server.Host2LastRegTime = DateTime.Now;
+            string result = JsonHelper.OutResult(true, "", "tick", Server.Tick);
             Write(result);
         }
 
@@ -252,10 +252,10 @@ namespace Taurus.MicroService
         {
             WriteLine(Environment.NewLine + "--------------------------------------");
             WriteLine(DateTime.Now.ToString("HH:mm:ss") + " : Server.API.Call.SyncList : Tick :" + tick);
-            if (tick > MicroService.Server.Tick)
+            if (tick > Server.Tick)
             {
-                MicroService.Server.Tick = tick;
-                MicroService.Server._HostList = JsonHelper.ToEntity<MDictionary<string, List<MicroService.HostInfo>>>(json);
+                Server.Tick = tick;
+                Server._HostList = JsonHelper.ToEntity<MDictionary<string, List<HostInfo>>>(json);
             }
             Write("", true);
         }

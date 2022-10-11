@@ -11,6 +11,7 @@ namespace Taurus.MicroService
         protected override WebRequest GetWebRequest(Uri address)
         {
             HttpWebRequest request = (HttpWebRequest)base.GetWebRequest(address);
+            //request.Proxy = null;
             if (isHeadRequest)
             {
                 request.Method = "HEAD";

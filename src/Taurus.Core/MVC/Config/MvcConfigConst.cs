@@ -46,7 +46,11 @@ namespace Taurus.Mvc
         /// </summary>
         public const string SubAppName = "Taurus.SubAppName";
 
-
+        /// <summary>
+        ///配置Mvc的Views目录文件夹 如 Taurus.Views ： Views（默认文件夹名称）
+        /// 默认值：Views
+        /// </summary>
+        public const string Views = "Taurus.Views";
 
 
     }

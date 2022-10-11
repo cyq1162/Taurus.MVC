@@ -4,13 +4,14 @@ using System.Net;
 using System.Threading;
 using CYQ.Data;
 using CYQ.Data.Tool;
+using CYQ.Data.Table;
 using Taurus.Mvc;
 namespace Taurus.MicroService
 {
     /// <summary>
     /// 运行中心
     /// </summary>
-    internal partial class MSRun
+    internal partial class MsRun
     {
         #region 微服务线程启动 - 自循环
 
@@ -23,7 +24,7 @@ namespace Taurus.MicroService
             if (!isStart)
             {
                 isStart = true;
-                if (MSConfig.IsServer)
+                if (MsConfig.IsServer)
                 {
                     if (ServicePointManager.DefaultConnectionLimit == 2)
                     {
@@ -31,43 +32,43 @@ namespace Taurus.MicroService
                         ThreadPool.SetMinThreads(30, 50);
                     }
                 }
-                MSLog.WriteDebugLine("MicroService.Run.Start.V" + MvcConfig.TaurusVersion + " : ");
-                if (MSConfig.IsRegCenterOfMaster)
+                MsLog.WriteDebugLine("MicroService.Run.Start.V" + MvcConfig.TaurusVersion + " : ");
+                if (MsConfig.IsRegCenterOfMaster)
                 {
-                    MSLog.WriteDebugLine("Run As MicroService.Server : Master.RegCenter");
+                    MsLog.WriteDebugLine("Run As MicroService.Server : Master.RegCenter");
                     Thread thread = new Thread(new ThreadStart(ClearServerTable));
                     thread.Start();
                 }
 
-                if (string.IsNullOrEmpty(MSConfig.AppRunUrl))
+                if (string.IsNullOrEmpty(MsConfig.AppRunUrl))
                 {
-                    MSConfig.AppRunUrl = host.ToLower();//设置当前程序运行的请求网址。
+                    MsConfig.AppRunUrl = host.ToLower();//设置当前程序运行的请求网址。
                 }
                 if (!string.IsNullOrEmpty(host))
                 {
-                    MSLog.WriteDebugLine("MicroService.App.RunUrl : " + host);
+                    MsLog.WriteDebugLine("MicroService.App.RunUrl : " + host);
                 }
 
-                if (!string.IsNullOrEmpty(MSConfig.ServerName) && !string.IsNullOrEmpty(MSConfig.ServerRegUrl) && MSConfig.ServerRegUrl != MSConfig.AppRunUrl)
+                if (!string.IsNullOrEmpty(MsConfig.ServerName) && !string.IsNullOrEmpty(MsConfig.ServerRegUrl) && MsConfig.ServerRegUrl != MsConfig.AppRunUrl)
                 {
-                    if (MSConfig.IsRegCenter || MSConfig.IsGateway)
+                    if (MsConfig.IsRegCenter || MsConfig.IsGateway)
                     {
-                        if (MSConfig.IsRegCenter)
+                        if (MsConfig.IsRegCenter)
                         {
-                            MSLog.WriteDebugLine("Run As MicroService.Server : Slave.RegCenter");
+                            MsLog.WriteDebugLine("Run As MicroService.Server : Slave.RegCenter");
                         }
                         else
                         {
-                            MSLog.WriteDebugLine("Run As MicroService.Server : Gateway");
+                            MsLog.WriteDebugLine("Run As MicroService.Server : Gateway");
                         }
-                        MSLog.WriteDebugLine("MicroService.Server.RegUrl : " + MSConfig.ServerRegUrl);
+                        MsLog.WriteDebugLine("MicroService.Server.RegUrl : " + MsConfig.ServerRegUrl);
                         ThreadBreak.AddGlobalThread(new ParameterizedThreadStart(ServerRunByLoop));
                     }
                 }
-                if (!string.IsNullOrEmpty(MSConfig.ClientName) && !string.IsNullOrEmpty(MSConfig.ClientRegUrl) && MSConfig.ClientRegUrl != MSConfig.AppRunUrl)
+                if (!string.IsNullOrEmpty(MsConfig.ClientName) && !string.IsNullOrEmpty(MsConfig.ClientRegUrl) && MsConfig.ClientRegUrl != MsConfig.AppRunUrl)
                 {
-                    MSLog.WriteDebugLine("Run As MicroService.Client : " + MSConfig.ClientName);
-                    MSLog.WriteDebugLine("MicroService.Client.RegUrl : " + MSConfig.ClientRegUrl);
+                    MsLog.WriteDebugLine("Run As MicroService.Client : " + MsConfig.ClientName);
+                    MsLog.WriteDebugLine("MicroService.Client.RegUrl : " + MsConfig.ClientRegUrl);
                     ThreadBreak.AddGlobalThread(new ParameterizedThreadStart(ClientRunByLoop));
                 }
             }
@@ -79,18 +80,18 @@ namespace Taurus.MicroService
         /// </summary>
         private static void ServerRunByLoop(object threadID)
         {
-            
-            MSLog.WriteDebugLine("MicroService.Run.ServerRunByLoop.");
+
+            MsLog.WriteDebugLine("MicroService.Run.ServerRunByLoop.");
             while (true)
             {
                 try
                 {
-                    System.Diagnostics.Debug.WriteLine(DateTime.Now.ToString()+ " : MicroService.Run.ServerRunByLoop...");
-                    if (MSConfig.IsGateway)
+                    System.Diagnostics.Debug.WriteLine(DateTime.Now.ToString() + " : MicroService.Run.ServerRunByLoop...");
+                    if (MsConfig.IsGateway)
                     {
                         AfterGetList(GetHostList(true), true);//仅读取服务列表
                     }
-                    else if (MSConfig.IsRegCenter)
+                    else if (MsConfig.IsRegCenter)
                     {
                         AfterRegHost2(RegHost2());//注册中心（备用节点、走数据同步）
                     }
@@ -108,7 +109,7 @@ namespace Taurus.MicroService
         /// </summary>
         private static void ClientRunByLoop(object threadID)
         {
-            MSLog.WriteDebugLine("MicroService.Run.ClientRunByLoop.");
+            MsLog.WriteDebugLine("MicroService.Run.ClientRunByLoop.");
             while (true)
             {
                 try
@@ -145,9 +146,9 @@ namespace Taurus.MicroService
             {
                 string host2 = JsonHelper.GetValue<string>(result, "host2");
                 string host = JsonHelper.GetValue<string>(result, "host");
-                if (!string.IsNullOrEmpty(host) && host != MSConfig.ServerRegUrl)
+                if (!string.IsNullOrEmpty(host) && host != MsConfig.ServerRegUrl)
                 {
-                    MSConfig.ServerRegUrl = host;//从备份请求切回主程序
+                    MsConfig.ServerRegUrl = host;//从备份请求切回主程序
                 }
                 long tick = JsonHelper.GetValue<long>(result, "tick");
                 if (isServer)
@@ -156,15 +157,15 @@ namespace Taurus.MicroService
                     Server.Tick = tick;
                     Server.Host2 = host2;
 
-                    if (MSConfig.ServerName.ToLower() == MSConst.Gateway)
+                    if (MsConfig.ServerName.ToLower() == MsConst.Gateway)
                     {
                         if (!string.IsNullOrEmpty(host2))
                         {
-                            IO.Write(MSConst.ServerHost2Path, host2);
+                            IO.Write(MsConst.ServerHost2Path, host2);
                         }
                         else
                         {
-                            IO.Delete(MSConst.ServerHost2Path);
+                            IO.Delete(MsConst.ServerHost2Path);
                         }
                     }
 
@@ -182,12 +183,12 @@ namespace Taurus.MicroService
                     if (isServer)
                     {
                         Server._HostList = JsonHelper.ToEntity<MDictionary<string, List<HostInfo>>>(json);
-                        IO.Write(MSConst.ServerHostListJsonPath, json);
+                        IO.Write(MsConst.ServerHostListJsonPath, json);
                     }
                     else
                     {
                         Client._HostList = JsonHelper.ToEntity<MDictionary<string, List<HostInfo>>>(json);
-                        IO.Write(MSConst.ClientHostListJsonPath, json);
+                        IO.Write(MsConst.ClientHostListJsonPath, json);
                     }
                 }
             }
@@ -219,16 +220,16 @@ namespace Taurus.MicroService
                 Client.Host2 = JsonHelper.GetValue<string>(result, "host2");
                 if (!string.IsNullOrEmpty(Client.Host2))
                 {
-                    IO.Write(MSConst.ClientHost2Path, Client.Host2);
+                    IO.Write(MsConst.ClientHost2Path, Client.Host2);
                 }
                 else
                 {
-                    IO.Delete(MSConst.ClientHost2Path);
+                    IO.Delete(MsConst.ClientHost2Path);
                 }
                 string host = JsonHelper.GetValue<string>(result, "host");
-                if (!string.IsNullOrEmpty(host) && host != MSConfig.ClientRegUrl)
+                if (!string.IsNullOrEmpty(host) && host != MsConfig.ClientRegUrl)
                 {
-                    MSConfig.ClientRegUrl = host;//从备份请求切回主程序
+                    MsConfig.ClientRegUrl = host;//从备份请求切回主程序
                 }
                 if (tick > Client.Tick)
                 {
@@ -246,33 +247,33 @@ namespace Taurus.MicroService
         /// <returns></returns>
         private static string RegHost()
         {
-            string url = MSConfig.ClientRegUrl + "/MicroService/Reg";
+            string url = MsConfig.ClientRegUrl + "/microservice/reg";
 
             try
             {
 
                 using (WebClient wc = new WebClient())
                 {
-                    wc.Headers.Add(MSConst.HeaderKey, MSConfig.ClientKey);
-                    wc.Headers.Add("Referer", MSConfig.AppRunUrl);
+                    wc.Headers.Add(MsConst.HeaderKey, MsConfig.ClientKey);
+                    wc.Headers.Add("Referer", MsConfig.AppRunUrl);
                     wc.Headers.Add("Content-Type", "application/x-www-form-urlencoded");
                     //Content - Type: multipart / form - data; boundary = ----WebKitFormBoundaryxSUOuGdhfM6ceac8
                     string data = "name={0}&host={1}&version={2}";
-                    string result = wc.UploadString(url, string.Format(data, MSConfig.ClientName, MSConfig.AppRunUrl, MSConfig.ClientVersion));
+                    string result = wc.UploadString(url, string.Format(data, MsConfig.ClientName, MsConfig.AppRunUrl, MsConfig.ClientVersion));
                     Client.RegCenterIsLive = true;
-                    MSLog.WriteDebugLine(DateTime.Now.ToString("HH:mm:ss") + " : Client.RegHost : " + result);
+                    MsLog.WriteDebugLine(DateTime.Now.ToString("HH:mm:ss") + " : Client.RegHost : " + result);
                     return result;
                 }
             }
             catch (Exception err)
             {
-                MSLog.WriteDebugLine(DateTime.Now.ToString("HH:mm:ss") + " : Client.RegHost Error : " + err.Message);
+                MsLog.WriteDebugLine(DateTime.Now.ToString("HH:mm:ss") + " : Client.RegHost Error : " + err.Message);
                 Client.RegCenterIsLive = false;
                 if (!string.IsNullOrEmpty(Client.Host2))
                 {
-                    MSConfig.ClientRegUrl = Client.Host2;//切换到备用库。
+                    MsConfig.ClientRegUrl = Client.Host2;//切换到备用库。
                 }
-                MSLog.Write(err.Message, url, "POST", MSConfig.ClientName);
+                MsLog.Write(err.Message, url, "POST", MsConfig.ClientName);
                 return err.Message;
             }
         }
@@ -282,27 +283,27 @@ namespace Taurus.MicroService
         /// <returns></returns>
         private static string RegHost2()
         {
-            string url = MSConfig.ServerRegUrl + "/MicroService/Reg2";
+            string url = MsConfig.ServerRegUrl + "/microservice/reg2";
             try
             {
                 string result = string.Empty;
                 using (WebClient wc = new WebClient())
                 {
-                    wc.Headers.Add(MSConst.HeaderKey, MSConfig.ServerKey);
-                    wc.Headers.Add("Referer", MSConfig.AppRunUrl);
+                    wc.Headers.Add(MsConst.HeaderKey, MsConfig.ServerKey);
+                    wc.Headers.Add("Referer", MsConfig.AppRunUrl);
                     wc.Headers.Add("Content-Type", "application/x-www-form-urlencoded");
                     string data = "host={0}&tick=" + Server.Tick;
-                    result = wc.UploadString(url, string.Format(data, MSConfig.AppRunUrl));
+                    result = wc.UploadString(url, string.Format(data, MsConfig.AppRunUrl));
                 }
-                MSLog.WriteDebugLine(DateTime.Now.ToString("HH:mm:ss") + " : Server.RegHost2 : " + result);
+                MsLog.WriteDebugLine(DateTime.Now.ToString("HH:mm:ss") + " : Server.RegHost2 : " + result);
                 Server.RegCenterIsLive = true;
                 return result;
             }
             catch (Exception err)
             {
-                MSLog.WriteDebugLine(DateTime.Now.ToString("HH:mm:ss") + " : Server.RegHost2 Error : " + err.Message);
+                MsLog.WriteDebugLine(DateTime.Now.ToString("HH:mm:ss") + " : Server.RegHost2 Error : " + err.Message);
                 Server.RegCenterIsLive = false;
-                MSLog.Write(err.Message, url, "POST", MSConfig.ServerName);
+                MsLog.Write(err.Message, url, "POST", MsConfig.ServerName);
                 return err.Message;
             }
         }
@@ -312,26 +313,26 @@ namespace Taurus.MicroService
         /// <returns></returns>
         private static void SyncHostList()
         {
-            string url = MSConfig.ServerRegUrl + "/MicroService/SyncList";
+            string url = MsConfig.ServerRegUrl + "/microservice/synclist";
             try
             {
 
                 string data = string.Format("json={0}&tick=" + Server.Tick, JsonHelper.ToJson(Server.HostList));
                 using (WebClient wc = new WebClient())
                 {
-                    wc.Headers.Add(MSConst.HeaderKey, MSConfig.ServerKey);
-                    wc.Headers.Add("Referer", MSConfig.AppRunUrl);
+                    wc.Headers.Add(MsConst.HeaderKey, MsConfig.ServerKey);
+                    wc.Headers.Add("Referer", MsConfig.AppRunUrl);
                     wc.Headers.Add("Content-Type", "application/x-www-form-urlencoded");
                     wc.UploadString(url, data);
                 }
                 Server.RegCenterIsLive = true;
-                MSLog.WriteDebugLine(DateTime.Now.ToString("HH:mm:ss") + " : Server.SyncHostList : ");
+                MsLog.WriteDebugLine(DateTime.Now.ToString("HH:mm:ss") + " : Server.SyncHostList : ");
             }
             catch (Exception err)
             {
-                MSLog.WriteDebugLine(DateTime.Now.ToString("HH:mm:ss") + " : Server.SyncHostList Error : " + err.Message);
+                MsLog.WriteDebugLine(DateTime.Now.ToString("HH:mm:ss") + " : Server.SyncHostList Error : " + err.Message);
                 Server.RegCenterIsLive = false;
-                MSLog.Write(err.Message, url, "POST", MSConfig.ServerName);
+                MsLog.Write(err.Message, url, "POST", MsConfig.ServerName);
             }
         }
         /// <summary>
@@ -340,13 +341,13 @@ namespace Taurus.MicroService
         /// <param name="isServer">请求端</param>
         internal static string GetHostList(bool isServer)
         {
-            string url = (isServer ? MSConfig.ServerRegUrl : MSConfig.ClientRegUrl) + "/MicroService/GetList?tick=" + (isServer ? Server.Tick : Client.Tick);
+            string url = (isServer ? MsConfig.ServerRegUrl : MsConfig.ClientRegUrl) + "/microservice/getlist?tick=" + (isServer ? Server.Tick : Client.Tick);
             try
             {
                 using (WebClient wc = new WebClient())
                 {
-                    wc.Headers.Add(MSConst.HeaderKey, (isServer ? MSConfig.ServerKey : MSConfig.ClientKey));
-                    wc.Headers.Set("Referer", MSConfig.AppRunUrl);
+                    wc.Headers.Add(MsConst.HeaderKey, (isServer ? MsConfig.ServerKey : MsConfig.ClientKey));
+                    wc.Headers.Set("Referer", MsConfig.AppRunUrl);
                     string result = wc.DownloadString(url);
                     if (isServer)
                     {
@@ -356,19 +357,19 @@ namespace Taurus.MicroService
                     {
                         Client.RegCenterIsLive = true;
                     }
-                    MSLog.WriteDebugLine(DateTime.Now.ToString("HH:mm:ss") + string.Format(" : {0}.GetHostList OK : Tick : {1}", (isServer ? "Server" : "Client"), (isServer ? Server.Tick : Client.Tick)));
+                    MsLog.WriteDebugLine(DateTime.Now.ToString("HH:mm:ss") + string.Format(" : {0}.GetHostList OK : Tick : {1}", (isServer ? "Server" : "Client"), (isServer ? Server.Tick : Client.Tick)));
                     return result;
                 }
             }
             catch (Exception err)
             {
-                MSLog.WriteDebugLine(DateTime.Now.ToString("HH:mm:ss") + " : GetHostList Error : " + err.Message);
+                MsLog.WriteDebugLine(DateTime.Now.ToString("HH:mm:ss") + " : GetHostList Error : " + err.Message);
                 if (isServer)
                 {
                     Server.RegCenterIsLive = false;
                     if (!string.IsNullOrEmpty(Server.Host2))
                     {
-                        MSConfig.ServerRegUrl = Server.Host2;//切换到备用库。
+                        MsConfig.ServerRegUrl = Server.Host2;//切换到备用库。
                     }
                 }
                 else
@@ -376,10 +377,10 @@ namespace Taurus.MicroService
                     Client.RegCenterIsLive = false;
                     if (!string.IsNullOrEmpty(Client.Host2))
                     {
-                        MSConfig.ServerRegUrl = Client.Host2;//切换到备用库。
+                        MsConfig.ServerRegUrl = Client.Host2;//切换到备用库。
                     }
                 }
-                MSLog.Write(err.Message, url, "GET", isServer ? MSConfig.ServerName : MSConfig.ClientName);
+                MsLog.Write(err.Message, url, "GET", isServer ? MsConfig.ServerName : MsConfig.ClientName);
                 return err.Message;
             }
         }
@@ -397,7 +398,7 @@ namespace Taurus.MicroService
             {
                 try
                 {
-                    lock (MSConst.tableLockObj)
+                    lock (MsConst.tableLockObj)
                     {
                         if (Server._HostList != null && Server._HostList.Count > 0)
                         {
@@ -430,17 +431,19 @@ namespace Taurus.MicroService
                                 if (newKeyValuePairs.Count > 0)
                                 {
                                     Server._HostListJson = JsonHelper.ToJson(newKeyValuePairs);
-                                    IO.Write(MSConst.ServerHostListJsonPath, Server._HostListJson);
+                                    IO.Write(MsConst.ServerHostListJsonPath, Server._HostListJson);
                                 }
                                 else
                                 {
                                     Server._HostListJson = String.Empty;
-                                    IO.Delete(MSConst.ServerHostListJsonPath);
+                                    IO.Delete(MsConst.ServerHostListJsonPath);
                                 }
                                 Server._HostList = newKeyValuePairs;
+                                WriteToDb(keyValuePairs);
                             }
                             else
                             {
+                                WriteToDb(newKeyValuePairs);
                                 newKeyValuePairs.Clear();
                                 newKeyValuePairs = null;
                             }
@@ -449,9 +452,46 @@ namespace Taurus.MicroService
                 }
                 catch (Exception err)
                 {
-                    MSLog.Write(err.Message, "MicroService.Run.ClearServerTable()", "", MSConfig.ServerName);
+                    MsLog.Write(err.Message, "MicroService.Run.ClearServerTable()", "", MsConfig.ServerName);
                 }
                 Thread.Sleep(5000);//测试并发。
+            }
+        }
+
+        private static void WriteToDb(MDictionary<string, List<HostInfo>> hostList)
+        {
+            if (hostList != null && hostList.Count > 0 && !string.IsNullOrEmpty(MsConfig.MsConn))
+            {
+                MDataTable table = MsTable;
+                foreach (KeyValuePair<string, List<HostInfo>> item in hostList)
+                {
+                    foreach (HostInfo host in item.Value)
+                    {
+                        table.NewRow(true).Sets(1, item.Key, host.Host, host.Version, host.RegTime);
+                    }
+                }
+                table.AcceptChanges(AcceptOp.Auto, System.Data.IsolationLevel.ReadUncommitted, null, "MsName", "Host");
+                table.Rows.Clear();
+            }
+        }
+        private static MDataTable _MsTable;
+        private static MDataTable MsTable
+        {
+            get
+            {
+                if (_MsTable == null)
+                {
+                    _MsTable = new MDataTable();
+                    _MsTable.TableName = MsConfig.MsTableName;
+                    _MsTable.Conn = MsConfig.MsConn;
+                    _MsTable.Columns.Add("MsID", System.Data.SqlDbType.Int, true);
+                    _MsTable.Columns.Add("MsName", System.Data.SqlDbType.NVarChar, false, false, 50);
+                    _MsTable.Columns.Add("Host", System.Data.SqlDbType.NVarChar, false, false, 250);
+                    _MsTable.Columns.Add("Version", System.Data.SqlDbType.Int);
+                    _MsTable.Columns.Add("LastActiveTime", System.Data.SqlDbType.DateTime);
+                    _MsTable.Columns.Add("CreateTime", System.Data.SqlDbType.DateTime, false, true, 0, false, CYQ.Data.SQL.SqlValue.GetDate);
+                }
+                return _MsTable;
             }
         }
         #endregion

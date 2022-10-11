@@ -7,7 +7,7 @@ namespace Taurus.MicroService
     /// <summary>
   /// 常量
   /// </summary>
-    internal class MSConst
+    internal class MsConst
     {
         /// <summary>
         /// 用于锁表。

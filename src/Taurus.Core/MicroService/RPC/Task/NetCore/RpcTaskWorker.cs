@@ -15,15 +15,15 @@ namespace Taurus.MicroService
     {
         private static void AddHeader(RpcTask task, HttpRequestMessage message)
         {
-            message.Headers.Add(MSConst.HeaderKey, (MSConfig.IsClient ? MSConfig.ClientKey : MSConfig.ServerKey));
+            message.Headers.Add(MsConst.HeaderKey, (MsConfig.IsClient ? MsConfig.ClientKey : MsConfig.ServerKey));
             message.Headers.Add("X-Real-IP", MvcConfig.HostIP);
             if (HttpContext.Current != null && HttpContext.Current.Request != null)
             {
                 message.Headers.Add("Referer", HttpContext.Current.Request.Url.AbsoluteUri);//当前运行地址。
             }
-            else if (!string.IsNullOrEmpty(MSConfig.AppRunUrl))
+            else if (!string.IsNullOrEmpty(MsConfig.AppRunUrl))
             {
-                message.Headers.Add("Referer", MSConfig.AppRunUrl);//当前运行地址。
+                message.Headers.Add("Referer", MsConfig.AppRunUrl);//当前运行地址。
             }
             if (task.Request.Header != null && task.Request.Header.Count > 0)
             {
@@ -89,7 +89,7 @@ namespace Taurus.MicroService
             {
                 task.State = RpcTaskState.Complete;
                 task.Result = new RpcTaskResult() { Error = err };
-                MSLog.Write(err.Message, task.Request.Url, task.Request.Method, "Rpc.ExeTaskAsync()");
+                MsLog.Write(err.Message, task.Request.Url, task.Request.Method, "Rpc.ExeTaskAsync()");
             }
         }
     }

@@ -117,7 +117,7 @@ namespace Taurus.MicroService
             }
             catch (Exception err)
             {
-                MSLog.Write(err.Message, Request.Url, Request.Method, "Rpc.RpcTask.SetResult()");
+                MsLog.Write(err.Message, Request.Url, Request.Method, "Rpc.RpcTask.SetResult()");
                 result.IsSuccess = false;
                 result.Error = err;
             }

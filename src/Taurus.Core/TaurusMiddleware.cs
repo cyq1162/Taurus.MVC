@@ -74,9 +74,9 @@ namespace Microsoft.AspNetCore.Http
         }
         public static IApplicationBuilder UseTaurusMvc(this IApplicationBuilder builder, string webRootPath)
         {
-            if (!string.IsNullOrEmpty(MSConfig.AppRunUrl) || MSConfig.IsRegCenterOfMaster)
+            if (!string.IsNullOrEmpty(MsConfig.AppRunUrl) || MsConfig.IsRegCenterOfMaster)
             {
-                MSRun.Start(MSConfig.AppRunUrl);//
+                MsRun.Start(MsConfig.AppRunUrl);//
             }
             //System.Web.HttpContext.Configure(httpContextAccessor);
             AppConfig.WebRootPath = webRootPath;//设置根目录地址，ASPNETCore的根目录和其它应用不一样。

@@ -73,11 +73,11 @@
     <Compile Include="MicroService\Client\Client.cs" />
     <Compile Include="MicroService\HostInfo.cs" />
     <Compile Include="MicroService\IO.cs" />
-    <Compile Include="MicroService\MSConfig.cs" />
-    <Compile Include="MicroService\MSConst.cs" />
+    <Compile Include="MicroService\MsConfig.cs" />
+    <Compile Include="MicroService\MsConst.cs" />
     <Compile Include="MicroService\RPC\Call\Gateway.cs" />
-    <Compile Include="MicroService\MSLog.cs" />
-    <Compile Include="MicroService\MSRun.cs" />
+    <Compile Include="MicroService\MsLog.cs" />
+    <Compile Include="MicroService\MsRun.cs" />
     <Compile Include="MicroService\RPC\Rpc.cs" />
     <Compile Include="MicroService\RPC\RpcClient\Net\RpcClient.cs">
       <SubType>Component</SubType>

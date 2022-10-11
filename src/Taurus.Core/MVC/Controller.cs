@@ -55,7 +55,7 @@ namespace Taurus.Mvc
                 case 1:
                     if (items.Length > 1)
                     {
-                        if (items.Length > 2 && items[0].ToLower() != _ControllerName && items[1].ToLower() == _ControllerName && items[0] == MicroService.MSConfig.ClientName.ToLower())
+                        if (items.Length > 2 && items[0].ToLower() != _ControllerName && items[1].ToLower() == _ControllerName && items[0] == MicroService.MsConfig.ClientName.ToLower())
                         {
                             paraStartIndex++;
                             methodName = items[2];//往后兼容一格。
@@ -253,7 +253,7 @@ namespace Taurus.Mvc
                     checkMicroService = MethodCollector.GlobalCheckMicroService;
                     if (checkMicroService != null)
                     {
-                        isGoOn = Convert.ToBoolean(checkMicroService.Method.Invoke(null, new object[] { this, Query<string>(MicroService.MSConst.HeaderKey) }));
+                        isGoOn = Convert.ToBoolean(checkMicroService.Method.Invoke(null, new object[] { this, Query<string>(MicroService.MsConst.HeaderKey) }));
                     }
                 }
                 if (isGoOn && checkMicroService == null)
@@ -261,7 +261,7 @@ namespace Taurus.Mvc
                     checkMicroService = MethodCollector.GetMethod(_ControllerType, ReflectConst.CheckMicroService, false);
                     if (checkMicroService != null)
                     {
-                        isGoOn = Convert.ToBoolean(checkMicroService.Method.Invoke(this, new object[] { Query<string>(MicroService.MSConst.HeaderKey) }));
+                        isGoOn = Convert.ToBoolean(checkMicroService.Method.Invoke(this, new object[] { Query<string>(MicroService.MsConst.HeaderKey) }));
                     }
                 }
                 if (!isGoOn)
@@ -370,12 +370,12 @@ namespace Taurus.Mvc
         {
             if (!CancelLoadHtml)
             {
-                _View = ViewEngine.Create(ControllerName, MethodName);
+                _View = ViewEngine.Create(ControllerType.Name, MethodName);//这里ControllerName用原始大写，兼容Linux下大小写名称。
                 if (_View != null)
                 {
                     //追加几个全局标签变量
                     _View.KeyValue.Add("module", ModuleName.ToLower());
-                    _View.KeyValue.Add("controller", _ControllerName);
+                    _View.KeyValue.Add("controller", ControllerName);
                     _View.KeyValue.Add("action", MethodName.ToLower());
                     _View.KeyValue.Add("para", Para.ToLower());
                     _View.KeyValue.Add("httphost", Request.Url.AbsoluteUri.Substring(0, Request.Url.AbsoluteUri.Length - Request.Url.PathAndQuery.Length));
@@ -494,7 +494,7 @@ namespace Taurus.Mvc
         /// <returns></returns>
         public virtual bool CheckMicroService(string msKey)
         {
-            return MicroService.MSConfig.ServerKey == Context.Request.Headers[MicroService.MSConst.HeaderKey];
+            return MicroService.MsConfig.ServerKey == Context.Request.Headers[MicroService.MsConst.HeaderKey];
         }
 
         /// <summary>

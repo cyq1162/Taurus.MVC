@@ -16,6 +16,7 @@ namespace Taurus.Mvc
     {
 
         #region GetAssembly
+        private static bool _IsSearchAll = false;
         private static string _DllNames;
         /// <summary>
         /// 控制器名称（多个时逗号分隔）
@@ -33,15 +34,23 @@ namespace Taurus.Mvc
                         string[] files = Directory.GetFiles(AppConfig.AssemblyPath, "*Controllers.dll", SearchOption.AllDirectories);
                         if (files == null || files.Length == 0)
                         {
+                            _IsSearchAll = true;
                             files = Directory.GetFiles(AppConfig.AssemblyPath, "*.dll", SearchOption.AllDirectories);//没有配置，搜索所有的dll。
                         }
                         if (files != null)
                         {
+                            StringBuilder sb = new StringBuilder();
                             foreach (string file in files)
                             {
-                                _DllNames += file + ",";
+                                string name = Path.GetFileName(file);
+                                if (name == "CYQ.Data.dll" || name == "Taurus.Core.dll" || name == "sni.dll" || name.StartsWith("System."))
+                                {
+                                    continue;
+                                }
+                                sb.Append(file);
+                                sb.Append(',');
                             }
-                            _DllNames = _DllNames.TrimEnd(',');
+                            _DllNames = sb.ToString().TrimEnd(',');
                         }
                     }
                 }
@@ -57,15 +66,26 @@ namespace Taurus.Mvc
                 _Assemblys = new List<Assembly>(dllItems.Length);
                 foreach (string dll in dllItems)
                 {
-                    //_Assemblys.Add(Assembly.LoadFrom(dll)); // 可直接抛异常。
-                    if (dll.IndexOfAny(new char[] { '\\', '/' })>0 )
+                    try
                     {
-                        _Assemblys.Add(Assembly.LoadFile(dll)); // 可直接抛异常。
+                        if (dll.IndexOfAny(new char[] { '\\', '/' }) > 0)
+                        {
+                            _Assemblys.Add(Assembly.LoadFile(dll)); // 可直接抛异常。
+                        }
+                        else
+                        {
+                            _Assemblys.Add(Assembly.Load(dll.Replace(".dll", ""))); // 可直接抛异常。
+                        }
                     }
-                    else
+                    catch (Exception err)
                     {
-                        _Assemblys.Add(Assembly.Load(dll.Replace(".dll",""))); // 可直接抛异常。
+                        Log.WriteLogToTxt(err);
+                        if (!_IsSearchAll)
+                        {
+                            throw err;
+                        }
                     }
+
                 }
             }
             return _Assemblys;
@@ -130,6 +150,7 @@ namespace Taurus.Mvc
                                         {
                                             _Lv2Controllers.Add(lv2Name, type);
                                         }
+                                        MethodCollector.InitMethodInfo(type);
                                     }
 
                                 }
@@ -138,14 +159,16 @@ namespace Taurus.Mvc
                         //追加APIHelp
                         if (DocConfig.IsStartDoc)
                         {
+                            Type docType = typeof(Taurus.Plugin.Doc.DocController);
                             if (!_Lv1Controllers.ContainsKey(ReflectConst.Doc))
                             {
-                                _Lv1Controllers.Add(ReflectConst.Doc, typeof(Taurus.Plugin.Doc.DocController));
+                                _Lv1Controllers.Add(ReflectConst.Doc, docType);
                             }
                             if (!_Lv2Controllers.ContainsKey(ReflectConst.CoreDoc))
                             {
-                                _Lv2Controllers.Add(ReflectConst.CoreDoc, typeof(Taurus.Plugin.Doc.DocController));
+                                _Lv2Controllers.Add(ReflectConst.CoreDoc, docType);
                             }
+                            MethodCollector.InitMethodInfo(docType);
                         }
                         //if (ReflectConst.IsStartAuth)
                         //{
@@ -158,17 +181,19 @@ namespace Taurus.Mvc
                         //        _Lv2Controllers.Add(ReflectConst.CoreAuth, typeof(Taurus.Mvc.AuthController));
                         //    }
                         //}
-                        if (MSConfig.IsRegCenter)
+                        if (MsConfig.IsRegCenter)
                         {
+                            Type msType = typeof(Taurus.MicroService.MicroServiceController);
                             //微服务API
                             if (!_Lv1Controllers.ContainsKey(ReflectConst.MicroService))
                             {
-                                _Lv1Controllers.Add(ReflectConst.MicroService, typeof(Taurus.MicroService.MicroServiceController));
+                                _Lv1Controllers.Add(ReflectConst.MicroService, msType);
                             }
                             if (!_Lv2Controllers.ContainsKey(ReflectConst.CoreMicroService))
                             {
-                                _Lv2Controllers.Add(ReflectConst.CoreMicroService, typeof(Taurus.MicroService.MicroServiceController));
+                                _Lv2Controllers.Add(ReflectConst.CoreMicroService, msType);
                             }
+                            MethodCollector.InitMethodInfo(msType);
                         }
                     }
                 }

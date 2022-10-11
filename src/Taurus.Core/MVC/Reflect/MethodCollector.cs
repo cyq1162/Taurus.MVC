@@ -127,13 +127,13 @@ namespace Taurus.Mvc
                 {
                     if (!typeMethods.ContainsKey(t.FullName))
                     {
-                        AddMethodInfo(t);
+                        InitMethodInfo(t);
                     }
                 }
             }
             return typeMethods[t.FullName];
         }
-        static void AddMethodInfo(Type t)
+        internal static void InitMethodInfo(Type t)
         {
             bool hasToken = t.GetCustomAttributes(typeof(TokenAttribute), true).Length > 0;
             bool hasAck = t.GetCustomAttributes(typeof(AckAttribute), true).Length > 0;

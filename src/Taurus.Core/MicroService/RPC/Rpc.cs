@@ -26,11 +26,11 @@ namespace Taurus.MicroService
         /// <returns></returns>
         public static string GetHost(string name)
         {
-            if (MSConfig.IsClient)
+            if (MsConfig.IsClient)
             {
                 return Client.GetHost(name);
             }
-            if (MSConfig.IsServer)
+            if (MsConfig.IsServer)
             {
                 return Server.GetHost(name);
             }
@@ -44,11 +44,11 @@ namespace Taurus.MicroService
         /// <returns></returns>
         public static string GetHost(string name, bool isClient)
         {
-            if (isClient && MSConfig.IsClient)
+            if (isClient && MsConfig.IsClient)
             {
                 return Client.GetHost(name);
             }
-            else if (!isClient && MSConfig.IsServer)
+            else if (!isClient && MsConfig.IsServer)
             {
                 return Server.GetHost(name);
             }

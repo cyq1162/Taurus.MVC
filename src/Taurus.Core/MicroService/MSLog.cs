@@ -3,7 +3,7 @@ using System;
 using System.Diagnostics;
 namespace Taurus.MicroService
 {
-    internal class MSLog
+    internal class MsLog
     {
         /// <summary>
         /// 内部日志记录
@@ -16,7 +16,7 @@ namespace Taurus.MicroService
             sysLogs.PageUrl = url;
             sysLogs.HttpMethod = httpMethod;
             sysLogs.ClientIP = sysLogs.Host;
-            sysLogs.Host = MSConfig.AppRunUrl;
+            sysLogs.Host = MsConfig.AppRunUrl;
             sysLogs.HostName = moduleName;
             sysLogs.Write();
         }

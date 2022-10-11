@@ -35,7 +35,7 @@ namespace Taurus.MicroService
             {
                 if (_Host2 == null)
                 {
-                    _Host2 = IO.Read(MSConst.ClientHost2Path);//首次读取，以便于恢复。
+                    _Host2 = IO.Read(MsConst.ClientHost2Path);//首次读取，以便于恢复。
                 }
                 return _Host2;
             }
@@ -54,7 +54,7 @@ namespace Taurus.MicroService
             {
                 if (_HostList == null)
                 {
-                    string json = IO.Read(MicroService.MSConst.ClientHostListJsonPath);
+                    string json = IO.Read(MicroService.MsConst.ClientHostListJsonPath);
                     if (!string.IsNullOrEmpty(json))
                     {
                         _HostList = JsonHelper.ToEntity<MDictionary<string, List<HostInfo>>>(json);

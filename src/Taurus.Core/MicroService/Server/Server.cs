@@ -39,11 +39,11 @@ namespace Taurus.MicroService
                 if (string.IsNullOrEmpty(_HostListJson) && IsChange && _HostList != null && _HostList.Count > 0)
                 {
                     IsChange = false;
-                    lock (MSConst.tableLockObj)
+                    lock (MsConst.tableLockObj)
                     {
                         _HostListJson = JsonHelper.ToJson(HostList);
                     }
-                    IO.Write(MSConst.ServerHostListJsonPath, _HostListJson);
+                    IO.Write(MsConst.ServerHostListJsonPath, _HostListJson);
                 }
                 return _HostListJson;
             }
@@ -62,7 +62,7 @@ namespace Taurus.MicroService
             {
                 if (_Host2 == null)
                 {
-                    _Host2 = IO.Read(MSConst.ServerHost2Path);//首次读取，以便于恢复。
+                    _Host2 = IO.Read(MsConst.ServerHost2Path);//首次读取，以便于恢复。
                 }
                 return _Host2;
             }
@@ -87,7 +87,7 @@ namespace Taurus.MicroService
             {
                 if (_HostList == null)
                 {
-                    _HostListJson = IO.Read(MicroService.MSConst.ServerHostListJsonPath);
+                    _HostListJson = IO.Read(MicroService.MsConst.ServerHostListJsonPath);
                     if (!string.IsNullOrEmpty(_HostListJson))//数据恢复。
                     {
                         #region 从Json文件恢复数据
@@ -127,7 +127,7 @@ namespace Taurus.MicroService
             List<HostInfo> infoList = GetHostList(name);//微服务程序。
             if (infoList != null && infoList.Count > 0)
             {
-                bool isRegCenter = MSConfig.IsRegCenterOfMaster;
+                bool isRegCenter = MsConfig.IsRegCenterOfMaster;
                 HostInfo firstInfo = infoList[0];
                 for (int i = 0; i < infoList.Count; i++)
                 {

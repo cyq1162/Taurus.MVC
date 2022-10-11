@@ -156,7 +156,7 @@ namespace Taurus.Plugin.Doc
                     {
                         continue;
                     }
-                    else if (fullName.EndsWith(ReflectConst.MicroServiceController) && !MicroService.MSConfig.IsServer)
+                    else if (fullName.EndsWith(ReflectConst.MicroServiceController) && !MicroService.MsConfig.IsServer)
                     {
                         continue;
                     }
@@ -315,7 +315,7 @@ namespace Taurus.Plugin.Doc
 
             #region MicroService
             MDataTable table = null;
-            if (MicroService.MSConfig.IsServer)
+            if (MicroService.MsConfig.IsServer)
             {
                 table = new MDataTable();
                 table.Columns.Add("name,host");
@@ -443,7 +443,7 @@ namespace Taurus.Plugin.Doc
                         string value = Query<string>(attr);
                         if (name == "microservice")
                         {
-                            value = MicroService.MSConfig.ServerKey;
+                            value = MicroService.MsConfig.ServerKey;
                         }
 
                         dt.NewRow(true, 0).Set(0, name)

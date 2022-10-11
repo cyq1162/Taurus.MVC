@@ -68,6 +68,17 @@ namespace Taurus.Mvc
             }
         }
         /// <summary>
+        /// 配置Mvc的Views目录文件夹 如 Taurus.Views ： Views（默认文件夹名称）
+        /// 默认值：Views
+        /// </summary>
+        public static string Views
+        {
+            get
+            {
+                return AppConfig.GetApp(MvcConfigConst.Views, "Views");
+            }
+        }
+        /// <summary>
         /// 配置部署成子应用程序的名称 如 Taurus.SubAppName ： UI
         /// 默认值：无
         /// </summary>

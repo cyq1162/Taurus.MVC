@@ -20,7 +20,7 @@ namespace Taurus.MicroService
             /// </summary>
             public static bool Proxy(HttpContext context, bool isServerCall)
             {
-                if ((isServerCall && !MSConfig.IsServer) || (!isServerCall && !MSConfig.IsClient))
+                if ((isServerCall && !MsConfig.IsServer) || (!isServerCall && !MsConfig.IsClient))
                 {
                     return false;
                 }
@@ -72,7 +72,7 @@ namespace Taurus.MicroService
                 else
                 {
                     int max = 3;//最多循环3个节点，避免长时间循环卡机。
-                    bool isRegCenter = MSConfig.IsRegCenterOfMaster;
+                    bool isRegCenter = MsConfig.IsRegCenterOfMaster;
                     HostInfo firstInfo = infoList[0];
                     if (firstInfo.CallIndex >= infoList.Count)
                     {
@@ -86,7 +86,7 @@ namespace Taurus.MicroService
                             callIndex = callIndex - infoList.Count;
                         }
                         HostInfo info = infoList[callIndex];
-                        if (!isServerCall && info.Host == MSConfig.AppRunUrl)
+                        if (!isServerCall && info.Host == MsConfig.AppRunUrl)
                         {
                             continue;
                         }
@@ -125,11 +125,11 @@ namespace Taurus.MicroService
                 RpcClient wc = RpcClientPool.Create(uri);
                 try
                 {
-                    wc.Headers.Add(MSConst.HeaderKey, (isServerCall ? MSConfig.ServerKey : MSConfig.ClientKey));
+                    wc.Headers.Add(MsConst.HeaderKey, (isServerCall ? MsConfig.ServerKey : MsConfig.ClientKey));
                     wc.Headers.Add("X-Real-IP", request.UserHostAddress);
-                    if (!string.IsNullOrEmpty(MSConfig.AppRunUrl))
+                    if (!string.IsNullOrEmpty(MsConfig.AppRunUrl))
                     {
-                        wc.Headers.Add("Referer", MSConfig.AppRunUrl);//当前运行地址。
+                        wc.Headers.Add("Referer", MsConfig.AppRunUrl);//当前运行地址。
                     }
                     foreach (string key in request.Headers.Keys)
                     {
@@ -189,7 +189,7 @@ namespace Taurus.MicroService
                 }
                 catch (Exception err)
                 {
-                    MSLog.Write(err.Message, url, request.HttpMethod, isServerCall ? MSConfig.ServerName : MSConfig.ClientName);
+                    MsLog.Write(err.Message, url, request.HttpMethod, isServerCall ? MsConfig.ServerName : MsConfig.ClientName);
                     return false;
                 }
                 finally

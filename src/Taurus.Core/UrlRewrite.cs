@@ -45,7 +45,7 @@ namespace Taurus.Core
             string urlAbs = uri.AbsoluteUri;
             string urlPath = uri.PathAndQuery;
             string host = urlAbs.Substring(0, urlAbs.Length - urlPath.Length);
-            MicroService.MSRun.Start(host);//微服务检测、启动。
+            MicroService.MsRun.Start(host);//微服务检测、启动。
             if (!WebTool.IsCallMicroServiceReg(uri) && Rpc.Gateway.Proxy(context, true))
             {
                 WebTool.SetRunProxySuccess(context);

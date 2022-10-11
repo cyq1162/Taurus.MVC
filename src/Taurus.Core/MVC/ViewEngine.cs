@@ -13,14 +13,46 @@ namespace Taurus.Mvc
     /// </summary>
     public static class ViewEngine
     {
+        private static string _ViewPath = string.Empty;
+        internal static string ViewsPath
+        {
+            get
+            {
+                if (string.IsNullOrEmpty(_ViewPath))
+                {
+                    _ViewPath = AppConfig.WebRootPath + MvcConfig.Views;
+                    if (!Directory.Exists(_ViewPath))
+                    {
+                        _ViewPath = AppConfig.WebRootPath + MvcConfig.Views.ToLower();//兼容Linux 文件夹小写
+                    }
+                }
+                return _ViewPath;
+            }
+
+        }
+        private static string _SharedPath = string.Empty;
+        internal static string SharedPath
+        {
+            get
+            {
+                if (string.IsNullOrEmpty(_SharedPath))
+                {
+                    _SharedPath = ViewsPath+ "/Shared";
+                    if (!Directory.Exists(_SharedPath))
+                    {
+                        _SharedPath = ViewsPath + "/shared"; ;//兼容Linux 文件夹小写
+                    }
+                }
+                return _SharedPath;
+            }
+
+        }
         /// <summary>
         /// 创建视图对象
         /// </summary>
         public static XHtmlAction Create(string controlName, string actionName)
         {
-            string path = AppConfig.GetApp("Views", "Views") + "/"
-                          + controlName.Replace(ReflectConst.Controller, "")
-                          + "/" + actionName + ".html";
+            string path = controlName.Replace(ReflectConst.Controller, "") + "/" + actionName + ".html";
             return Create(path);
         }
         /// <summary>
@@ -29,12 +61,12 @@ namespace Taurus.Mvc
         /// <param name="path">相对路径，如：/abc/cyq/a.html</param>
         public static XHtmlAction Create(string path)
         {
-            string fullPath = AppConfig.WebRootPath + path.TrimStart('/');//.Replace("/", "\\");
+            string fullPath = ViewsPath + "/" + path.TrimStart('/');//.Replace("/", "\\");
             bool isExists = File.Exists(fullPath);
             if (!isExists)
             {
-                fullPath= AppConfig.WebRootPath + path.TrimStart('/').ToLower();
-                isExists= File.Exists(fullPath);
+                fullPath = ViewsPath + "/" + path.TrimStart('/').ToLower();
+                isExists = File.Exists(fullPath);
             }
             // System.Web.HttpContext.Current.Response.Write(path);
             if (isExists)
@@ -129,7 +161,7 @@ namespace Taurus.Mvc
         /// <returns></returns>
         private static XHtmlAction GetSharedView(string htmlName, string htmlPath)
         {
-            string path = AppConfig.WebRootPath + AppConfig.GetApp("Views", "Views") + "/Shared/" + htmlName + ".html";
+            string path = SharedPath + "/" + htmlName + ".html";
             if (!File.Exists(path))
             {
                 path = null;
@@ -140,7 +172,7 @@ namespace Taurus.Mvc
                 }
                 else
                 {
-                    files = Directory.GetFiles(AppConfig.WebRootPath + AppConfig.GetApp("Views", "Views"), htmlName + ".html", SearchOption.AllDirectories);
+                    files = Directory.GetFiles(ViewsPath, htmlName + ".html", SearchOption.AllDirectories);
                     if (files != null && files.Length > 0)
                     {
                         path = files[0];

@@ -43,7 +43,6 @@ namespace Taurus.MicroService
                 AddToPool(uri, new RpcClient());//预存一个
                 AddToPool(uri, new RpcClient());//预存一个
                 client = new RpcClient();
-                client.Proxy = null;
             }
 
             return client;

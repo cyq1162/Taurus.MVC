@@ -12,7 +12,7 @@ namespace Taurus.MicroService
     /// <summary>
     /// 对应【AppSettings】可配置项
     /// </summary>
-    public class MSConfig
+    public class MsConfig
     {
         #region AppSetting 配置
 
@@ -144,7 +144,7 @@ namespace Taurus.MicroService
         {
             get
             {
-                return !string.IsNullOrEmpty(MSConfig.ClientName) && !string.IsNullOrEmpty(MSConfig.ClientRegUrl) && MSConfig.ClientRegUrl != MSConfig.AppRunUrl;
+                return !string.IsNullOrEmpty(MsConfig.ClientName) && !string.IsNullOrEmpty(MsConfig.ClientRegUrl) && MsConfig.ClientRegUrl != MsConfig.AppRunUrl;
             }
         }
 
@@ -165,7 +165,7 @@ namespace Taurus.MicroService
         {
             get
             {
-                return MSConfig.ServerName.ToLower() == MSConst.RegCenter;
+                return MsConfig.ServerName.ToLower() == MsConst.RegCenter;
             }
         }
         /// <summary>
@@ -175,7 +175,7 @@ namespace Taurus.MicroService
         {
             get
             {
-                return MSConfig.ServerName.ToLower() == MSConst.Gateway;
+                return MsConfig.ServerName.ToLower() == MsConst.Gateway;
             }
         }
         /// <summary>
@@ -185,7 +185,51 @@ namespace Taurus.MicroService
         {
             get
             {
-                return MSConfig.ServerName.ToLower() == MSConst.RegCenter && (string.IsNullOrEmpty(MSConfig.ServerRegUrl) || MSConfig.ServerRegUrl == MSConfig.AppRunUrl);
+                return MsConfig.ServerName.ToLower() == MsConst.RegCenter && (string.IsNullOrEmpty(MsConfig.ServerRegUrl) || MsConfig.ServerRegUrl == MsConfig.AppRunUrl);
+            }
+        }
+        #endregion
+
+
+        #region 注册中心 - 数据库配置
+
+        private static string _MsConn = null;
+        /// <summary>
+        /// 微服务 - 注册中心  数据库链接配置
+        /// </summary>
+        public static string MsConn
+        {
+            get
+            {
+                if (_MsConn == null)
+                {
+                    _MsConn = AppConfig.GetConn("MsConn");
+                }
+                return _MsConn;
+            }
+            set
+            {
+                _MsConn = value;
+            }
+        }
+     
+        private static string _MsTableName;
+        /// <summary>
+        /// 异常日志表名（默认为MsRegCenter，可配置）
+        /// </summary>
+        public static string MsTableName
+        {
+            get
+            {
+                if (string.IsNullOrEmpty(_MsTableName))
+                {
+                    _MsTableName = AppConfig.GetApp("MsTableName", "MsRegCenter");
+                }
+                return _MsTableName;
+            }
+            set
+            {
+                _MsTableName = value;
             }
         }
         #endregion
