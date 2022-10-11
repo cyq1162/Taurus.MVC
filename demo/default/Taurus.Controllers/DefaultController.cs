@@ -47,7 +47,7 @@ namespace Taurus.Controllers
         /// </summary>
         public static bool CheckMicroService(Controller controller, string serverKey)
         {
-            return MicroService.MSConfig.ServerKey == serverKey;
+            return MicroService.MsConfig.ServerKey == serverKey;
         }
 
         /// <summary>

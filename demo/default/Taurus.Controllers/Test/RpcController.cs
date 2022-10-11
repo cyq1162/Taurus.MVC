@@ -6,19 +6,13 @@ using System.Text;
 namespace Taurus.Controllers.Test
 {
 
-    public class RpcController : Controller
+    public class RpcController : Taurus.Mvc.Controller
     {
         static int i = 0;
-        public void Call()
+        public void CallGet()
         {
 
             i++;
-            //bool result = tt.WaitOne(1000);
-            //result = tt.WaitOne(3000);
-            //result = task.Set();
-            //result = task.WaitOne();
-            //result = task.WaitOne();
-            //RpcTask task = MSRpc.GetAsync("http://localhost:8000/ms/hello");
             RpcTask task = Rpc.StartGetAsync("ms", "/ms/hello?msg=" + DateTime.Now.Ticks);
             System.Diagnostics.Debug.WriteLine("-----------------------------" + i);
             task.Wait();

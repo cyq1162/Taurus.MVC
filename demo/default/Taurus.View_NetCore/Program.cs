@@ -39,7 +39,7 @@ namespace Taurus.View
 
 
             string host = AppConfig.GetApp("Host");
-            string runUrl = MicroService.MSConfig.AppRunUrl;
+            string runUrl = MicroService.MsConfig.AppRunUrl;
             if (host.Contains(":0"))//常规部署随机端口
             {
                 TcpListener tl = new TcpListener(IPAddress.Any, 0);
@@ -64,7 +64,7 @@ namespace Taurus.View
                     }
 
                 }
-                MicroService.MSConfig.AppRunUrl = runUrl;
+                MicroService.MsConfig.AppRunUrl = runUrl;
 
             }
             else 
@@ -74,7 +74,7 @@ namespace Taurus.View
                 string dockerUrl = Environment.GetEnvironmentVariable("DockerUrl");//跨服务器配置完整路径：http://host:port
                 if (!string.IsNullOrEmpty(dockerUrl))
                 {
-                    MicroService.MSConfig.AppRunUrl = dockerUrl;
+                    MicroService.MsConfig.AppRunUrl = dockerUrl;
                 }
                 else
                 {
@@ -105,12 +105,12 @@ namespace Taurus.View
                         {
                             dockerHost = "80";
                         }
-                        MicroService.MSConfig.AppRunUrl = http + "://" + dockerHost + ":" + dockerPort;
+                        MicroService.MsConfig.AppRunUrl = http + "://" + dockerHost + ":" + dockerPort;
                     }
                 }
             }
             //string url = AppConfig.GetApp("Host", host);//"[http|https]://*:8888"
-            Console.WriteLine(host);
+            //Console.WriteLine(host);
             return host;
         }
     }

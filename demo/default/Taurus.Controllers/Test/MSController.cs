@@ -32,7 +32,7 @@ namespace Taurus.Controllers.Test
                 Write("UrlReferrer : " + Request.UrlReferrer.ToString() + "\r\n<br/>");
             }
             Write("UserHostAddress : " + Request.UserHostAddress.ToString() + "\r\n<br/>");
-            Write("MicroService AppRunUrl: " + MicroService.MSConfig.AppRunUrl + Request.Url.LocalPath + " : " + Request.HttpMethod + " : " + msg ?? "Hello" + MicroService.MSConfig.ServerName);
+            Write("MicroService AppRunUrl: " + MicroService.MsConfig.AppRunUrl + Request.Url.LocalPath + " : " + Request.HttpMethod + " : " + msg ?? "Hello" + MicroService.MsConfig.ServerName);
         }
         /// <summary>
         /// Get or Post 测试
@@ -45,7 +45,7 @@ namespace Taurus.Controllers.Test
                 Write("UrlReferrer : " + Request.UrlReferrer.ToString() + "\r\n<br/>");
             }
             Write("UserHostAddress : " + Request.UserHostAddress.ToString() + "\r\n<br/>");
-            Write("MicroService AppRunUrl : " + MicroService.MSConfig.AppRunUrl + Request.Url.LocalPath + " : " + Request.HttpMethod + " : " + msg ?? "Hello" + MicroService.MSConfig.ServerName);
+            Write("MicroService AppRunUrl : " + MicroService.MsConfig.AppRunUrl + Request.Url.LocalPath + " : " + Request.HttpMethod + " : " + msg ?? "Hello" + MicroService.MsConfig.ServerName);
         }
 
         public void Cookie(string msg)
