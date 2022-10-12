@@ -40,7 +40,7 @@
     <DefineConstants>DEBUG;TRACE</DefineConstants>
     <ErrorReport>prompt</ErrorReport>
     <WarningLevel>4</WarningLevel>
-    <DocumentationFile>bin\Debug\Taurus.Controllers.XML</DocumentationFile>
+    <DocumentationFile>bin\Debug\Taurus.Controllers.xml</DocumentationFile>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|AnyCPU' ">
     <DebugType>pdbonly</DebugType>
@@ -49,7 +49,7 @@
     <DefineConstants>TRACE</DefineConstants>
     <ErrorReport>prompt</ErrorReport>
     <WarningLevel>4</WarningLevel>
-    <DocumentationFile>bin\Release\Taurus.Controllers.XML</DocumentationFile>
+    <DocumentationFile>bin\Release\Taurus.Controllers.xml</DocumentationFile>
   </PropertyGroup>
   <ItemGroup>
     <Reference Include="CYQ.Data, Version=5.8.5.3, Culture=neutral, processorArchitecture=MSIL">
@@ -84,9 +84,7 @@
       <Install>true</Install>
     </BootstrapperPackage>
   </ItemGroup>
-  <ItemGroup>
-    <Folder Include="User\" />
-  </ItemGroup>
+  <ItemGroup />
   <ItemGroup>
     <ProjectReference Include="..\..\..\src\Taurus.Core\Taurus.Core.csproj">
       <Project>{adf7675f-36f0-4ad5-8d20-83ae72bb4c99}</Project>
