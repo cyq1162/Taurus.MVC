@@ -194,5 +194,43 @@ namespace Taurus.MicroService
             }
             return null;
         }
+
+        /// <summary>
+        /// 为Server端添加Host
+        /// </summary>
+        public static void AddHost(string name, string host)
+        {
+            if (string.IsNullOrEmpty(host)) { return; }
+            var kvTable = Server.HostList;
+            if (!kvTable.ContainsKey(name))
+            {
+                //首次添加
+                Server.IsChange = true;
+                List<HostInfo> list = new List<HostInfo>();
+                HostInfo info = new HostInfo();
+                info.Host = host;
+                info.RegTime = DateTime.Now;
+                list.Add(info);
+                kvTable.Add(name, list);
+            }
+            else
+            {
+                List<HostInfo> list = kvTable[name];//ms,a.com
+                for (int i = 0; i < list.Count; i++)
+                {
+                    HostInfo hostInfo = list[i];
+                    if (hostInfo.Host == host)
+                    {
+                        hostInfo.RegTime = DateTime.Now;//更新时间。
+                        return;
+                    }
+                }
+                Server.IsChange = true;
+                HostInfo info = new HostInfo();
+                info.Host = host;
+                info.RegTime = DateTime.Now;
+                list.Add(info);
+            }
+        }
     }
 }

@@ -42,7 +42,7 @@ namespace Taurus.MicroService
 
                 if (string.IsNullOrEmpty(MsConfig.AppRunUrl))
                 {
-                    MsConfig.AppRunUrl = host.ToLower();//设置当前程序运行的请求网址。
+                    MsConfig.AppRunUrl = host.ToLower().TrimEnd('/');//设置当前程序运行的请求网址。
                 }
                 if (!string.IsNullOrEmpty(host))
                 {
@@ -342,6 +342,10 @@ namespace Taurus.MicroService
         internal static string GetHostList(bool isServer)
         {
             string url = (isServer ? MsConfig.ServerRegUrl : MsConfig.ClientRegUrl) + "/microservice/getlist?tick=" + (isServer ? Server.Tick : Client.Tick);
+            if (MsConfig.IsGateway)
+            {
+                url += "&isGateway=1";
+            }
             try
             {
                 using (WebClient wc = new WebClient())
@@ -449,6 +453,7 @@ namespace Taurus.MicroService
                             }
                         }
                     }
+                    Server.AddHost("RegCenter",MsConfig.AppRunUrl);
                 }
                 catch (Exception err)
                 {

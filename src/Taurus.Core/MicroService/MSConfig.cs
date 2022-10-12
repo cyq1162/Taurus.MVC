@@ -38,7 +38,7 @@ namespace Taurus.MicroService
         {
             get
             {
-                return AppConfig.GetApp("MicroService.Server.RegUrl");
+                return AppConfig.GetApp("MicroService.Server.RegUrl","").TrimEnd('/');
             }
             set
             {
@@ -95,7 +95,7 @@ namespace Taurus.MicroService
         {
             get
             {
-                return AppConfig.GetApp("MicroService.Client.RegUrl");
+                return AppConfig.GetApp("MicroService.Client.RegUrl","").TrimEnd('/');
             }
             set
             {
@@ -125,7 +125,7 @@ namespace Taurus.MicroService
         {
             get
             {
-                return AppConfig.GetApp("MicroService.App.RunUrl");
+                return AppConfig.GetApp("MicroService.App.RunUrl","").TrimEnd('/');
             }
             set
             {

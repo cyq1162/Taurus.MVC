@@ -194,9 +194,10 @@ namespace Taurus.MicroService
         /// 注册中心 - 获取服务列表。
         /// </summary>
         /// <param name="tick">最后获取的时间Tick，首次请求可传0</param>
+        /// <param name="isGateway">是否网关请求</param>
         [HttpGet]
         [MicroService]
-        public void GetList(long tick)
+        public void GetList(long tick, bool isGateway)
         {
             WriteLine(Environment.NewLine + "--------------------------------------");
             WriteLine(DateTime.Now.ToString("HH:mm:ss") + " : Server.API.Call.GetList : From :" + Request.UrlReferrer);
@@ -208,6 +209,10 @@ namespace Taurus.MicroService
             if (host == MsConfig.AppRunUrl)//主机即是自己。
             {
                 host = string.Empty;
+            }
+            if (isGateway && Request.UrlReferrer != null)
+            {
+                Server.AddHost("Gateway", Request.UrlReferrer.OriginalString);
             }
             if (Server.HostList.Count == 0 || tick == Server.Tick)
             {
@@ -234,6 +239,7 @@ namespace Taurus.MicroService
         {
             WriteLine(Environment.NewLine + "--------------------------------------");
             WriteLine(DateTime.Now.ToString("HH:mm:ss") + " : Server.API.Call.Reg2 : Host :" + host);
+            Server.AddHost("RegCenterOfSlave", host);
             Server.Host2 = host;
             Server.Host2LastRegTime = DateTime.Now;
             string result = JsonHelper.OutResult(true, "", "tick", Server.Tick);
@@ -259,5 +265,6 @@ namespace Taurus.MicroService
             }
             Write("", true);
         }
+
     }
 }
