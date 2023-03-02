@@ -94,7 +94,6 @@ namespace Taurus.MicroService
                         {
                             continue;//已经断开服务的。
                         }
-
                         if (Proxy(context, info.Host, isServerCall))
                         {
                             firstInfo.CallIndex = callIndex + 1;//指向下一个。
@@ -106,12 +105,12 @@ namespace Taurus.MicroService
                             max--;
                             if (max == 0)
                             {
-                                return false;
+                                return true;
                             }
                         }
 
                     }
-                    return false;
+                    return true;
                 }
             }
 
@@ -189,6 +188,10 @@ namespace Taurus.MicroService
                 }
                 catch (Exception err)
                 {
+                    if (err.Message.Contains("(404) Not Found"))
+                    {
+                        return true;
+                    }
                     MsLog.Write(err.Message, url, request.HttpMethod, isServerCall ? MsConfig.ServerName : MsConfig.ClientName);
                     return false;
                 }
