@@ -312,7 +312,6 @@ namespace Taurus.Plugin.Doc
         private void BindController()
         {
             ControllerTable.Bind(View);
-
             #region MicroService
             MDataTable table = null;
             if (MicroService.MsConfig.IsServer)

@@ -1,6 +1,4 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.Text;
 using CYQ.Data.Xml;
 using CYQ.Data;
 using CYQ.Data.Tool;
@@ -37,7 +35,7 @@ namespace Taurus.Mvc
             {
                 if (string.IsNullOrEmpty(_SharedPath))
                 {
-                    _SharedPath = ViewsPath+ "/Shared";
+                    _SharedPath = ViewsPath + "/Shared";
                     if (!Directory.Exists(_SharedPath))
                     {
                         _SharedPath = ViewsPath + "/shared"; ;//兼容Linux 文件夹小写
@@ -52,38 +50,38 @@ namespace Taurus.Mvc
         /// </summary>
         public static XHtmlAction Create(string controlName, string actionName)
         {
-            string path = controlName.Replace(ReflectConst.Controller, "") + "/" + actionName + ".html";
-            return Create(path);
+            string cName = controlName.Replace(ReflectConst.Controller, "");
+            string folder = ViewsPath + "/" + cName;
+
+            if (!Directory.Exists(folder))
+            {
+                folder = ViewsPath + "/" + cName.ToLower();
+            }
+            string filePath = folder + "/" + actionName + ".html";
+            if (!File.Exists(filePath))
+            {
+                filePath = folder + "/" + actionName.ToLower() + ".html";
+                if (!File.Exists(filePath))
+                {
+                    return null;
+                }
+            }
+            return Create(filePath);
         }
         /// <summary>
         /// 创建视图对象
         /// </summary>
         /// <param name="path">相对路径，如：/abc/cyq/a.html</param>
-        public static XHtmlAction Create(string path)
+        public static XHtmlAction Create(string fullPath)
         {
-            string fullPath = ViewsPath + "/" + path.TrimStart('/');//.Replace("/", "\\");
-            bool isExists = File.Exists(fullPath);
-            if (!isExists)
+            XHtmlAction view = new XHtmlAction(true, false);
+            if (view.Load(fullPath, XmlCacheLevel.Hour, true))
             {
-                fullPath = ViewsPath + "/" + path.TrimStart('/').ToLower();
-                isExists = File.Exists(fullPath);
+                // System.Web.HttpContext.Current.Response.Write("load ok");
+                //处理Shared目录下的节点替换。
+                ReplaceItemRef(view, view.GetList("*", "itemref"), false, 0);
             }
-            // System.Web.HttpContext.Current.Response.Write(path);
-            if (isExists)
-            {
-                //System.Web.HttpContext.Current.Response.Write("path ok");
-                XHtmlAction view = new XHtmlAction(true, false);
-
-                if (view.Load(fullPath, XmlCacheLevel.Hour, true))
-                {
-                    // System.Web.HttpContext.Current.Response.Write("load ok");
-                    //处理Shared目录下的节点替换。
-                    ReplaceItemRef(view, view.GetList("*", "itemref"), false, 0);
-                }
-                //System.Web.HttpContext.Current.Response.Write(view.OutXml);
-                return view;
-            }
-            return null;
+            return view;
         }
         private static void ReplaceItemRef(XHtmlAction view, XmlNodeList list, bool isBreak, int loopCount)
         {

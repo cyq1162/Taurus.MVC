@@ -66,19 +66,21 @@ namespace Taurus.Mvc
                 _Assemblys = new List<Assembly>(dllItems.Length);
                 foreach (string dll in dllItems)
                 {
+                    //MsLog.WriteDebugLine(dll);
                     try
                     {
-                        if (dll.IndexOfAny(new char[] { '\\', '/' }) > 0)
+                        if (dll.IndexOfAny(new char[] { '\\', '/' }) > 0 && dll[0]!='/')
                         {
                             _Assemblys.Add(Assembly.LoadFile(dll)); // 可直接抛异常。
                         }
                         else
                         {
-                            _Assemblys.Add(Assembly.Load(dll.Replace(".dll", ""))); // 可直接抛异常。
+                            _Assemblys.Add(Assembly.Load(Path.GetFileName(dll.Replace(".dll", "")))); // 可直接抛异常。
                         }
                     }
                     catch (Exception err)
                     {
+                        Log.WriteLogToTxt(dll);
                         Log.WriteLogToTxt(err);
                         if (!_IsSearchAll)
                         {
