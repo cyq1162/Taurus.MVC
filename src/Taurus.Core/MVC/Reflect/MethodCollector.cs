@@ -13,7 +13,7 @@ namespace Taurus.Mvc
     //    }
     //    #region GetMethods
 
- 
+
     //    static Dictionary<string, Dictionary<string, MethodInfo>> _TypeMethods = new Dictionary<string, Dictionary<string, MethodInfo>>();
     //    static Dictionary<string, AttributeEntity> _MethodAttrs = new Dictionary<string, AttributeEntity>(StringComparer.OrdinalIgnoreCase);
 
@@ -123,7 +123,7 @@ namespace Taurus.Mvc
         {
             if (!typeMethods.ContainsKey(t.FullName))
             {
-                lock (t)
+                lock (t.FullName)
                 {
                     if (!typeMethods.ContainsKey(t.FullName))
                     {
@@ -180,7 +180,10 @@ namespace Taurus.Mvc
                 }
                 dic.Add(name, new MethodEntity(method, attributeEntity));
             }
-            typeMethods.Add(t.FullName, dic);
+            if (!typeMethods.ContainsKey(t.FullName))//有概念会重复。
+            {
+                typeMethods.Add(t.FullName, dic);
+            }
         }
 
         public static MethodEntity GetMethod(Type t, String methodName)
