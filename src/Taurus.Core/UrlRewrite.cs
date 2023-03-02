@@ -175,13 +175,13 @@ namespace Taurus.Core
                 className = items.Length > 1 ? items[0] + "." + items[1] : items[0];
             }
             t = ControllerCollector.GetController(className);
-            if (t == null || t.Name == ReflectConst.DefaultController)
-            {
-                if (Rpc.Gateway.Proxy(context, false))//客户端做为网关。
-                {
-                    return;
-                }
-            }
+            //if (t == null || t.Name == ReflectConst.DefaultController)
+            //{
+            //    if (Rpc.Gateway.Proxy(context, false))//客户端禁用做为网关，避免死循环。
+            //    {
+            //        return;
+            //    }
+            //}
             if (t == null)
             {
                 WriteError("You need a " + className + " controller for coding!", context);
