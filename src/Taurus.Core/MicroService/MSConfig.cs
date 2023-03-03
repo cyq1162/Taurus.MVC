@@ -38,7 +38,7 @@ namespace Taurus.MicroService
         {
             get
             {
-                return AppConfig.GetApp("MicroService.Server.RegUrl","").TrimEnd('/');
+                return AppConfig.GetApp("MicroService.Server.RegUrl", "").TrimEnd('/');
             }
             set
             {
@@ -95,7 +95,7 @@ namespace Taurus.MicroService
         {
             get
             {
-                return AppConfig.GetApp("MicroService.Client.RegUrl","").TrimEnd('/');
+                return AppConfig.GetApp("MicroService.Client.RegUrl", "").TrimEnd('/');
             }
             set
             {
@@ -125,11 +125,25 @@ namespace Taurus.MicroService
         {
             get
             {
-                return AppConfig.GetApp("MicroService.App.RunUrl","").TrimEnd('/');
+                return AppConfig.GetApp("MicroService.App.RunUrl", "").TrimEnd('/');
             }
             set
             {
                 AppConfig.SetApp("MicroService.App.RunUrl", value);
+            }
+        }
+        /// <summary>
+        /// 应用配置：禁用应用程序退出功能【安全需要】
+        /// </summary>
+        public static bool IsDisableExit
+        {
+            get
+            {
+                return AppConfig.GetAppBool("MicroService.App.IsDisableExit", false);
+            }
+            set
+            {
+                AppConfig.SetApp("MicroService.App.IsDisableExit", value.ToString());
             }
         }
         #endregion
@@ -212,7 +226,7 @@ namespace Taurus.MicroService
                 _MsConn = value;
             }
         }
-     
+
         private static string _MsTableName;
         /// <summary>
         /// 异常日志表名（默认为MsRegCenter，可配置）

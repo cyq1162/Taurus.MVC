@@ -183,8 +183,8 @@ namespace Taurus.Mvc
                         //        _Lv2Controllers.Add(ReflectConst.CoreAuth, typeof(Taurus.Mvc.AuthController));
                         //    }
                         //}
-                        if (MsConfig.IsRegCenter)
-                        {
+                        //if (MsConfig.IsRegCenter)//客户端新增Exit方法，因此客户端和网关也允许退出。
+                        //{
                             Type msType = typeof(Taurus.MicroService.MicroServiceController);
                             //微服务API
                             if (!_Lv1Controllers.ContainsKey(ReflectConst.MicroService))
@@ -196,7 +196,7 @@ namespace Taurus.Mvc
                                 _Lv2Controllers.Add(ReflectConst.CoreMicroService, msType);
                             }
                             MethodCollector.InitMethodInfo(msType);
-                        }
+                        //}
                     }
                 }
             }

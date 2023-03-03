@@ -6,6 +6,8 @@ using CYQ.Data;
 using CYQ.Data.Tool;
 using CYQ.Data.Table;
 using Taurus.Mvc;
+using System.Diagnostics;
+
 namespace Taurus.MicroService
 {
     /// <summary>
@@ -23,6 +25,7 @@ namespace Taurus.MicroService
         {
             if (!isStart)
             {
+                MsLog.WriteDebugLine("Current Process ID : " + Process.GetCurrentProcess().Id + " : ");
                 isStart = true;
                 if (MsConfig.IsServer)
                 {

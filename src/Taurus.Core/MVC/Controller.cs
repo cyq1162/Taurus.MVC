@@ -494,7 +494,11 @@ namespace Taurus.Mvc
         /// <returns></returns>
         public virtual bool CheckMicroService(string msKey)
         {
-            return MicroService.MsConfig.ServerKey == Context.Request.Headers[MicroService.MsConst.HeaderKey];
+            if (MicroService.MsConfig.IsServer)
+            {
+                return MicroService.MsConfig.ServerKey == msKey;
+            }
+            return MicroService.MsConfig.ClientKey == msKey;
         }
 
         /// <summary>

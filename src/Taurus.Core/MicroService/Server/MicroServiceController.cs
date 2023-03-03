@@ -10,8 +10,9 @@ namespace Taurus.MicroService
     /// <summary>
     /// 微服务 - 注册中心。
     /// </summary>
-    internal class MicroServiceController : Controller
+    internal partial class MicroServiceController : Controller
     {
+
         private void WriteLine(string msg)
         {
 #if DEBUG
@@ -23,6 +24,18 @@ namespace Taurus.MicroService
         {
             return base.CheckMicroService(msKey);
         }
+
+        public override bool BeforeInvoke()
+        {
+            switch (MethodName)
+            {
+                case "exit":
+                    return true;
+                default:
+                    return MsConfig.IsRegCenter;
+            }
+        }
+
         public override void EndInvoke()
         {
             if (string.IsNullOrEmpty(MsConfig.AppRunUrl))
