@@ -71,6 +71,7 @@
     <Compile Include="Attribute\TokenAttribute.cs" />
     <Compile Include="Attribute\WebSocketAttribute.cs" />
     <Compile Include="MicroService\Client\Client.cs" />
+    <Compile Include="MicroService\Client\MicroServiceController.cs" />
     <Compile Include="MicroService\HostInfo.cs" />
     <Compile Include="MicroService\IO.cs" />
     <Compile Include="MicroService\MsConfig.cs" />
