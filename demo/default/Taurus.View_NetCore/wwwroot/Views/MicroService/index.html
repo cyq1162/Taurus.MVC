@@ -1,0 +1,38 @@
+﻿<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head itemref="master.head">
+    <title>MicroService Register Center</title>
+    <link itemref="master.btcss" />
+    <link itemref="master.btcss_extend" />
+    <style type="text/css">
+        .table-bordered td {
+            text-align: left;
+        }
+    </style>
+</head>
+<body itemref="master.body">
+    <div id="container">
+        <div title="Data Bind">
+            MicroService Register Center：
+            <hr />
+        </div>
+        <hr />
+        <table class="table table-striped" title="[Users] Table">
+            <tr>
+                <td>Register Name</td>
+                <td>Host</td>
+                <td>Version</td>
+                <td>LastActiveTime</td>
+            </tr>
+            <tbody id="defaultView" clearflag="1">
+                <tr>
+                    <td>${MsName}</td>
+                    <td>${Host}</td>
+                    <td>${Version}</td>
+                    <td>${LastActiveTime}</td>
+                </tr>
+            </tbody>
+        </table>
+    </div>
+</body>
+</html>
