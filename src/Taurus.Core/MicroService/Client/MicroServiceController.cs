@@ -15,14 +15,14 @@ namespace Taurus.MicroService
         [MicroService]
         public void Exit()
         {
-            if (!MsConfig.IsDisableExit)
+            if (MsConfig.RemoteExit)
             {
                 Write("Environment exit.", true);
                 Environment.Exit(0);
             }
             else
             {
-                Write("Method is disabled.", false);
+                Write("MicroService remote exit is disabled.", false);
             }
         }
     }

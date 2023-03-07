@@ -133,17 +133,17 @@ namespace Taurus.MicroService
             }
         }
         /// <summary>
-        /// 应用配置：禁用应用程序退出功能【安全需要】
+        /// 应用配置：应用程序远程退出功能
         /// </summary>
-        public static bool IsDisableExit
+        public static bool RemoteExit
         {
             get
             {
-                return AppConfig.GetAppBool("MicroService.App.IsDisableExit", false);
+                return AppConfig.GetAppBool("MicroService.App.RemoteExit", false);
             }
             set
             {
-                AppConfig.SetApp("MicroService.App.IsDisableExit", value.ToString());
+                AppConfig.SetApp("MicroService.App.RemoteExit", value.ToString());
             }
         }
         #endregion

@@ -7,6 +7,7 @@ using CYQ.Data.Tool;
 using CYQ.Data.Table;
 using Taurus.Mvc;
 using System.Diagnostics;
+using static Taurus.MicroService.Rpc;
 
 namespace Taurus.MicroService
 {
@@ -23,9 +24,15 @@ namespace Taurus.MicroService
         /// </summary>
         internal static void Start(string host)
         {
+            if (string.IsNullOrEmpty(MsConfig.AppRunUrl))
+            {
+                MsConfig.AppRunUrl = host.ToLower().TrimEnd('/');//设置当前程序运行的请求网址。
+            }
             if (!isStart)
             {
-                MsLog.WriteDebugLine("Current Process ID : " + Process.GetCurrentProcess().Id + " : ");
+                MsLog.WriteDebugLine("--------------------------------------------------");
+                MsLog.WriteDebugLine("Current App Process ID    ：" + Process.GetCurrentProcess().Id);
+                MsLog.WriteDebugLine("Current Taurus Version    ：" + MvcConfig.TaurusVersion);
                 isStart = true;
                 if (MsConfig.IsServer)
                 {
@@ -35,22 +42,17 @@ namespace Taurus.MicroService
                         ThreadPool.SetMinThreads(30, 50);
                     }
                 }
-                MsLog.WriteDebugLine("MicroService.Run.Start.V" + MvcConfig.TaurusVersion + " : ");
+                
                 if (MsConfig.IsRegCenterOfMaster)
                 {
-                    MsLog.WriteDebugLine("Run As MicroService.Server : Master.RegCenter");
+                    MsLog.WriteDebugLine("Current MicroService Type ：RegCenter of Master");
                     Thread thread = new Thread(new ThreadStart(ClearServerTable));
                     thread.Start();
                 }
-
-                if (string.IsNullOrEmpty(MsConfig.AppRunUrl))
-                {
-                    MsConfig.AppRunUrl = host.ToLower().TrimEnd('/');//设置当前程序运行的请求网址。
-                }
-                if (!string.IsNullOrEmpty(host))
-                {
-                    MsLog.WriteDebugLine("MicroService.App.RunUrl : " + host);
-                }
+                //if (!string.IsNullOrEmpty(host))
+                //{
+                //    MsLog.WriteDebugLine("MicroService.App.RunUrl : " + host);
+                //}
 
                 if (!string.IsNullOrEmpty(MsConfig.ServerName) && !string.IsNullOrEmpty(MsConfig.ServerRegUrl) && MsConfig.ServerRegUrl != MsConfig.AppRunUrl)
                 {
@@ -58,22 +60,23 @@ namespace Taurus.MicroService
                     {
                         if (MsConfig.IsRegCenter)
                         {
-                            MsLog.WriteDebugLine("Run As MicroService.Server : Slave.RegCenter");
+                            MsLog.WriteDebugLine("Current MicroService Type ：RegCenter of Slave");
                         }
                         else
                         {
-                            MsLog.WriteDebugLine("Run As MicroService.Server : Gateway");
+                            MsLog.WriteDebugLine("Current MicroService Type ：Gateway");
                         }
-                        MsLog.WriteDebugLine("MicroService.Server.RegUrl : " + MsConfig.ServerRegUrl);
+                        //MsLog.WriteDebugLine("MicroService.Server.RegUrl : " + MsConfig.ServerRegUrl);
                         ThreadBreak.AddGlobalThread(new ParameterizedThreadStart(ServerRunByLoop));
                     }
                 }
                 if (!string.IsNullOrEmpty(MsConfig.ClientName) && !string.IsNullOrEmpty(MsConfig.ClientRegUrl) && MsConfig.ClientRegUrl != MsConfig.AppRunUrl)
                 {
-                    MsLog.WriteDebugLine("Run As MicroService.Client : " + MsConfig.ClientName);
-                    MsLog.WriteDebugLine("MicroService.Client.RegUrl : " + MsConfig.ClientRegUrl);
+                    MsLog.WriteDebugLine("Current MicroService Type ：Client of 【" + MsConfig.ClientName+"】");
+                    //MsLog.WriteDebugLine("MicroService.Client.RegUrl : " + MsConfig.ClientRegUrl);
                     ThreadBreak.AddGlobalThread(new ParameterizedThreadStart(ClientRunByLoop));
                 }
+                MsLog.WriteDebugLine("--------------------------------------------------");
             }
         }
 
@@ -407,8 +410,9 @@ namespace Taurus.MicroService
                 {
                     lock (MsConst.tableLockObj)
                     {
-                        if (Server._HostList != null && Server._HostList.Count > 0)
+                        if (Server.HostList != null)//Server._HostList != null && 
                         {
+                            Server.AddHost("RegCenter", MsConfig.AppRunUrl);
                             MDictionary<string, List<HostInfo>> keyValuePairs = Server._HostList;//拿到引用
                             MDictionary<string, List<HostInfo>> newKeyValuePairs = new MDictionary<string, List<HostInfo>>(StringComparer.OrdinalIgnoreCase);
                             foreach (var item in keyValuePairs)
@@ -431,35 +435,35 @@ namespace Taurus.MicroService
                                 }
                             }
 
+                            if (newKeyValuePairs.Count > 0)
+                            {
+                                Server._HostListJson = JsonHelper.ToJson(newKeyValuePairs);
+                                IO.Write(MsConst.ServerHostListJsonPath, Server._HostListJson);
+                            }
+                            else
+                            {
+                                IO.Delete(MsConst.ServerHostListJsonPath);
+                                Server._HostListJson = String.Empty;
+                            }
+                            WriteToDb(keyValuePairs);
                             if (Server.IsChange)
                             {
                                 Server.IsChange = false;
                                 Server.Tick = DateTime.Now.Ticks;
-                                if (newKeyValuePairs.Count > 0)
-                                {
-                                    Server._HostListJson = JsonHelper.ToJson(newKeyValuePairs);
-                                    IO.Write(MsConst.ServerHostListJsonPath, Server._HostListJson);
-                                }
-                                else
-                                {
-                                    Server._HostListJson = String.Empty;
-                                    IO.Delete(MsConst.ServerHostListJsonPath);
-                                }
                                 Server._HostList = newKeyValuePairs;
-                                WriteToDb(keyValuePairs);
                             }
                             else
                             {
-                                WriteToDb(newKeyValuePairs);
                                 newKeyValuePairs.Clear();
                                 newKeyValuePairs = null;
                             }
                         }
                     }
-                    Server.AddHost("RegCenter",MsConfig.AppRunUrl);
+
                 }
                 catch (Exception err)
                 {
+                    MsLog.WriteDebugLine(err.Message);
                     MsLog.Write(err.Message, "MicroService.Run.ClearServerTable()", "", MsConfig.ServerName);
                 }
                 Thread.Sleep(5000);//测试并发。
@@ -470,38 +474,21 @@ namespace Taurus.MicroService
         {
             if (hostList != null && hostList.Count > 0 && !string.IsNullOrEmpty(MsConfig.MsConn))
             {
-                MDataTable table = MsTable;
-                foreach (KeyValuePair<string, List<HostInfo>> item in hostList)
+                if (DBTool.TestConn(MsConfig.MsConn))
                 {
-                    foreach (HostInfo host in item.Value)
+                    MDataTable table = Server.CreateTable(hostList);
+                    if(table.Rows.Count > 0)
                     {
-                        table.NewRow(true).Sets(1, item.Key, host.Host, host.Version, host.RegTime);
+                        table.AcceptChanges(AcceptOp.Auto, System.Data.IsolationLevel.Unspecified, null, "MsName", "Host");
+                        //bool result = table.AcceptChanges(AcceptOp.Auto, System.Data.IsolationLevel.Unspecified, null, "MsName", "Host");
+                        //MsLog.WriteDebugLine("AcceptChanges : " + result.ToString());
+                       // if(!result
                     }
+                    table.Rows.Clear();
                 }
-                table.AcceptChanges(AcceptOp.Auto, System.Data.IsolationLevel.ReadUncommitted, null, "MsName", "Host");
-                table.Rows.Clear();
             }
         }
-        private static MDataTable _MsTable;
-        private static MDataTable MsTable
-        {
-            get
-            {
-                if (_MsTable == null)
-                {
-                    _MsTable = new MDataTable();
-                    _MsTable.TableName = MsConfig.MsTableName;
-                    _MsTable.Conn = MsConfig.MsConn;
-                    _MsTable.Columns.Add("MsID", System.Data.SqlDbType.Int, true);
-                    _MsTable.Columns.Add("MsName", System.Data.SqlDbType.NVarChar, false, false, 50);
-                    _MsTable.Columns.Add("Host", System.Data.SqlDbType.NVarChar, false, false, 250);
-                    _MsTable.Columns.Add("Version", System.Data.SqlDbType.Int);
-                    _MsTable.Columns.Add("LastActiveTime", System.Data.SqlDbType.DateTime);
-                    _MsTable.Columns.Add("CreateTime", System.Data.SqlDbType.DateTime, false, true, 0, false, CYQ.Data.SQL.SqlValue.GetDate);
-                }
-                return _MsTable;
-            }
-        }
+
         #endregion
     }
 

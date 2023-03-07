@@ -51,22 +51,41 @@ namespace Taurus.Mvc
         public static XHtmlAction Create(string controlName, string actionName)
         {
             string cName = controlName.Replace(ReflectConst.Controller, "");
-            string folder = ViewsPath + "/" + cName;
-
-            if (!Directory.Exists(folder))
+            string[] folders = Directory.GetDirectories(ViewsPath, "*", SearchOption.TopDirectoryOnly);
+            foreach (string folder in folders)
             {
-                folder = ViewsPath + "/" + cName.ToLower();
-            }
-            string filePath = folder + "/" + actionName + ".html";
-            if (!File.Exists(filePath))
-            {
-                filePath = folder + "/" + actionName.ToLower() + ".html";
-                if (!File.Exists(filePath))
+                string foName = Path.GetFileNameWithoutExtension(folder);
+                if (string.Equals(cName,foName, StringComparison.OrdinalIgnoreCase))
                 {
-                    return null;
+                    string[] files = Directory.GetFiles(folder, "*.html", SearchOption.TopDirectoryOnly);
+                    foreach (string file in files)
+                    {
+                        string fiName = Path.GetFileNameWithoutExtension(file);
+                        if (string.Equals(actionName, fiName, StringComparison.OrdinalIgnoreCase))
+                        {
+                            return Create(file);
+                        }
+                    }
+                    break;
                 }
             }
-            return Create(filePath);
+            return null;
+            //string folder = ViewsPath + "/" + cName;
+
+            //if (!Directory.Exists(folder))
+            //{
+            //    folder = ViewsPath + "/" + cName.ToLower();
+            //}
+            //string filePath = folder + "/" + actionName + ".html";
+            //if (!File.Exists(filePath))
+            //{
+            //    filePath = folder + "/" + actionName.ToLower() + ".html";
+            //    if (!File.Exists(filePath))
+            //    {
+            //        return null;
+            //    }
+            //}
+            //return Create(filePath);
         }
         /// <summary>
         /// 创建视图对象

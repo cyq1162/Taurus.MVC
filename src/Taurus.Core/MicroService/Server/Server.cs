@@ -1,4 +1,5 @@
-﻿using CYQ.Data.Tool;
+﻿using CYQ.Data.Table;
+using CYQ.Data.Tool;
 using System;
 using System.Collections.Generic;
 using System.Text;
@@ -28,7 +29,7 @@ namespace Taurus.MicroService
         /// </summary>
         internal static bool IsChange = false;
         internal static string _HostListJson = String.Empty;
-        
+
         /// <summary>
         /// 注册中心 - 返回的表数据Json
         /// </summary>
@@ -231,6 +232,38 @@ namespace Taurus.MicroService
                 info.RegTime = DateTime.Now;
                 list.Add(info);
             }
+        }
+
+        internal static MDataTable GetHostTable()
+        {
+            MDictionary<string, List<HostInfo>> hostList = JsonHelper.ToEntity<MDictionary<string, List<HostInfo>>>(_HostListJson);
+            return CreateTable(hostList);
+        }
+
+        internal static MDataTable CreateTable(MDictionary<string, List<HostInfo>> hostList)
+        {
+            MDataTable _MsTable = new MDataTable();
+            _MsTable.TableName = MsConfig.MsTableName;
+            _MsTable.Conn = MsConfig.MsConn;
+            _MsTable.Columns.Add("MsID", System.Data.SqlDbType.Int, true);
+            _MsTable.Columns.Add("MsName", System.Data.SqlDbType.NVarChar, false, false, 50);
+            _MsTable.Columns.Add("Host", System.Data.SqlDbType.NVarChar, false, false, 250);
+            _MsTable.Columns.Add("Version", System.Data.SqlDbType.Int);
+            _MsTable.Columns.Add("LastActiveTime", System.Data.SqlDbType.DateTime);
+            _MsTable.Columns.Add("CreateTime", System.Data.SqlDbType.DateTime, false, false, 0, false, CYQ.Data.SQL.SqlValue.GetDate);
+
+            if (hostList != null && hostList.Count > 0 && !string.IsNullOrEmpty(MsConfig.MsConn))
+            {
+                foreach (KeyValuePair<string, List<HostInfo>> item in hostList)
+                {
+                    foreach (HostInfo host in item.Value)
+                    {
+                        _MsTable.NewRow(true).Sets(1, item.Key, host.Host, host.Version, host.RegTime);
+                    }
+                }
+            }
+            return _MsTable;
+
         }
     }
 }

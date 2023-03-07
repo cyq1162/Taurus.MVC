@@ -442,7 +442,6 @@ namespace Taurus.Mvc
                 }
 
                 context.Response.Write(outResult);
-                outResult = null;
                 apiResult = null;
             }
         }

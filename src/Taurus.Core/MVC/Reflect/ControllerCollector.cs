@@ -66,7 +66,7 @@ namespace Taurus.Mvc
                 _Assemblys = new List<Assembly>(dllItems.Length);
                 foreach (string dll in dllItems)
                 {
-                    //MsLog.WriteDebugLine(dll);
+                    
                     try
                     {
                         if (dll.IndexOfAny(new char[] { '\\', '/' }) > 0 && dll[0]!='/')
