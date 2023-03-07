@@ -2,6 +2,7 @@
 
   <PropertyGroup>
     <TargetFramework>net6.0</TargetFramework>
+	  <EnableUnsafeBinaryFormatterSerialization>true</EnableUnsafeBinaryFormatterSerialization>
     <AssemblyName>Taurus.View</AssemblyName>
     <RootNamespace>Taurus.View</RootNamespace>
     <StartupObject></StartupObject>
@@ -29,18 +30,13 @@
   </ItemGroup>
 
   <ItemGroup>
-    <PackageReference Include="System.Data.SqlClient" Version="4.6.0" />
+    <PackageReference Include="MySql.Data" Version="8.0.20" />
   </ItemGroup>
 
   <ItemGroup>
+    <ProjectReference Include="..\..\..\..\..\cyqdata\trunk\src\CYQ.Data_NetCore.csproj" />
     <ProjectReference Include="..\..\..\src\Taurus.Core\Taurus.Core_NetCore.csproj" />
     <ProjectReference Include="..\Taurus.Controllers\Taurus.Controllers_NetCore.csproj" />
-  </ItemGroup>
-
-  <ItemGroup>
-    <Reference Include="CYQ.Data">
-      <HintPath>..\..\..\Packages\netcoreapp2.1\CYQ.Data.dll</HintPath>
-    </Reference>
   </ItemGroup>
 
   <ItemGroup>

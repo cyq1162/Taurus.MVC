@@ -6,6 +6,7 @@ using System.Net.Sockets;
 using System.Net;
 using Taurus.Mvc;
 using System.Net.Http;
+using Microsoft.AspNetCore.Builder;
 
 namespace Taurus.View
 {
@@ -31,13 +32,6 @@ namespace Taurus.View
                 .Build();
         public static string GetUrl()
         {
-            //ServicePointManager.DefaultConnectionLimit = 10000;
-            //System.Threading.ThreadPool.SetMaxThreads(1000, 1000);
-            //HttpClientHandler. = 10000;
-           
-
-
-
             string host = AppConfig.GetApp("Host");
             string runUrl = MicroService.MsConfig.AppRunUrl;
             if (host.Contains(":0"))//常规部署随机端口
@@ -56,11 +50,13 @@ namespace Taurus.View
                     System.Net.IPAddress[] addressList = Dns.GetHostEntry(Dns.GetHostName()).AddressList;
                     foreach (var address in addressList)
                     {
-                        if (!address.ToString().Contains(":"))
+                        string ip=address.ToString();
+                        if (ip.EndsWith(".1") || ip.Contains(":")) // 忽略路由和网卡地址。
                         {
-                            runUrl = runUrl.Replace("localhost", address.ToString());//设置启动路径
-                            break;
+                            continue;
                         }
+                        runUrl = runUrl.Replace("localhost", ip);//设置启动路径
+                        break;
                     }
 
                 }

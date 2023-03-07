@@ -22,6 +22,7 @@ namespace Taurus.View
             services.AddHttpContext();
             services.Configure<KestrelServerOptions>((x) =>
             {
+                //x.ConfigureHttpsDefaults(options => { options.ServerCertificate.})
                 //x.Listen(IPAddress.Any, 443, op => {
                 //    op.UseHttps("xxx.pfx", "password");
                 //});
