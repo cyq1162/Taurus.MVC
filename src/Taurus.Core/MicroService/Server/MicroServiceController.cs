@@ -32,6 +32,10 @@ namespace Taurus.MicroService
                 case "exit":
                     return true;
                 default:
+                    if (!MsConfig.IsRegCenter)
+                    {
+                        Write("Current Is Not Run As Register Center.", false);
+                    }
                     return MsConfig.IsRegCenter;
             }
         }
