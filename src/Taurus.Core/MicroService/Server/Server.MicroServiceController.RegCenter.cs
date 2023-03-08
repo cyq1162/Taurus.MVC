@@ -9,10 +9,10 @@ namespace Taurus.MicroService
     /// </summary>
     internal partial class MicroServiceController
     {
-        public void Json()
-        {
-            Write(Server.HostListJson);
-        }
+        //public void Json()
+        //{
+        //    Write(Server.HostListJson);
+        //}
         public void Index()
         {
             if (View != null)
