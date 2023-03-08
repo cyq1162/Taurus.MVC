@@ -31,7 +31,7 @@ namespace Taurus.MicroService
                 if (context.Request.Url.Host != "localhost" && !IPAddress.TryParse(context.Request.Url.Host, out iPAddress))
                 {
                     module = context.Request.Url.Host;//域名转发优先。
-                    domainList = isServerCall ? MicroService.Server.GetHostList(module) : MicroService.Client.GetHostList(module);
+                    domainList = isServerCall ? Server.GetHostList(module) : Client.GetHostList(module);
                     if (domainList == null || domainList.Count == 0)
                     {
                         return false;
@@ -46,7 +46,7 @@ namespace Taurus.MicroService
                 {
                     module = context.Request.Url.LocalPath.TrimStart('/').Split('/')[0];
                 }
-                List<HostInfo> moduleList = isServerCall ? MicroService.Server.GetHostList(module) : MicroService.Client.GetHostList(module);
+                List<HostInfo> moduleList = isServerCall ? Server.GetHostList(module) : Client.GetHostList(module);
 
                 if (domainList == null || domainList.Count == 0) { infoList = moduleList; }
                 else if (moduleList == null || moduleList.Count == 0) { infoList = domainList; }
