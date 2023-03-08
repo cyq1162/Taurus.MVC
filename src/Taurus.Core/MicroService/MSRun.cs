@@ -7,7 +7,6 @@ using CYQ.Data.Tool;
 using CYQ.Data.Table;
 using Taurus.Mvc;
 using System.Diagnostics;
-using static Taurus.MicroService.Rpc;
 
 namespace Taurus.MicroService
 {

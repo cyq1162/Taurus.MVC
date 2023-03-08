@@ -165,7 +165,7 @@ namespace Taurus.MicroService
                 }
                 if (name.Contains("."))//域名
                 {
-                    if (list.Count == 0 && name.Split(".").Length > 2)//2级泛域名检测
+                    if (list.Count == 0 && name.Split('.').Length > 2)//2级泛域名检测
                     {
                         string seName = "*" + name.Substring(name.IndexOf("."));
                         if (HostList.ContainsKey(seName))
