@@ -64,14 +64,8 @@ namespace Taurus.MicroService
         {
             WriteLine(Environment.NewLine);
             WriteLine("--------------------------------------");
-            WriteLine(DateTime.Now.ToString("HH:mm:ss") + string.Format(" : Server.API.Call.Reg : Host : {0} Name : {1}", host, name));
-            if (!MsConfig.IsRegCenter)
-            {
-                string tip = "MicroService.Reg : This is not RegCenter";
-                MsLog.Write(tip, Convert.ToString(Request.UrlReferrer), "POST", MsConfig.ServerName);
-                Write(tip, false);
-                return;//仅服务类型为注册中心，才允许接收注册。
-            }
+            WriteLine(DateTime.Now.ToString("HH:mm:ss") + string.Format(" : Reg Host From : {0} Name : {1}", host, name));
+
             #region 注册中心【从】检测到【主】恢复后，推送host，让后续的请求转回【主】
             if (Server.RegCenterIsLive && !MsConfig.IsRegCenterOfMaster)
             {
@@ -255,7 +249,7 @@ namespace Taurus.MicroService
         public void Reg2(string host)
         {
             WriteLine(Environment.NewLine + "--------------------------------------");
-            WriteLine(DateTime.Now.ToString("HH:mm:ss") + " : Server.API.Call.Reg2 : Host :" + host);
+            WriteLine(DateTime.Now.ToString("HH:mm:ss") + " : Reg Host2 From :" + host);
             Server.AddHost("RegCenterOfSlave", host);
             Server.Host2 = host;
             Server.Host2LastRegTime = DateTime.Now;

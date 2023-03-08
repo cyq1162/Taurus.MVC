@@ -146,6 +146,20 @@ namespace Taurus.MicroService
                 AppConfig.SetApp("MicroService.App.RemoteExit", value.ToString());
             }
         }
+        ///// <summary>
+        ///// 应用配置：应用程序绑定域名
+        ///// </summary>
+        //public static bool Domain
+        //{
+        //    get
+        //    {
+        //        return AppConfig.GetAppBool("MicroService.App.Domain", false);
+        //    }
+        //    set
+        //    {
+        //        AppConfig.SetApp("MicroService.App.Domain", value.ToString());
+        //    }
+        //}
         #endregion
 
 

@@ -51,22 +51,25 @@ namespace Taurus.Mvc
         public static XHtmlAction Create(string controlName, string actionName)
         {
             string cName = controlName.Replace(ReflectConst.Controller, "");
-            string[] folders = Directory.GetDirectories(ViewsPath, "*", SearchOption.TopDirectoryOnly);
-            foreach (string folder in folders)
+            if (Directory.Exists(ViewsPath))
             {
-                string foName = Path.GetFileNameWithoutExtension(folder);
-                if (string.Equals(cName,foName, StringComparison.OrdinalIgnoreCase))
+                string[] folders = Directory.GetDirectories(ViewsPath, "*", SearchOption.TopDirectoryOnly);
+                foreach (string folder in folders)
                 {
-                    string[] files = Directory.GetFiles(folder, "*.html", SearchOption.TopDirectoryOnly);
-                    foreach (string file in files)
+                    string foName = Path.GetFileNameWithoutExtension(folder);
+                    if (string.Equals(cName, foName, StringComparison.OrdinalIgnoreCase))
                     {
-                        string fiName = Path.GetFileNameWithoutExtension(file);
-                        if (string.Equals(actionName, fiName, StringComparison.OrdinalIgnoreCase))
+                        string[] files = Directory.GetFiles(folder, "*.html", SearchOption.TopDirectoryOnly);
+                        foreach (string file in files)
                         {
-                            return Create(file);
+                            string fiName = Path.GetFileNameWithoutExtension(file);
+                            if (string.Equals(actionName, fiName, StringComparison.OrdinalIgnoreCase))
+                            {
+                                return Create(file);
+                            }
                         }
+                        break;
                     }
-                    break;
                 }
             }
             return null;

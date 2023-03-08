@@ -44,6 +44,41 @@ namespace Taurus.MicroService
                 _Host2 = value;
             }
         }
+        /// <summary>
+        /// 注册数据是否发生改变
+        /// </summary>
+        internal static bool IsChange = false;
+        internal static string _HostListJson = null;
+
+        /// <summary>
+        /// 返回的注册数据
+        /// </summary>
+        internal static string HostListJson
+        {
+            get
+            {
+                if (_HostListJson == null)
+                {
+                    _HostListJson = IO.Read(MsConst.ClientHostListJsonPath);
+                }
+                return _HostListJson;
+            }
+            set
+            {
+                _HostListJson = value;
+                IsChange = true;
+                if (string.IsNullOrEmpty(value))
+                {
+                    IO.Delete(MsConst.ClientHostListJsonPath);
+                }
+                else
+                {
+                    IO.Write(MsConst.ClientHostListJsonPath, value);
+                }
+
+            }
+        }
+
         internal static MDictionary<string, List<HostInfo>> _HostList;
         /// <summary>
         /// 从微服务主程序端获取的微服务列表【用于微服务间内部调用运转】
@@ -52,13 +87,11 @@ namespace Taurus.MicroService
         {
             get
             {
-                if (_HostList == null)
+                if (_HostList == null || IsChange)
                 {
-                    string json = IO.Read(MicroService.MsConst.ClientHostListJsonPath);
-                    if (!string.IsNullOrEmpty(json))
-                    {
-                        _HostList = JsonHelper.ToEntity<MDictionary<string, List<HostInfo>>>(json);
-                    }
+                    IsChange = false;
+                    _HostList = JsonHelper.ToEntity<MDictionary<string, List<HostInfo>>>(HostListJson);
+
                     if (_HostList == null)
                     {
                         _HostList = new MDictionary<string, List<HostInfo>>(StringComparer.OrdinalIgnoreCase);
