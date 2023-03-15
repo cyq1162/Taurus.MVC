@@ -5,6 +5,8 @@
     <link itemref="master.btcss" />
     <link itemref="master.btcss_extend" />
     <style type="text/css">
+        a { cursor:pointer;
+        }
         .table-bordered td {
             text-align: left;
         }
@@ -12,27 +14,52 @@
 </head>
 <body itemref="master.body">
     <div id="container">
-        <div title="Data Bind">
+        <div>
             MicroService Register Center：
-            <hr />
         </div>
         <hr />
-        <table class="table table-striped" title="[Users] Table">
+        <div id="namesView" style="float:left">
+            <a href="${'/'+module}/microservice/index?name=${Name}">${Name}（${Count}）</a>&nbsp;|&nbsp;
+        </div>
+        <div style="clear:both;">
+        </div>
+        <hr />
+        <table class="table table-striped">
             <tr>
                 <td>Register Name</td>
                 <td>Host</td>
                 <td>Version</td>
                 <td>LastActiveTime</td>
+                <td>Remote Exit</td>
             </tr>
             <tbody id="defaultView" clearflag="1">
                 <tr>
-                    <td>${MsName}</td>
-                    <td>${Host}</td>
+                    <td><a target="_blank" href="${Host}/doc" title="doc">${Name}</a></td>
+                    <td><a target="_blank" href="${Host}">${Host}</a></td>
                     <td>${Version}</td>
-                    <td>${LastActiveTime}</td>
+                    <td>${RegTime}</td>
+                    <td><a onclick="stop('${Host}',this);" title="stop application">Stop</a></td>
                 </tr>
             </tbody>
         </table>
+        <script>
+            function stop(host,el)
+            {
+                if (confirm("Stop Service Confirm ?")) {
+                    el.onclick = undefined;
+                    el.style = "text-decoration: none; cursor: default; opacity: 0.2";
+                    $.ajax({
+                        type: "GET",
+                        url: host + "/microservice/exit?mskey=${ClientKey}",
+                        success: function (result) {
+                            if (result) {
+                                alert(result.msg);
+                            }
+                        }
+                    });
+                }
+            }
+        </script>
     </div>
 </body>
 </html>
