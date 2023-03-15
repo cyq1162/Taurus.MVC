@@ -25,6 +25,10 @@ namespace Taurus.MicroService
             {
                 try
                 {
+                    if (MsConfig.IsApplicationExit)
+                    {
+                        break;//停止注册，即注销。
+                    }
                     if (MsConfig.IsGateway)
                     {
                         AfterGetListOfServer(GetListOfServer());//仅读取服务列表
@@ -107,7 +111,7 @@ namespace Taurus.MicroService
             try
             {
 
-                string data = string.Format("json={0}&tick=" + Server.Tick, JsonHelper.ToJson(Server.HostList));
+                string data = string.Format("json={0}&tick=" + Server.Tick, Server.Gateway.HostListJson);
                 using (WebClient wc = new WebClient())
                 {
                     wc.Headers.Add(MsConst.HeaderKey, MsConfig.ServerKey);
@@ -144,24 +148,11 @@ namespace Taurus.MicroService
                 if (Server.Tick > tick) { return; }
                 Server.Tick = tick;
                 Server.Host2 = host2;
-
-                if (MsConfig.ServerName.ToLower() == MsConst.Gateway)
-                {
-                    if (!string.IsNullOrEmpty(host2))
-                    {
-                        IO.Write(MsConst.ServerHost2Path, host2);
-                    }
-                    else
-                    {
-                        IO.Delete(MsConst.ServerHost2Path);
-                    }
-                }
-
                 string json = JsonHelper.GetValue<string>(result, "msg");
                 if (!string.IsNullOrEmpty(json))
                 {
-                    Server._HostList = JsonHelper.ToEntity<MDictionary<string, List<HostInfo>>>(json);
-                    IO.Write(MsConst.ServerHostListJsonPath, json);
+                    Server.Gateway.HostList = JsonHelper.ToEntity<MDictionary<string, List<HostInfo>>>(json);
+                    Server.Gateway.HostListJson = json;
                 }
             }
         }
@@ -206,63 +197,64 @@ namespace Taurus.MicroService
 
         #region 服务主机清理。
         /// <summary>
-        /// 清理服务主机。
+        /// 注册中心 - 清理过期服务。
         /// </summary>
-        internal static void ClearServerTable()
+        internal static void ClearExpireHost()
         {
             while (true)
             {
                 try
                 {
-                    lock (MsConst.tableLockObj)
+                    var regCenterList = Server.RegCenter.HostList;
+                    if (regCenterList != null)
                     {
-                        if (Server.HostList != null)//Server._HostList != null && 
+                        Server.RegCenter.AddHost("RegCenter", MsConfig.AppRunUrl);
+                        List<string> keys = new List<string>(regCenterList.Count);
+                        foreach (string item in regCenterList.Keys)
                         {
-                            Server.AddHost("RegCenter", MsConfig.AppRunUrl);
-                            MDictionary<string, List<HostInfo>> keyValuePairs = Server._HostList;//拿到引用
-                            MDictionary<string, List<HostInfo>> newKeyValuePairs = new MDictionary<string, List<HostInfo>>(StringComparer.OrdinalIgnoreCase);
-                            foreach (var item in keyValuePairs)
+                            keys.Add(item);
+                        }
+                        var kvForRegCenter = new MDictionary<string, List<HostInfo>>(StringComparer.OrdinalIgnoreCase);
+                        var kvForGateway = new MDictionary<string, List<HostInfo>>(StringComparer.OrdinalIgnoreCase);
+                        foreach (string key in keys)
+                        {
+                            var item = regCenterList[key];
+                            List<HostInfo> newList = new List<HostInfo>();
+                            foreach (var info in item)
                             {
-                                List<HostInfo> newList = new List<HostInfo>();
-                                foreach (var info in item.Value)
+                                if (info.RegTime < DateTime.Now.AddSeconds(-11) || info.Version < 0)
                                 {
-                                    if (info.RegTime < DateTime.Now.AddSeconds(-11) || info.Version < 0)
-                                    {
-                                        Server.IsChange = true;
-                                    }
-                                    else
-                                    {
-                                        newList.Add(info);
-                                    }
+                                    Server.IsChange = true;
                                 }
-                                if (newList.Count > 0)
+                                else
                                 {
-                                    newKeyValuePairs.Add(item.Key, newList);
+                                    newList.Add(info);
                                 }
                             }
+                            if (newList.Count > 0)
+                            {
+                                kvForRegCenter.Add(key, newList);
+                                kvForGateway.Add(key, newList);
 
-                            if (newKeyValuePairs.Count > 0)
-                            {
-                                Server._HostListJson = JsonHelper.ToJson(newKeyValuePairs);
-                                IO.Write(MsConst.ServerHostListJsonPath, Server._HostListJson);
                             }
-                            else
-                            {
-                                IO.Delete(MsConst.ServerHostListJsonPath);
-                                Server._HostListJson = String.Empty;
-                            }
-                            WriteToDb(keyValuePairs);
-                            if (Server.IsChange)
-                            {
-                                Server.IsChange = false;
-                                Server.Tick = DateTime.Now.Ticks;
-                                Server._HostList = newKeyValuePairs;
-                            }
-                            else
-                            {
-                                newKeyValuePairs.Clear();
-                                newKeyValuePairs = null;
-                            }
+                        }
+
+                        if (kvForRegCenter.Count > 0)
+                        {
+                            Server.RegCenter.HostListJson = JsonHelper.ToJson(kvForRegCenter);
+                        }
+                        else
+                        {
+                            Server.RegCenter.HostListJson = String.Empty;
+                        }
+                        Server.Gateway.HostList = kvForGateway;
+                        Server.RegCenter.HostList = kvForRegCenter;
+                        if (Server.IsChange)
+                        {
+                            Server.IsChange = false;
+                            Server.Tick = DateTime.Now.Ticks;
+                            //Server.HostList = kvForRegCenter;
+                            //WriteToDb(kvForGateway);//为了性能，取消写数据库操作。
                         }
                     }
 
@@ -272,28 +264,28 @@ namespace Taurus.MicroService
                     MsLog.WriteDebugLine(err.Message);
                     MsLog.Write(err.Message, "MicroService.Run.ClearServerTable()", "", MsConfig.ServerName);
                 }
-                Thread.Sleep(5000);//测试并发。
+                Thread.Sleep(3000);//测试并发。
             }
         }
 
-        private static void WriteToDb(MDictionary<string, List<HostInfo>> hostList)
-        {
-            if (hostList != null && hostList.Count > 0 && !string.IsNullOrEmpty(MsConfig.MsConn))
-            {
-                if (DBTool.TestConn(MsConfig.MsConn))
-                {
-                    MDataTable table = Server.CreateTable(hostList);
-                    if (table.Rows.Count > 0)
-                    {
-                        table.AcceptChanges(AcceptOp.Auto, System.Data.IsolationLevel.Unspecified, null, "MsName", "Host");
-                        //bool result = table.AcceptChanges(AcceptOp.Auto, System.Data.IsolationLevel.Unspecified, null, "MsName", "Host");
-                        //MsLog.WriteDebugLine("AcceptChanges : " + result.ToString());
-                        // if(!result
-                    }
-                    table.Rows.Clear();
-                }
-            }
-        }
+        //private static void WriteToDb(MDictionary<string, List<HostInfo>> hostList)
+        //{
+        //    if (hostList != null && hostList.Count > 0 && !string.IsNullOrEmpty(MsConfig.MsConn))
+        //    {
+        //        if (DBTool.TestConn(MsConfig.MsConn))
+        //        {
+        //            MDataTable table = Server.CreateTable(hostList);
+        //            if (table.Rows.Count > 0)
+        //            {
+        //                table.AcceptChanges(AcceptOp.Auto, System.Data.IsolationLevel.Unspecified, null, "MsName", "Host");
+        //                //bool result = table.AcceptChanges(AcceptOp.Auto, System.Data.IsolationLevel.Unspecified, null, "MsName", "Host");
+        //                //MsLog.WriteDebugLine("AcceptChanges : " + result.ToString());
+        //                // if(!result
+        //            }
+        //            table.Rows.Clear();
+        //        }
+        //    }
+        //}
 
         #endregion
     }

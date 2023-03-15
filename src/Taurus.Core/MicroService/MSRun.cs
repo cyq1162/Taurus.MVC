@@ -43,7 +43,7 @@ namespace Taurus.MicroService
                 if (MsConfig.IsRegCenterOfMaster)
                 {
                     MsLog.WriteDebugLine("Current MicroService Type ：RegCenter of Master");
-                    Thread thread = new Thread(new ThreadStart(ClearServerTable));
+                    Thread thread = new Thread(new ThreadStart(ClearExpireHost));
                     thread.Start();
                 }
                 //if (!string.IsNullOrEmpty(host))

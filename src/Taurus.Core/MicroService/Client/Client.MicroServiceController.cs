@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Threading;
 using Taurus.Mvc;
 using Taurus.Mvc.Attr;
 
@@ -17,13 +18,25 @@ namespace Taurus.MicroService
         {
             if (MsConfig.RemoteExit)
             {
-                Write("Environment exit.", true);
-                Environment.Exit(0);
+                MsConfig.IsApplicationExit = true;//注销注册中心服务。
+                new Thread(new ThreadStart(AppExit)).Start();
+                Write("Remote Exit Success: wait for the registry to unregister the host (10s).", true);
             }
             else
             {
                 Write("MicroService remote exit is disabled.", false);
             }
+        }
+
+        private void AppExit()
+        {
+            MsLog.WriteDebugLine("Remote Exit : wait for the registry to unregister the host (15s).");
+            for (int i = 15; i >= 0; i--)
+            {
+                MsLog.WriteDebugLine("Ready to stop : " + i + "s");
+                Thread.Sleep(1000);
+            }
+            Environment.Exit(0);
         }
     }
 }

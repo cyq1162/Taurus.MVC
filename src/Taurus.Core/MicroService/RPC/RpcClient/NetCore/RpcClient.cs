@@ -17,7 +17,7 @@ namespace Taurus.MicroService
             if (isNet6)
             {
                 wc = new WebClient();
-               // wc.Proxy = null;
+                // wc.Proxy = null;
             }
         }
 
@@ -58,7 +58,13 @@ namespace Taurus.MicroService
         {
             if (wc != null)
             {
+                //Random rnd = new Random();
+                //if (rnd.Next() % 2 == 0)
+                //{
+                //    return wc.DownloadDataTaskAsync(url).Result;
+                //}
                 return wc.DownloadData(url);
+                //      
                 //WebClient wc = new WebClient();
                 //if (Headers.Count > 0)
                 //{
@@ -82,7 +88,8 @@ namespace Taurus.MicroService
         {
             if (wc != null)
             {
-                return wc.UploadData(address, method, data);
+                return wc.UploadDataTaskAsync(address, method, data).Result;
+                //   return wc.UploadData(address, method, data);
                 //WebClient wc = new WebClient();
                 //if (Headers.Count > 0)
                 //{
@@ -130,7 +137,7 @@ namespace Taurus.MicroService
             }
             else
             {
-                ResponseHeaders =new WebHeaderCollection();
+                ResponseHeaders = new WebHeaderCollection();
             }
             foreach (var item in task.Result.Headers)
             {

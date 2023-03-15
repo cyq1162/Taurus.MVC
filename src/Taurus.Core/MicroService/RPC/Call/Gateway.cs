@@ -3,6 +3,8 @@ using System.Web;
 using System.Collections.Generic;
 using System.Net;
 using Taurus.Mvc;
+using CYQ.Data.Tool;
+using CYQ.Data;
 
 namespace Taurus.MicroService
 {
@@ -31,7 +33,7 @@ namespace Taurus.MicroService
                 if (context.Request.Url.Host != "localhost" && !IPAddress.TryParse(context.Request.Url.Host, out iPAddress))
                 {
                     module = context.Request.Url.Host;//域名转发优先。
-                    domainList = isServerCall ? Server.GetHostList(module) : Client.GetHostList(module);
+                    domainList = isServerCall ? Server.Gateway.GetHostList(module) : Client.Gateway.GetHostList(module);
                     if (domainList == null || domainList.Count == 0)
                     {
                         return false;
@@ -46,7 +48,7 @@ namespace Taurus.MicroService
                 {
                     module = context.Request.Url.LocalPath.TrimStart('/').Split('/')[0];
                 }
-                List<HostInfo> moduleList = isServerCall ? Server.GetHostList(module) : Client.GetHostList(module);
+                List<HostInfo> moduleList = isServerCall ? Server.Gateway.GetHostList(module) : Client.Gateway.GetHostList(module);
 
                 if (domainList == null || domainList.Count == 0) { infoList = moduleList; }
                 else if (moduleList == null || moduleList.Count == 0) { infoList = domainList; }
@@ -122,6 +124,7 @@ namespace Taurus.MicroService
                 byte[] bytes = null;
                 url = host + request.RawUrl;
                 RpcClient wc = RpcClientPool.Create(uri);
+                if (wc == null) { return false; }
                 try
                 {
                     wc.Headers.Add(MsConst.HeaderKey, (isServerCall ? MsConfig.ServerKey : MsConfig.ClientKey));
@@ -192,6 +195,7 @@ namespace Taurus.MicroService
                     {
                         return true;
                     }
+                    RpcClientPool.RemoveFromPool(uri);
                     MsLog.Write(err.Message, url, request.HttpMethod, isServerCall ? MsConfig.ServerName : MsConfig.ClientName);
                     return false;
                 }

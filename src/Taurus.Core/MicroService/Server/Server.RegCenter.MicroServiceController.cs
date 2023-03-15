@@ -73,7 +73,7 @@ namespace Taurus.MicroService
                 return;
             }
             #endregion
-            var kvTable = Server.HostList;
+            var kvTable = Server.RegCenter.HostList;
 
             StringBuilder sb = new StringBuilder();
             #region 注册名字[版本号检测]
@@ -123,9 +123,10 @@ namespace Taurus.MicroService
                     bool hasBiggerVersion = false;
                     List<HostInfo> list = kvTable[module];//ms,a.com
                     StringBuilder sb2 = new StringBuilder();
-                    for (int i = 0; i < list.Count; i++)
+                    int count = list.Count;//1、先拿总数，不能在for中用list.Count
+                    for (int i = 0; i < count; i++)
                     {
-                        HostInfo info = list[i];
+                        HostInfo info = list[i];//2、先拿总数，再循环，否则在并发下会拿到null值。
                         if (info.Version == -1)
                         {
                             if (info.Host == host)
@@ -211,7 +212,7 @@ namespace Taurus.MicroService
         public void GetList(long tick, bool isGateway)
         {
             WriteLine(Environment.NewLine + "--------------------------------------");
-            WriteLine(DateTime.Now.ToString("HH:mm:ss") + " : Server.API.Call.GetList : From :" + Request.UrlReferrer);
+            WriteLine(DateTime.Now.ToString("HH:mm:ss") + " : GetList : From :" + Request.UrlReferrer);
             if (Server.Host2LastRegTime < DateTime.Now.AddSeconds(-15))//超过15秒，备份链接无效化。
             {
                 Server.Host2 = String.Empty;
@@ -223,17 +224,16 @@ namespace Taurus.MicroService
             }
             if (isGateway && Request.UrlReferrer != null)
             {
-                Server.AddHost("Gateway", Request.UrlReferrer.OriginalString);
+                Server.RegCenter.AddHost("Gateway", Request.UrlReferrer.OriginalString);
             }
-            if (Server.HostList.Count == 0 || tick == Server.Tick)
+            if (Server.RegCenter.HostList.Count == 0 || tick == Server.Tick)
             {
                 string result = JsonHelper.OutResult(true, "", "tick", Server.Tick, "host2", Server.Host2, "host", host);
                 Write(result);
             }
             else
             {
-                string json = Server.HostListJson;
-                string result = JsonHelper.OutResult(true, json, "tick", Server.Tick, "host2", Server.Host2, "host", host);
+                string result = JsonHelper.OutResult(true, Server.RegCenter.HostListJson, "tick", Server.Tick, "host2", Server.Host2, "host", host);
                 Write(result);
             }
 
@@ -250,7 +250,7 @@ namespace Taurus.MicroService
         {
             WriteLine(Environment.NewLine + "--------------------------------------");
             WriteLine(DateTime.Now.ToString("HH:mm:ss") + " : Reg Host2 From :" + host);
-            Server.AddHost("RegCenterOfSlave", host);
+            Server.RegCenter.AddHost("RegCenterOfSlave", host);
             Server.Host2 = host;
             Server.Host2LastRegTime = DateTime.Now;
             string result = JsonHelper.OutResult(true, "", "tick", Server.Tick);
@@ -272,7 +272,8 @@ namespace Taurus.MicroService
             if (tick > Server.Tick)
             {
                 Server.Tick = tick;
-                Server._HostList = JsonHelper.ToEntity<MDictionary<string, List<HostInfo>>>(json);
+                Server.RegCenter.HostListJson = json;
+                Server.RegCenter.HostList = JsonHelper.ToEntity<MDictionary<string, List<HostInfo>>>(json);
             }
             Write("", true);
         }

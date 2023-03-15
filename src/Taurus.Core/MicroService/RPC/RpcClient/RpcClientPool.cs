@@ -2,6 +2,8 @@
 using System;
 using System.Collections.Generic;
 using CYQ.Data;
+using CYQ.Data.Cache;
+using static CYQ.Data.AppConfig;
 
 namespace Taurus.MicroService
 {
@@ -13,6 +15,7 @@ namespace Taurus.MicroService
     /// </summary>
     internal class RpcClientPool
     {
+        static CacheManage cache = CacheManage.LocalInstance;
         static MDictionary<string, Queue<RpcClient>> rpcClientPool = new MDictionary<string, Queue<RpcClient>>();
         /// <summary>
         /// NET 6 及以上自带池。
@@ -21,6 +24,10 @@ namespace Taurus.MicroService
 
         public static RpcClient Create(Uri uri)
         {
+            if (cache.Get("RpcClientPool_" + uri.Authority) != null)
+            {
+                return null;
+            }
             if (!isNeedPool)
             {
                 return new RpcClient();
@@ -49,6 +56,10 @@ namespace Taurus.MicroService
         }
         public static void AddToPool(Uri uri, RpcClient wc)
         {
+            if (cache.Get("RpcClientPool_" + uri.Authority) != null)
+            {
+                return;
+            }
             if (!isNeedPool)
             {
                 return;
@@ -70,6 +81,11 @@ namespace Taurus.MicroService
                 rpcClientPool.Add(uri.Authority, queue);
             }
 
+        }
+        public static void RemoveFromPool(Uri uri)
+        {
+            cache.Set("RpcClientPool_" + uri.Authority, true, 0.15);
+            rpcClientPool.Remove(uri.Authority);
         }
     }
 }

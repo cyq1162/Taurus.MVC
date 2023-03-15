@@ -4,9 +4,6 @@ using System.Net;
 using System.Threading;
 using CYQ.Data;
 using CYQ.Data.Tool;
-using CYQ.Data.Table;
-using Taurus.Mvc;
-using System.Diagnostics;
 
 namespace Taurus.MicroService
 {
@@ -20,10 +17,33 @@ namespace Taurus.MicroService
         /// </summary>
         private static void RunLoopOfClient(object threadID)
         {
+            bool isFirst = true;
             while (true)
             {
                 try
                 {
+                    if (MsConfig.IsApplicationExit)
+                    {
+                        break;//停止注册，即注销。
+                    }
+                    #region 测试并发注册
+                    //string name = MsConfig.ClientName;
+                    //for (int i = 0; i < 1000000; i++)
+                    //{
+                    //    MsConfig.ClientName = name + "," + i;
+                    //    MsConfig.AppRunUrl = "http://localhost:" + i;
+                    //    AfterRegHost(RegHost());
+                    //}
+                    #endregion
+
+                    //获取列表，再注册【Rpc的调用，需要有列表，再注册自身（获得请求分配）】
+
+                    if (isFirst)
+                    {
+                        isFirst = false;
+                        AfterGetListOfClient(GetListOfClient());
+                    }
+
                     AfterRegHost(RegHost());
                 }
                 catch (Exception err)
@@ -44,8 +64,8 @@ namespace Taurus.MicroService
         /// <returns></returns>
         private static string RegHost()
         {
+            
             string url = MsConfig.ClientRegUrl + "/microservice/reg";
-
             try
             {
                 using (WebClient wc = new WebClient())
@@ -57,7 +77,7 @@ namespace Taurus.MicroService
                     string data = "name={0}&host={1}&version={2}";
                     string result = wc.UploadString(url, string.Format(data, MsConfig.ClientName, MsConfig.AppRunUrl, MsConfig.ClientVersion));
                     Client.RegCenterIsLive = true;
-                    MsLog.WriteDebugLine(DateTime.Now.ToString("HH:mm:ss") + string.Format(" : RegHost OK : Tick : {0} Module : {1}", Client.Tick, MsConfig.ClientName));
+                    MsLog.WriteDebugLine(DateTime.Now.ToString("HH:mm:ss") + string.Format(" : RegHost : Module : {0} Version : {1} => OK", MsConfig.ClientName, MsConfig.ClientVersion));
                     return result;
                 }
             }
@@ -80,14 +100,6 @@ namespace Taurus.MicroService
             {
                 long tick = JsonHelper.GetValue<long>(result, "tick");
                 Client.Host2 = JsonHelper.GetValue<string>(result, "host2");
-                if (!string.IsNullOrEmpty(Client.Host2))
-                {
-                    IO.Write(MsConst.ClientHost2Path, Client.Host2);
-                }
-                else
-                {
-                    IO.Delete(MsConst.ClientHost2Path);
-                }
                 string host = JsonHelper.GetValue<string>(result, "host");
                 if (!string.IsNullOrEmpty(host) && host != MsConfig.ClientRegUrl)
                 {
@@ -95,6 +107,7 @@ namespace Taurus.MicroService
                 }
                 if (tick > Client.Tick)
                 {
+                    Thread.Sleep(1000);
                     AfterGetListOfClient(GetListOfClient());
                 }
             }
@@ -118,7 +131,7 @@ namespace Taurus.MicroService
                     wc.Headers.Set("Referer", MsConfig.AppRunUrl);
                     string result = wc.DownloadString(url);
                     Client.RegCenterIsLive = true;
-                    MsLog.WriteDebugLine(DateTime.Now.ToString("HH:mm:ss") + string.Format(" : GetList OK : Tick : {0}", Client.Tick));
+                    MsLog.WriteDebugLine(DateTime.Now.ToString("HH:mm:ss") + string.Format(" : GetList : Tick : {0}  => OK", Client.Tick));
                     return result;
                 }
             }
@@ -142,9 +155,9 @@ namespace Taurus.MicroService
             {
                 string host2 = JsonHelper.GetValue<string>(result, "host2");
                 string host = JsonHelper.GetValue<string>(result, "host");
-                if (!string.IsNullOrEmpty(host) && host != MsConfig.ServerRegUrl)
+                if (!string.IsNullOrEmpty(host) && host != MsConfig.ClientRegUrl)
                 {
-                    MsConfig.ServerRegUrl = host;//从备份请求切回主程序
+                    MsConfig.ClientRegUrl = host;//从备份请求切回主程序
                 }
                 long tick = JsonHelper.GetValue<long>(result, "tick");
 
@@ -155,7 +168,8 @@ namespace Taurus.MicroService
                 string json = JsonHelper.GetValue<string>(result, "msg");
                 if (!string.IsNullOrEmpty(json))
                 {
-                    Client.HostListJson = json;
+                    Client.Gateway.HostList = JsonHelper.ToEntity<MDictionary<string, List<HostInfo>>>(json);
+                    Client.Gateway.HostListJson = json;
                 }
             }
         }
