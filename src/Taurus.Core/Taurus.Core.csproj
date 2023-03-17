@@ -71,6 +71,7 @@
     <Compile Include="Attribute\TokenAttribute.cs" />
     <Compile Include="Attribute\WebSocketAttribute.cs" />
     <Compile Include="MicroService\Client\Client.cs" />
+    <Compile Include="MicroService\Client\Client.Gateway.cs" />
     <Compile Include="MicroService\Client\Client.MicroServiceController.cs" />
     <Compile Include="MicroService\Client\Client.Run.cs" />
     <Compile Include="MicroService\HostInfo.cs" />
@@ -92,8 +93,10 @@
     <Compile Include="MicroService\RPC\Call\Rest.cs" />
     <Compile Include="MicroService\RPC\Task\RpcTaskState.cs" />
     <Compile Include="MicroService\Server\Server.cs" />
-    <Compile Include="MicroService\Server\Server.MicroServiceController.cs" />
-    <Compile Include="MicroService\Server\Server.MicroServiceController.RegCenter.cs" />
+    <Compile Include="MicroService\Server\Server.Gateway.cs" />
+    <Compile Include="MicroService\Server\Server.RegCenter.cs" />
+    <Compile Include="MicroService\Server\Server.RegCenter.MicroServiceController.cs" />
+    <Compile Include="MicroService\Server\Server.RegCenter.UI.MicroServiceController.cs" />
     <Compile Include="MicroService\Server\Server.Run.cs" />
     <Compile Include="MVC\Config\MvcConfig.cs" />
     <Compile Include="MVC\Config\MvcConfigConst.cs" />

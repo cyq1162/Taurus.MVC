@@ -199,7 +199,6 @@ namespace Taurus.MicroService
             }
             string result = JsonHelper.OutResult(sb.Length == 0, sb.ToString(), "tick", Server.Tick, "host2", Server.Host2);
             Write(result);
-
         }
 
         /// <summary>
@@ -236,7 +235,6 @@ namespace Taurus.MicroService
                 string result = JsonHelper.OutResult(true, Server.RegCenter.HostListJson, "tick", Server.Tick, "host2", Server.Host2, "host", host);
                 Write(result);
             }
-
         }
 
         /// <summary>

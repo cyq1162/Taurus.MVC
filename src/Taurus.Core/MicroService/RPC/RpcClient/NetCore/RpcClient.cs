@@ -5,6 +5,9 @@ using System.Net.Http.Headers;
 using System;
 using System.IO;
 using System.Threading.Tasks;
+using Microsoft.Extensions.Hosting;
+using CYQ.Data;
+using System.Security.Policy;
 
 namespace Taurus.MicroService
 {
@@ -53,31 +56,50 @@ namespace Taurus.MicroService
                 _ResponseHeaders = value;
             }
         }
-
+        //临时用于预加载的链接建立
+        public void DownloadDataAsync(Uri uri)
+        {
+            wc.DownloadDataTaskAsync(uri.AbsoluteUri);
+        }
         public byte[] DownloadData(string url)
         {
-            if (wc != null)
-            {
-                //Random rnd = new Random();
-                //if (rnd.Next() % 2 == 0)
-                //{
-                //    return wc.DownloadDataTaskAsync(url).Result;
-                //}
-                return wc.DownloadData(url);
-                //      
-                //WebClient wc = new WebClient();
-                //if (Headers.Count > 0)
-                //{
-                //    foreach (var item in Headers)
-                //    {
-                //        wc.Headers.Add(item.Key, item.Value);
-                //    }
-                //}
-                //byte[] result = wc.DownloadData(url);
-                //SetWebClientHeader(wc);
-                //return result;
-            }
-            return ExeTask("GET", new Uri(url), null);
+            //System.Diagnostics.Stopwatch sw = new System.Diagnostics.Stopwatch();
+            //sw.Start();
+            //try
+            //{
+                if (wc != null)
+                {
+                    //Random rnd = new Random();
+                    //if (rnd.Next() % 2 == 0)
+                    //{
+                    //    
+                    //}
+                    //return wc.DownloadDataTaskAsync(url).Result;
+                    return wc.DownloadData(url);
+                    //      
+                    //WebClient wc = new WebClient();
+                    //if (Headers.Count > 0)
+                    //{
+                    //    foreach (var item in Headers)
+                    //    {
+                    //        wc.Headers.Add(item.Key, item.Value);
+                    //    }
+                    //}
+                    //byte[] result = wc.DownloadData(url);
+                    //SetWebClientHeader(wc);
+                    //return result;
+                }
+                return ExeTask("GET", new Uri(url), null);
+            //}
+            //finally
+            //{
+            //    sw.Stop();
+            //    if (sw.ElapsedMilliseconds > 1000)
+            //    {
+            //        Log.WriteLogToTxt("Proxy DownloadData: " + url + " " + sw.ElapsedMilliseconds, "DownloadData");
+            //    }
+            //    sw.Start();
+            //}
         }
         public byte[] UploadData(string url, string method, byte[] data)
         {

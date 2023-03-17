@@ -3,7 +3,6 @@ using System;
 using System.Collections.Generic;
 using CYQ.Data;
 using CYQ.Data.Cache;
-using static CYQ.Data.AppConfig;
 
 namespace Taurus.MicroService
 {
@@ -21,6 +20,15 @@ namespace Taurus.MicroService
         /// NET 6 及以上自带池。
         /// </summary>
         private static bool isNeedPool = !AppConfig.IsNetCore;//  Environment.Version.Major < 6;
+
+        /// <summary>
+        /// 是否包含指定的Uri
+        /// </summary>
+        /// <returns></returns>
+        public static bool Contains(Uri uri)
+        {
+            return rpcClientPool.ContainsKey(uri.Authority);
+        }
 
         public static RpcClient Create(Uri uri)
         {
@@ -51,7 +59,6 @@ namespace Taurus.MicroService
                 AddToPool(uri, new RpcClient());//预存一个
                 client = new RpcClient();
             }
-
             return client;
         }
         public static void AddToPool(Uri uri, RpcClient wc)
@@ -80,7 +87,6 @@ namespace Taurus.MicroService
                 queue.Enqueue(wc);
                 rpcClientPool.Add(uri.Authority, queue);
             }
-
         }
         public static void RemoveFromPool(Uri uri)
         {

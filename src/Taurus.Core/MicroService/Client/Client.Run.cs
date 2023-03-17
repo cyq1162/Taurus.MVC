@@ -42,6 +42,7 @@ namespace Taurus.MicroService
                     {
                         isFirst = false;
                         AfterGetListOfClient(GetListOfClient());
+                        Thread.Sleep(1000);
                     }
 
                     AfterRegHost(RegHost());
@@ -52,7 +53,7 @@ namespace Taurus.MicroService
                 }
                 finally
                 {
-                    Thread.Sleep(new Random().Next(5000, 10000));//5-10秒循环1次。
+                    Thread.Sleep(new Random().Next(5000, 8000));//5-10秒循环1次，GetList中间卡了1秒。
                 }
             }
         }

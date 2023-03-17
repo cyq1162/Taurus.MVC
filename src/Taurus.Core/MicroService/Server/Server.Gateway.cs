@@ -1,4 +1,5 @@
-﻿using CYQ.Data.Table;
+﻿using CYQ.Data;
+using CYQ.Data.Table;
 using CYQ.Data.Tool;
 using System;
 using System.Collections.Generic;
@@ -18,7 +19,7 @@ namespace Taurus.MicroService
             private static string _HostListJson = null;
 
             /// <summary>
-            /// 返回的注册数据
+            /// 对于网关或注册中心（从） - 记录并备份返回的注册数据
             /// </summary>
             internal static string HostListJson
             {
@@ -26,7 +27,7 @@ namespace Taurus.MicroService
                 {
                     if (_HostListJson == null)
                     {
-                        _HostListJson = IO.Read(MsConst.ServerHostListJsonPath);
+                        _HostListJson = IO.Read(MsConst.ServerGatewayJsonPath);
                     }
                     return _HostListJson;
                 }
@@ -35,13 +36,12 @@ namespace Taurus.MicroService
                     _HostListJson = value;
                     if (string.IsNullOrEmpty(value))
                     {
-                        IO.Delete(MsConst.ServerHostListJsonPath);
+                        IO.Delete(MsConst.ServerGatewayJsonPath);
                     }
                     else
                     {
-                        IO.Write(MsConst.ServerHostListJsonPath, value);
+                        IO.Write(MsConst.ServerGatewayJsonPath, value);
                     }
-
                 }
             }
             private static MDictionary<string, List<HostInfo>> _HostList;
@@ -56,7 +56,7 @@ namespace Taurus.MicroService
                 }
                 set
                 {
-                    _HostList = value; 
+                    _HostList = value;
                 }
             }
             /// <summary>
@@ -69,8 +69,8 @@ namespace Taurus.MicroService
                 List<HostInfo> infoList = GetHostList(name);//微服务程序。
                 if (infoList != null && infoList.Count > 0)
                 {
-                   // bool isRegCenter = MsConfig.IsRegCenterOfMaster;
-                   //分拆出网关：网关列表，不具备注册时间（即不更新注册时间），所以取消该时间判断。
+                    // bool isRegCenter = MsConfig.IsRegCenterOfMaster;
+                    //分拆出网关：网关列表，不具备注册时间（即不更新注册时间），所以取消该时间判断。
                     HostInfo firstInfo = infoList[0];
                     for (int i = 0; i < infoList.Count; i++)
                     {
@@ -98,26 +98,29 @@ namespace Taurus.MicroService
             /// <returns></returns>
             public static List<HostInfo> GetHostList(string name)
             {
-                if (!string.IsNullOrEmpty(name) && HostList != null)
+                System.Diagnostics.Stopwatch sw = new System.Diagnostics.Stopwatch();
+                sw.Start();
+                var hostList = HostList;//先获取引用【避免执行过程，因线程更换了引用的对象】
+                if (!string.IsNullOrEmpty(name) && hostList != null)
                 {
                     List<HostInfo> list = new List<HostInfo>();
-                    if (HostList.ContainsKey(name))//微服务程序。
+                    if (hostList.ContainsKey(name))//微服务程序。
                     {
-                        list.AddRange(HostList[name]);
+                        list.AddRange(hostList[name]);
                     }
                     if (name.Contains("."))//域名
                     {
                         if (list.Count == 0 && name.Split('.').Length > 2)//2级泛域名检测
                         {
                             string seName = "*" + name.Substring(name.IndexOf("."));
-                            if (HostList.ContainsKey(seName))
+                            if (hostList.ContainsKey(seName))
                             {
-                                list.AddRange(HostList[seName]);
+                                list.AddRange(hostList[seName]);
                             }
                         }
-                        if (name != "*.*" && HostList.ContainsKey("*.*"))
+                        if (name != "*.*" && hostList.ContainsKey("*.*"))
                         {
-                            List<HostInfo> commList = HostList["*.*"];
+                            List<HostInfo> commList = hostList["*.*"];
                             if (commList.Count > 0)
                             {
                                 if (list.Count == 0 || commList[0].Version >= list[0].Version)//版本号比较处理
@@ -129,9 +132,9 @@ namespace Taurus.MicroService
                     }
                     else //普通模块
                     {
-                        if (name != "*" && HostList.ContainsKey("*"))
+                        if (name != "*" && hostList.ContainsKey("*"))
                         {
-                            List<HostInfo> commList = HostList["*"];
+                            List<HostInfo> commList = hostList["*"];
                             if (commList.Count > 0)
                             {
                                 if (list.Count == 0 || commList[0].Version >= list[0].Version)//版本号比较处理
@@ -140,6 +143,11 @@ namespace Taurus.MicroService
                                 }
                             }
                         }
+                    }
+                    sw.Stop();
+                    if (sw.ElapsedMilliseconds > 1000)
+                    {
+                        Log.WriteLogToTxt("GetHostList : " + sw.ElapsedMilliseconds, "DebugMS");
                     }
                     return list;
                 }

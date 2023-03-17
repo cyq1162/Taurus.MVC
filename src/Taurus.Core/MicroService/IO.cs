@@ -11,17 +11,20 @@ namespace Taurus.MicroService
     {
         public static void Write(string path, string text)
         {
+            return;
             path = AppConfig.WebRootPath + "/App_Data/" + path;
             IOHelper.Write(path, text);
         }
 
         public static string Read(string path)
         {
+            return "";
             path = AppConfig.WebRootPath + "/App_Data/" + path;
             return IOHelper.ReadAllText(path);
         }
         public static void Delete(string path)
         {
+            return;
             path = AppConfig.WebRootPath + "/App_Data/" + path;
             IOHelper.Delete(path);
         }

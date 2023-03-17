@@ -22,97 +22,111 @@ namespace Taurus.MicroService
             /// </summary>
             public static bool Proxy(HttpContext context, bool isServerCall)
             {
-                if ((isServerCall && !MsConfig.IsServer) || (!isServerCall && !MsConfig.IsClient))
+
+                try
                 {
-                    return false;
-                }
-                List<HostInfo> infoList = new List<HostInfo>();
-                string module = string.Empty;
-                IPAddress iPAddress;
-                List<HostInfo> domainList = null;
-                if (context.Request.Url.Host != "localhost" && !IPAddress.TryParse(context.Request.Url.Host, out iPAddress))
-                {
-                    module = context.Request.Url.Host;//域名转发优先。
-                    domainList = isServerCall ? Server.Gateway.GetHostList(module) : Client.Gateway.GetHostList(module);
-                    if (domainList == null || domainList.Count == 0)
+                    if ((isServerCall && !MsConfig.IsServer) || (!isServerCall && !MsConfig.IsClient))
                     {
                         return false;
                     }
-                }
-
-                if (context.Request.Url.LocalPath == "/")
-                {
-                    module = MvcConfig.DefaultUrl.TrimStart('/').Split('/')[0];
-                }
-                else
-                {
-                    module = context.Request.Url.LocalPath.TrimStart('/').Split('/')[0];
-                }
-                List<HostInfo> moduleList = isServerCall ? Server.Gateway.GetHostList(module) : Client.Gateway.GetHostList(module);
-
-                if (domainList == null || domainList.Count == 0) { infoList = moduleList; }
-                else if (moduleList == null || moduleList.Count == 0) { infoList = domainList; }
-                else
-                {
-                    foreach (var item in domainList)//过滤掉不在域名下的主机
+                    List<HostInfo> infoList = new List<HostInfo>();
+                    string module = string.Empty;
+                    IPAddress iPAddress;
+                    List<HostInfo> domainList = null;
+                    if (context.Request.Url.Host != "localhost" && !IPAddress.TryParse(context.Request.Url.Host, out iPAddress))
                     {
-                        foreach (var keyValue in moduleList)
+                        module = context.Request.Url.Host;//域名转发优先。
+                        domainList = isServerCall ? Server.Gateway.GetHostList(module) : Client.Gateway.GetHostList(module);
+                        if (domainList == null || domainList.Count == 0)
                         {
-                            if (item.Host == keyValue.Host)
+                            return false;
+                        }
+                    }
+
+                    if (context.Request.Url.LocalPath == "/")
+                    {
+                        module = MvcConfig.DefaultUrl.TrimStart('/').Split('/')[0];
+                    }
+                    else
+                    {
+                        module = context.Request.Url.LocalPath.TrimStart('/').Split('/')[0];
+                    }
+                    List<HostInfo> moduleList = isServerCall ? Server.Gateway.GetHostList(module) : Client.Gateway.GetHostList(module);
+
+                    if (domainList == null || domainList.Count == 0) { infoList = moduleList; }
+                    else if (moduleList == null || moduleList.Count == 0) { infoList = domainList; }
+                    else
+                    {
+                        foreach (var item in domainList)//过滤掉不在域名下的主机
+                        {
+                            foreach (var keyValue in moduleList)
                             {
-                                infoList.Add(item);
-                                break;
+                                if (item.Host == keyValue.Host)
+                                {
+                                    infoList.Add(item);
+                                    break;
+                                }
                             }
                         }
                     }
-                }
 
-                if (infoList == null || infoList.Count == 0)
-                {
-                    return false;
-                }
-                else
-                {
-                    int max = 3;//最多循环3个节点，避免长时间循环卡机。
-                    bool isRegCenter = MsConfig.IsRegCenterOfMaster;
-                    HostInfo firstInfo = infoList[0];
-                    if (firstInfo.CallIndex >= infoList.Count)
+                    if (infoList == null || infoList.Count == 0)
                     {
-                        firstInfo.CallIndex = 0;//处理节点移除后，CallIndex最大值的问题。
+                        return false;
                     }
-                    for (int i = 0; i < infoList.Count; i++)
+                    else
                     {
-                        int callIndex = firstInfo.CallIndex + i;
-                        if (callIndex >= infoList.Count)
+                        int count = infoList.Count;
+                        int max = 3;//最多循环3个节点，避免长时间循环卡机。
+                        bool isRegCenter = MsConfig.IsRegCenterOfMaster;
+                        HostInfo firstInfo = infoList[0];
+                        if (firstInfo.CallIndex >= count)
                         {
-                            callIndex = callIndex - infoList.Count;
+                            firstInfo.CallIndex = 0;//处理节点移除后，CallIndex最大值的问题。
                         }
-                        HostInfo info = infoList[callIndex];
-                        if (!isServerCall && info.Host == MsConfig.AppRunUrl)
+                        for (int i = 0; i < count; i++)
                         {
-                            continue;
-                        }
-                        if (info.Version < 0 || (info.CallTime > DateTime.Now && infoList.Count > 0) || (isRegCenter && info.RegTime < DateTime.Now.AddSeconds(-10)))//正常5-10秒注册1次。
-                        {
-                            continue;//已经断开服务的。
-                        }
-                        if (Proxy(context, info.Host, isServerCall))
-                        {
-                            firstInfo.CallIndex = callIndex + 1;//指向下一个。
-                            return true;
-                        }
-                        else
-                        {
-                            info.CallTime = DateTime.Now.AddSeconds(10);//网络异常的，延时10s检测。
-                            max--;
-                            if (max == 0)
+                            int callIndex = firstInfo.CallIndex + i;
+                            if (callIndex >= count)
                             {
+                                callIndex = callIndex - count;
+                            }
+                            if (callIndex < 0 || callIndex >= infoList.Count)
+                            {
+
+                            }
+                            HostInfo info = infoList[callIndex];//并发下有异步抛出
+                            if (!isServerCall && info.Host == MsConfig.AppRunUrl)
+                            {
+                                continue;
+                            }
+                            if (info.Version < 0 || info.CallTime > DateTime.Now || (isRegCenter && info.RegTime < DateTime.Now.AddSeconds(-10)))//正常5-10秒注册1次。
+                            {
+                                continue;//已经断开服务的。
+                            }
+                            if (Proxy(context, info.Host, isServerCall))
+                            {
+                                firstInfo.CallIndex = callIndex + 1;//指向下一个。
                                 return true;
                             }
-                        }
+                            else
+                            {
+                                info.CallTime = DateTime.Now.AddSeconds(10);//网络异常的，延时10s检测。
+                                max--;
+                                if (max == 0)
+                                {
+                                    return true;
+                                }
+                            }
 
+                        }
+                        return true;
                     }
-                    return true;
+                }
+                catch (Exception err)
+                {
+
+                    throw err;
                 }
             }
 
@@ -121,8 +135,16 @@ namespace Taurus.MicroService
                 Uri uri = new Uri(host);
                 HttpRequest request = context.Request;
                 string url = String.Empty;
-                byte[] bytes = null;
+                byte[] bytes = null, data = null;
                 url = host + request.RawUrl;
+                if (request.HttpMethod != "GET" && request.ContentLength > 0)
+                {
+                    //Synchronous operations are disallowed. Call ReadAsync or set AllowSynchronousIO to true instead.”
+                    data = new byte[(int)request.ContentLength];
+                    request.InputStream.Read(data, 0, data.Length);
+                }
+
+
                 RpcClient wc = RpcClientPool.Create(uri);
                 if (wc == null) { return false; }
                 try
@@ -146,7 +168,6 @@ namespace Taurus.MicroService
                                 wc.Headers.Add(key, request.Headers[key]);
                                 break;
                         }
-
                     }
                     if (request.HttpMethod == "GET")
                     {
@@ -154,13 +175,6 @@ namespace Taurus.MicroService
                     }
                     else
                     {
-                        byte[] data = null;
-                        if (request.ContentLength > 0)
-                        {
-                            //Synchronous operations are disallowed. Call ReadAsync or set AllowSynchronousIO to true instead.”
-                            data = new byte[(int)request.ContentLength];
-                            request.InputStream.Read(data, 0, data.Length);
-                        }
                         bytes = wc.UploadData(url, request.HttpMethod, data);
                     }
                     try
@@ -181,27 +195,60 @@ namespace Taurus.MicroService
                         }
 
                     }
-                    catch
+                    catch (Exception err)
                     {
-
+                        Log.WriteLogToTxt(err.Message, "DebugMS_Error");
                     }
-                    context.Response.BinaryWrite(bytes);
-                    bytes = null;
-                    return true;
+
                 }
                 catch (Exception err)
                 {
-                    if (err.Message.Contains("(404) Not Found"))
+                    if (!err.Message.Contains("(404) Not Found"))
                     {
-                        return true;
+                        RpcClientPool.RemoveFromPool(uri);
+                        MsLog.Write(err.Message, url, request.HttpMethod, isServerCall ? MsConfig.ServerName : MsConfig.ClientName);
+                        return false;
                     }
-                    RpcClientPool.RemoveFromPool(uri);
-                    MsLog.Write(err.Message, url, request.HttpMethod, isServerCall ? MsConfig.ServerName : MsConfig.ClientName);
-                    return false;
                 }
                 finally
                 {
                     RpcClientPool.AddToPool(uri, wc);
+                    if (bytes != null)
+                    {
+                        context.Response.BinaryWrite(bytes);
+                    }
+                }
+                return true;
+
+            }
+
+
+            private static Dictionary<Uri, bool> preConnectionDic = new Dictionary<Uri, bool>();
+            /// <summary>
+            /// 预先建立链接
+            /// </summary>
+            /// <param name="uri"></param>
+            internal static void PreConnection(Uri uri)
+            {
+                if (!preConnectionDic.ContainsKey(uri))
+                {
+                    preConnectionDic.Add(uri, true);
+                    RpcClient wc = RpcClientPool.Create(uri);
+                    if (wc != null)
+                    {
+                        try
+                        {
+                            wc.DownloadData(uri.AbsoluteUri);
+                        }
+                        catch (Exception err)
+                        {
+                            Log.WriteLogToTxt(err.Message, LogType.MicroService);
+                        }
+                        finally
+                        {
+                            RpcClientPool.AddToPool(uri, wc);
+                        }
+                    }
                 }
             }
 

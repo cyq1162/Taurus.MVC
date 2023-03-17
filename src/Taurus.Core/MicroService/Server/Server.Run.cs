@@ -151,7 +151,9 @@ namespace Taurus.MicroService
                 string json = JsonHelper.GetValue<string>(result, "msg");
                 if (!string.IsNullOrEmpty(json))
                 {
-                    Server.Gateway.HostList = JsonHelper.ToEntity<MDictionary<string, List<HostInfo>>>(json);
+                    var keyValues = JsonHelper.ToEntity<MDictionary<string, List<HostInfo>>>(json);
+                    PreConnection(keyValues);
+                    Server.Gateway.HostList = keyValues;
                     Server.Gateway.HostListJson = json;
                 }
             }
@@ -218,43 +220,43 @@ namespace Taurus.MicroService
                         var kvForGateway = new MDictionary<string, List<HostInfo>>(StringComparer.OrdinalIgnoreCase);
                         foreach (string key in keys)
                         {
-                            var item = regCenterList[key];
-                            List<HostInfo> newList = new List<HostInfo>();
-                            foreach (var info in item)
+                            var items = regCenterList[key];
+                            List<HostInfo> regList = new List<HostInfo>();
+                            List<HostInfo> gatewayList = new List<HostInfo>();
+                            for (int i = 0; i < items.Count; i++)
                             {
+                                var info = items[i];
                                 if (info.RegTime < DateTime.Now.AddSeconds(-11) || info.Version < 0)
                                 {
                                     Server.IsChange = true;
                                 }
                                 else
                                 {
-                                    newList.Add(info);
+                                    regList.Add(info);
+                                    gatewayList.Add(info);
                                 }
                             }
-                            if (newList.Count > 0)
+                            if (regList.Count > 0)
                             {
-                                kvForRegCenter.Add(key, newList);
-                                kvForGateway.Add(key, newList);
+                                kvForRegCenter.Add(key, regList);
+                                kvForGateway.Add(key, gatewayList);
 
                             }
                         }
 
-                        if (kvForRegCenter.Count > 0)
-                        {
-                            Server.RegCenter.HostListJson = JsonHelper.ToJson(kvForRegCenter);
-                        }
-                        else
-                        {
-                            Server.RegCenter.HostListJson = String.Empty;
-                        }
-                        Server.Gateway.HostList = kvForGateway;
-                        Server.RegCenter.HostList = kvForRegCenter;
                         if (Server.IsChange)
                         {
                             Server.IsChange = false;
                             Server.Tick = DateTime.Now.Ticks;
-                            //Server.HostList = kvForRegCenter;
+                            Server.RegCenter.HostList = kvForRegCenter;
+                            Server.RegCenter.HostListJson = JsonHelper.ToJson(kvForRegCenter);
+                            PreConnection(kvForGateway);
+                            Server.Gateway.HostList = kvForGateway;
                             //WriteToDb(kvForGateway);//为了性能，取消写数据库操作。
+                        }
+                        else
+                        {
+                            kvForRegCenter = kvForGateway = null;
                         }
                     }
 
@@ -262,9 +264,20 @@ namespace Taurus.MicroService
                 catch (Exception err)
                 {
                     MsLog.WriteDebugLine(err.Message);
-                    MsLog.Write(err.Message, "MicroService.Run.ClearServerTable()", "", MsConfig.ServerName);
+                    MsLog.Write(err.Message, "MicroService.Run.ClearExpireHost()", "", MsConfig.ServerName);
                 }
                 Thread.Sleep(3000);//测试并发。
+            }
+        }
+
+        private static void PreConnection(MDictionary<string, List<HostInfo>> keyValues)
+        {
+            foreach (var items in keyValues.Values)
+            {
+                foreach (var info in items)
+                {
+                    Rpc.Gateway.PreConnection(new Uri(info.Host));//对于新加入的请求，发起一次请求建立预先链接。
+                }
             }
         }
 

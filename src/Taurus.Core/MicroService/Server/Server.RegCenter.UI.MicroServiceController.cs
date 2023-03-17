@@ -27,7 +27,8 @@ namespace Taurus.MicroService
         {
             MDataTable dt = new MDataTable();
             dt.Columns.Add("Name,Count");
-            foreach (var item in Server.Gateway.HostList)
+            var hostList = Server.Gateway.HostList;//先获取引用【避免执行过程，因线程更换了引用的对象】
+            foreach (var item in hostList)
             {
                 dt.NewRow(true).Sets(0, item.Key, item.Value.Count);
             }

@@ -318,7 +318,8 @@ namespace Taurus.Plugin.Doc
             {
                 table = new MDataTable();
                 table.Columns.Add("name,host");
-                foreach (var item in MicroService.Server.Gateway.HostList)
+                var hostList = MicroService.Server.Gateway.HostList;
+                foreach (var item in hostList)
                 {
                     if (item.Value.Count > 0)
                     {
