@@ -98,8 +98,8 @@ namespace Taurus.MicroService
             /// <returns></returns>
             public static List<HostInfo> GetHostList(string name)
             {
-                System.Diagnostics.Stopwatch sw = new System.Diagnostics.Stopwatch();
-                sw.Start();
+                //System.Diagnostics.Stopwatch sw = new System.Diagnostics.Stopwatch();
+                //sw.Start();
                 var hostList = HostList;//先获取引用【避免执行过程，因线程更换了引用的对象】
                 if (!string.IsNullOrEmpty(name) && hostList != null)
                 {
@@ -144,11 +144,11 @@ namespace Taurus.MicroService
                             }
                         }
                     }
-                    sw.Stop();
-                    if (sw.ElapsedMilliseconds > 1000)
-                    {
-                        Log.WriteLogToTxt("GetHostList : " + sw.ElapsedMilliseconds, "DebugMS");
-                    }
+                    //sw.Stop();
+                    //if (sw.ElapsedMilliseconds > 1000)
+                    //{
+                    //    Log.WriteLogToTxt("GetHostList : " + sw.ElapsedMilliseconds, "DebugMS");
+                    //}
                     return list;
                 }
                 return null;

@@ -45,7 +45,7 @@ namespace Taurus.Core
             string urlAbs = uri.AbsoluteUri;
             string urlPath = uri.PathAndQuery;
             string host = urlAbs.Substring(0, urlAbs.Length - urlPath.Length);
-            MicroService.MsRun.Start(host);//微服务检测、启动。
+            MsRun.Start(host);//微服务检测、启动。
             if (!WebTool.IsCallMicroServiceReg(uri) && Rpc.Gateway.Proxy(context, true))
             {
                 WebTool.SetRunProxySuccess(context);
@@ -58,6 +58,22 @@ namespace Taurus.Core
 
                 }
 
+                return;
+            }
+            else if (MsConfig.IsGateway && !MsConfig.IsClient)
+            {
+                WebTool.SetRunProxySuccess(context);
+                //单纯网关，直接返回
+                context.Response.StatusCode = 503;
+                context.Response.Write("503 Service unavailable.");
+                try
+                {
+                    context.Response.End();
+                }
+                catch (ThreadAbortException)
+                {
+
+                }
                 return;
             }
             #endregion
