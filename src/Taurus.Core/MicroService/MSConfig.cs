@@ -226,45 +226,45 @@ namespace Taurus.MicroService
 
         #region 注册中心 - 数据库配置
 
-        private static string _MsConn = null;
-        /// <summary>
-        /// 微服务 - 注册中心  数据库链接配置
-        /// </summary>
-        public static string MsConn
-        {
-            get
-            {
-                if (_MsConn == null)
-                {
-                    _MsConn = AppConfig.GetConn("MsConn");
-                }
-                return _MsConn;
-            }
-            set
-            {
-                _MsConn = value;
-            }
-        }
+        //private static string _MsConn = null;
+        ///// <summary>
+        ///// 微服务 - 注册中心  数据库链接配置
+        ///// </summary>
+        //public static string MsConn
+        //{
+        //    get
+        //    {
+        //        if (_MsConn == null)
+        //        {
+        //            _MsConn = AppConfig.GetConn("MsConn");
+        //        }
+        //        return _MsConn;
+        //    }
+        //    set
+        //    {
+        //        _MsConn = value;
+        //    }
+        //}
 
-        private static string _MsTableName;
-        /// <summary>
-        /// 异常日志表名（默认为MsRegCenter，可配置）
-        /// </summary>
-        public static string MsTableName
-        {
-            get
-            {
-                if (string.IsNullOrEmpty(_MsTableName))
-                {
-                    _MsTableName = AppConfig.GetApp("MsTableName", "MsRegCenter");
-                }
-                return _MsTableName;
-            }
-            set
-            {
-                _MsTableName = value;
-            }
-        }
+        //private static string _MsTableName;
+        ///// <summary>
+        ///// 异常日志表名（默认为MsRegCenter，可配置）
+        ///// </summary>
+        //public static string MsTableName
+        //{
+        //    get
+        //    {
+        //        if (string.IsNullOrEmpty(_MsTableName))
+        //        {
+        //            _MsTableName = AppConfig.GetApp("MsTableName", "MsRegCenter");
+        //        }
+        //        return _MsTableName;
+        //    }
+        //    set
+        //    {
+        //        _MsTableName = value;
+        //    }
+        //}
         #endregion
     }
 }

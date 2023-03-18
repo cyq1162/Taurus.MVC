@@ -210,7 +210,6 @@ namespace Taurus.MicroService
                     var regCenterList = Server.RegCenter.HostList;
                     if (regCenterList != null)
                     {
-                        Server.RegCenter.AddHost("RegCenter", MsConfig.AppRunUrl);
                         List<string> keys = new List<string>(regCenterList.Count);
                         foreach (string item in regCenterList.Keys)
                         {
@@ -240,10 +239,9 @@ namespace Taurus.MicroService
                             {
                                 kvForRegCenter.Add(key, regList);
                                 kvForGateway.Add(key, gatewayList);
-
                             }
                         }
-
+                        Server.RegCenter.AddHost("RegCenter", MsConfig.AppRunUrl);
                         if (Server.IsChange)
                         {
                             Server.IsChange = false;
@@ -256,7 +254,15 @@ namespace Taurus.MicroService
                         }
                         else
                         {
-                            kvForRegCenter = kvForGateway = null;
+                            if (Server.Gateway.HostList == null)
+                            {
+                                Server.Gateway.HostList = kvForGateway;
+                            }
+                            else
+                            {
+                                kvForGateway = null;
+                            }
+                            kvForRegCenter = null;
                         }
                     }
 
