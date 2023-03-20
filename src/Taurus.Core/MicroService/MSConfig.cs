@@ -6,6 +6,8 @@ using System.Threading;
 using CYQ.Data;
 using CYQ.Data.Table;
 using CYQ.Data.Tool;
+using System.Security.Cryptography.X509Certificates;
+using System.IO;
 
 namespace Taurus.MicroService
 {
@@ -151,6 +153,47 @@ namespace Taurus.MicroService
                 AppConfig.SetApp("MicroService.App.RemoteExit", value.ToString());
             }
         }
+        /// <summary>
+        /// 应用配置：Https 证书 存放路径【客户端默认开启、服务端默认关闭】
+        /// </summary>
+        public static string SslPath
+        {
+            get
+            {
+                return AppConfig.GetApp("MicroService.App.SslPath", "/App_Data/ssl");
+            }
+            set
+            {
+                AppConfig.SetApp("MicroService.App.SslPath", value);
+            }
+        }
+        /// <summary>
+        /// 获取应用证书【证书路径由SslPath配置】（只读）
+        /// </summary>
+        public static Dictionary<string, X509Certificate2> SslCertificate
+        {
+            get
+            {
+                var certificates = new Dictionary<string, X509Certificate2>(StringComparer.OrdinalIgnoreCase);
+                string sslFolder = AppConfig.WebRootPath + SslPath;
+                if (Directory.Exists(sslFolder))
+                {
+                    string[] files = Directory.GetFiles(sslFolder, "*.pfx", SearchOption.TopDirectoryOnly);
+                    foreach (string file in files)
+                    {
+                        string pwdPath = file.Replace(".pfx", ".txt");
+                        if (File.Exists(pwdPath))
+                        {
+                            string pwd = IOHelper.ReadAllText(pwdPath);
+                            string domain = Path.GetFileName(pwdPath).Replace(".txt", "");
+                            certificates.Add(domain, new X509Certificate2(file, pwd));
+                        }
+                    }
+                }
+                return certificates;
+            }
+        }
+
         ///// <summary>
         ///// 应用配置：应用程序绑定域名
         ///// </summary>

@@ -28,7 +28,7 @@ namespace Taurus.MicroService
             if (!isStart)
             {
                 MsLog.WriteDebugLine("--------------------------------------------------");
-                MsLog.WriteDebugLine("Current App Process ID    ：" + Process.GetCurrentProcess().Id);
+                MsLog.WriteDebugLine("Current App Process ID    ：" + MsConst.ProcessID);
                 MsLog.WriteDebugLine("Current Taurus Version    ：" + MvcConfig.TaurusVersion);
                 isStart = true;
                 if (MsConfig.IsServer)

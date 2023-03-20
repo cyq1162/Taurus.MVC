@@ -1,13 +1,8 @@
 ﻿using System.Net.Http;
-using System.Collections.Generic;
 using System.Net;
-using System.Net.Http.Headers;
 using System;
 using System.IO;
 using System.Threading.Tasks;
-using Microsoft.Extensions.Hosting;
-using CYQ.Data;
-using System.Security.Policy;
 
 namespace Taurus.MicroService
 {

@@ -4,9 +4,6 @@ using System.Net;
 using System.Threading;
 using CYQ.Data;
 using CYQ.Data.Tool;
-using CYQ.Data.Table;
-using Taurus.Mvc;
-using System.Diagnostics;
 
 namespace Taurus.MicroService
 {
@@ -68,13 +65,13 @@ namespace Taurus.MicroService
                     string data = "host={0}&tick=" + Server.Tick;
                     result = wc.UploadString(url, string.Format(data, MsConfig.AppRunUrl));
                 }
-                MsLog.WriteDebugLine(DateTime.Now.ToString("HH:mm:ss") + " : Server.RegHost2 : " + result);
+                MsLog.WriteDebugLine(DateTime.Now.ToString("HH:mm:ss") + string.Format(" : PID : {0} Reg2 : {1}: ", MsConst.ProcessID, result));
                 Server.RegCenterIsLive = true;
                 return result;
             }
             catch (Exception err)
             {
-                MsLog.WriteDebugLine(DateTime.Now.ToString("HH:mm:ss") + " : Server.RegHost2 Error : " + err.Message);
+                MsLog.WriteDebugLine(DateTime.Now.ToString("HH:mm:ss") + string.Format(" : PID : {0} Reg2.Error : {1}: ", MsConst.ProcessID, err.Message));
                 Server.RegCenterIsLive = false;
                 MsLog.Write(err.Message, url, "POST", MsConfig.ServerName);
                 return err.Message;
@@ -120,11 +117,11 @@ namespace Taurus.MicroService
                     wc.UploadString(url, data);
                 }
                 Server.RegCenterIsLive = true;
-                MsLog.WriteDebugLine(DateTime.Now.ToString("HH:mm:ss") + " : Server.SyncHostList : ");
+                MsLog.WriteDebugLine(DateTime.Now.ToString("HH:mm:ss") + string.Format(" : PID : {0} SyncHostList : = > OK. ", MsConst.ProcessID));
             }
             catch (Exception err)
             {
-                MsLog.WriteDebugLine(DateTime.Now.ToString("HH:mm:ss") + " : Server.SyncHostList Error : " + err.Message);
+                MsLog.WriteDebugLine(DateTime.Now.ToString("HH:mm:ss") + string.Format(" : PID : {0} SyncHostList.Error : {1}", MsConst.ProcessID, err.Message));
                 Server.RegCenterIsLive = false;
                 MsLog.Write(err.Message, url, "POST", MsConfig.ServerName);
             }
@@ -177,13 +174,13 @@ namespace Taurus.MicroService
                     wc.Headers.Set("Referer", MsConfig.AppRunUrl);
                     string result = wc.DownloadString(url);
                     Server.RegCenterIsLive = true;
-                    MsLog.WriteDebugLine(DateTime.Now.ToString("HH:mm:ss") + string.Format(" : GetList OK : Tick : {0}", Server.Tick));
+                    MsLog.WriteDebugLine(DateTime.Now.ToString("HH:mm:ss") + string.Format(" : PID : {0} GetList : Tick : {1}  => OK", MsConst.ProcessID, Server.Tick));
                     return result;
                 }
             }
             catch (Exception err)
             {
-                MsLog.WriteDebugLine(DateTime.Now.ToString("HH:mm:ss") + " : GetHostList Error : " + err.Message);
+                MsLog.WriteDebugLine(DateTime.Now.ToString("HH:mm:ss") + string.Format(" : PID : {0} GetList.Error : {1}", MsConst.ProcessID, err.Message));
                 Server.RegCenterIsLive = false;
                 if (!string.IsNullOrEmpty(Server.Host2))
                 {
@@ -210,6 +207,7 @@ namespace Taurus.MicroService
                     var regCenterList = Server.RegCenter.HostList;
                     if (regCenterList != null)
                     {
+                        Server.RegCenter.AddHost("RegCenter", MsConfig.AppRunUrl);
                         List<string> keys = new List<string>(regCenterList.Count);
                         foreach (string item in regCenterList.Keys)
                         {
@@ -241,7 +239,7 @@ namespace Taurus.MicroService
                                 kvForGateway.Add(key, gatewayList);
                             }
                         }
-                        Server.RegCenter.AddHost("RegCenter", MsConfig.AppRunUrl);
+
                         if (Server.IsChange)
                         {
                             Server.IsChange = false;
@@ -278,9 +276,13 @@ namespace Taurus.MicroService
 
         private static void PreConnection(MDictionary<string, List<HostInfo>> keyValues)
         {
-            foreach (var items in keyValues.Values)
+            foreach (var items in keyValues)
             {
-                foreach (var info in items)
+                if (items.Key == "RegCenter" || items.Key == "Gateway")
+                {
+                    continue;//不需要对服务端进行预请求。
+                }
+                foreach (var info in items.Value)
                 {
                     Rpc.Gateway.PreConnection(new Uri(info.Host));//对于新加入的请求，发起一次请求建立预先链接。
                 }

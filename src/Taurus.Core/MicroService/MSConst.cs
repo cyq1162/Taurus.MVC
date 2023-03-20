@@ -1,12 +1,13 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Diagnostics;
 using System.Text;
 
 namespace Taurus.MicroService
 {
     /// <summary>
-  /// 常量
-  /// </summary>
+    /// 常量
+    /// </summary>
     internal class MsConst
     {
         /// <summary>
@@ -31,5 +32,21 @@ namespace Taurus.MicroService
         internal const string ClientGatewayJsonPath = "MicroService_Client_Gateway.json";
         internal const string ServerHost2Path = "MicroService_Server_Host2.json";
         internal const string ClientHost2Path = "MicroService_Client_Host2.json";
+
+        public static int _ProcessID;
+        /// <summary>
+        /// 当前进程ID
+        /// </summary>
+        public static int ProcessID
+        {
+            get
+            {
+                if (_ProcessID == 0)
+                {
+                    _ProcessID = Process.GetCurrentProcess().Id;
+                }
+                return _ProcessID;
+            }
+        }
     }
 }

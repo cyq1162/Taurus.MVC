@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Diagnostics;
 using System.Net;
 using System.Threading;
 using CYQ.Data;
@@ -65,7 +66,7 @@ namespace Taurus.MicroService
         /// <returns></returns>
         private static string RegHost()
         {
-            
+
             string url = MsConfig.ClientRegUrl + "/microservice/reg";
             try
             {
@@ -78,13 +79,13 @@ namespace Taurus.MicroService
                     string data = "name={0}&host={1}&version={2}";
                     string result = wc.UploadString(url, string.Format(data, MsConfig.ClientName, MsConfig.AppRunUrl, MsConfig.ClientVersion));
                     Client.RegCenterIsLive = true;
-                    MsLog.WriteDebugLine(DateTime.Now.ToString("HH:mm:ss") + string.Format(" : RegHost : Module : {0} Version : {1} => OK", MsConfig.ClientName, MsConfig.ClientVersion));
+                    MsLog.WriteDebugLine(DateTime.Now.ToString("HH:mm:ss") + string.Format(" : PID : {0} Reg : {1} Version : {2} => OK", MsConst.ProcessID, MsConfig.ClientName, MsConfig.ClientVersion));
                     return result;
                 }
             }
             catch (Exception err)
             {
-                MsLog.WriteDebugLine(DateTime.Now.ToString("HH:mm:ss") + " : RegHost.Error : " + err.Message);
+                MsLog.WriteDebugLine(DateTime.Now.ToString("HH:mm:ss") + string.Format(" : PID : {0} Reg.Error : {1}: ", MsConst.ProcessID, err.Message));
                 Client.RegCenterIsLive = false;
                 if (!string.IsNullOrEmpty(Client.Host2))
                 {
@@ -132,13 +133,13 @@ namespace Taurus.MicroService
                     wc.Headers.Set("Referer", MsConfig.AppRunUrl);
                     string result = wc.DownloadString(url);
                     Client.RegCenterIsLive = true;
-                    MsLog.WriteDebugLine(DateTime.Now.ToString("HH:mm:ss") + string.Format(" : GetList : Tick : {0}  => OK", Client.Tick));
+                    MsLog.WriteDebugLine(DateTime.Now.ToString("HH:mm:ss") + string.Format(" : PID : {0} GetList : Tick : {1}  => OK", MsConst.ProcessID, Client.Tick));
                     return result;
                 }
             }
             catch (Exception err)
             {
-                MsLog.WriteDebugLine(DateTime.Now.ToString("HH:mm:ss") + " : GetList.Error : " + err.Message);
+                MsLog.WriteDebugLine(DateTime.Now.ToString("HH:mm:ss") + string.Format(" : PID : {0} GetList.Error : {1}", MsConst.ProcessID, err.Message));
 
                 Client.RegCenterIsLive = false;
                 if (!string.IsNullOrEmpty(Client.Host2))

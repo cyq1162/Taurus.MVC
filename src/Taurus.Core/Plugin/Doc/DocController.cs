@@ -312,30 +312,30 @@ namespace Taurus.Plugin.Doc
         private void BindController()
         {
             ControllerTable.Bind(View);
-            #region MicroService
-            MDataTable table = null;
-            if (MicroService.MsConfig.IsServer)
-            {
-                table = new MDataTable();
-                table.Columns.Add("name,host");
-                var hostList = MicroService.Server.Gateway.HostList;
-                foreach (var item in hostList)
-                {
-                    if (item.Value.Count > 0)
-                    {
-                        table.NewRow(true).Sets(0, item.Key, item.Value[0].Host);
-                    }
-                }
-            }
-            if (table != null && table.Rows.Count > 0)
-            {
-                table.Bind(View, "MicroServiceView");
-            }
-            else
-            {
-                View.Remove("Node_MicroService");
-            }
-            #endregion
+            //#region MicroService 由注册中心提供链接，此处不再提供链接。
+            //MDataTable table = null;
+            //if (MicroService.MsConfig.IsServer)
+            //{
+            //    table = new MDataTable();
+            //    table.Columns.Add("name,host");
+            //    var hostList = MicroService.Server.Gateway.HostList;
+            //    foreach (var item in hostList)
+            //    {
+            //        if (item.Value.Count > 0)
+            //        {
+            //            table.NewRow(true).Sets(0, item.Key, item.Value[0].Host);
+            //        }
+            //    }
+            //}
+            //if (table != null && table.Rows.Count > 0)
+            //{
+            //    table.Bind(View, "MicroServiceView");
+            //}
+            //else
+            //{
+            //    View.Remove("Node_MicroService");
+            //}
+            //#endregion
         }
         private void BindAction()
         {

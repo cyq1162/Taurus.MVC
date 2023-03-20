@@ -197,7 +197,7 @@ namespace Taurus.MicroService
                     }
                     catch (Exception err)
                     {
-                        Log.WriteLogToTxt(err.Message, "DebugMS_Error");
+                        Log.WriteLogToTxt(err.Message, "MicroService");
                     }
 
                 }
@@ -242,7 +242,7 @@ namespace Taurus.MicroService
                         }
                         catch (Exception err)
                         {
-                            Log.WriteLogToTxt(err.Message, LogType.MicroService);
+                            Log.WriteLogToTxt(err.Message, "MicroService");
                         }
                         finally
                         {
