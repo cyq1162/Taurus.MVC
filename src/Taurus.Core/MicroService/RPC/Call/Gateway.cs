@@ -157,6 +157,10 @@ namespace Taurus.MicroService
                     }
                     foreach (string key in request.Headers.Keys)
                     {
+                        if (key.StartsWith(":"))//chrome 新出来的 :method等
+                        {
+                            continue;
+                        }
                         switch (key)
                         {
                             case "Connection"://引发异常 链接已关闭
@@ -182,6 +186,10 @@ namespace Taurus.MicroService
                         //context.Response.AppendHeader("Content-Length", bytes.Length.ToString());
                         foreach (string key in wc.ResponseHeaders.Keys)
                         {
+                            if (key.StartsWith(":"))//chrome 新出来的 :method等
+                            {
+                                continue;
+                            }
                             switch (key)
                             {
                                 case "Transfer-Encoding"://输出这个会造成时不时的503
