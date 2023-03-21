@@ -1,13 +1,11 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Threading.Tasks;
-using Microsoft.AspNetCore.Builder;
+﻿using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Server.Kestrel.Core;
 using Microsoft.Extensions.DependencyInjection;
 using System.Net;
+using Taurus.MicroService;
+
 namespace Taurus.View
 {
     public class Startup
@@ -16,17 +14,28 @@ namespace Taurus.View
         // For more information on how to configure your application, visit https://go.microsoft.com/fwlink/?LinkID=398940
         public void ConfigureServices(IServiceCollection services)
         {
-           // Taurus
+            // Taurus
             services.AddDistributedMemoryCache();//支持Session的必要组件
             services.AddSession();
             services.AddHttpContext();
             services.Configure<KestrelServerOptions>((x) =>
             {
-                //x.ConfigureHttpsDefaults(options => { options.ServerCertificate.})
-                //x.Listen(IPAddress.Any, 443, op => {
-                //    op.UseHttps("xxx.pfx", "password");
-                //});
+                if (MsConfig.IsGateway)
+                {
+                   // x.Listen(IPAddress.Any, 80);
+                    x.Listen(IPAddress.Any, 443, op =>
+                    {
+                        op.UseHttps(opx =>
+                        {
+                            var certificates = MsConfig.SslCertificate;
+                            opx.ServerCertificateSelector = (connectionContext, name) =>
+                               name != null && certificates.TryGetValue(name, out var cert) ? cert : certificates["localhost"];
 
+                        });
+
+
+                    });
+                }
                 x.AllowSynchronousIO = true;
                 //为整个应用设置并发打开的最大 TCP 连接数,默认情况下，最大连接数不受限制 (NULL)
                 // x.Limits.MaxConcurrentConnections = 100000;

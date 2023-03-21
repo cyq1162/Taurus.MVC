@@ -7,6 +7,8 @@ using System.Net;
 using Taurus.Mvc;
 using System.Net.Http;
 using Microsoft.AspNetCore.Builder;
+using CYQ.Data.Tool;
+using System.Collections.Generic;
 
 namespace Taurus.View
 {
@@ -45,17 +47,17 @@ namespace Taurus.View
                 {
                     runUrl = runUrl.Replace(":0", ":" + port);//设置启动路径
                 }
-                if (runUrl.Contains("localhost"))
+                if (runUrl.Contains("localhost") || runUrl.Contains("*"))
                 {
                     System.Net.IPAddress[] addressList = Dns.GetHostEntry(Dns.GetHostName()).AddressList;
                     foreach (var address in addressList)
                     {
-                        string ip=address.ToString();
+                        string ip = address.ToString();
                         if (ip.EndsWith(".1") || ip.Contains(":")) // 忽略路由和网卡地址。
                         {
                             continue;
                         }
-                        runUrl = runUrl.Replace("localhost", ip);//设置启动路径
+                        runUrl = runUrl.Replace("localhost", ip).Replace("*", ip);//设置启动路径
                         break;
                     }
 
@@ -63,7 +65,7 @@ namespace Taurus.View
                 MicroService.MsConfig.AppRunUrl = runUrl;
 
             }
-            else 
+            else
             {
                 // Docker部署：设置映射后的地址
                 //判断是否Docker部署，通过环境变量传递当前运行地址，或端口：
