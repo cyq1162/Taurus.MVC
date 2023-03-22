@@ -79,7 +79,14 @@ namespace Taurus.MicroService
                     string data = "name={0}&host={1}&version={2}";
                     string result = wc.UploadString(url, string.Format(data, MsConfig.ClientName, MsConfig.AppRunUrl, MsConfig.ClientVersion));
                     Client.RegCenterIsLive = true;
-                    MsLog.WriteDebugLine(DateTime.Now.ToString("HH:mm:ss") + string.Format(" : PID : {0} Reg : {1} Version : {2} => OK", MvcConst.ProcessID, MsConfig.ClientName, MsConfig.ClientVersion));
+                    if (JsonHelper.IsSuccess(result))
+                    {
+                        MsLog.WriteDebugLine(DateTime.Now.ToString("HH:mm:ss") + string.Format(" : PID : {0} Reg : {1} Version : {2} => OK", MvcConst.ProcessID, MsConfig.ClientName, MsConfig.ClientVersion));
+                    }
+                    else
+                    {
+                        MsLog.WriteDebugLine(DateTime.Now.ToString("HH:mm:ss") + string.Format(" : PID : {0} Reg.Fail : {1}: ", MvcConst.ProcessID, result));
+                    }
                     return result;
                 }
             }
