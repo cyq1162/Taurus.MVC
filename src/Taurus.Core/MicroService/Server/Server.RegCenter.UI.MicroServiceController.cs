@@ -14,8 +14,28 @@ namespace Taurus.MicroService
         //{
         //    Write(Server.HostListJson);
         //}
+        public void Login()
+        {
+
+        }
+        public void BtnLogin()
+        {
+            if (Query<string>("uid") == "admin" && Query<string>("pwd") == MsConfig.Password)
+            {
+                Context.Session["login"] = "1";
+                Response.Redirect("index");
+                return;
+            }
+            View.Set("msg", "user or password is error.");
+        }
         public void Index()
         {
+            if (!string.IsNullOrEmpty(MsConfig.Password) && Context.Session["login"] == null)
+            {
+                //检测账号密码，跳转登陆页
+                Response.Redirect("login");
+                return;
+            }
             if (View != null && Server.Gateway.HostList != null && Server.Gateway.HostList.Count > 0)
             {
                 View.KeyValue.Add("ClientKey", MsConfig.ClientKey);

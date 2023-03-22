@@ -138,6 +138,8 @@ CYQ.Data升级到V5.8.4.9
 1、优化：并发下新应用程序的启动与关闭。（2023-03-15）
 2、新增：MicroService.App.SslPath和MicroService.App.SslCertificate 属性（用于https证书部署）。（2023-03-20）
 3、优化：去掉Doc文档模块关于微服务链接的部署（由注册中心提供）（2023-03-20）
+4、新增：MicroService.App.Password 属性（用于设置注册中心UI访问的密码（默认账号admin，不设时可直接访问）。（2023-03-22）
+
 
 插件：
 幕等性检测、安全检测、黑名单、熔断、限流。

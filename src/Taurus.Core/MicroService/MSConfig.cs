@@ -193,7 +193,20 @@ namespace Taurus.MicroService
                 return certificates;
             }
         }
-
+        /// <summary>
+        /// 应用配置：配置注册中心访问密码【账号默认admin】
+        /// </summary>
+        public static string Password
+        {
+            get
+            {
+                return AppConfig.GetApp("MicroService.App.Password", "");
+            }
+            set
+            {
+                AppConfig.SetApp("MicroService.App.Password", value);
+            }
+        }
         ///// <summary>
         ///// 应用配置：应用程序绑定域名
         ///// </summary>
