@@ -39,7 +39,7 @@ namespace Taurus.MicroService
             {
                 wc = RpcClientPool.Create(task.Request.Uri);
                 wc.Headers.Add(MsConst.HeaderKey, (MsConfig.IsClient ? MsConfig.ClientKey : MsConfig.ServerKey));
-                wc.Headers.Add("X-Real-IP", MvcConfig.HostIP);
+                wc.Headers.Add("X-Real-IP", MvcConst.HostIP);
                 if (HttpContext.Current != null && HttpContext.Current.Request != null)
                 {
                     wc.Headers.Add("Referer", HttpContext.Current.Request.Url.AbsoluteUri);//当前运行地址。

@@ -4,7 +4,6 @@ using CYQ.Data;
 using CYQ.Data.Tool;
 using System.Security.Cryptography.X509Certificates;
 using System.IO;
-using Newtonsoft.Json.Linq;
 
 namespace Taurus.MicroService
 {

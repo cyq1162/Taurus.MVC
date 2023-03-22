@@ -100,6 +100,7 @@
     <Compile Include="MicroService\Server\Server.Run.cs" />
     <Compile Include="MVC\Config\MvcConfig.cs" />
     <Compile Include="MVC\Config\MvcConfigConst.cs" />
+    <Compile Include="MVC\Config\MvcConst.cs" />
     <Compile Include="MVC\Filter\HttpResponseFilter.cs" />
     <Compile Include="MVC\Reflect\ControllerCollector.cs" />
     <Compile Include="MVC\Reflect\Entity\AttributeEntity.cs" />
