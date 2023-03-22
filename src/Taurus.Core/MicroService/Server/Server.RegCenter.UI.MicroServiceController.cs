@@ -20,7 +20,7 @@ namespace Taurus.MicroService
         }
         public void BtnLogin()
         {
-            if (Query<string>("uid") == "admin" && Query<string>("pwd") == MsConfig.Password)
+            if (Query<string>("uid") == "admin" && Query<string>("pwd") == MsConfig.ServerRcPassword)
             {
                 Context.Session["login"] = "1";
                 Response.Redirect("index");
@@ -30,7 +30,7 @@ namespace Taurus.MicroService
         }
         public void Index()
         {
-            if (!string.IsNullOrEmpty(MsConfig.Password) && Context.Session["login"] == null)
+            if (!string.IsNullOrEmpty(MsConfig.ServerRcPassword) && Context.Session["login"] == null)
             {
                 //检测账号密码，跳转登陆页
                 Response.Redirect("login");

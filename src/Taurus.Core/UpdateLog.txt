@@ -135,12 +135,13 @@ CYQ.Data升级到V5.8.4.9
 6、新增：/MicroService/index 页面，可查看注册中心的相关注册信息。
 7、优化：网关：对配置绑定域名支持泛域名解析。
 -----V3.1.4----------------
-1、优化：并发下新应用程序的启动与关闭。（2023-03-15）
-2、新增：MicroService.App.SslPath和MicroService.App.SslCertificate 属性（用于https证书部署）。（2023-03-20）
-3、优化：去掉Doc文档模块关于微服务链接的部署（由注册中心提供）（2023-03-20）
-4、新增：MicroService.App.Password 属性（用于设置注册中心UI访问的密码（默认账号admin，不设时可直接访问）。（2023-03-22）
-
-
+1、新增：/MicroService/login，允许注册中心UI设置密码登陆。（2023-03-22）
+2、新增：MicroService.App.RcPassword 配置项，用于设置注册中心UI访问的密码（默认账号admin，不设时可直接访问）。（2023-03-22）
+3、新增：MicroService.App.SslPath 配置项 和 MsConfig.AppSslCertificate（只读）属性（用于https证书部署）。（2023-03-20）
+4、变更：MicroService.Server.RegUrl、MicroService.Client.RegUrl 配置项中 RegUrl 变更名称为：RcUrl。（2023-03-22）
+5、优化：取消Doc文档模块关于微服务链接的显示，该功能由注册中心UI提供。（2023-03-20）
+6、优化：MicroService.App.RunUrl、Taurus.Controllers 配置项初始值优化，可以默认节省掉该配置项。（2023-03-22）
+7、优化：并发请求下新应用程序的启动与关闭的流畅性。（2023-03-15 - 2023-03-22）
 插件：
 幕等性检测、安全检测、黑名单、熔断、限流。
 域名配置、退出系统。

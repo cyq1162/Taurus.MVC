@@ -1,12 +1,7 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Net;
+﻿using System.Net;
 using System.Threading;
-using CYQ.Data;
 using CYQ.Data.Tool;
-using CYQ.Data.Table;
 using Taurus.Mvc;
-using System.Diagnostics;
 
 namespace Taurus.MicroService
 {
@@ -28,8 +23,8 @@ namespace Taurus.MicroService
             if (!isStart)
             {
                 MsLog.WriteDebugLine("--------------------------------------------------");
-                MsLog.WriteDebugLine("Current App Process ID    ：" + MsConst.ProcessID);
-                MsLog.WriteDebugLine("Current Taurus Version    ：" + MvcConfig.TaurusVersion);
+                MsLog.WriteDebugLine("Current App Process ID    ：" + MvcConst.ProcessID);
+                MsLog.WriteDebugLine("Current Taurus Version    ：" + MvcConst.Version);
                 isStart = true;
                 if (MsConfig.IsServer)
                 {
@@ -46,12 +41,7 @@ namespace Taurus.MicroService
                     Thread thread = new Thread(new ThreadStart(ClearExpireHost));
                     thread.Start();
                 }
-                //if (!string.IsNullOrEmpty(host))
-                //{
-                //    MsLog.WriteDebugLine("MicroService.App.RunUrl : " + host);
-                //}
-
-                if (!string.IsNullOrEmpty(MsConfig.ServerName) && !string.IsNullOrEmpty(MsConfig.ServerRegUrl) && MsConfig.ServerRegUrl != MsConfig.AppRunUrl)
+                if (!string.IsNullOrEmpty(MsConfig.ServerName) && !string.IsNullOrEmpty(MsConfig.ServerRcUrl) && MsConfig.ServerRcUrl != MsConfig.AppRunUrl)
                 {
                     if (MsConfig.IsRegCenter || MsConfig.IsGateway)
                     {
@@ -63,14 +53,14 @@ namespace Taurus.MicroService
                         {
                             MsLog.WriteDebugLine("Current MicroService Type ：Gateway");
                         }
-                        MsLog.WriteDebugLine("Current RegisterCenter Url：" + MsConfig.ServerRegUrl);
+                        MsLog.WriteDebugLine("Current RegisterCenter Url：" + MsConfig.ServerRcUrl);
                         ThreadBreak.AddGlobalThread(new ParameterizedThreadStart(RunLoopOfServer));
                     }
                 }
-                if (!string.IsNullOrEmpty(MsConfig.ClientName) && !string.IsNullOrEmpty(MsConfig.ClientRegUrl) && MsConfig.ClientRegUrl != MsConfig.AppRunUrl)
+                if (!string.IsNullOrEmpty(MsConfig.ClientName) && !string.IsNullOrEmpty(MsConfig.ClientRcUrl) && MsConfig.ClientRcUrl != MsConfig.AppRunUrl)
                 {
                     MsLog.WriteDebugLine("Current MicroService Type ：Client of 【" + MsConfig.ClientName+"】");
-                    MsLog.WriteDebugLine("Current RegisterCenter Url：" + MsConfig.ClientRegUrl);
+                    MsLog.WriteDebugLine("Current RegisterCenter Url：" + MsConfig.ClientRcUrl);
                     ThreadBreak.AddGlobalThread(new ParameterizedThreadStart(RunLoopOfClient));
                 }
                 MsLog.WriteDebugLine("--------------------------------------------------");

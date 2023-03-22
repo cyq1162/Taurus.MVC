@@ -1,8 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Diagnostics;
-using System.Text;
-
+﻿
 namespace Taurus.MicroService
 {
     /// <summary>
@@ -10,10 +6,6 @@ namespace Taurus.MicroService
     /// </summary>
     internal class MsConst
     {
-        /// <summary>
-        /// 用于锁表。
-        /// </summary>
-        internal static readonly object tableLockObj = new object();
         /// <summary>
         /// 请求头带上的Header的Key名称
         /// </summary>
@@ -33,20 +25,5 @@ namespace Taurus.MicroService
         internal const string ServerHost2Path = "MicroService_Server_Host2.json";
         internal const string ClientHost2Path = "MicroService_Client_Host2.json";
 
-        public static int _ProcessID;
-        /// <summary>
-        /// 当前进程ID
-        /// </summary>
-        public static int ProcessID
-        {
-            get
-            {
-                if (_ProcessID == 0)
-                {
-                    _ProcessID = Process.GetCurrentProcess().Id;
-                }
-                return _ProcessID;
-            }
-        }
     }
 }

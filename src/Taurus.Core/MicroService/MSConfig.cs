@@ -1,13 +1,10 @@
 ﻿using System;
-using System.Web;
 using System.Collections.Generic;
-using System.Net;
-using System.Threading;
 using CYQ.Data;
-using CYQ.Data.Table;
 using CYQ.Data.Tool;
 using System.Security.Cryptography.X509Certificates;
 using System.IO;
+using Newtonsoft.Json.Linq;
 
 namespace Taurus.MicroService
 {
@@ -41,15 +38,29 @@ namespace Taurus.MicroService
         /// <summary>
         /// 网关或注册中心配置：注册中心地址【示例：http://localhost:9999】
         /// </summary>
-        public static string ServerRegUrl
+        public static string ServerRcUrl
         {
             get
             {
-                return AppConfig.GetApp("MicroService.Server.RegUrl", "").TrimEnd('/');
+                return AppConfig.GetApp("MicroService.Server.RcUrl", "").TrimEnd('/');
             }
             set
             {
-                AppConfig.SetApp("MicroService.Server.RegUrl", value);
+                AppConfig.SetApp("MicroService.Server.RcUrl", value);
+            }
+        }
+        /// <summary>
+        /// 应用配置：配置注册中心访问密码【账号默认admin】
+        /// </summary>
+        public static string ServerRcPassword
+        {
+            get
+            {
+                return AppConfig.GetApp("MicroService.Server.RcPassword", "");
+            }
+            set
+            {
+                AppConfig.SetApp("MicroService.Server.RcPassword", value);
             }
         }
         /// <summary>
@@ -98,15 +109,15 @@ namespace Taurus.MicroService
         /// <summary>
         /// 微服务应用配置：注册中心的Url
         /// </summary>
-        public static string ClientRegUrl
+        public static string ClientRcUrl
         {
             get
             {
-                return AppConfig.GetApp("MicroService.Client.RegUrl", "").TrimEnd('/');
+                return AppConfig.GetApp("MicroService.Client.RcUrl", "").TrimEnd('/');
             }
             set
             {
-                AppConfig.SetApp("MicroService.Client.RegUrl", value);
+                AppConfig.SetApp("MicroService.Client.RcUrl", value);
             }
         }
 
@@ -126,7 +137,7 @@ namespace Taurus.MicroService
         }
 
         /// <summary>
-        /// 应用配置：当前运行Url【Kestrel启动运行需要】
+        /// 应用配置：当前Application运行Url【Kestrel启动运行需要】
         /// </summary>
         public static string AppRunUrl
         {
@@ -142,7 +153,7 @@ namespace Taurus.MicroService
         /// <summary>
         /// 应用配置：开启应用程序远程退出功能【客户端默认开启、服务端默认关闭】
         /// </summary>
-        public static bool RemoteExit
+        public static bool AppRemoteExit
         {
             get
             {
@@ -156,7 +167,7 @@ namespace Taurus.MicroService
         /// <summary>
         /// 应用配置：Https 证书 存放路径【客户端默认开启、服务端默认关闭】
         /// </summary>
-        public static string SslPath
+        public static string AppSslPath
         {
             get
             {
@@ -170,12 +181,12 @@ namespace Taurus.MicroService
         /// <summary>
         /// 获取应用证书【证书路径由SslPath配置】（只读）
         /// </summary>
-        public static Dictionary<string, X509Certificate2> SslCertificate
+        public static Dictionary<string, X509Certificate2> AppSslCertificate
         {
             get
             {
                 var certificates = new Dictionary<string, X509Certificate2>(StringComparer.OrdinalIgnoreCase);
-                string sslFolder = AppConfig.WebRootPath + SslPath;
+                string sslFolder = AppConfig.WebRootPath + AppSslPath;
                 if (Directory.Exists(sslFolder))
                 {
                     string[] files = Directory.GetFiles(sslFolder, "*.pfx", SearchOption.TopDirectoryOnly);
@@ -191,20 +202,6 @@ namespace Taurus.MicroService
                     }
                 }
                 return certificates;
-            }
-        }
-        /// <summary>
-        /// 应用配置：配置注册中心访问密码【账号默认admin】
-        /// </summary>
-        public static string Password
-        {
-            get
-            {
-                return AppConfig.GetApp("MicroService.App.Password", "");
-            }
-            set
-            {
-                AppConfig.SetApp("MicroService.App.Password", value);
             }
         }
         ///// <summary>
@@ -233,7 +230,7 @@ namespace Taurus.MicroService
         {
             get
             {
-                return !string.IsNullOrEmpty(MsConfig.ClientName) && !string.IsNullOrEmpty(MsConfig.ClientRegUrl) && MsConfig.ClientRegUrl != MsConfig.AppRunUrl;
+                return !string.IsNullOrEmpty(MsConfig.ClientName) && !string.IsNullOrEmpty(MsConfig.ClientRcUrl) && MsConfig.ClientRcUrl != MsConfig.AppRunUrl;
             }
         }
 
@@ -274,7 +271,7 @@ namespace Taurus.MicroService
         {
             get
             {
-                return MsConfig.ServerName.ToLower() == MsConst.RegCenter && (string.IsNullOrEmpty(MsConfig.ServerRegUrl) || MsConfig.ServerRegUrl == MsConfig.AppRunUrl);
+                return MsConfig.ServerName.ToLower() == MsConst.RegCenter && (string.IsNullOrEmpty(MsConfig.ServerRcUrl) || MsConfig.ServerRcUrl == MsConfig.AppRunUrl);
             }
         }
         #endregion

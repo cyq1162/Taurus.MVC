@@ -1,6 +1,5 @@
-﻿using CYQ.Data;
-using CYQ.Data.Tool;
-
+﻿using CYQ.Data.Tool;
+using Taurus.Mvc;
 
 namespace Taurus.MicroService
 {
@@ -11,18 +10,18 @@ namespace Taurus.MicroService
     {
         public static void Write(string path, string text)
         {
-            path = AppConfig.WebRootPath + "/App_Data/" + path;
+            path = MvcConst.AppDataFolderPath + path;
             IOHelper.Write(path, text);
         }
 
         public static string Read(string path)
         {
-            path = AppConfig.WebRootPath + "/App_Data/" + path;
+            path = MvcConst.AppDataFolderPath + path;
             return IOHelper.ReadAllText(path);
         }
         public static void Delete(string path)
         {
-            path = AppConfig.WebRootPath + "/App_Data/" + path;
+            path = MvcConst.AppDataFolderPath + path;
             IOHelper.Delete(path);
         }
     }

@@ -43,7 +43,7 @@ namespace Taurus.Mvc
                             foreach (string file in files)
                             {
                                 string name = Path.GetFileName(file);
-                                if (name == "CYQ.Data.dll" || name == "Taurus.Core.dll" || name == "sni.dll" || name.StartsWith("System."))
+                                if (name == "CYQ.Data.dll" || name == "Taurus.Core.dll" || name == "sni.dll" || name.StartsWith("System.") || name.StartsWith("Microsoft."))
                                 {
                                     continue;
                                 }

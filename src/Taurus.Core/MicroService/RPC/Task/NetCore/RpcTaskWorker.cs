@@ -16,7 +16,7 @@ namespace Taurus.MicroService
         private static void AddHeader(RpcTask task, HttpRequestMessage message)
         {
             message.Headers.Add(MsConst.HeaderKey, (MsConfig.IsClient ? MsConfig.ClientKey : MsConfig.ServerKey));
-            message.Headers.Add("X-Real-IP", MvcConfig.HostIP);
+            message.Headers.Add("X-Real-IP", MvcConst.HostIP);
             if (HttpContext.Current != null && HttpContext.Current.Request != null)
             {
                 message.Headers.Add("Referer", HttpContext.Current.Request.Url.AbsoluteUri);//当前运行地址。

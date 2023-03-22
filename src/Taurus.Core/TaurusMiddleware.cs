@@ -6,6 +6,7 @@ using System.Threading.Tasks;
 using Taurus.MicroService;
 using Taurus.Mvc;
 using Taurus.Core;
+using Microsoft.AspNetCore.Hosting.Server.Features;
 
 namespace Microsoft.AspNetCore.Http
 {
@@ -74,10 +75,12 @@ namespace Microsoft.AspNetCore.Http
         }
         public static IApplicationBuilder UseTaurusMvc(this IApplicationBuilder builder, string webRootPath)
         {
-            if (!string.IsNullOrEmpty(MsConfig.AppRunUrl) || MsConfig.IsRegCenterOfMaster)
-            {
-                MsRun.Start(MsConfig.AppRunUrl);//
-            }
+            SetAppRunUrl(builder);
+            MsRun.Start(MsConfig.AppRunUrl);//
+            //if (!string.IsNullOrEmpty(MsConfig.AppRunUrl) || MsConfig.IsRegCenterOfMaster)
+            //{
+            //    MsRun.Start(MsConfig.AppRunUrl);//
+            //}
             //System.Web.HttpContext.Configure(httpContextAccessor);
             AppConfig.WebRootPath = webRootPath;//设置根目录地址，ASPNETCore的根目录和其它应用不一样。
             //执行一次，用于注册事件
@@ -85,6 +88,39 @@ namespace Microsoft.AspNetCore.Http
             url.Init(System.Web.HttpApplication.Instance);
             ControllerCollector.InitControllers();
             return builder.UseMiddleware<TaurusMiddleware>();
+        }
+        private static bool SetAppRunUrl(string host)
+        {
+            if (string.IsNullOrEmpty(host) || host.EndsWith(":0"))
+            {
+                return false;
+            }
+            string[] items = host.Split(":");
+            string port = items[items.Length - 1];
+            string url = items[0] + "://" + MvcConst.HostIP + ":" + port;
+            MsConfig.AppRunUrl = url;
+            return true;
+        }
+
+
+        private static void SetAppRunUrl(IApplicationBuilder builder)
+        {
+            if (string.IsNullOrEmpty(MsConfig.AppRunUrl))
+            {
+                //builder.ApplicationServices.
+                var saf = builder.ServerFeatures.Get<IServerAddressesFeature>();
+                if (saf != null)
+                {
+                    foreach (var host in saf.Addresses)
+                    {
+                        if (SetAppRunUrl(host))
+                        {
+                            return;
+                        }
+                    }
+                }
+                SetAppRunUrl(AppConfig.GetApp("Host"));
+            }
         }
     }
 }

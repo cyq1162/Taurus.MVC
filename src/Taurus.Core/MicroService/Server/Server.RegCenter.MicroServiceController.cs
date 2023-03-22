@@ -69,7 +69,7 @@ namespace Taurus.MicroService
             #region 注册中心【从】检测到【主】恢复后，推送host，让后续的请求转回【主】
             if (Server.RegCenterIsLive && !MsConfig.IsRegCenterOfMaster)
             {
-                Write(JsonHelper.OutResult(true, "", "tick", Server.Tick, "host", MsConfig.ServerRegUrl));
+                Write(JsonHelper.OutResult(true, "", "tick", Server.Tick, "host", MsConfig.ServerRcUrl));
                 return;
             }
             #endregion
@@ -216,7 +216,7 @@ namespace Taurus.MicroService
             {
                 Server.Host2 = String.Empty;
             }
-            string host = Server.RegCenterIsLive ? MsConfig.ServerRegUrl : "";//注册中心【从】检测到【主】恢复后，推送host，让后续的请求转回【主】
+            string host = Server.RegCenterIsLive ? MsConfig.ServerRcUrl : "";//注册中心【从】检测到【主】恢复后，推送host，让后续的请求转回【主】
             if (host == MsConfig.AppRunUrl)//主机即是自己。
             {
                 host = string.Empty;

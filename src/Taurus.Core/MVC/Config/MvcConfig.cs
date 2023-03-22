@@ -1,6 +1,4 @@
 ﻿using CYQ.Data;
-using System;
-using System.Net;
 
 namespace Taurus.Mvc
 {
@@ -18,7 +16,7 @@ namespace Taurus.Mvc
         {
             get
             {
-                return AppConfig.GetApp(MvcConfigConst.Controllers, "");
+                return AppConfig.GetApp(MvcConfigConst.Controllers, "*");
             }
         }
         /// <summary>
@@ -87,43 +85,6 @@ namespace Taurus.Mvc
             get
             {
                 return AppConfig.GetApp(MvcConfigConst.SubAppName, "");
-            }
-        }
-
-        /// <summary>
-        /// 获取当前 Taurus.Mvc 版本号
-        /// </summary>
-        public static string TaurusVersion
-        {
-            get
-            {
-                return System.Reflection.Assembly.GetExecutingAssembly().GetName().Version.ToString();
-            }
-        }
-
-        private static string _HostIP;
-        /// <summary>
-        /// 本机内网IP，若无，则返回主机名
-        /// </summary>
-        public static string HostIP
-        {
-            get
-            {
-                if (string.IsNullOrEmpty(_HostIP))
-                {
-                    IPAddress[] addressList = Dns.GetHostAddresses(Environment.MachineName);
-                    foreach (IPAddress address in addressList)
-                    {
-                        string ip = address.ToString();
-                        if (ip.EndsWith(".1") || ip.Contains(":")) // 忽略路由和网卡地址。
-                        {
-                            continue;
-                        }
-                        _HostIP = ip;
-                        break;
-                    }
-                }
-                return _HostIP ?? "127.0.0.1";
             }
         }
     }
