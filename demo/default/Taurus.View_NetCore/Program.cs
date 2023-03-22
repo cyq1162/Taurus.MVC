@@ -41,6 +41,7 @@ namespace Taurus.View
                 int port = ((IPEndPoint)tl.LocalEndpoint).Port;//获取随机可用端口
                 tl.Stop();
                 host = host.Replace(":0", ":" + port);
+                string ip = MvcConst.HostIP;
                 if (!string.IsNullOrEmpty(runUrl))
                 {
                     if (runUrl.Contains(":0"))
@@ -49,10 +50,14 @@ namespace Taurus.View
                     }
                     if (runUrl.Contains("localhost") || runUrl.Contains("*"))
                     {
-                        string ip = MvcConst.HostIP;
+
                         runUrl = runUrl.Replace("localhost", ip).Replace("*", ip);//设置启动路径
                     }
                     MsConfig.AppRunUrl = runUrl;
+                }
+                else
+                {
+                    MsConfig.AppRunUrl = "http://" + ip + ":" + port;
                 }
             }
             else

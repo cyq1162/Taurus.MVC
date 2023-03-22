@@ -1,5 +1,6 @@
 ﻿using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
+using Microsoft.AspNetCore.Hosting.Server.Features;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Server.Kestrel.Core;
 using Microsoft.Extensions.DependencyInjection;
@@ -47,10 +48,10 @@ namespace Taurus.View
                 // x.Limits.KeepAliveTimeout = TimeSpan.FromMinutes(100);
                 //  serverOptions.Limits.RequestHeadersTimeout = TimeSpan.FromMinutes(1);
             });//.Configure<IISServerOptions>(x => x.AllowSynchronousIO = true);
-            services.Configure<IISServerOptions>((x) =>
-            {
-                x.AllowSynchronousIO = true;
-            });
+            //services.Configure<IISServerOptions>((x) =>
+            //{
+            //    x.AllowSynchronousIO = true;
+            //});
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
