@@ -1,0 +1,72 @@
+﻿<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+    <title>Login For Register Center</title>
+    <style type="text/css">
+        body {
+            text-align: center;
+            font: Verdana, Arial, Helvetica, sans-serif;
+            font-size: 14px;
+            font-weight: bold;
+            background-color: Black;
+            color: White;
+            margin: 0;
+            padding: 0;
+        }
+
+        input {
+            width: 180px;
+            border: 1px solid #cccccc;
+            background-color: #f5f5f5;
+        }
+
+        a {
+            text-decoration: none;
+            color: #99ccff;
+            font-size: 12px;
+        }
+
+        .tdright {
+            text-align: right;
+            width: 100px;
+            height: 35px;
+        }
+
+        .tdleft {
+            text-align: left;
+            padding-left: 8px;
+        }
+
+        a:link, a:visited {
+            text-decoration: none;
+            color: #336699;
+        }
+
+        a:hover {
+            color: Red;
+            font-weight: bold;
+            text-decoration: underline;
+            font-size: 12px;
+        }
+    </style>
+</head>
+<body>
+    <div style="margin: auto; text-align: center;margin-top: 250px;">
+        <h1 style="font-size: xx-large; color: #99ccff; font-style: italic;">Login To Register Center</h1><div style="margin: auto; text-align: center;margin-top: 50px;">
+            <form method="post">
+                <input name="myAct" type="hidden" value="Login" /><table width="420px" align="center">
+                    <tr><td class="tdright"><span>UserName</span> ：</td><td class="tdleft"><input name="uid" type="text" maxlength="25" /></td><td></td></tr>
+                    <tr><td class="tdright"><span>Password</span> ：</td><td class="tdleft"><input name="pwd" type="password" maxlength="30" size="20" /></td><td></td></tr>
+                    <tr>
+                        <td class="tdright"></td>
+                        <td class="tdleft" colspan="2">
+                            <input name="btnLogin" type="submit" value="Login" style="width: 71px;margin-left: 10px; cursor: pointer; padding-top: 2px;" />
+                        </td>
+                    </tr>
+                </table>
+            </form><div id="msg" style="text-align:center;margin-top:20px;color:red"></div>
+        </div>
+    </div>
+</body>
+</html>
