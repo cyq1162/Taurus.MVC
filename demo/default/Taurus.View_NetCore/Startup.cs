@@ -17,17 +17,19 @@ namespace Taurus.View
             // Taurus
             services.AddDistributedMemoryCache();//支持Session的必要组件
             services.AddSession();
+            // services.AddDataProtection().PersistKeysToFileSystem(new DirectoryInfo(Directory.GetCurrentDirectory() + Path.DirectorySeparatorChar + "DataProtection"));
             services.AddHttpContext();
             services.Configure<KestrelServerOptions>((x) =>
             {
-                if (MsConfig.IsGateway)
+                if (MsConfig.IsGateway && MsConfig.AppSslCertificate.Count > 0)
                 {
-                   // x.Listen(IPAddress.Any, 80);
+                    // x.Listen(IPAddress.Any, 80);
                     x.Listen(IPAddress.Any, 443, op =>
                     {
+
                         op.UseHttps(opx =>
                         {
-                            var certificates = MsConfig.SslCertificate;
+                            var certificates = MsConfig.AppSslCertificate;
                             opx.ServerCertificateSelector = (connectionContext, name) =>
                                name != null && certificates.TryGetValue(name, out var cert) ? cert : certificates["localhost"];
 
@@ -54,16 +56,11 @@ namespace Taurus.View
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
         public void Configure(IApplicationBuilder app, IWebHostEnvironment env)//把IHostingEnvironment IWebHostEnvironment
         {
-            //MicroService.MsConfig.MsTableName = "MsHostList" + DateTime.Now.ToString("yyyymmdd");
             app.UseWebSockets();
             app.UseStaticFiles();
             app.UseSession();
             app.UseHttpContext();
             app.UseTaurusMvc(env);
-            //app.Run(async (context) =>
-            //{
-            //    await context.Response.WriteAsync("Hello World!");
-            //});
         }
     }
 }

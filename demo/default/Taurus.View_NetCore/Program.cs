@@ -4,11 +4,9 @@ using Microsoft.AspNetCore.Hosting;
 using CYQ.Data;
 using System.Net.Sockets;
 using System.Net;
-using Taurus.Mvc;
-using System.Net.Http;
 using Microsoft.AspNetCore.Builder;
-using CYQ.Data.Tool;
-using System.Collections.Generic;
+using Taurus.MicroService;
+using Taurus.Mvc;
 
 namespace Taurus.View
 {
@@ -35,7 +33,7 @@ namespace Taurus.View
         public static string GetUrl()
         {
             string host = AppConfig.GetApp("Host");
-            string runUrl = MicroService.MsConfig.AppRunUrl;
+            string runUrl = MsConfig.AppRunUrl;
             if (host.Contains(":0"))//常规部署随机端口
             {
                 TcpListener tl = new TcpListener(IPAddress.Any, 0);
@@ -43,27 +41,19 @@ namespace Taurus.View
                 int port = ((IPEndPoint)tl.LocalEndpoint).Port;//获取随机可用端口
                 tl.Stop();
                 host = host.Replace(":0", ":" + port);
-                if (runUrl.Contains(":0"))
+                if (!string.IsNullOrEmpty(runUrl))
                 {
-                    runUrl = runUrl.Replace(":0", ":" + port);//设置启动路径
-                }
-                if (runUrl.Contains("localhost") || runUrl.Contains("*"))
-                {
-                    System.Net.IPAddress[] addressList = Dns.GetHostEntry(Dns.GetHostName()).AddressList;
-                    foreach (var address in addressList)
+                    if (runUrl.Contains(":0"))
                     {
-                        string ip = address.ToString();
-                        if (ip.EndsWith(".1") || ip.Contains(":")) // 忽略路由和网卡地址。
-                        {
-                            continue;
-                        }
-                        runUrl = runUrl.Replace("localhost", ip).Replace("*", ip);//设置启动路径
-                        break;
+                        runUrl = runUrl.Replace(":0", ":" + port);//设置启动路径
                     }
-
+                    if (runUrl.Contains("localhost") || runUrl.Contains("*"))
+                    {
+                        string ip = MvcConst.HostIP;
+                        runUrl = runUrl.Replace("localhost", ip).Replace("*", ip);//设置启动路径
+                    }
+                    MsConfig.AppRunUrl = runUrl;
                 }
-                MicroService.MsConfig.AppRunUrl = runUrl;
-
             }
             else
             {
@@ -72,7 +62,7 @@ namespace Taurus.View
                 string dockerUrl = Environment.GetEnvironmentVariable("DockerUrl");//跨服务器配置完整路径：http://host:port
                 if (!string.IsNullOrEmpty(dockerUrl))
                 {
-                    MicroService.MsConfig.AppRunUrl = dockerUrl;
+                    MsConfig.AppRunUrl = dockerUrl;
                 }
                 else
                 {
@@ -103,7 +93,7 @@ namespace Taurus.View
                         {
                             dockerHost = "80";
                         }
-                        MicroService.MsConfig.AppRunUrl = http + "://" + dockerHost + ":" + dockerPort;
+                        MsConfig.AppRunUrl = http + "://" + dockerHost + ":" + dockerPort;
                     }
                 }
             }
