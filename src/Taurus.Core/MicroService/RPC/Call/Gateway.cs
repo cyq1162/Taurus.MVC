@@ -235,7 +235,6 @@ namespace Taurus.MicroService
             /// <summary>
             /// 预先建立链接
             /// </summary>
-            /// <param name="uri"></param>
             internal static void PreConnection(Uri uri)
             {
                 if (!preConnectionDic.ContainsKey(uri))
@@ -250,7 +249,7 @@ namespace Taurus.MicroService
                         }
                         catch (Exception err)
                         {
-                            Log.WriteLogToTxt(err.Message, "MicroService");
+                            MsLog.Write(err.Message, "MicroService.Run.PreConnection(" + uri.AbsoluteUri + ")", "GET", MsConfig.ServerName);
                         }
                         finally
                         {
