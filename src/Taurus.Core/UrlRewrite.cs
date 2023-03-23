@@ -116,9 +116,11 @@ namespace Taurus.Core
             HttpContext cont = ((HttpApplication)sender).Context;
             if (cont != null && WebTool.IsCallMvc(cont.Request.Url) && !WebTool.IsProxyCall(cont) && WebTool.IsTaurusSuffix(cont.Request.Url))
             {
-                CheckCORS(cont);
-                ReplaceOutput(cont);
-                InvokeClass(cont);
+                if (CheckCORS(cont))
+                {
+                    ReplaceOutput(cont);
+                    InvokeClass(cont);
+                }
             }
         }
 
@@ -132,7 +134,7 @@ namespace Taurus.Core
         }
 
         #region 检测CORS跨域请求
-        private void CheckCORS(HttpContext context)
+        private bool CheckCORS(HttpContext context)
         {
             if (MvcConfig.IsAllowCORS)
             {
@@ -150,6 +152,7 @@ namespace Taurus.Core
                         context.Response.AppendHeader("Access-Control-Allow-Headers", context.Request.Headers["Access-Control-Request-Headers"]);
                     }
                     context.Response.End();
+                    return false;
                 }
                 else if (context.Request.UrlReferrer == null || context.Request.Url.Authority != context.Request.UrlReferrer.Authority)
                 {
@@ -158,6 +161,7 @@ namespace Taurus.Core
                     context.Response.AppendHeader("Access-Control-Allow-Credentials", "true");
                 }
             }
+            return true;
         }
 
         #endregion

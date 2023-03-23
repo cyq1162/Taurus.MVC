@@ -53,10 +53,19 @@ namespace Taurus.MicroService
                     }
                     List<HostInfo> moduleList = isServerCall ? Server.Gateway.GetHostList(module) : Client.Gateway.GetHostList(module);
 
-                    if (domainList == null || domainList.Count == 0) { infoList = moduleList; }
-                    else if (moduleList == null || moduleList.Count == 0) { infoList = domainList; }
+                    if (domainList == null || domainList.Count == 0) 
+                    {
+                        infoList = moduleList; 
+                    }
+                    else if (moduleList == null || moduleList.Count == 0) 
+                    {
+                        //仅有域名，没有对应模块
+                        return false;
+                        //infoList = domainList;
+                    }
                     else
                     {
+                        //存在域名，也存在模块，过滤出满足：域名+模块
                         foreach (var item in domainList)//过滤掉不在域名下的主机
                         {
                             foreach (var keyValue in moduleList)

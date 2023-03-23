@@ -38,7 +38,7 @@ namespace Taurus.MicroService
             }
             if (View != null && Server.Gateway.HostList != null && Server.Gateway.HostList.Count > 0)
             {
-                View.KeyValue.Add("ClientKey", MsConfig.ClientKey);
+                View.KeyValue.Set("ClientKey", MsConfig.ClientKey);
                 BindNamesView();
                 BindDefaultView();
             }
@@ -58,6 +58,18 @@ namespace Taurus.MicroService
         public void BindDefaultView()
         {
             string name = Query<string>("name", "RegCenter");
+            if (name != "RegCenter" && name != "Gateway")
+            {
+                var hostList = Server.Gateway.HostList;
+                if (hostList.ContainsKey("Gateway"))
+                {
+                    View.KeyValue.Set("GatewayUrl", hostList["Gateway"][0].Host);
+                }
+                else if (hostList.ContainsKey("RegCenter"))
+                {
+                    View.KeyValue.Set("GatewayUrl", hostList["RegCenter"][0].Host);
+                }
+            }
             List<HostInfo> list = Server.Gateway.GetHostList(name);
             if (list.Count > 0)
             {
