@@ -3,9 +3,9 @@
 <head>
     <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
     <title>Web API 文档 - Taurus.MVC</title>
-    <link rel="stylesheet" type="text/css" media="all" href="/views/doc/css/css.css" />
-    <script src="/views/doc/js/jquery.min.js"></script>
-    <script src="/views/doc/js/doc.js"></script>
+    <link rel="stylesheet" type="text/css" media="all" href="/Views/Doc/css/css.css" />
+    <script src="/Views/Doc/js/jquery.min.js"></script>
+    <script src="/Views/Doc/js/doc.js"></script>
 </head>
 <body id="Node_Body">
     <div id="body_allwrap">
@@ -38,21 +38,8 @@
                                     <div class="publiclist_sidebar">
                                         <ul id="ControllerView">
                                             <li>
-                                                <a href="${'/'+module}/doc/default?c={0}&f=${f}" title="{1}">{0}</a>
+                                                <a href="${'/'+module}/doc/default?c={0}&f=${f}&g=${g}" title="{1}">{0}</a>
                                                 <p style="text-indent: 2em;"><em>{1}</em></p>
-                                            </li>
-                                        </ul>
-                                    </div>
-                                </dd>
-                            </div>
-                            <div id="Node_MicroService">
-                                <dt style="text-align: left;">MicroService Host ：</dt>
-                                <dd style="text-align: left;">
-                                    <div class="publiclist_sidebar">
-                                        <ul id="MicroServiceView">
-                                            <li>
-                                                <a href="${host}/doc" title="${name}" target="_blank">${host}</a>
-                                                <p style="text-indent: 2em;"><em>${name}</em></p>
                                             </li>
                                         </ul>
                                     </div>
@@ -72,7 +59,7 @@
                     </div>
                     <div id="ActionView">
                         <div class="default_contents">
-                            <h6 class="pubtime">${Num}、 ${Attr} : <a href="${'/'+module}/doc/detail?c=${CName}&a=${AName}&p=${Attr}&u=${Url}&d=${ADesc}&n=${Num}">${Url}</a>
+                            <h6 class="pubtime">${Num}、 ${Attr} : <a href="${'/'+module}/doc/detail?c=${CName}&a=${AName}&p=${Attr}&u=${Url}&d=${ADesc}&n=${Num}&g=${g}">${Url}</a>
                             <span style="float:right;margin-right:20px;">...</span>
                             </h6>
                             <div class="user_article">
