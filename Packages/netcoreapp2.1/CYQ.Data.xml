@@ -2501,6 +2501,11 @@
             Gemini Workflow Dev Framework
             </summary>
         </member>
+        <member name="F:CYQ.Data.LogType.MicroService">
+            <summary>
+            Taurus.MicroService
+            </summary>
+        </member>
         <member name="T:CYQ.Data.LogWorker">
             <summary>
             内部定时日志工作
@@ -6092,6 +6097,11 @@
             <typeparam name="K">key</typeparam>
             <typeparam name="V">value</typeparam>
         </member>
+        <member name="M:CYQ.Data.Tool.MDictionary`2.Add(`0,`1)">
+            <summary>
+            添加值【不存则，则添加；存在，则忽略】
+            </summary>
+        </member>
         <member name="P:CYQ.Data.Tool.MDictionary`2.Item(`0)">
             <summary>
             索引取值
@@ -6114,7 +6124,7 @@
         </member>
         <member name="M:CYQ.Data.Tool.MDictionary`2.Set(`0,`1)">
             <summary>
-            当Key为int时，通过此方法取值
+            检查值存在【则更新】，不存在则添加
             </summary>
         </member>
         <member name="T:CYQ.Data.Tool.ReflectTool">
