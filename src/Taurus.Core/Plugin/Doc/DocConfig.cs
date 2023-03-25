@@ -51,17 +51,17 @@ namespace Taurus.Plugin.Doc
             }
         }
         /// <summary>
-        /// 配置Doc默认追加的（多个以逗号分隔）参数（一般用于配置全局的请求头）
+        /// 配置Doc默认追加的（多个以逗号分隔）参数（一般用于配置全局的请求头，如ack，token等）
         /// </summary>
         public static string DefaultParas
         {
             get
             {
-                return AppConfig.GetApp(DocConst.DefaultImg, "");
+                return AppConfig.GetApp(DocConst.DefaultParas, "");
             }
             set
             {
-                AppConfig.SetApp(DocConst.DefaultImg, value);
+                AppConfig.SetApp(DocConst.DefaultParas, value);
             }
         }
     }
