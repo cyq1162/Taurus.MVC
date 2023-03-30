@@ -115,6 +115,9 @@
     <Compile Include="Plugin\Doc\DocConst.cs" />
     <Compile Include="Plugin\Doc\DocController.cs" />
     <Compile Include="Plugin\Doc\HttpPostedFileExtend.cs" />
+    <Compile Include="Plugin\Limit\AckLimit.cs" />
+    <Compile Include="Plugin\Limit\LimitConfig.cs" />
+    <Compile Include="Plugin\Limit\LimitConst.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="Tool\WebTool.cs" />
     <Compile Include="UrlRewrite.cs" />
