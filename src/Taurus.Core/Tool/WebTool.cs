@@ -62,6 +62,10 @@ namespace Taurus.Mvc
         internal static bool IsTaurusSuffix(Uri uri)
         {
             string localPath = uri.LocalPath;
+            return IsTaurusSuffix(localPath);
+        }
+        internal static bool IsTaurusSuffix(string localPath)
+        {
             string suffix = MvcConfig.Suffix;
             if (suffix != "" && localPath.EndsWith(suffix))
             {
@@ -69,12 +73,11 @@ namespace Taurus.Mvc
             }
             return localPath.IndexOf('.') == -1;
         }
-
-        #endregion
-        /// <summary>
-        /// 是否使用子目录部署网站
-        /// </summary>
-        internal static bool IsSubAppSite(Uri uri)
+            #endregion
+            /// <summary>
+            /// 是否使用子目录部署网站
+            /// </summary>
+            internal static bool IsSubAppSite(Uri uri)
         {
             string ui =MvcConfig.SubAppName.ToLower();
             if (ui != string.Empty)

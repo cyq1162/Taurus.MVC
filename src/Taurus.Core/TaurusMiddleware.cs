@@ -13,7 +13,7 @@ namespace Microsoft.AspNetCore.Http
     /// <summary>
     /// 为支持Asp.net core 存在的文件
     /// </summary>
-    public class TaurusMiddleware
+    internal class TaurusMiddleware
     {
         private readonly RequestDelegate next;
 
@@ -54,7 +54,7 @@ namespace Microsoft.AspNetCore.Http
     public static class TaurusExtensions
     {
         /// <summary>
-        /// Net Core 3.1 把IHostingEnvironment 拆分成了：IWebHostEnvironment和IHostEnvironment 
+        /// 使用Taurus.MVC中件间功能：Net Core 3.1 把IHostingEnvironment 拆分成了：IWebHostEnvironment和IHostEnvironment 
         /// 所以增加重载方法适应。
         /// </summary>
         /// <param name="builder"></param>

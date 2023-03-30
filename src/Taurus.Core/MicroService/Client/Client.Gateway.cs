@@ -94,18 +94,23 @@ namespace Taurus.MicroService
             /// <returns></returns>
             public static List<HostInfo> GetHostList(string name)
             {
-                if (!string.IsNullOrEmpty(name))
+                var hostList = HostList;//先获取引用【避免执行过程，因线程更换了引用的对象】
+                if (hostList != null)
                 {
-                    List<HostInfo> list = new List<HostInfo>();
-                    if (HostList.ContainsKey(name))//微服务程序。
+                    if (string.IsNullOrEmpty(name))
                     {
-                        list.AddRange(HostList[name]);
+                        name = "/";
+                    }
+                    List<HostInfo> list = new List<HostInfo>();
+                    if (hostList.ContainsKey(name))//微服务程序。
+                    {
+                        list.AddRange(hostList[name]);
                     }
                     if (name.Contains("."))//域名
                     {
-                        if (name != "*.*" && HostList.ContainsKey("*.*"))
+                        if (name != "*.*" && hostList.ContainsKey("*.*"))
                         {
-                            List<HostInfo> commList = HostList["*.*"];
+                            List<HostInfo> commList = hostList["*.*"];
                             if (commList.Count > 0)
                             {
                                 if (list.Count == 0 || commList[0].Version >= list[0].Version)//版本号比较处理
@@ -117,9 +122,9 @@ namespace Taurus.MicroService
                     }
                     else //普通模块
                     {
-                        if (name != "*" && HostList.ContainsKey("*"))
+                        if (name != "*" && hostList.ContainsKey("*"))
                         {
-                            List<HostInfo> commList = HostList["*"];
+                            List<HostInfo> commList = hostList["*"];
                             if (commList.Count > 0)
                             {
                                 if (list.Count == 0 || commList[0].Version >= list[0].Version)//版本号比较处理

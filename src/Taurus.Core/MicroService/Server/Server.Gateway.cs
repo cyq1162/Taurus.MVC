@@ -101,8 +101,12 @@ namespace Taurus.MicroService
                 //System.Diagnostics.Stopwatch sw = new System.Diagnostics.Stopwatch();
                 //sw.Start();
                 var hostList = HostList;//先获取引用【避免执行过程，因线程更换了引用的对象】
-                if (!string.IsNullOrEmpty(name) && hostList != null)
+                if (hostList != null)
                 {
+                    if (string.IsNullOrEmpty(name))
+                    {
+                        name = "/";
+                    }
                     List<HostInfo> list = new List<HostInfo>();
                     if (hostList.ContainsKey(name))//微服务程序。
                     {

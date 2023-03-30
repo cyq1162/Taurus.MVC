@@ -5,6 +5,7 @@ using System.Threading;
 using System.Web;
 using Taurus.MicroService;
 using Taurus.Mvc;
+using Taurus.Plugin.Limit;
 
 namespace Taurus.Core
 {
@@ -28,11 +29,11 @@ namespace Taurus.Core
 
         void context_Disposed(object sender, EventArgs e)
         {
-//#if DEBUG
-//            ThreadBreak.ClearGlobalThread();
-//            System.Diagnostics.Debug.WriteLine("应用程序退出：HttpApplication Disposed。");
-//            System.Console.WriteLine("应用程序退出：HttpApplication Disposed!");
-//#endif
+            //#if DEBUG
+            //            ThreadBreak.ClearGlobalThread();
+            //            System.Diagnostics.Debug.WriteLine("应用程序退出：HttpApplication Disposed。");
+            //            System.Console.WriteLine("应用程序退出：HttpApplication Disposed!");
+            //#endif
 
         }
         void context_BeginRequest(object sender, EventArgs e)
