@@ -1,5 +1,4 @@
-﻿using Microsoft.AspNetCore.Http;
-using Taurus.Mvc;
+﻿using Taurus.Mvc;
 
 namespace Taurus.Plugin.Limit
 {
@@ -12,14 +11,13 @@ namespace Taurus.Plugin.Limit
         /// 检测请求是否合法。
         /// </summary>
         /// <returns></returns>
-        public static bool CheckRequestIsSafe(HttpContext context, out string tip)
+        public static bool CheckRequestIsSafe(string localPath, out string tip)
         {
             tip = string.Empty;
-            string localPath = context.Request.Path.Value;
             if (WebTool.IsTaurusSuffix(localPath))
             {
                 string configPath = LimitConfig.AckCheckPath;
-                if (localPath.Length > 1 && !string.IsNullOrEmpty(configPath))
+                if (localPath.Length > 0 && !string.IsNullOrEmpty(configPath))
                 {
                     foreach (var item in configPath.Split(','))
                     {
@@ -37,7 +35,7 @@ namespace Taurus.Plugin.Limit
             return true;
         }
 
-        public static bool CheckAckIsSafe(out string tip)
+        private static bool CheckAckIsSafe(out string tip)
         {
             tip = string.Empty;
             if (LimitConfig.AckIsVerifyDecode || LimitConfig.AckIsVerifyUsed)
@@ -55,7 +53,7 @@ namespace Taurus.Plugin.Limit
                 }
                 if (LimitConfig.AckIsVerifyUsed && AckLimit.IsAckUsed(ack))
                 {
-                    tip = "ack is used.";
+                    tip = "ack has used.";
                     return false;
                 }
             }

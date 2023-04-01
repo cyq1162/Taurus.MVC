@@ -148,6 +148,8 @@ CYQ.Data升级到V5.8.4.9
 -----V3.1.5.0----------------
 1、新增：Taurus.Plugin.Limit.AckLimit 用于网关的安全效验和限制重复提交（中间件使用：app.UseTaurusAckLimit();）。（2023-03-30）
 2、优化：对于请求（路径为空或为'/'时）网关统一转发给客户端配置名称为“/”的。（2023-03-30）
+3、优化：微服务：客户端和服务端默认发起的请求，默认带上ack标识（处理任意端使用了：app.UseTaurusAckLimit();）（2023-03-31）
+4、优化：配置项规范：未调整：Mvc模块【Taurus.Xxx】，微服务【MicroService.Xxx.Xxx】、调整：Doc【Doc.Xxx】，Limit【Limit.Xxx】（2023-04-01）
 
 插件：
 幕等性检测、安全检测、黑名单、熔断、限流。

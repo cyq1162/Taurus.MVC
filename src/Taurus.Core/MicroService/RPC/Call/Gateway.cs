@@ -220,7 +220,7 @@ namespace Taurus.MicroService
                 }
                 catch (Exception err)
                 {
-                    if (!err.Message.Contains("(404) Not Found"))
+                    if (!err.Message.Contains("(40"))//400 系列，机器是通的， 404) Not Found
                     {
                         RpcClientPool.RemoveFromPool(uri);
                         MsLog.Write(err.Message, url, request.HttpMethod, isServerCall ? MsConfig.ServerName : MsConfig.ClientName);

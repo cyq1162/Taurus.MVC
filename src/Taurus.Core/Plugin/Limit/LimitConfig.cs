@@ -14,11 +14,11 @@ namespace Taurus.Plugin.Limit
         {
             get
             {
-                return AppConfig.GetApp(LimitConst.AckKey,"ts");
+                return AppConfig.GetApp("Limit.AckKey", "ts");
             }
             set
             {
-                AppConfig.SetApp(LimitConst.AckKey, value);
+                AppConfig.SetApp("Limit.AckKey", value);
             }
         }
         /// <summary>
@@ -28,11 +28,11 @@ namespace Taurus.Plugin.Limit
         {
             get
             {
-                return AppConfig.GetApp(LimitConst.AckCheckPath, "");
+                return AppConfig.GetApp("Limit.AckCheckPath", "");
             }
             set
             {
-                AppConfig.SetApp(LimitConst.AckCheckPath, value);
+                AppConfig.SetApp("Limit.AckCheckPath", value);
             }
         }
         
@@ -45,7 +45,7 @@ namespace Taurus.Plugin.Limit
         {
             get
             {
-                return AppConfig.GetAppBool(LimitConst.AckIsVerifyDecode, true);
+                return AppConfig.GetAppBool("Limit.AckIsVerifyDecode", true);
             }
         }
         /// <summary>
@@ -56,7 +56,7 @@ namespace Taurus.Plugin.Limit
         {
             get
             {
-                return AppConfig.GetAppBool(LimitConst.AckIsVerifyUsed, true);
+                return AppConfig.GetAppBool("Limit.AckIsVerifyUsed", true);
             }
         }
     }

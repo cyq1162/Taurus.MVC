@@ -3,6 +3,7 @@ using CYQ.Data.Tool;
 using Microsoft.AspNetCore.Builder;
 using System;
 using System.Threading.Tasks;
+using Taurus.Core;
 using Taurus.Mvc;
 using Taurus.Plugin.Limit;
 
@@ -24,17 +25,25 @@ namespace Microsoft.AspNetCore.Http
         {
             try
             {
-                string tip;
-                if (!LimitRun.CheckRequestIsSafe(context, out tip))
+                if (context.Request.Path.Value.IndexOf("/App_Data/", StringComparison.OrdinalIgnoreCase) > -1)//兼容受保护的目录
                 {
-                    context.Response.StatusCode = 401;
-                    await context.Response.WriteAsync(JsonHelper.OutResult(false, tip));
+                    context.Response.StatusCode = 403;
+                    await context.Response.WriteAsync("403 Forbidden");
                 }
                 else
                 {
-                    await next(context);
+                    System.Web.HttpApplication.Instance.ExecuteEventHandler();
+                    if (System.Web.HttpContext.Current.Response.HasStarted)
+                    {
+                        context.Response.StatusCode = 401;
+                        await context.Response.WriteAsync("");
+                    }
+                    //处理信息
+                    else
+                    {
+                        await next(context);
+                    }
                 }
-
             }
             catch (Exception ex)
             {
@@ -51,6 +60,8 @@ namespace Microsoft.AspNetCore.Http
         /// <returns></returns>
         public static IApplicationBuilder UseTaurusAckLimit(this IApplicationBuilder builder)
         {
+            UrlLimit limit = new UrlLimit();
+            limit.Init(System.Web.HttpApplication.Instance);
             return builder.UseMiddleware<TaurusLimitMiddleware>();
         }
     }

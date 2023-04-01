@@ -13,11 +13,11 @@ namespace Taurus.Plugin.Doc
         /// 配置是否启用WebAPI文档自动生成功能 如 Taurus.IsStartDoc ：true
         /// 默认值：false
         /// </summary>
-        public static bool IsStartDoc
+        public static bool IsStart
         {
             get
             {
-                return AppConfig.GetAppBool(DocConst.IsStartDoc, true);
+                return AppConfig.GetAppBool("Doc.IsStart", true);
             }
         }
         /// <summary>
@@ -43,11 +43,11 @@ namespace Taurus.Plugin.Doc
         {
             get
             {
-                return AppConfig.GetApp(DocConst.DefaultImg,"");
+                return AppConfig.GetApp("Doc.DefaultImg", "");
             }
             set
             {
-                AppConfig.SetApp(DocConst.DefaultImg, value);
+                AppConfig.SetApp("Doc.DefaultImg", value);
             }
         }
         /// <summary>
@@ -57,11 +57,11 @@ namespace Taurus.Plugin.Doc
         {
             get
             {
-                return AppConfig.GetApp(DocConst.DefaultParas, "");
+                return AppConfig.GetApp("Doc.DefaultParas", "");
             }
             set
             {
-                AppConfig.SetApp(DocConst.DefaultParas, value);
+                AppConfig.SetApp("Doc.DefaultParas", value);
             }
         }
     }

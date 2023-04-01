@@ -159,7 +159,7 @@ namespace Taurus.Mvc
                             }
                         }
                         //追加APIHelp
-                        if (DocConfig.IsStartDoc)
+                        if (DocConfig.IsStart)
                         {
                             Type docType = typeof(Taurus.Plugin.Doc.DocController);
                             if (!_Lv1Controllers.ContainsKey(ReflectConst.Doc))

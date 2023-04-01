@@ -5,6 +5,7 @@ using System.Threading;
 using CYQ.Data;
 using CYQ.Data.Tool;
 using Taurus.Mvc;
+using Taurus.Plugin.Limit;
 
 namespace Taurus.MicroService
 {
@@ -61,6 +62,7 @@ namespace Taurus.MicroService
                 using (WebClient wc = new WebClient())
                 {
                     wc.Headers.Add(MsConst.HeaderKey, MsConfig.ServerKey);
+                    wc.Headers.Add("ack", AckLimit.CreateAck());
                     wc.Headers.Add("Referer", MsConfig.AppRunUrl);
                     wc.Headers.Add("Content-Type", "application/x-www-form-urlencoded");
                     string data = "host={0}&tick=" + Server.Tick;
@@ -113,6 +115,7 @@ namespace Taurus.MicroService
                 using (WebClient wc = new WebClient())
                 {
                     wc.Headers.Add(MsConst.HeaderKey, MsConfig.ServerKey);
+                    wc.Headers.Add("ack", AckLimit.CreateAck());
                     wc.Headers.Add("Referer", MsConfig.AppRunUrl);
                     wc.Headers.Add("Content-Type", "application/x-www-form-urlencoded");
                     wc.UploadString(url, data);
@@ -172,7 +175,8 @@ namespace Taurus.MicroService
                 using (WebClient wc = new WebClient())
                 {
                     wc.Headers.Add(MsConst.HeaderKey, MsConfig.ServerKey);
-                    wc.Headers.Set("Referer", MsConfig.AppRunUrl);
+                    wc.Headers.Add("ack", AckLimit.CreateAck());
+                    wc.Headers.Add("Referer", MsConfig.AppRunUrl);
                     string result = wc.DownloadString(url);
                     Server.RegCenterIsLive = true;
                     MsLog.WriteDebugLine(DateTime.Now.ToString("HH:mm:ss") + string.Format(" : PID : {0} GetList : Tick : {1}  => OK", MvcConst.ProcessID, Server.Tick));

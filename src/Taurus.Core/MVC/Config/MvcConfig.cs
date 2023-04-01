@@ -16,7 +16,7 @@ namespace Taurus.Mvc
         {
             get
             {
-                return AppConfig.GetApp(MvcConfigConst.Controllers, "*");
+                return AppConfig.GetApp("Taurus.Controllers", "*");
             }
         }
         /// <summary>
@@ -27,7 +27,7 @@ namespace Taurus.Mvc
         {
             get
             {
-                return AppConfig.GetApp(MvcConfigConst.Suffix, "");
+                return AppConfig.GetApp("Taurus.Suffix", "");
             }
         }
         /// <summary>
@@ -38,8 +38,8 @@ namespace Taurus.Mvc
         /// </summary>
         public static int RouteMode
         {
-            get { return AppConfig.GetAppInt(MvcConfigConst.RouteMode, 1); }
-            set { AppConfig.SetApp(MvcConfigConst.RouteMode, value.ToString()); }
+            get { return AppConfig.GetAppInt("Taurus.RouteMode", 1); }
+            set { AppConfig.SetApp("Taurus.RouteMode", value.ToString()); }
         }
 
         /// <summary>
@@ -50,7 +50,7 @@ namespace Taurus.Mvc
         {
             get
             {
-                return AppConfig.GetApp(MvcConfigConst.DefaultUrl, "");
+                return AppConfig.GetApp("Taurus.DefaultUrl", "");
             }
         }
 
@@ -62,7 +62,7 @@ namespace Taurus.Mvc
         {
             get
             {
-                return AppConfig.GetAppBool(MvcConfigConst.IsAllowCORS, true);
+                return AppConfig.GetAppBool("Taurus.IsAllowCORS", true);
             }
         }
         /// <summary>
@@ -73,7 +73,7 @@ namespace Taurus.Mvc
         {
             get
             {
-                return AppConfig.GetApp(MvcConfigConst.Views, "Views");
+                return AppConfig.GetApp("Taurus.Views", "Views");
             }
         }
         /// <summary>
@@ -84,7 +84,7 @@ namespace Taurus.Mvc
         {
             get
             {
-                return AppConfig.GetApp(MvcConfigConst.SubAppName, "");
+                return AppConfig.GetApp("Taurus.SubAppName", "");
             }
         }
     }

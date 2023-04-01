@@ -5,6 +5,7 @@ using System.Threading;
 using CYQ.Data;
 using CYQ.Data.Tool;
 using Taurus.Mvc;
+using Taurus.Plugin.Limit;
 
 namespace Taurus.MicroService
 {
@@ -73,6 +74,7 @@ namespace Taurus.MicroService
                 using (WebClient wc = new WebClient())
                 {
                     wc.Headers.Add(MsConst.HeaderKey, MsConfig.ClientKey);
+                    wc.Headers.Add("ack", AckLimit.CreateAck());
                     wc.Headers.Add("Referer", MsConfig.AppRunUrl);
                     wc.Headers.Add("Content-Type", "application/x-www-form-urlencoded");
                     //Content - Type: multipart / form - data; boundary = ----WebKitFormBoundaryxSUOuGdhfM6ceac8
@@ -137,7 +139,8 @@ namespace Taurus.MicroService
                 using (WebClient wc = new WebClient())
                 {
                     wc.Headers.Add(MsConst.HeaderKey, MsConfig.ClientKey);
-                    wc.Headers.Set("Referer", MsConfig.AppRunUrl);
+                    wc.Headers.Add("ack", AckLimit.CreateAck());
+                    wc.Headers.Add("Referer", MsConfig.AppRunUrl);
                     string result = wc.DownloadString(url);
                     Client.RegCenterIsLive = true;
                     MsLog.WriteDebugLine(DateTime.Now.ToString("HH:mm:ss") + string.Format(" : PID : {0} GetList : Tick : {1}  => OK", MvcConst.ProcessID, Client.Tick));
