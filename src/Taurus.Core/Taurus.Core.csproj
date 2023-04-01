@@ -99,7 +99,6 @@
     <Compile Include="MicroService\Server\Server.RegCenter.UI.MicroServiceController.cs" />
     <Compile Include="MicroService\Server\Server.Run.cs" />
     <Compile Include="MVC\Config\MvcConfig.cs" />
-    <Compile Include="MVC\Config\MvcConfigConst.cs" />
     <Compile Include="MVC\Config\MvcConst.cs" />
     <Compile Include="MVC\Filter\HttpResponseFilter.cs" />
     <Compile Include="MVC\Reflect\ControllerCollector.cs" />
@@ -112,12 +111,10 @@
     <Compile Include="MVC\ViewEngine.cs" />
     <Compile Include="MVC\LogicBase.cs" />
     <Compile Include="Plugin\Doc\DocConfig.cs" />
-    <Compile Include="Plugin\Doc\DocConst.cs" />
     <Compile Include="Plugin\Doc\DocController.cs" />
     <Compile Include="Plugin\Doc\HttpPostedFileExtend.cs" />
     <Compile Include="Plugin\Limit\AckLimit.cs" />
     <Compile Include="Plugin\Limit\LimitConfig.cs" />
-    <Compile Include="Plugin\Limit\LimitConst.cs" />
     <Compile Include="Plugin\Limit\LimitRun.cs" />
     <Compile Include="Plugin\Limit\UrlLimit.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
