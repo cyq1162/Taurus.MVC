@@ -9,6 +9,7 @@ namespace Taurus.Plugin.Limit
     {
         /// <summary>
         /// 配置Ack的加密Key，默认2-3个字符。
+        /// 如：Limit.AckKey ："abc"，默认值ts
         /// </summary>
         public static string AckKey
         {
@@ -22,7 +23,8 @@ namespace Taurus.Plugin.Limit
             }
         }
         /// <summary>
-        /// 配置：Ack检测路径，默认拦截Mvc请求（即无后缀）
+        /// 配置：Ack检测路径，默认拦截Mvc请求（即无后缀）。
+        /// 如：Limit.AckCheckPath："/web/,/"
         /// </summary>
         public static string AckCheckPath
         {
@@ -35,11 +37,11 @@ namespace Taurus.Plugin.Limit
                 AppConfig.SetApp("Limit.AckCheckPath", value);
             }
         }
-        
+
 
         /// <summary>
         /// 配置：是否对Ack进行解码较验。
-        /// 默认值：true
+        /// 如：Limit.AckIsVerifyDecode：true，默认值：true
         /// </summary>
         public static bool AckIsVerifyDecode
         {
@@ -50,7 +52,7 @@ namespace Taurus.Plugin.Limit
         }
         /// <summary>
         /// 配置：是否限制Ack重复使用。
-        /// 默认值：true
+        /// 如：Limit.AckIsVerifyUsed，默认值：true
         /// </summary>
         public static bool AckIsVerifyUsed
         {

@@ -10,8 +10,8 @@ namespace Taurus.Plugin.Doc
     {
 
         /// <summary>
-        /// 配置是否启用WebAPI文档自动生成功能 如 Taurus.IsStartDoc ：true
-        /// 默认值：false
+        /// 配置是否启用WebAPI文档自动生成功能 
+        /// 如 Doc.IsStart ：true， 默认值：true
         /// </summary>
         public static bool IsStart
         {
@@ -21,7 +21,7 @@ namespace Taurus.Plugin.Doc
             }
         }
         /// <summary>
-        /// 从默认图片转换成的：HttpPostedFile
+        /// 只读：从默认图片转换成的：HttpPostedFile
         /// 需要配置：DefaultImg 图片相对路径
         /// </summary>
         public static HttpPostedFile DefaultImgHttpPostedFile
@@ -37,7 +37,8 @@ namespace Taurus.Plugin.Doc
         }
 
         /// <summary>
-        /// 配置Doc默认文档自动提交的图片（配置相对路径）
+        /// 配置Doc默认文档自动提交的图片（配置相对路径），
+        /// 如：Doc.DefaultImg ："/App_Data/xxx.jpg"
         /// </summary>
         public static string DefaultImg
         {
@@ -51,7 +52,8 @@ namespace Taurus.Plugin.Doc
             }
         }
         /// <summary>
-        /// 配置Doc默认追加的（多个以逗号分隔）参数（一般用于配置全局的请求头，如ack，token等）
+        /// 配置Doc默认追加的（多个以逗号分隔）参数（一般用于配置全局的请求头，如ack，token等），
+        /// 如：Doc.DefaultParas ："ack,token"
         /// </summary>
         public static string DefaultParas
         {

@@ -48,14 +48,14 @@ namespace Taurus.Core
             if (!WebTool.IsCallMicroServiceReg(uri) && Rpc.Gateway.Proxy(context, true))
             {
                 WebTool.SetRunProxySuccess(context);
-                try
-                {
+                //try
+                //{
                     context.Response.End();
-                }
-                catch (ThreadAbortException)
-                {
+                //}
+                //catch (ThreadAbortException)
+                //{
 
-                }
+                //}
 
                 return;
             }
@@ -65,14 +65,14 @@ namespace Taurus.Core
                 //单纯网关，直接返回
                 context.Response.StatusCode = 503;
                 context.Response.Write("503 Service unavailable.");
-                try
-                {
+                //try
+                //{
                     context.Response.End();
-                }
-                catch (ThreadAbortException)
-                {
+                //}
+                //catch (ThreadAbortException)
+                //{
 
-                }
+                //}
                 return;
             }
             #endregion
