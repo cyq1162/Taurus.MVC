@@ -22,7 +22,7 @@ namespace Taurus.View
             services.AddHttpContext();
             services.Configure<KestrelServerOptions>((x) =>
             {
-                if (MsConfig.IsGateway && MsConfig.AppSslCertificate.Count > 0)
+                if (MsConfig.IsGateway && MsConfig.App.SslCertificate.Count > 0)
                 {
                     // x.Listen(IPAddress.Any, 80);
                     x.Listen(IPAddress.Any, 443, op =>
@@ -30,7 +30,7 @@ namespace Taurus.View
 
                         op.UseHttps(opx =>
                         {
-                            var certificates = MsConfig.AppSslCertificate;
+                            var certificates = MsConfig.App.SslCertificate;
                             opx.ServerCertificateSelector = (connectionContext, name) =>
                                name != null && certificates.TryGetValue(name, out var cert) ? cert : certificates["localhost"];
 
