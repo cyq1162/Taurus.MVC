@@ -7,7 +7,12 @@ namespace Taurus.Plugin.Limit
     /// </summary>
     internal static class LimitRun
     {
-        public static bool Start(string localPath)
+        /// <summary>
+        /// 限制策略启动检测
+        /// </summary>
+        /// <param name="localPath">请求的相对路径</param>
+        /// <returns></returns>
+        public static bool Check(string localPath)
         {
             if (LimitConfig.IsEnable)
             {

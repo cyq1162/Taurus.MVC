@@ -22,19 +22,19 @@ namespace Taurus.Mvc
             }
             return localPath;
         }
-        internal static bool IsProxyCall(HttpContext context)
+        internal static bool IsRunToEnd(HttpContext context)
         {
             if (context != null)
             {
-                return context.Items.Contains("IsRunProxySuccess");
+                return context.Items.Contains("IsRunToEnd");
             }
             return false;
         }
-        internal static void SetRunProxySuccess(HttpContext context)
+        internal static void SetRunToEnd(HttpContext context)
         {
-            if (context!=null && !context.Items.Contains("IsRunProxySuccess"))
+            if (context!=null && !context.Items.Contains("IsRunToEnd"))
             {
-                context.Items.Add("IsRunProxySuccess", 1);
+                context.Items.Add("IsRunToEnd", 1);
             }
 
         }

@@ -105,7 +105,7 @@ namespace Taurus.MicroService
 
                             }
                             HostInfo info = infoList[callIndex];//并发下有异步抛出
-                            if (!isServerCall && info.Host == MsConfig.AppRunUrl)
+                            if (!isServerCall && info.Host == MsConfig.App.RunUrl)
                             {
                                 continue;
                             }
@@ -158,11 +158,11 @@ namespace Taurus.MicroService
                 if (wc == null) { return false; }
                 try
                 {
-                    wc.Headers.Add(MsConst.HeaderKey, (isServerCall ? MsConfig.ServerKey : MsConfig.ClientKey));
+                    wc.Headers.Add(MsConst.HeaderKey, (isServerCall ? MsConfig.Server.Key : MsConfig.Client.Key));
                     wc.Headers.Add("X-Real-IP", request.UserHostAddress);
-                    if (!string.IsNullOrEmpty(MsConfig.AppRunUrl))
+                    if (!string.IsNullOrEmpty(MsConfig.App.RunUrl))
                     {
-                        wc.Headers.Add("Referer", MsConfig.AppRunUrl);//当前运行地址。
+                        wc.Headers.Add("Referer", MsConfig.App.RunUrl);//当前运行地址。
                     }
                     foreach (string key in request.Headers.Keys)
                     {
@@ -223,7 +223,7 @@ namespace Taurus.MicroService
                     if (!err.Message.Contains("(40"))//400 系列，机器是通的， 404) Not Found
                     {
                         RpcClientPool.RemoveFromPool(uri);
-                        MsLog.Write(err.Message, url, request.HttpMethod, isServerCall ? MsConfig.ServerName : MsConfig.ClientName);
+                        MsLog.Write(err.Message, url, request.HttpMethod, isServerCall ? MsConfig.Server.Name : MsConfig.Client.Name);
                         return false;
                     }
                 }
@@ -258,7 +258,7 @@ namespace Taurus.MicroService
                         }
                         catch (Exception err)
                         {
-                            MsLog.Write(err.Message, "MicroService.Run.PreConnection(" + uri.AbsoluteUri + ")", "GET", MsConfig.ServerName);
+                            MsLog.Write(err.Message, "MicroService.Run.PreConnection(" + uri.AbsoluteUri + ")", "GET", MsConfig.Server.Name);
                         }
                         finally
                         {

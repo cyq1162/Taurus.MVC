@@ -5,7 +5,7 @@ namespace Taurus.MicroService
     /// <summary>
     /// 存档请求的客户端信息
     /// </summary>
-    internal class HostInfo : ICloneable
+    internal class HostInfo
     {
         /// <summary>
         /// 主机地址：http://localhost:8080
@@ -27,10 +27,5 @@ namespace Taurus.MicroService
         /// 记录调用顺序，用于负载均衡
         /// </summary>
         public int CallIndex { get; set; }
-
-        public object Clone()
-        {
-            return this.MemberwiseClone();
-        }
     }
 }

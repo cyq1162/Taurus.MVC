@@ -9,6 +9,7 @@ using CYQ.Data.Tool;
 using System.Text.RegularExpressions;
 using Taurus.Plugin.Doc;
 using Taurus.Mvc.Attr;
+using Taurus.MicroService;
 
 namespace Taurus.Mvc
 {
@@ -55,7 +56,7 @@ namespace Taurus.Mvc
                 case 1:
                     if (items.Length > 1)
                     {
-                        if (items.Length > 2 && items[0].ToLower() != _ControllerName && items[1].ToLower() == _ControllerName && items[0] == MicroService.MsConfig.ClientName.ToLower())
+                        if (items.Length > 2 && items[0].ToLower() != _ControllerName && items[1].ToLower() == _ControllerName && items[0] == MsConfig.Client.Name.ToLower())
                         {
                             paraStartIndex++;
                             methodName = items[2];//往后兼容一格。
@@ -495,9 +496,9 @@ namespace Taurus.Mvc
         {
             if (MicroService.MsConfig.IsServer)
             {
-                return MicroService.MsConfig.ServerKey == msKey;
+                return MicroService.MsConfig.Server.Key == msKey;
             }
-            return MicroService.MsConfig.ClientKey == msKey;
+            return MicroService.MsConfig.Client.Key == msKey;
         }
 
         /// <summary>

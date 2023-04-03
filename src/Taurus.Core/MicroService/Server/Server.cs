@@ -45,7 +45,7 @@ namespace Taurus.MicroService
             set
             {
                 _Host2 = value;
-                if (MsConfig.ServerName.ToLower() == MsConst.Gateway)
+                if (MsConfig.Server.Name.ToLower() == MsConst.Gateway)
                 {
                     if (!string.IsNullOrEmpty(value))
                     {

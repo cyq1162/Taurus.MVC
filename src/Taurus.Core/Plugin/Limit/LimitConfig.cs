@@ -15,7 +15,11 @@ namespace Taurus.Plugin.Limit
         {
             get
             {
-                return AppConfig.GetAppBool("Limit.IsEnable", true);
+                return AppConfig.GetAppBool("Limit.IsEnable", false);
+            }
+            set
+            {
+                AppConfig.SetApp("Limit.IsEnable", value.ToString());
             }
         }
         /// <summary>
@@ -60,6 +64,10 @@ namespace Taurus.Plugin.Limit
             {
                 return AppConfig.GetAppBool("Limit.AckIsVerifyDecode", true);
             }
+            set
+            {
+                AppConfig.SetApp("Limit.AckIsVerifyDecode", value.ToString());
+            }
         }
         /// <summary>
         /// 配置：是否限制Ack重复使用。
@@ -70,6 +78,10 @@ namespace Taurus.Plugin.Limit
             get
             {
                 return AppConfig.GetAppBool("Limit.AckIsVerifyUsed", true);
+            }
+            set
+            {
+                AppConfig.SetApp("Limit.AckIsVerifyUsed", value.ToString());
             }
         }
     }

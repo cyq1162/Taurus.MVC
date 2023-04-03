@@ -42,13 +42,13 @@ namespace Taurus.MicroService
 
         public override void EndInvoke()
         {
-            if (string.IsNullOrEmpty(MsConfig.AppRunUrl))
+            if (string.IsNullOrEmpty(MsConfig.App.RunUrl))
             {
                 Uri uri = Context.Request.Url;
                 string urlAbs = uri.AbsoluteUri;
                 string urlPath = uri.PathAndQuery;
                 string host = urlAbs.Substring(0, urlAbs.Length - urlPath.Length);
-                MsConfig.AppRunUrl = host;
+                MsConfig.App.RunUrl = host;
             }
         }
         /// <summary>
@@ -69,7 +69,7 @@ namespace Taurus.MicroService
             #region 注册中心【从】检测到【主】恢复后，推送host，让后续的请求转回【主】
             if (Server.RegCenterIsLive && !MsConfig.IsRegCenterOfMaster)
             {
-                Write(JsonHelper.OutResult(true, "", "tick", Server.Tick, "host", MsConfig.ServerRcUrl));
+                Write(JsonHelper.OutResult(true, "", "tick", Server.Tick, "host", MsConfig.Server.RcUrl));
                 return;
             }
             #endregion
@@ -216,8 +216,8 @@ namespace Taurus.MicroService
             {
                 Server.Host2 = String.Empty;
             }
-            string host = Server.RegCenterIsLive ? MsConfig.ServerRcUrl : "";//注册中心【从】检测到【主】恢复后，推送host，让后续的请求转回【主】
-            if (host == MsConfig.AppRunUrl)//主机即是自己。
+            string host = Server.RegCenterIsLive ? MsConfig.Server.RcUrl : "";//注册中心【从】检测到【主】恢复后，推送host，让后续的请求转回【主】
+            if (host == MsConfig.App.RunUrl)//主机即是自己。
             {
                 host = string.Empty;
             }

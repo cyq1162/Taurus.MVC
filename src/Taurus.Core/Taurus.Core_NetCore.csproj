@@ -51,6 +51,8 @@ V2.3.4(2019-07-31)
   </ItemGroup>
 
   <ItemGroup>
+    <None Remove="Plugin\Limit\TaurusLimitMiddleware.cs.del" />
+    <None Remove="Plugin\Limit\UrlLimit.cs.del" />
     <None Remove="Taurus.Core_Core_VS2017.v11.suo" />
   </ItemGroup>
 

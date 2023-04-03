@@ -76,7 +76,7 @@ namespace Microsoft.AspNetCore.Http
         public static IApplicationBuilder UseTaurusMvc(this IApplicationBuilder builder, string webRootPath)
         {
             SetAppRunUrl(builder);
-            MsRun.Start(MsConfig.AppRunUrl);//
+            MsRun.Start(MsConfig.App.RunUrl);//
             //if (!string.IsNullOrEmpty(MsConfig.AppRunUrl) || MsConfig.IsRegCenterOfMaster)
             //{
             //    MsRun.Start(MsConfig.AppRunUrl);//
@@ -98,14 +98,14 @@ namespace Microsoft.AspNetCore.Http
             string[] items = host.Split(":");
             string port = items[items.Length - 1];
             string url = items[0] + "://" + MvcConst.HostIP + ":" + port;
-            MsConfig.AppRunUrl = url;
+            MsConfig.App.RunUrl = url;
             return true;
         }
 
 
         private static void SetAppRunUrl(IApplicationBuilder builder)
         {
-            if (string.IsNullOrEmpty(MsConfig.AppRunUrl))
+            if (string.IsNullOrEmpty(MsConfig.App.RunUrl))
             {
                 //builder.ApplicationServices.
                 var saf = builder.ServerFeatures.Get<IServerAddressesFeature>();

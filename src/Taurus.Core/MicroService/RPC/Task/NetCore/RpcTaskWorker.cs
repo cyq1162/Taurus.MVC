@@ -15,15 +15,15 @@ namespace Taurus.MicroService
     {
         private static void AddHeader(RpcTask task, HttpRequestMessage message)
         {
-            message.Headers.Add(MsConst.HeaderKey, (MsConfig.IsClient ? MsConfig.ClientKey : MsConfig.ServerKey));
+            message.Headers.Add(MsConst.HeaderKey, (MsConfig.IsClient ? MsConfig.Client.Key : MsConfig.Server.Key));
             message.Headers.Add("X-Real-IP", MvcConst.HostIP);
             if (HttpContext.Current != null && HttpContext.Current.Request != null)
             {
                 message.Headers.Add("Referer", HttpContext.Current.Request.Url.AbsoluteUri);//当前运行地址。
             }
-            else if (!string.IsNullOrEmpty(MsConfig.AppRunUrl))
+            else if (!string.IsNullOrEmpty(MsConfig.App.RunUrl))
             {
-                message.Headers.Add("Referer", MsConfig.AppRunUrl);//当前运行地址。
+                message.Headers.Add("Referer", MsConfig.App.RunUrl);//当前运行地址。
             }
             if (task.Request.Header != null && task.Request.Header.Count > 0)
             {

@@ -55,18 +55,18 @@ namespace Taurus.MicroService
         /// <returns></returns>
         private static string RegHost2()
         {
-            string url = MsConfig.ServerRcUrl + "/microservice/reg2";
+            string url = MsConfig.Server.RcUrl + "/microservice/reg2";
             try
             {
                 string result = string.Empty;
                 using (WebClient wc = new WebClient())
                 {
-                    wc.Headers.Add(MsConst.HeaderKey, MsConfig.ServerKey);
+                    wc.Headers.Add(MsConst.HeaderKey, MsConfig.Server.Key);
                     wc.Headers.Add("ack", AckLimit.CreateAck());
-                    wc.Headers.Add("Referer", MsConfig.AppRunUrl);
+                    wc.Headers.Add("Referer", MsConfig.App.RunUrl);
                     wc.Headers.Add("Content-Type", "application/x-www-form-urlencoded");
                     string data = "host={0}&tick=" + Server.Tick;
-                    result = wc.UploadString(url, string.Format(data, MsConfig.AppRunUrl));
+                    result = wc.UploadString(url, string.Format(data, MsConfig.App.RunUrl));
                 }
                 MsLog.WriteDebugLine(DateTime.Now.ToString("HH:mm:ss") + string.Format(" : PID : {0} Reg2 : {1}: ", MvcConst.ProcessID, result));
                 Server.RegCenterIsLive = true;
@@ -76,7 +76,7 @@ namespace Taurus.MicroService
             {
                 MsLog.WriteDebugLine(DateTime.Now.ToString("HH:mm:ss") + string.Format(" : PID : {0} Reg2.Error : {1}: ", MvcConst.ProcessID, err.Message));
                 Server.RegCenterIsLive = false;
-                MsLog.Write(err.Message, url, "POST", MsConfig.ServerName);
+                MsLog.Write(err.Message, url, "POST", MsConfig.Server.Name);
                 return err.Message;
             }
         }
@@ -107,16 +107,16 @@ namespace Taurus.MicroService
         /// <returns></returns>
         private static void SyncHostList()
         {
-            string url = MsConfig.ServerRcUrl + "/microservice/synclist";
+            string url = MsConfig.Server.RcUrl + "/microservice/synclist";
             try
             {
 
                 string data = string.Format("json={0}&tick=" + Server.Tick, Server.Gateway.HostListJson);
                 using (WebClient wc = new WebClient())
                 {
-                    wc.Headers.Add(MsConst.HeaderKey, MsConfig.ServerKey);
+                    wc.Headers.Add(MsConst.HeaderKey, MsConfig.Server.Key);
                     wc.Headers.Add("ack", AckLimit.CreateAck());
-                    wc.Headers.Add("Referer", MsConfig.AppRunUrl);
+                    wc.Headers.Add("Referer", MsConfig.App.RunUrl);
                     wc.Headers.Add("Content-Type", "application/x-www-form-urlencoded");
                     wc.UploadString(url, data);
                 }
@@ -127,7 +127,7 @@ namespace Taurus.MicroService
             {
                 MsLog.WriteDebugLine(DateTime.Now.ToString("HH:mm:ss") + string.Format(" : PID : {0} SyncHostList.Error : {1}", MvcConst.ProcessID, err.Message));
                 Server.RegCenterIsLive = false;
-                MsLog.Write(err.Message, url, "POST", MsConfig.ServerName);
+                MsLog.Write(err.Message, url, "POST", MsConfig.Server.Name);
             }
         }
         #endregion
@@ -140,9 +140,9 @@ namespace Taurus.MicroService
             {
                 string host2 = JsonHelper.GetValue<string>(result, "host2");
                 string host = JsonHelper.GetValue<string>(result, "host");
-                if (!string.IsNullOrEmpty(host) && host != MsConfig.ServerRcUrl)
+                if (!string.IsNullOrEmpty(host) && host != MsConfig.Server.RcUrl)
                 {
-                    MsConfig.ServerRcUrl = host;//从备份请求切回主程序
+                    MsConfig.Server.RcUrl = host;//从备份请求切回主程序
                 }
                 long tick = JsonHelper.GetValue<long>(result, "tick");
 
@@ -165,7 +165,7 @@ namespace Taurus.MicroService
         /// </summary>
         internal static string GetListOfServer()
         {
-            string url = MsConfig.ServerRcUrl + "/microservice/getlist?tick=" + Server.Tick;
+            string url = MsConfig.Server.RcUrl + "/microservice/getlist?tick=" + Server.Tick;
             if (MsConfig.IsGateway)
             {
                 url += "&isGateway=1";
@@ -174,9 +174,9 @@ namespace Taurus.MicroService
             {
                 using (WebClient wc = new WebClient())
                 {
-                    wc.Headers.Add(MsConst.HeaderKey, MsConfig.ServerKey);
+                    wc.Headers.Add(MsConst.HeaderKey, MsConfig.Server.Key);
                     wc.Headers.Add("ack", AckLimit.CreateAck());
-                    wc.Headers.Add("Referer", MsConfig.AppRunUrl);
+                    wc.Headers.Add("Referer", MsConfig.App.RunUrl);
                     string result = wc.DownloadString(url);
                     Server.RegCenterIsLive = true;
                     MsLog.WriteDebugLine(DateTime.Now.ToString("HH:mm:ss") + string.Format(" : PID : {0} GetList : Tick : {1}  => OK", MvcConst.ProcessID, Server.Tick));
@@ -189,9 +189,9 @@ namespace Taurus.MicroService
                 Server.RegCenterIsLive = false;
                 if (!string.IsNullOrEmpty(Server.Host2))
                 {
-                    MsConfig.ServerRcUrl = Server.Host2;//切换到备用库。
+                    MsConfig.Server.RcUrl = Server.Host2;//切换到备用库。
                 }
-                MsLog.Write(err.Message, url, "GET", MsConfig.ServerName);
+                MsLog.Write(err.Message, url, "GET", MsConfig.Server.Name);
                 return err.Message;
             }
         }
@@ -212,7 +212,7 @@ namespace Taurus.MicroService
                     var regCenterList = Server.RegCenter.HostList;
                     if (regCenterList != null)
                     {
-                        Server.RegCenter.AddHost("RegCenter", MsConfig.AppRunUrl);
+                        Server.RegCenter.AddHost("RegCenter", MsConfig.App.RunUrl);
                         List<string> keys = new List<string>(regCenterList.Count);
                         foreach (string item in regCenterList.Keys)
                         {
@@ -273,7 +273,7 @@ namespace Taurus.MicroService
                 catch (Exception err)
                 {
                     MsLog.WriteDebugLine(err.Message);
-                    MsLog.Write(err.Message, "MicroService.Run.ClearExpireHost()", "", MsConfig.ServerName);
+                    MsLog.Write(err.Message, "MicroService.Run.ClearExpireHost()", "", MsConfig.Server.Name);
                 }
                 Thread.Sleep(3000);//测试并发。
             }

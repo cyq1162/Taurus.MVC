@@ -16,7 +16,7 @@ namespace Taurus.MicroService
         [MicroService]
         public void Exit()
         {
-            if (MsConfig.AppRemoteExit)
+            if (MsConfig.App.RemoteExit)
             {
                 MsConfig.IsApplicationExit = true;//注销注册中心服务。
                 new Thread(new ThreadStart(AppExit)).Start();

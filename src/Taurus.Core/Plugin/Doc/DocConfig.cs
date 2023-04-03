@@ -11,13 +11,17 @@ namespace Taurus.Plugin.Doc
 
         /// <summary>
         /// 配置是否启用WebAPI文档自动生成功能 
-        /// 如 Doc.IsStart ：true， 默认值：true
+        /// 如 Doc.IsEnable ：true， 默认值：true
         /// </summary>
-        public static bool IsStart
+        public static bool IsEnable
         {
             get
             {
-                return AppConfig.GetAppBool("Doc.IsStart", true);
+                return AppConfig.GetAppBool("Doc.IsEnable", true);
+            }
+            set
+            {
+                AppConfig.SetApp("Doc.IsEnable", value.ToString());
             }
         }
         /// <summary>

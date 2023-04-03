@@ -443,7 +443,7 @@ namespace Taurus.Plugin.Doc
                         string value = Query<string>(attr);
                         if (name == "microservice")
                         {
-                            value = MicroService.MsConfig.ServerKey;
+                            value = MicroService.MsConfig.Server.Key;
                         }
 
                         dt.NewRow(true, 0).Set(0, name)

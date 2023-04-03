@@ -16,7 +16,7 @@ namespace Taurus.MicroService
             sysLogs.PageUrl = url;
             sysLogs.HttpMethod = httpMethod;
             sysLogs.ClientIP = sysLogs.Host;
-            sysLogs.Host = MsConfig.AppRunUrl;
+            sysLogs.Host = MsConfig.App.RunUrl;
             sysLogs.HostName = moduleName;
             sysLogs.Write();
         }

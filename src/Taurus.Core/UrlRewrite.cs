@@ -5,6 +5,7 @@ using System.Threading;
 using System.Web;
 using Taurus.MicroService;
 using Taurus.Mvc;
+using Taurus.Plugin.Limit;
 
 namespace Taurus.Core
 {
@@ -40,43 +41,45 @@ namespace Taurus.Core
             HttpApplication app = (HttpApplication)sender;
             HttpContext context = app.Context;
             Uri uri = context.Request.Url;
-            #region 微服务检测与启动
-            string urlAbs = uri.AbsoluteUri;
-            string urlPath = uri.PathAndQuery;
-            string host = urlAbs.Substring(0, urlAbs.Length - urlPath.Length);
-            MsRun.Start(host);//微服务检测、启动。
-            if (!WebTool.IsCallMicroServiceReg(uri) && Rpc.Gateway.Proxy(context, true))
+
+            #region 1、微服务检测与启动
+            MsRun.Start(uri);//微服务检测、启动。
+            #endregion
+
+            #region 2、网关安全限制策略检测
+            if (!LimitRun.Check(uri.LocalPath))
             {
-                WebTool.SetRunProxySuccess(context);
-                //try
-                //{
-                    context.Response.End();
-                //}
-                //catch (ThreadAbortException)
-                //{
-
-                //}
-
-                return;
-            }
-            else if (MsConfig.IsGateway && !MsConfig.IsClient)
-            {
-                WebTool.SetRunProxySuccess(context);
-                //单纯网关，直接返回
-                context.Response.StatusCode = 503;
-                context.Response.Write("503 Service unavailable.");
-                //try
-                //{
-                    context.Response.End();
-                //}
-                //catch (ThreadAbortException)
-                //{
-
-                //}
+                WebTool.SetRunToEnd(context);
+                //网关请求限制，直接返回
+                context.Response.StatusCode = 403;
+                context.Response.Write("403.13 Ack is invalid.");
+                context.Response.End();
                 return;
             }
             #endregion
 
+            #region 3、网关代理请求检测与转发
+            if (!WebTool.IsCallMicroServiceReg(uri) && Rpc.Gateway.Proxy(context, true))
+            {
+                WebTool.SetRunToEnd(context);
+                context.Response.End();
+                return;
+            }
+            #endregion
+
+            #region 4、纯网关检测（关闭Mvc功能模块）
+            if (MsConfig.IsGateway && !MsConfig.IsClient)
+            {
+                WebTool.SetRunToEnd(context);
+                //单纯网关，直接返回
+                context.Response.StatusCode = 503;
+                context.Response.Write("503 Service unavailable.");
+                context.Response.End();
+                return;
+            }
+            #endregion
+
+            #region 5、Mvc模块运行
             if (WebTool.IsCallMvc(uri))
             {
                 if (context.Request.Url.LocalPath == "/")//设置默认首页
@@ -101,12 +104,13 @@ namespace Taurus.Core
                     }
                 }
             }
+            #endregion
         }
 
         void context_PostMapRequestHandler(object sender, EventArgs e)
         {
             HttpContext cont = ((HttpApplication)sender).Context;
-            if (cont != null && WebTool.IsCallMvc(cont.Request.Url) && !WebTool.IsProxyCall(cont) && WebTool.IsTaurusSuffix(cont.Request.Url))
+            if (cont != null && WebTool.IsCallMvc(cont.Request.Url) && !WebTool.IsRunToEnd(cont) && WebTool.IsTaurusSuffix(cont.Request.Url))
             {
                 cont.Handler = SessionHandler.Instance;//注册Session
             }
@@ -114,7 +118,7 @@ namespace Taurus.Core
         void context_AcquireRequestState(object sender, EventArgs e)
         {
             HttpContext cont = ((HttpApplication)sender).Context;
-            if (cont != null && WebTool.IsCallMvc(cont.Request.Url) && !WebTool.IsProxyCall(cont) && WebTool.IsTaurusSuffix(cont.Request.Url))
+            if (cont != null && WebTool.IsCallMvc(cont.Request.Url) && !WebTool.IsRunToEnd(cont) && WebTool.IsTaurusSuffix(cont.Request.Url))
             {
                 if (CheckCORS(cont))
                 {

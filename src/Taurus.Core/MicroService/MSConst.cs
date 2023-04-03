@@ -9,15 +9,15 @@ namespace Taurus.MicroService
         /// <summary>
         /// 请求头带上的Header的Key名称
         /// </summary>
-        public const string HeaderKey = "mskey";
+        internal const string HeaderKey = "mskey";
         /// <summary>
         /// 网关
         /// </summary>
-        public const string Gateway = "gateway";
+        internal const string Gateway = "gateway";
         /// <summary>
         /// 注册中心
         /// </summary>
-        public const string RegCenter = "regcenter";
+        internal const string RegCenter = "regcenter";
 
         internal const string RegCenterJsonPath = "MicroService_RegCenter.json";
         internal const string ServerGatewayJsonPath = "MicroService_Server_Gateway.json";

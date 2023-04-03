@@ -5,7 +5,7 @@ namespace Taurus.Mvc
     /// <summary>
     /// Taurus.Mvc Config
     /// </summary>
-    public class MvcConfig
+    public static class MvcConfig
     {
 
         /// <summary>
@@ -18,6 +18,10 @@ namespace Taurus.Mvc
             {
                 return AppConfig.GetApp("Taurus.Controllers", "*");
             }
+            set
+            {
+                AppConfig.SetApp("Taurus.Controllers", value);
+            }
         }
         /// <summary>
         /// 配置请求路径的默认后缀。
@@ -28,6 +32,10 @@ namespace Taurus.Mvc
             get
             {
                 return AppConfig.GetApp("Taurus.Suffix", "");
+            }
+            set
+            {
+                AppConfig.SetApp("Taurus.Suffix", value);
             }
         }
         /// <summary>
@@ -53,6 +61,10 @@ namespace Taurus.Mvc
             {
                 return AppConfig.GetApp("Taurus.DefaultUrl", "");
             }
+            set
+            {
+                AppConfig.SetApp("Taurus.DefaultUrl", value);
+            }
         }
 
         /// <summary>
@@ -65,6 +77,10 @@ namespace Taurus.Mvc
             {
                 return AppConfig.GetAppBool("Taurus.IsAllowCORS", true);
             }
+            set
+            {
+                AppConfig.SetApp("Taurus.IsAllowCORS", value.ToString());
+            }
         }
         /// <summary>
         /// 配置Mvc的Views目录文件夹。
@@ -76,6 +92,10 @@ namespace Taurus.Mvc
             {
                 return AppConfig.GetApp("Taurus.Views", "Views");
             }
+            set
+            {
+                AppConfig.SetApp("Taurus.Views", value);
+            }
         }
         /// <summary>
         /// 配置部署成子应用程序的名称。
@@ -86,6 +106,10 @@ namespace Taurus.Mvc
             get
             {
                 return AppConfig.GetApp("Taurus.SubAppName", "");
+            }
+            set
+            {
+                AppConfig.SetApp("Taurus.SubAppName", value);
             }
         }
     }
