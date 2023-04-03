@@ -8,6 +8,17 @@ namespace Taurus.Plugin.Limit
     public static class LimitConfig
     {
         /// <summary>
+        /// 配置是否启用 WebAPI 安全限制
+        /// 如 Limit.IsEnable ：true， 默认值：false
+        /// </summary>
+        public static bool IsEnable
+        {
+            get
+            {
+                return AppConfig.GetAppBool("Limit.IsEnable", true);
+            }
+        }
+        /// <summary>
         /// 配置Ack的加密Key，默认2-3个字符。
         /// 如：Limit.AckKey ："abc"，默认值ts
         /// </summary>

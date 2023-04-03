@@ -7,11 +7,20 @@ namespace Taurus.Plugin.Limit
     /// </summary>
     internal static class LimitRun
     {
+        public static bool Start(string localPath)
+        {
+            if (LimitConfig.IsEnable)
+            {
+                string tip;
+                return CheckRequestIsSafe(localPath, out tip);
+            }
+            return true;
+        }
         /// <summary>
         /// 检测请求是否合法。
         /// </summary>
         /// <returns></returns>
-        public static bool CheckRequestIsSafe(string localPath, out string tip)
+        private static bool CheckRequestIsSafe(string localPath, out string tip)
         {
             tip = string.Empty;
             if (WebTool.IsTaurusSuffix(localPath))
