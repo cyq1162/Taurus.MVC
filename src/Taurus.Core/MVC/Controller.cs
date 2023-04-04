@@ -152,21 +152,22 @@ namespace Taurus.Mvc
                 {
                     sb.AppendLine(err.StackTrace);
                 }
-
-                if (Request.Headers.Count > 0)
+                var headers = Request.Headers;
+                if (headers.Count > 0)
                 {
                     sb.AppendLine("\n-----------Headers-----------");
-                    foreach (string key in Request.Headers.AllKeys)
+                    foreach (string key in headers.AllKeys)
                     {
-                        sb.AppendLine(key + " : " + Request.Headers[key]);
+                        sb.AppendLine(key + " : " + headers[key]);
                     }
                 }
-                if (Request.Form.Count > 0)
+                var form = Request.Form;
+                if (form.Count > 0)
                 {
                     sb.AppendLine("-----------Forms-----------");
-                    foreach (string key in Request.Form.AllKeys)
+                    foreach (string key in form.AllKeys)
                     {
-                        sb.AppendLine(key + " : " + Request.Form[key]);
+                        sb.AppendLine(key + " : " + form[key]);
                     }
                 }
                 WriteLog("【Taurus.Core.Controller】：" + sb.ToString());
@@ -513,14 +514,16 @@ namespace Taurus.Mvc
         }
         private string GetBtnName()
         {
-            foreach (string name in Context.Request.QueryString)
+            var queryString = context.Request.QueryString;
+            foreach (string name in queryString)
             {
                 if (name != null && name.ToLower().StartsWith("btn"))
                 {
                     return name;
                 }
             }
-            foreach (string name in Context.Request.Form)
+            var form = context.Request.Form;
+            foreach (string name in form)
             {
                 if (name != null && name.ToLower().StartsWith("btn"))
                 {
@@ -536,6 +539,7 @@ namespace Taurus.Mvc
             ParameterInfo[] piList = methodEntity.Parameters;
             if (piList != null && piList.Length > 0)
             {
+                var files=Request.Files;
                 paras = new object[piList.Length];
                 for (int i = 0; i < piList.Length; i++)
                 {
@@ -543,7 +547,7 @@ namespace Taurus.Mvc
                     Type t = pi.ParameterType;
                     if (t.Name == "HttpFileCollection")
                     {
-                        paras[i] = Request.Files;
+                        paras[i] = files;
                         continue;
                     }
                     object value = Query<object>(pi.Name, null);
@@ -555,9 +559,9 @@ namespace Taurus.Mvc
                         }
                         if (t.Name == "HttpPostedFile")
                         {
-                            if (Request.Files != null && Request.Files.Count == 1)
+                            if (files != null && files.Count == 1)
                             {
-                                value = Request.Files[0];
+                                value = files[0];
                             }
                         }
 
@@ -911,12 +915,13 @@ namespace Taurus.Mvc
             {
                 return WebTool.ChangeValueType<T>(queryCache[key], defaultValue, false);
             }
-
+            var files = context.Request.Files;
+            var headers = context.Request.Headers;
             T value = default(T);
             foreach (string pre in autoPrefixs)
             {
                 string newKey = pre + key;
-                if (Context.Request[newKey] == null && (Context.Request.Files == null || Context.Request.Files[newKey] == null))
+                if (context.Request[newKey] == null && (files == null || files[newKey] == null))
                 {
                     //尝试从Json中获取
                     string result = JsonHelper.GetValue(GetJson(), newKey);
@@ -925,9 +930,9 @@ namespace Taurus.Mvc
                         value = WebTool.ChangeValueType<T>(result, defaultValue, false);
                         break;
                     }
-                    else if (Context.Request.Headers[newKey] != null)
+                    else if (headers[newKey] != null)
                     {
-                        value = WebTool.ChangeValueType<T>(Context.Request.Headers[newKey], defaultValue, false);
+                        value = WebTool.ChangeValueType<T>(headers[newKey], defaultValue, false);
                         break;
                     }
                     else
@@ -1039,15 +1044,17 @@ namespace Taurus.Mvc
             {
                 if (IsHttpPost)
                 {
-                    if (Context.Request.Form.Count > 0)
+                    var form = context.Request.Form;
+                    var files = context.Request.Files;
+                    if (form.Count > 0)
                     {
-                        if (Context.Request.Form.Count == 1 && Context.Request.Form.Keys[0] == null)
+                        if (form.Count == 1 && form.Keys[0] == null)
                         {
-                            return JsonHelper.ToJson(Context.Request.Form[0]);
+                            return JsonHelper.ToJson(form[0]);
                         }
-                        _Json = JsonHelper.ToJson(Context.Request.Form);
+                        _Json = JsonHelper.ToJson(form);
                     }
-                    else if (Context.Request.Files == null || Context.Request.Files.Count == 0)//请求头忘了带Http Type
+                    else if (files == null || files.Count == 0)//请求头忘了带Http Type
                     {
                         Stream stream = Context.Request.InputStream;
                         if (stream != null && stream.CanRead)

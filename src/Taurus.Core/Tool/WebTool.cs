@@ -125,10 +125,11 @@ namespace Taurus.Mvc
         /// </summary>
         public static T Query<T>(string key, T defaultValue, bool filter)
         {
+            var files = HttpContext.Current.Request.Files;
             string value = HttpContext.Current.Request[key] ?? HttpContext.Current.Request.QueryString[key] ?? HttpContext.Current.Request.Headers[key];
-            if (value == null && HttpContext.Current.Request.Files != null && HttpContext.Current.Request.Files[key] != null)
+            if (value == null && files != null && files[key] != null)
             {
-                object file = HttpContext.Current.Request.Files[key];
+                object file = files[key];
                 if (typeof(T) == typeof(string))
                 {
                     file = ((HttpPostedFile)file).FileName;

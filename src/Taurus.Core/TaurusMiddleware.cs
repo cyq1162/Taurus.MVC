@@ -7,6 +7,7 @@ using Taurus.MicroService;
 using Taurus.Mvc;
 using Taurus.Core;
 using Microsoft.AspNetCore.Hosting.Server.Features;
+using Microsoft.AspNetCore.Http.Internal;
 
 namespace Microsoft.AspNetCore.Http
 {
@@ -33,6 +34,10 @@ namespace Microsoft.AspNetCore.Http
                 }
                 else
                 {
+                    if (context.Request.Method != "GET" && context.Request.ContentLength.HasValue && context.Request.ContentLength.Value > 0)
+                    {
+                        context.Request.EnableBuffering();
+                    }
                     System.Web.HttpApplication.Instance.ExecuteEventHandler();
                     if (System.Web.HttpContext.Current.Response.HasStarted)  // || Body是只写流  (context.Response.Body != null && context.Response.Body.CanRead
                     {

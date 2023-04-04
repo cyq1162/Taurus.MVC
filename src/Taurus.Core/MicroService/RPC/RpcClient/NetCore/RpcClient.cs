@@ -105,8 +105,8 @@ namespace Taurus.MicroService
         {
             if (wc != null)
             {
-                return wc.UploadDataTaskAsync(address, method, data).Result;
-                //   return wc.UploadData(address, method, data);
+                //    return wc.UploadDataTaskAsync(address, method, data).Result;
+                return wc.UploadData(address, method, data);
                 //WebClient wc = new WebClient();
                 //if (Headers.Count > 0)
                 //{

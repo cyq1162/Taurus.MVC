@@ -5,6 +5,7 @@ using System.Net;
 using Taurus.Mvc;
 using CYQ.Data.Tool;
 using CYQ.Data;
+using System.Threading;
 
 namespace Taurus.MicroService
 {
@@ -23,134 +24,146 @@ namespace Taurus.MicroService
             public static bool Proxy(HttpContext context, bool isServerCall)
             {
 
-                try
+                if ((isServerCall && !MsConfig.IsServer) || (!isServerCall && !MsConfig.IsClient))
                 {
-                    if ((isServerCall && !MsConfig.IsServer) || (!isServerCall && !MsConfig.IsClient))
+                    return false;
+                }
+                List<HostInfo> infoList = new List<HostInfo>();
+                string module = string.Empty;
+                IPAddress iPAddress;
+                List<HostInfo> domainList = null;
+                Uri uri = context.Request.Url;
+                if (uri.Host != "localhost" && !IPAddress.TryParse(uri.Host, out iPAddress))
+                {
+                    module = uri.Host;//域名转发优先。
+                    domainList = isServerCall ? Server.Gateway.GetHostList(module) : Client.Gateway.GetHostList(module);
+                    if (domainList == null || domainList.Count == 0)
                     {
                         return false;
                     }
-                    List<HostInfo> infoList = new List<HostInfo>();
-                    string module = string.Empty;
-                    IPAddress iPAddress;
-                    List<HostInfo> domainList = null;
-                    if (context.Request.Url.Host != "localhost" && !IPAddress.TryParse(context.Request.Url.Host, out iPAddress))
-                    {
-                        module = context.Request.Url.Host;//域名转发优先。
-                        domainList = isServerCall ? Server.Gateway.GetHostList(module) : Client.Gateway.GetHostList(module);
-                        if (domainList == null || domainList.Count == 0)
-                        {
-                            return false;
-                        }
-                    }
+                }
 
-                    if (context.Request.Url.LocalPath == "/")
-                    {
-                        module = MvcConfig.DefaultUrl.TrimStart('/').Split('/')[0];
-                    }
-                    else
-                    {
-                        module = context.Request.Url.LocalPath.TrimStart('/').Split('/')[0];
-                    }
-                    List<HostInfo> moduleList = isServerCall ? Server.Gateway.GetHostList(module) : Client.Gateway.GetHostList(module);
+                if (uri.LocalPath == "/")
+                {
+                    module = MvcConfig.DefaultUrl.TrimStart('/').Split('/')[0];
+                }
+                else
+                {
+                    module = uri.LocalPath.TrimStart('/').Split('/')[0];
+                }
+                List<HostInfo> moduleList = isServerCall ? Server.Gateway.GetHostList(module) : Client.Gateway.GetHostList(module);
 
-                    if (domainList == null || domainList.Count == 0) 
+                if (domainList == null || domainList.Count == 0)
+                {
+                    infoList = moduleList;
+                }
+                else if (moduleList == null || moduleList.Count == 0)
+                {
+                    //仅有域名，没有对应模块
+                    return false;
+                    //infoList = domainList;
+                }
+                else
+                {
+                    //存在域名，也存在模块，过滤出满足：域名+模块
+                    foreach (var item in domainList)//过滤掉不在域名下的主机
                     {
-                        infoList = moduleList; 
-                    }
-                    else if (moduleList == null || moduleList.Count == 0) 
-                    {
-                        //仅有域名，没有对应模块
-                        return false;
-                        //infoList = domainList;
-                    }
-                    else
-                    {
-                        //存在域名，也存在模块，过滤出满足：域名+模块
-                        foreach (var item in domainList)//过滤掉不在域名下的主机
+                        foreach (var keyValue in moduleList)
                         {
-                            foreach (var keyValue in moduleList)
+                            if (item.Host == keyValue.Host)
                             {
-                                if (item.Host == keyValue.Host)
-                                {
-                                    infoList.Add(item);
-                                    break;
-                                }
+                                infoList.Add(item);
+                                break;
                             }
                         }
                     }
+                }
 
-                    if (infoList == null || infoList.Count == 0)
+                if (infoList == null || infoList.Count == 0)
+                {
+                    return false;
+                }
+                else
+                {
+                    int count = infoList.Count;
+                    int max = 3;//最多循环3个节点，避免长时间循环卡机。
+                    bool isRegCenter = MsConfig.IsRegCenterOfMaster;
+                    HostInfo firstInfo = infoList[0];
+                    if (firstInfo.CallIndex >= count)
                     {
-                        return false;
+                        firstInfo.CallIndex = 0;//处理节点移除后，CallIndex最大值的问题。
                     }
-                    else
+                    for (int i = 0; i < count; i++)
                     {
-                        int count = infoList.Count;
-                        int max = 3;//最多循环3个节点，避免长时间循环卡机。
-                        bool isRegCenter = MsConfig.IsRegCenterOfMaster;
-                        HostInfo firstInfo = infoList[0];
-                        if (firstInfo.CallIndex >= count)
+                        int callIndex = firstInfo.CallIndex + i;
+                        if (callIndex >= count)
                         {
-                            firstInfo.CallIndex = 0;//处理节点移除后，CallIndex最大值的问题。
+                            callIndex = callIndex - count;
                         }
-                        for (int i = 0; i < count; i++)
-                        {
-                            int callIndex = firstInfo.CallIndex + i;
-                            if (callIndex >= count)
-                            {
-                                callIndex = callIndex - count;
-                            }
-                            if (callIndex < 0 || callIndex >= infoList.Count)
-                            {
+                        //if (callIndex < 0 || callIndex >= infoList.Count)
+                        //{
 
-                            }
-                            HostInfo info = infoList[callIndex];//并发下有异步抛出
-                            if (!isServerCall && info.Host == MsConfig.App.RunUrl)
+                        //}
+                        HostInfo info = infoList[callIndex];//并发下有异步抛出
+                        if (!isServerCall && info.Host == MsConfig.App.RunUrl)
+                        {
+                            continue;
+                        }
+                        if (info.Version < 0 || info.CallTime > DateTime.Now || (isRegCenter && info.RegTime < DateTime.Now.AddSeconds(-10)))//正常5-10秒注册1次。
+                        {
+                            continue;//已经断开服务的。
+                        }
+                        if (Proxy(context, info.Host, isServerCall))
+                        {
+                            firstInfo.CallIndex = callIndex + 1;//指向下一个。
+                            return true;
+                        }
+                        else
+                        {
+                            info.CallTime = DateTime.Now.AddSeconds(10);//网络异常的，延时10s检测。
+                            max--;
+                            if (max == 0)
                             {
-                                continue;
-                            }
-                            if (info.Version < 0 || info.CallTime > DateTime.Now || (isRegCenter && info.RegTime < DateTime.Now.AddSeconds(-10)))//正常5-10秒注册1次。
-                            {
-                                continue;//已经断开服务的。
-                            }
-                            if (Proxy(context, info.Host, isServerCall))
-                            {
-                                firstInfo.CallIndex = callIndex + 1;//指向下一个。
                                 return true;
                             }
-                            else
-                            {
-                                info.CallTime = DateTime.Now.AddSeconds(10);//网络异常的，延时10s检测。
-                                max--;
-                                if (max == 0)
-                                {
-                                    return true;
-                                }
-                            }
-
                         }
-                        return true;
-                    }
-                }
-                catch (Exception err)
-                {
 
-                    throw err;
+                    }
+                    return true;
                 }
+
             }
 
             public static bool Proxy(HttpContext context, string host, bool isServerCall)
             {
                 Uri uri = new Uri(host);
                 HttpRequest request = context.Request;
-                string url = String.Empty;
                 byte[] bytes = null, data = null;
-                url = host + request.RawUrl;
+                string url = host + request.RawUrl;
                 if (request.HttpMethod != "GET" && request.ContentLength > 0)
                 {
                     //Synchronous operations are disallowed. Call ReadAsync or set AllowSynchronousIO to true instead.”
                     data = new byte[(int)request.ContentLength];
+                    request.InputStream.Position = 0;// 需要启用：context.Request.EnableBuffering();
                     request.InputStream.Read(data, 0, data.Length);
+                    if (request.InputStream.Position < request.ContentLength)
+                    {
+                        //Linux CentOS-8 大文件下读不全，会延时，导致：Unexpected end of Stream, the content may have already been read by another component.
+                        int max = 0;
+                        while (request.InputStream.Position < request.ContentLength)
+                        {
+                            max++;
+                            if (max > 90000)//90秒超时
+                            {
+                                context.Response.StatusCode = 413;
+                                context.Response.Write("Timeout : Unexpected end of Stream , request entity too large");
+                                return true;
+                            }
+                            Thread.Sleep(1);
+                            request.InputStream.Read(data, (int)request.InputStream.Position, data.Length - (int)request.InputStream.Position);
+                        }
+                    }
+
                 }
 
 

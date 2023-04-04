@@ -58,7 +58,17 @@ namespace Taurus.Core
             }
             #endregion
 
-            #region 3、网关代理请求检测与转发
+            #region 3、跨域检测【在网关转发之前】
+
+            if (!CheckCORS(context))
+            {
+                WebTool.SetRunToEnd(context);
+                context.Response.End();
+                return;
+            }
+            #endregion
+
+            #region 4、网关代理请求检测与转发
             if (!WebTool.IsCallMicroServiceReg(uri) && Rpc.Gateway.Proxy(context, true))
             {
                 WebTool.SetRunToEnd(context);
@@ -67,7 +77,7 @@ namespace Taurus.Core
             }
             #endregion
 
-            #region 4、纯网关检测（关闭Mvc功能模块）
+            #region 5、纯网关检测（关闭Mvc功能模块）
             if (MsConfig.IsGateway && !MsConfig.IsClient)
             {
                 WebTool.SetRunToEnd(context);
@@ -79,7 +89,7 @@ namespace Taurus.Core
             }
             #endregion
 
-            #region 5、Mvc模块运行
+            #region 6、Mvc模块运行
             if (WebTool.IsCallMvc(uri))
             {
                 if (context.Request.Url.LocalPath == "/")//设置默认首页
@@ -120,11 +130,8 @@ namespace Taurus.Core
             HttpContext cont = ((HttpApplication)sender).Context;
             if (cont != null && WebTool.IsCallMvc(cont.Request.Url) && !WebTool.IsRunToEnd(cont) && WebTool.IsTaurusSuffix(cont.Request.Url))
             {
-                if (CheckCORS(cont))
-                {
-                    ReplaceOutput(cont);
-                    InvokeClass(cont);
-                }
+                ReplaceOutput(cont);
+                InvokeClass(cont);
             }
         }
 
