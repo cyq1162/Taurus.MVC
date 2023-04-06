@@ -3,7 +3,6 @@ using System.Web;
 using System.Collections.Generic;
 using System.Net;
 using Taurus.Mvc;
-using CYQ.Data.Tool;
 using CYQ.Data;
 using System.Threading;
 
@@ -173,11 +172,10 @@ namespace Taurus.MicroService
                 try
                 {
                     wc.Headers.Add(MsConst.HeaderKey, (isServerCall ? MsConfig.Server.Key : MsConfig.Client.Key));
-                    wc.Headers.Add("X-Real-IP", request.UserHostAddress);
-                    if (!string.IsNullOrEmpty(MsConfig.App.RunUrl))
-                    {
-                        wc.Headers.Add("Referer", MsConfig.App.RunUrl);//当前运行地址。
-                    }
+                    //if (!string.IsNullOrEmpty(MsConfig.App.RunUrl))
+                    //{
+                    //    wc.Headers.Add("Referer", MsConfig.App.RunUrl);//当前运行地址。
+                    //}
                     foreach (string key in request.Headers.Keys)
                     {
                         if (key.StartsWith(":"))//chrome 新出来的 :method等
@@ -189,12 +187,29 @@ namespace Taurus.MicroService
                             case "Connection"://引发异常 链接已关闭
                             case "Accept-Encoding"://引发乱码
                             case "Accept"://引发下载类型错乱
-                            case "Referer":
+                                          //case "Referer":
                                 break;
                             default:
                                 wc.Headers.Add(key, request.Headers[key]);
                                 break;
                         }
+                    }
+                    string realIP = request.UserHostAddress;
+                    string realPort = request.ServerVariables["REMOTE_PORT"];
+                    string xForwardedFor = wc.Headers["X-Forwarded-For"];
+
+                    if (xForwardedFor != null)
+                    {
+                        wc.Headers.Set("X-Forwarded-For", xForwardedFor + "," + realIP);
+                    }
+                    else
+                    {
+                        wc.Headers.Add("X-Forwarded-For", realIP);
+                    }
+                    wc.Headers.Add("X-Real-IP", realIP);
+                    if (!string.IsNullOrEmpty(realPort))
+                    {
+                        wc.Headers.Set("X-Real-Port", realPort);
                     }
                     if (request.HttpMethod == "GET")
                     {
