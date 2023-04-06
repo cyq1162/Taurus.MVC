@@ -150,10 +150,11 @@ namespace Taurus.MicroService
                     {
                         //Linux CentOS-8 大文件下读不全，会延时，导致：Unexpected end of Stream, the content may have already been read by another component.
                         int max = 0;
+                        int timeout = MsConfig.Server.GatewayTimeout * 1000;
                         while (request.InputStream.Position < request.ContentLength)
                         {
                             max++;
-                            if (max > 90000)//90秒超时
+                            if (max > timeout)//60秒超时
                             {
                                 context.Response.StatusCode = 413;
                                 context.Response.Write("Timeout : Unexpected end of Stream , request entity too large");
@@ -271,7 +272,10 @@ namespace Taurus.MicroService
                         }
                         catch (Exception err)
                         {
-                            MsLog.Write(err.Message, "MicroService.Run.PreConnection(" + uri.AbsoluteUri + ")", "GET", MsConfig.Server.Name);
+                            if (!err.Message.Contains("(40"))//400 系列，机器是通的， 404) Not Found
+                            {
+                                MsLog.Write(err.Message, "MicroService.Run.PreConnection(" + uri.AbsoluteUri + ")", "GET", MsConfig.Server.Name);
+                            }
                         }
                         finally
                         {

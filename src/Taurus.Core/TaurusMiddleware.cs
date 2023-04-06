@@ -36,7 +36,7 @@ namespace Microsoft.AspNetCore.Http
                 {
                     if (context.Request.Method != "GET" && context.Request.ContentLength.HasValue && context.Request.ContentLength.Value > 0)
                     {
-                        context.Request.EnableBuffering();
+                        context.Request.EnableBuffering();// 使用处：对应Rpc.Gateway.cs 代码：Proxy 方法 149行上下。
                     }
                     System.Web.HttpApplication.Instance.ExecuteEventHandler();
                     if (System.Web.HttpContext.Current.Response.HasStarted)  // || Body是只写流  (context.Response.Body != null && context.Response.Body.CanRead

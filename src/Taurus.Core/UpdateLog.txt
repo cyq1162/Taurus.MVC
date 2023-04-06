@@ -152,9 +152,10 @@ CYQ.Data升级到V5.8.4.9
 4、优化：配置项规范：未调整：Mvc模块【Taurus.Xxx】，微服务【MicroService.Xxx.Xxx】、调整：Doc【Doc.Xxx】，Limit【Limit.Xxx】（2023-04-01）
 5、优化：内部命名规范，内部名称空间调整（2023-04-03）
 6、优化：网关：（Linux【CentOS8】下文件上传时引发读取Body不完整的问题）（2023-04-04）
+7、新增：MicroService.Server.GatewayTimeout 配置项（设置网关：接收请求（大文件上传）超时时间，单位秒（s），默认值60）（2023-04-06）
 
 
-
+文件保存太久 -- 查此问题。
 
 插件：
 幕等性检测、安全检测、黑名单、熔断、限流。

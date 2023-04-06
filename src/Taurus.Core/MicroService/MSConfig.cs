@@ -80,6 +80,21 @@ namespace Taurus.MicroService
                     AppConfig.SetApp("MicroService.Server.Key", value);
                 }
             }
+            /// <summary>
+            /// 网关：接收请求（大文件上传）超时时间，单位秒（s）
+            /// 默认：60（s）
+            /// </summary>
+            public static int GatewayTimeout
+            {
+                get
+                {
+                    return AppConfig.GetAppInt("MicroService.Server.GatewayTimeout", 60);
+                }
+                set
+                {
+                    AppConfig.SetApp("MicroService.Server.GatewayTimeout", value.ToString());
+                }
+            }
         }
         /// <summary>
         /// 微服务客户端配置
