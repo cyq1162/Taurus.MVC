@@ -51,8 +51,8 @@ namespace Taurus.Core
             {
                 WebTool.SetRunToEnd(context);
                 //网关请求限制，直接返回
-                context.Response.StatusCode = 403;
-                context.Response.Write("403.13 Ack is invalid.");
+                context.Response.StatusCode = 412;
+                context.Response.Write("412 Precondition failed, ack is invalid.");
                 context.Response.End();
                 return;
             }

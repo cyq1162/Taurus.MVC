@@ -123,11 +123,15 @@ namespace Taurus.MicroService
                             max--;
                             if (max == 0)
                             {
+                                context.Response.StatusCode = 502;
+                                context.Response.Write("502 Bad gateway.");
                                 return true;
                             }
                         }
 
                     }
+                    context.Response.StatusCode = 502;
+                    context.Response.Write("502 Bad gateway.");
                     return true;
                 }
 
@@ -136,6 +140,11 @@ namespace Taurus.MicroService
             public static bool Proxy(HttpContext context, string host, bool isServerCall)
             {
                 Uri uri = new Uri(host);
+                if (!preConnectionDic.ContainsKey(uri) || !preConnectionDic[uri])
+                {
+                    return false;
+                }
+
                 HttpRequest request = context.Request;
                 byte[] bytes = null, data = null;
                 string url = host + request.RawUrl;
@@ -277,25 +286,39 @@ namespace Taurus.MicroService
             {
                 if (!preConnectionDic.ContainsKey(uri))
                 {
-                    preConnectionDic.Add(uri, true);
-                    RpcClient wc = RpcClientPool.Create(uri);
-                    if (wc != null)
+                    preConnectionDic.Add(uri, false);
+                    //启动线程进行检测，避免某些无效请求卡住阻塞太长时间。
+                    Thread thread = new Thread(new ParameterizedThreadStart(PreConnectionOnThread));
+                    thread.IsBackground = true;
+                    thread.Start(uri);
+                }
+            }
+            private static void PreConnectionOnThread(object uriObj)
+            {
+                Uri uri = uriObj as Uri;
+                RpcClient wc = RpcClientPool.Create(uri);
+                if (wc != null)
+                {
+                    try
                     {
-                        try
+                        wc.DownloadData(uri.AbsoluteUri);
+                        preConnectionDic[uri] = true;
+                    }
+                    catch (Exception err)
+                    {
+                        if (!err.Message.Contains("(40"))//400 系列，机器是通的， 404) Not Found
                         {
-                            wc.DownloadData(uri.AbsoluteUri);
+                            preConnectionDic.Remove(uri);//清空，以便下次仍进行检测。
+                            MsLog.Write(err.Message, "MicroService.Run.PreConnection(" + uri.AbsoluteUri + ")", "GET", MsConfig.Server.Name);
                         }
-                        catch (Exception err)
+                        else
                         {
-                            if (!err.Message.Contains("(40"))//400 系列，机器是通的， 404) Not Found
-                            {
-                                MsLog.Write(err.Message, "MicroService.Run.PreConnection(" + uri.AbsoluteUri + ")", "GET", MsConfig.Server.Name);
-                            }
+                            preConnectionDic[uri] = true;
                         }
-                        finally
-                        {
-                            RpcClientPool.AddToPool(uri, wc);
-                        }
+                    }
+                    finally
+                    {
+                        RpcClientPool.AddToPool(uri, wc);
                     }
                 }
             }

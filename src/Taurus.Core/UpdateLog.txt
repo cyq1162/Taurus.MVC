@@ -154,12 +154,17 @@ CYQ.Data升级到V5.8.4.9
 6、修复：网关：（Linux【CentOS8】下文件上传时引发读取Body不完整的问题）（2023-04-04）
 7、新增：MicroService.Server.GatewayTimeout 配置项（设置网关：接收请求（大文件上传）超时时间，单位秒（s），默认值60）（2023-04-06）
 8、优化：网关（Referer、X-Real-IP、X-Real-Port、X-Forwarded-For）的请求头设置。（2023-04-06）
+9、优化：网关 502 Bad gateway. 信息输出提示。（2023-04-07）
+10、优化：网关 对预处理建立链接成功的才允许转发，避免错误链接消耗资源。（2023-04-08）
+
 
 文件保存太久 -- 查此问题。
 Referer
 X-Real-IP
 X-Forwarded-For
 request.UserHostAddress
+
+网关请求超时
 
 插件：
 1、配置项管理
