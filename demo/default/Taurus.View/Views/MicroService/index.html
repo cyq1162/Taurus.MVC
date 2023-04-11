@@ -18,7 +18,20 @@
             MicroService Register Center：
         </div>
         <hr />
-        <div id="namesView" style="float:left">
+        <div style="float:left"><b>Server ：</b></div>
+        <div id="serverNamesView" style="float:left">
+            <a href="${'/'+module}/microservice/index?name=${Name}">${Name}（${Count}）</a>&nbsp;|&nbsp;
+        </div>
+        <div style="clear:both; height:5px;">
+        </div>
+         <div style="float:left"><b>Domain ：</b></div>
+        <div id="domainNamesView" style="float:left">
+            <a href="${'/'+module}/microservice/index?name=${Name}">${Name}（${Count}）</a>&nbsp;|&nbsp;
+        </div>
+        <div style="clear:both;height:5px;">
+        </div>
+        <div style="float:left"><b>Client ：</b></div>
+        <div id="clientNamesView" style="float:left">
             <a href="${'/'+module}/microservice/index?name=${Name}">${Name}（${Count}）</a>&nbsp;|&nbsp;
         </div>
         <div style="clear:both;">
