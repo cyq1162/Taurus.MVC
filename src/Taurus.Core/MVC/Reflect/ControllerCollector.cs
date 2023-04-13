@@ -6,6 +6,7 @@ using System.Text;
 using System.IO;
 using Taurus.Plugin.Doc;
 using Taurus.MicroService;
+using Taurus.Plugin.Log;
 
 namespace Taurus.Mvc
 {
@@ -171,6 +172,19 @@ namespace Taurus.Mvc
                                 _Lv2Controllers.Add(ReflectConst.CoreDoc, docType);
                             }
                             MethodCollector.InitMethodInfo(docType);
+                        }
+                        if(LogConfig.IsEnable)
+                        {
+                            Type logType = typeof(Taurus.Plugin.Log.LogController);
+                            if (!_Lv1Controllers.ContainsKey(ReflectConst.Log))
+                            {
+                                _Lv1Controllers.Add(ReflectConst.Log, logType);
+                            }
+                            if (!_Lv2Controllers.ContainsKey(ReflectConst.CoreLog))
+                            {
+                                _Lv2Controllers.Add(ReflectConst.CoreLog, logType);
+                            }
+                            MethodCollector.InitMethodInfo(logType);
                         }
                         //if (ReflectConst.IsStartAuth)
                         //{

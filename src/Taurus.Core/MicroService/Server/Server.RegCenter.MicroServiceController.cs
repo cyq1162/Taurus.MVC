@@ -93,7 +93,7 @@ namespace Taurus.MicroService
                     name += ",*";//对于仅绑定域名的，追加通用模块。
                 }
             }
-            string[] names = name.ToLower().Split(',');//允许一次注册多个模块。
+            string[] names = name.ToLower().Trim(',').Split(',');//允许一次注册多个模块。
             foreach (string item in names)
             {
                 string[] items = item.Split('|');//允许模块域名带优先级版本号

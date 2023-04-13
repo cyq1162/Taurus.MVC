@@ -7,6 +7,7 @@ namespace Taurus.Mvc
         internal const string Controller = "Controller";
         internal const string DefaultController = "DefaultController";
         internal const string DocController = "DocController";
+        internal const string LogController = "LogController";
         internal const string TaurusMvcController = "Taurus.Mvc.Controller";
         internal const string MicroServiceController = "MicroServiceController";
 
@@ -14,6 +15,9 @@ namespace Taurus.Mvc
         internal const string MicroService = "MicroService";
         internal const string CoreDoc = "Core.Doc";
         internal const string CoreMicroService = "Core.MicroService";
+        internal const string Log = "Log";
+        internal const string CoreLog = "Core.Log";
+
 
         internal const string CheckToken = "CheckToken";
         internal const string CheckAck = "CheckAck";

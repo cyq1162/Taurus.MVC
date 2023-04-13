@@ -5,7 +5,7 @@
     <AssemblyName>Taurus.Core</AssemblyName>
     <RootNamespace>Taurus.Mvc</RootNamespace>
     <Description>Taurus.mvc is a high-performance mvc and webapi framework for asp.net or asp.net core（适合场景：对性能和并发有较高要求的电商、站点、WebAPI等系统，支持.Net Core）(开源地址：https://github.com/cyq1162/cyqdata)</Description>
-    <Company>路过秋天 （2023-04-04）</Company>
+    <Company>路过秋天 （2023-04-10）</Company>
     <Authors>路过秋天</Authors>
     <Copyright>Copyright ©  路过秋天 2016-2096</Copyright>
     <Version>2.3.4</Version>
@@ -22,8 +22,8 @@ V2.3.4(2019-07-31)
 4、增加[Ack]属性（机制和Token一样）
 5、Doc功能增强：增加自动化API执行功能。</PackageReleaseNotes>
     <PackageTags>Taurus.MVC Core ASP.NET aspnetcore webapi</PackageTags>
-    <AssemblyVersion>3.1.5.1</AssemblyVersion>
-    <FileVersion>3.1.5.1</FileVersion>
+    <AssemblyVersion>3.1.5.2</AssemblyVersion>
+    <FileVersion>3.1.5.2</FileVersion>
   </PropertyGroup>
 
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|AnyCPU'">

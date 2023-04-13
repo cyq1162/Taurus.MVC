@@ -152,7 +152,7 @@ namespace Taurus.Plugin.Doc
                 foreach (KeyValuePair<string, Type> item in cType)
                 {
                     string fullName = item.Value.FullName;
-                    if (fullName.EndsWith(ReflectConst.DefaultController) || fullName.EndsWith(ReflectConst.DocController))
+                    if (fullName.EndsWith(ReflectConst.DefaultController) || fullName.EndsWith(ReflectConst.DocController) || fullName.EndsWith(ReflectConst.LogController))
                     {
                         continue;
                     }
