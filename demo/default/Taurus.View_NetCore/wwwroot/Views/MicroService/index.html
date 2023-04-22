@@ -1,9 +1,9 @@
 ﻿<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
 <html xmlns="http://www.w3.org/1999/xhtml">
-<head itemref="master.head">
+<head itemref="common.head">
     <title>MicroService Register Center</title>
-    <link itemref="master.btcss" />
-    <link itemref="master.btcss_extend" />
+    <link itemref="common.btcss" />
+    <link itemref="common.btcss_extend" />
     <style type="text/css">
         a { cursor:pointer;
         }
@@ -12,10 +12,10 @@
         }
     </style>
 </head>
-<body itemref="master.body">
+<body itemref="common.body">
     <div id="container">
         <div>
-            MicroService Register Center：
+            MicroService Register Center ：V${Version}
         </div>
         <hr />
         <div style="float:left"><b>Server ：</b></div>
@@ -51,7 +51,7 @@
                     <td><a href="${'/'+module}/microservice/index?h=${Host}">${Host}</a></td>
                     <td>${Version}</td>
                     <td>${RegTime}</td>
-                    <td><a onclick="stop('${Host}',this);" title="stop application"><%# ('${Name}'=='RegCenter' || '${Name}'=='Gateway')?'':'Stop'%></a></td>
+                    <td><a onclick="stop('${Host}',this);" title="stop application"><%# ('${Name}'=='RegCenter' || '${Name}'=='Gateway')?'':'${RemoteExit}'%></a></td>
                 </tr>
             </tbody>
         </table>
