@@ -39,7 +39,7 @@ namespace Taurus.MicroService
             {
                 wc = RpcClientPool.Create(task.Request.Uri);
                 wc.Headers.Add(MsConst.HeaderKey, (MsConfig.IsClient ? MsConfig.Client.Key : MsConfig.Server.Key));
-                wc.Headers.Add("X-Real-IP", MvcConst.HostIP);
+                //wc.Headers.Add("X-Real-IP", MvcConst.HostIP);
                 if (HttpContext.Current != null && HttpContext.Current.Request != null)
                 {
                     wc.Headers.Add("Referer", HttpContext.Current.Request.Url.AbsoluteUri);//当前运行地址。
@@ -207,7 +207,7 @@ namespace Taurus.MicroService
                             ExeTask(task);
                             threadExeCountArray[i]++;
                             exeTaskTotalCount++;
-                            System.Diagnostics.Debug.WriteLine("Thread_" + i.ToString() + " : " + threadExeCountArray[i] + "/" + exeTaskTotalCount);
+                            //System.Diagnostics.Debug.WriteLine("Thread_" + i.ToString() + " : " + threadExeCountArray[i] + "/" + exeTaskTotalCount);
                         }
 
                         //try
@@ -230,7 +230,7 @@ namespace Taurus.MicroService
                     }
                     else
                     {
-                        System.Diagnostics.Debug.WriteLine("Thread_" + i.ToString() + " : " + threadExeCountArray[i] + "/" + exeTaskTotalCount);
+                       // System.Diagnostics.Debug.WriteLine("Thread_" + i.ToString() + " : " + threadExeCountArray[i] + "/" + exeTaskTotalCount);
                         auto.WaitOne();
                     }
                 }
@@ -367,7 +367,7 @@ namespace Taurus.MicroService
                     }
                     else
                     {
-                        System.Diagnostics.Debug.WriteLine("Thread_" + i.ToString() + " : " + threadExeCountArray[i] + "/" + exeTaskTotalCount);
+                        //System.Diagnostics.Debug.WriteLine("Thread_" + i.ToString() + " : " + threadExeCountArray[i] + "/" + exeTaskTotalCount);
                         auto.WaitOne();
                     }
                 }

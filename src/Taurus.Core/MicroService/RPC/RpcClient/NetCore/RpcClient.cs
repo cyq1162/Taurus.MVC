@@ -62,29 +62,29 @@ namespace Taurus.MicroService
             //sw.Start();
             //try
             //{
-                if (wc != null)
-                {
-                    //Random rnd = new Random();
-                    //if (rnd.Next() % 2 == 0)
-                    //{
-                    //    
-                    //}
-                    //return wc.DownloadDataTaskAsync(url).Result;
-                    return wc.DownloadData(url);
-                    //      
-                    //WebClient wc = new WebClient();
-                    //if (Headers.Count > 0)
-                    //{
-                    //    foreach (var item in Headers)
-                    //    {
-                    //        wc.Headers.Add(item.Key, item.Value);
-                    //    }
-                    //}
-                    //byte[] result = wc.DownloadData(url);
-                    //SetWebClientHeader(wc);
-                    //return result;
-                }
-                return ExeTask("GET", new Uri(url), null);
+            if (wc != null)
+            {
+                //Random rnd = new Random();
+                //if (rnd.Next() % 2 == 0)
+                //{
+                //    
+                //}
+                //return wc.DownloadDataTaskAsync(url).Result;
+                return wc.DownloadData(url);
+                //      
+                //WebClient wc = new WebClient();
+                //if (Headers.Count > 0)
+                //{
+                //    foreach (var item in Headers)
+                //    {
+                //        wc.Headers.Add(item.Key, item.Value);
+                //    }
+                //}
+                //byte[] result = wc.DownloadData(url);
+                //SetWebClientHeader(wc);
+                //return result;
+            }
+            return ExeTask("GET", new Uri(url), null);
             //}
             //finally
             //{
@@ -132,9 +132,9 @@ namespace Taurus.MicroService
                     request.Headers.Add(item, Headers[item]);
                 }
             }
-            if (data != null)
+            if (data != null && data.Length > 0)
             {
-                request.Content = new StreamContent(new MemoryStream(data)) { }; ;
+                request.Content = new StreamContent(new MemoryStream(data)) { };
             }
             HttpClient httpClient = HttpClientPool.Create(address);
             Task<HttpResponseMessage> task = httpClient.SendAsync(request);

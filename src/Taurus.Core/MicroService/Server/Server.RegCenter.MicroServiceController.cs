@@ -29,14 +29,15 @@ namespace Taurus.MicroService
         {
             switch (MethodName)
             {
-                case "exit":
+                case "exit"://client
                     return true;
                 default:
-                    if (!MsConfig.IsRegCenter)
+                    if (!MsConfig.IsServer && !MsConfig.IsClient)
                     {
-                        Write("Current Is Not Run As Register Center.", false);
+                        Write("Current Is Not Run As MicroService.", false);
                     }
-                    return MsConfig.IsRegCenter;
+                    //check ui login
+                    return UIAccountCheck(MethodName);
             }
         }
 
@@ -93,9 +94,14 @@ namespace Taurus.MicroService
                     name += ",*";//对于仅绑定域名的，追加通用模块。
                 }
             }
+            else
+            {
+                name += ",*.*";//未绑定域名的，添加通用域名模块。
+            }
             string[] names = name.ToLower().Trim(',').Split(',');//允许一次注册多个模块。
             foreach (string item in names)
             {
+                if (string.IsNullOrEmpty(item)) { continue; }
                 string[] items = item.Split('|');//允许模块域名带优先级版本号
                 int ver = 0;
                 if (items.Length < 2 || !int.TryParse(items[1], out ver))

@@ -159,8 +159,16 @@ CYQ.Data升级到V5.8.4.9
 -----V3.1.5.2----------------
 1、新增：Taurus.Plugin.Log 插件：用于便捷查看错误日志文件（配置项：Log.IsEnable : true【默认】）。（2023-04-11）
 2、优化：/MicroService/index 界面呈现。（2023-04-13）
+3、优化：网关：Cookie 域名替换。（2023-04-22）
+4、优化：网关：状态码（100-600）（2023-04-22）
+5、优化：MicroService.Server.RcPassword 配置项变更为：MicroService.App.Password。（2023-04-22）
+6、新增：MicroService.App.UserName 配置项。（2023-04-22）
+6、新增：/MicroService/config，管理微服务配置。（2023-04-22）
+7、新增：/MicroService/log，管理微服务异常日志。（2023-04-22）
+8、优化：注册中心后台变更为：微服务管理后台（网关、注册中心、客户端）。（2023-04-22）
 
 网关：Linux 下内存占用问题测试。
+注册中心：手动添加转发地址（如其它静态站：www.xxx.com）
 
 后续待处理
 插件：
@@ -173,3 +181,4 @@ CYQ.Data升级到V5.8.4.9
 域名配置、退出系统。
 分布式事务（插件）
 分布式锁（插件）
+CYQ.Data 异步（IO、数据库读写）

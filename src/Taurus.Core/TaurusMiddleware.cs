@@ -27,6 +27,10 @@ namespace Microsoft.AspNetCore.Http
         {
             try
             {
+                if (!context.Response.HasStarted)
+                {
+                    context.Response.Headers.Add("Server", "Taurus/" + MvcConst.Version);
+                }
                 if (context.Request.Path.Value.IndexOf("/App_Data/", StringComparison.OrdinalIgnoreCase) > -1)//兼容受保护的目录
                 {
                     context.Response.StatusCode = 403;

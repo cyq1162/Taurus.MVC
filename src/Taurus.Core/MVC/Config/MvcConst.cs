@@ -12,6 +12,7 @@ namespace Taurus.Mvc
     /// </summary>
     public static class MvcConst
     {
+        private static string _Version;
         /// <summary>
         /// 获取当前 Taurus 版本号
         /// </summary>
@@ -19,7 +20,11 @@ namespace Taurus.Mvc
         {
             get
             {
-                return System.Reflection.Assembly.GetExecutingAssembly().GetName().Version.ToString();
+                if (_Version == null)
+                {
+                    _Version = System.Reflection.Assembly.GetExecutingAssembly().GetName().Version.ToString();
+                }
+                return _Version;
             }
         }
         public static int _ProcessID;

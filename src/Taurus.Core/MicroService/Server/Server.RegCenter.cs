@@ -28,7 +28,7 @@ namespace Taurus.MicroService
                     if (_HostListJson == null)
                     {
                         _IsReadFromFile = true;
-                        _HostListJson = IO.Read(MsConst.RegCenterJsonPath);
+                        _HostListJson = IO.Read(MsConst.ServerRegCenterJsonPath);
                     }
                     return _HostListJson;
                 }
@@ -39,11 +39,11 @@ namespace Taurus.MicroService
 
                     if (string.IsNullOrEmpty(value))
                     {
-                        IO.Delete(MsConst.RegCenterJsonPath);
+                        IO.Delete(MsConst.ServerRegCenterJsonPath);
                     }
                     else
                     {
-                        IO.Write(MsConst.RegCenterJsonPath, _HostListJson);
+                        IO.Write(MsConst.ServerRegCenterJsonPath, _HostListJson);
                     }
                 }
             }

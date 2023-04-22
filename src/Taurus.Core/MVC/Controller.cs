@@ -349,7 +349,6 @@ namespace Taurus.Mvc
                     isGoOn = Convert.ToBoolean(beforeInvoke.Method.Invoke(this, null));
                 }
             }
-            #endregion
             return isGoOn;
         }
         private void ExeEndInvoke(bool isIgnoreGlobal)
@@ -368,6 +367,7 @@ namespace Taurus.Mvc
                     endInvoke.Method.Invoke(null, new object[] { this });
                 }
             }
+            #endregion
         }
         private void LoadHtmlView()
         {
@@ -443,7 +443,6 @@ namespace Taurus.Mvc
                         context.Response.ContentType = "application/xml;charset=" + context.Response.Charset;
                     }
                 }
-
                 context.Response.Write(outResult);
                 apiResult = null;
             }

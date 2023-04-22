@@ -5,6 +5,7 @@ using System.Net;
 using Taurus.Mvc;
 using CYQ.Data;
 using System.Threading;
+using System.IO;
 
 namespace Taurus.MicroService
 {
@@ -22,118 +23,99 @@ namespace Taurus.MicroService
             /// </summary>
             public static bool Proxy(HttpContext context, bool isServerCall)
             {
-
                 if ((isServerCall && !MsConfig.IsServer) || (!isServerCall && !MsConfig.IsClient))
                 {
                     return false;
                 }
-                List<HostInfo> infoList = new List<HostInfo>();
-                string module = string.Empty;
-                IPAddress iPAddress;
-                List<HostInfo> domainList = null;
+
                 Uri uri = context.Request.Url;
-                if (uri.Host != "localhost" && !IPAddress.TryParse(uri.Host, out iPAddress))
-                {
-                    module = uri.Host;//域名转发优先。
-                    domainList = isServerCall ? Server.Gateway.GetHostList(module) : Client.Gateway.GetHostList(module);
-                    if (domainList == null || domainList.Count == 0)
-                    {
-                        return false;
-                    }
-                }
-
-                if (uri.LocalPath == "/")
-                {
-                    module = MvcConfig.DefaultUrl.TrimStart('/').Split('/')[0];
-                }
-                else
-                {
-                    module = uri.LocalPath.TrimStart('/').Split('/')[0];
-                }
-                List<HostInfo> moduleList = isServerCall ? Server.Gateway.GetHostList(module) : Client.Gateway.GetHostList(module);
-
+                List<HostInfo> domainList = isServerCall ? Server.Gateway.GetHostList(uri.Host) : Client.Gateway.GetHostList(uri.Host);
                 if (domainList == null || domainList.Count == 0)
                 {
-                    infoList = moduleList;
-                }
-                else if (moduleList == null || moduleList.Count == 0)
-                {
-                    //仅有域名，没有对应模块
                     return false;
-                    //infoList = domainList;
-                }
-                else
-                {
-                    //存在域名，也存在模块，过滤出满足：域名+模块
-                    foreach (var item in domainList)//过滤掉不在域名下的主机
-                    {
-                        foreach (var keyValue in moduleList)
-                        {
-                            if (item.Host == keyValue.Host)
-                            {
-                                infoList.Add(item);
-                                break;
-                            }
-                        }
-                    }
                 }
 
-                if (infoList == null || infoList.Count == 0)
+                string url = uri.LocalPath == "/" ? MvcConfig.DefaultUrl : uri.LocalPath;
+                string[] items = url.TrimStart('/').Split('/');
+                string module = items[0];
+                if (items.Length == 1 && (string.IsNullOrEmpty(module) || module.Contains(".")))
+                {
+                    module = "/";
+                }
+
+                List<HostInfo> moduleList = isServerCall ? Server.Gateway.GetHostList(module) : Client.Gateway.GetHostList(module);
+                if (moduleList == null || moduleList.Count == 0)
                 {
                     return false;
                 }
-                else
+                List<HostInfo> infoList = new List<HostInfo>();
+                //存在域名，也存在模块，过滤出满足：域名+模块
+                foreach (var item in domainList)//过滤掉不在域名下的主机
                 {
-                    int count = infoList.Count;
-                    int max = 3;//最多循环3个节点，避免长时间循环卡机。
-                    bool isRegCenter = MsConfig.IsRegCenterOfMaster;
-                    HostInfo firstInfo = infoList[0];
-                    if (firstInfo.CallIndex >= count)
+                    foreach (var keyValue in moduleList)
                     {
-                        firstInfo.CallIndex = 0;//处理节点移除后，CallIndex最大值的问题。
+                        if (item.Host == keyValue.Host)
+                        {
+                            infoList.Add(item);
+                            break;
+                        }
                     }
-                    for (int i = 0; i < count; i++)
-                    {
-                        int callIndex = firstInfo.CallIndex + i;
-                        if (callIndex >= count)
-                        {
-                            callIndex = callIndex - count;
-                        }
-                        //if (callIndex < 0 || callIndex >= infoList.Count)
-                        //{
+                }
+                if (infoList.Count == 0)
+                {
+                    return false;
+                }
 
-                        //}
-                        HostInfo info = infoList[callIndex];//并发下有异步抛出
-                        if (!isServerCall && info.Host == MsConfig.App.RunUrl)
+                int count = infoList.Count;
+                int max = 3;//最多循环3个节点，避免长时间循环卡机。
+                bool isRegCenter = MsConfig.IsRegCenterOfMaster;
+                HostInfo firstInfo = infoList[0];
+                if (firstInfo.CallIndex >= count)
+                {
+                    firstInfo.CallIndex = 0;//处理节点移除后，CallIndex最大值的问题。
+                }
+                for (int i = 0; i < count; i++)
+                {
+                    int callIndex = firstInfo.CallIndex + i;
+                    if (callIndex >= count)
+                    {
+                        callIndex = callIndex - count;
+                    }
+                    //if (callIndex < 0 || callIndex >= infoList.Count)
+                    //{
+
+                    //}
+                    HostInfo info = infoList[callIndex];//并发下有异步抛出
+                    if (!isServerCall && info.Host == MsConfig.App.RunUrl)
+                    {
+                        continue;
+                    }
+                    if (info.Version < 0 || info.CallTime > DateTime.Now || (isRegCenter && info.RegTime < DateTime.Now.AddSeconds(-10)))//正常5-10秒注册1次。
+                    {
+                        continue;//已经断开服务的。
+                    }
+                    if (Proxy(context, info.Host, isServerCall))
+                    {
+                        firstInfo.CallIndex = callIndex + 1;//指向下一个。
+                        return true;
+                    }
+                    else
+                    {
+                        info.CallTime = DateTime.Now.AddSeconds(10);//网络异常的，延时10s检测。
+                        max--;
+                        if (max == 0)
                         {
-                            continue;
-                        }
-                        if (info.Version < 0 || info.CallTime > DateTime.Now || (isRegCenter && info.RegTime < DateTime.Now.AddSeconds(-10)))//正常5-10秒注册1次。
-                        {
-                            continue;//已经断开服务的。
-                        }
-                        if (Proxy(context, info.Host, isServerCall))
-                        {
-                            firstInfo.CallIndex = callIndex + 1;//指向下一个。
+                            context.Response.StatusCode = 502;
+                            context.Response.Write("502 Bad gateway.");
                             return true;
                         }
-                        else
-                        {
-                            info.CallTime = DateTime.Now.AddSeconds(10);//网络异常的，延时10s检测。
-                            max--;
-                            if (max == 0)
-                            {
-                                context.Response.StatusCode = 502;
-                                context.Response.Write("502 Bad gateway.");
-                                return true;
-                            }
-                        }
-
                     }
-                    context.Response.StatusCode = 502;
-                    context.Response.Write("502 Bad gateway.");
-                    return true;
+
                 }
+                context.Response.StatusCode = 502;
+                context.Response.Write("502 Bad gateway.");
+                return true;
+
 
             }
 
@@ -226,6 +208,10 @@ namespace Taurus.MicroService
                     }
                     else
                     {
+                        if (data == null)
+                        {
+                            data = new byte[0];
+                        }
                         bytes = wc.UploadData(url, request.HttpMethod, data);
                     }
                     try
@@ -233,20 +219,26 @@ namespace Taurus.MicroService
                         //context.Response.AppendHeader("Content-Length", bytes.Length.ToString());
                         foreach (string key in wc.ResponseHeaders.Keys)
                         {
-                            if (key.StartsWith(":"))//chrome 新出来的 :method等
+                            //chrome 新出来的 :method等
+                            //"Transfer-Encoding" 输出这个会造成时不时的503
+                            if (key.StartsWith(":") || key == "Transfer-Encoding")
                             {
                                 continue;
                             }
-                            switch (key)
+                            string value = wc.ResponseHeaders[key];
+                            if (key == "Set-Cookie")
                             {
-                                case "Transfer-Encoding"://输出这个会造成时不时的503
-                                    continue;
+                                //处理切换域名
+                                if (value.Contains("domain=" + uri.Host))
+                                {
+                                    value = value.Replace("domain=" + uri.Host, "domain=" + request.Url.Host);
+                                }
                             }
-                            if (key == "Content-Type" && wc.ResponseHeaders[key].Split(';').Length == 1)
-                            {
-                                continue;
-                            }
-                            context.Response.AppendHeader(key, wc.ResponseHeaders[key]);
+                            //if (key == "Content-Type" && !value.Contains("html") && value.Split(';').Length == 1) // 不返回可能造成html显示成字符串内容。
+                            //{
+                            //    continue;
+                            //}
+                            context.Response.AppendHeader(key, value);
                         }
 
                     }
@@ -258,11 +250,24 @@ namespace Taurus.MicroService
                 }
                 catch (Exception err)
                 {
-                    if (!err.Message.Contains("(40"))//400 系列，机器是通的， 404) Not Found
+                    string msg = err.Message;
+                    bool isHasStatusCode = msg.Contains("(1") || msg.Contains("(2") || msg.Contains("(3") || msg.Contains("(4") || msg.Contains("(5") || msg.Contains("(6");
+                    if (!isHasStatusCode || msg.Contains("Connection refused") || msg.Contains("Could not find file") || msg.Contains("无法连接到远程服务器") || msg.Contains("未能解析此远程名称") || msg.Contains("不知道这样的主机"))//!err.Message.Contains("(40")400 系列，机器是通的， 404) Not Found
                     {
                         RpcClientPool.RemoveFromPool(uri);
-                        MsLog.Write(err.Message, url, request.HttpMethod, isServerCall ? MsConfig.Server.Name : MsConfig.Client.Name);
+                        MsLog.Write(msg, url, request.HttpMethod, isServerCall ? MsConfig.Server.Name : MsConfig.Client.Name);
                         return false;
+                    }
+                    else
+                    {
+                        //解析状态码
+                        int i = msg.IndexOf('(');
+                        int end = msg.IndexOf(')', i);
+                        if (end > i)
+                        {
+                            string code = msg.Substring(i + 1, end - i - 1);
+                            context.Response.StatusCode = int.Parse(code);
+                        }
                     }
                 }
                 finally

@@ -112,6 +112,8 @@
     <Compile Include="Plugin\Limit\AckLimit.cs" />
     <Compile Include="Plugin\Limit\LimitConfig.cs" />
     <Compile Include="Plugin\Limit\LimitRun.cs" />
+    <Compile Include="Plugin\Log\LogConfig.cs" />
+    <Compile Include="Plugin\Log\LogController.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="Tool\WebTool.cs" />
     <Compile Include="UrlRewrite.cs" />

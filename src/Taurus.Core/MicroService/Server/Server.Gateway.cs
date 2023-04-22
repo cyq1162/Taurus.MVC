@@ -98,6 +98,16 @@ namespace Taurus.MicroService
             /// <returns></returns>
             public static List<HostInfo> GetHostList(string name)
             {
+                return GetHostList(name, true);
+            }
+            /// <summary>
+            /// 获取模块的所有Host列表。
+            /// </summary>
+            /// <param name="name">服务模块名称</param>
+            /// <param name="withStar">是否包含星号通配符（默认true）</param>
+            /// <returns></returns>
+            public static List<HostInfo> GetHostList(string name, bool withStar)
+            {
                 //System.Diagnostics.Stopwatch sw = new System.Diagnostics.Stopwatch();
                 //sw.Start();
                 var hostList = HostList;//先获取引用【避免执行过程，因线程更换了引用的对象】
@@ -112,38 +122,49 @@ namespace Taurus.MicroService
                     {
                         list.AddRange(hostList[name]);
                     }
-                    if (name.Contains("."))//域名
+                    if (withStar)
                     {
-                        if (list.Count == 0 && name.Split('.').Length > 2)//2级泛域名检测
+                        if (name.Contains("."))//域名
                         {
-                            string seName = "*" + name.Substring(name.IndexOf("."));
-                            if (hostList.ContainsKey(seName))
+                            if (list.Count == 0 && name.Split('.').Length > 2)//2级泛域名检测
                             {
-                                list.AddRange(hostList[seName]);
-                            }
-                        }
-                        if (name != "*.*" && hostList.ContainsKey("*.*"))
-                        {
-                            List<HostInfo> commList = hostList["*.*"];
-                            if (commList.Count > 0)
-                            {
-                                if (list.Count == 0 || commList[0].Version >= list[0].Version)//版本号比较处理
+                                string seName = "*" + name.Substring(name.IndexOf("."));
+                                if (hostList.ContainsKey(seName))
                                 {
-                                    list.AddRange(commList);//增加“*.*”模块的通用符号处理。
+                                    list.AddRange(hostList[seName]);
+                                }
+                            }
+                            if (name != "*.*" && hostList.ContainsKey("*.*"))
+                            {
+                                List<HostInfo> commList = hostList["*.*"];
+                                if (commList.Count > 0)
+                                {
+                                    if (list.Count == 0 || commList[0].Version >= list[0].Version)//版本号比较处理
+                                    {
+                                        list.AddRange(commList);//增加“*.*”模块的通用符号处理。
+                                    }
                                 }
                             }
                         }
-                    }
-                    else //普通模块
-                    {
-                        if (name != "*" && hostList.ContainsKey("*"))
+                        else //普通模块
                         {
-                            List<HostInfo> commList = hostList["*"];
-                            if (commList.Count > 0)
+                            switch (name)
                             {
-                                if (list.Count == 0 || commList[0].Version >= list[0].Version)//版本号比较处理
+                                case "*":
+                                case "RegCenter":
+                                case "RegCenterOfSlave":
+                                case "Gateway":
+                                    return list;
+                            }
+                            if (hostList.ContainsKey("*"))
+                            {
+                                List<HostInfo> commList = hostList["*"];
+                                if (commList.Count > 0)
                                 {
-                                    list.AddRange(commList);//增加“*”模块的通用符号处理。
+                                    if (list.Count == 0 || commList[0].Version >= list[0].Version)//版本号比较处理
+                                    {
+                                        list.AddRange(commList);//增加“*”模块的通用符号处理。
+                                    }
                                 }
                             }
                         }
