@@ -1,4 +1,5 @@
-﻿using System;
+﻿using CYQ.Data;
+using System;
 using System.Collections.Generic;
 using System.Text;
 using Taurus.Mvc;
@@ -11,6 +12,19 @@ namespace Taurus.Controllers.Test
     /// </summary>
     public class MSController : Controller
     {
+        public override void Default()
+        {
+            Write("UrlReferrer : " + Convert.ToString(Request.UrlReferrer) + "\r\n<br/>");
+            Write("X-Real-IP : " + Request.Headers["X-Real-IP"] + "\r\n<br/>");
+            Write("X-Real-Port : " + Request.Headers["X-Real-Port"] + "\r\n<br/>");
+            Write("X-Forwarded-For : " + Request.Headers["X-Forwarded-For"] + "\r\n<br/>");
+            Write("REMOTE_ADDR : " + Request.ServerVariables["REMOTE_ADDR"] + "\r\n<br/>");
+            Write("REMOTE_PORT : " + Request.ServerVariables["REMOTE_PORT"] + "\r\n<br/>");
+            Write("App.RunUrl : " + MvcConfig.RunUrl + "\r\n<br/>");
+            Write("Url.LocalPath : " + Request.Url.LocalPath + "\r\n<br/>");
+            Write("Request.Url.Port  : " + Request.Url.Port + "\r\n<br/>");
+            Write("UserHostAddress : " + Request.UserHostAddress.ToString() + "\r\n<br/>");
+        }
         /// <summary>
         /// Get or Post 测试
         /// </summary>
@@ -25,14 +39,14 @@ namespace Taurus.Controllers.Test
         {
             if (file != null)
             {
-                file.SaveAs(file.FileName);
+                file.SaveAs(AppConfig.RunPath + file.FileName);
             }
             if (Request.UrlReferrer != null)
             {
                 Write("UrlReferrer : " + Request.UrlReferrer.ToString() + "\r\n<br/>");
             }
             Write("UserHostAddress : " + Request.UserHostAddress.ToString() + "\r\n<br/>");
-            Write("MicroService AppRunUrl: " + MicroService.MsConfig.AppRunUrl + Request.Url.LocalPath + " : " + Request.HttpMethod + " : " + msg ?? "Hello" + MicroService.MsConfig.ServerName);
+            Write("MicroService AppRunUrl: " + MvcConfig.RunUrl + Request.Url.LocalPath + " : " + Request.HttpMethod + " : " + msg ?? "Hello" + MicroService.MsConfig.Server.Name);
         }
         /// <summary>
         /// Get or Post 测试
@@ -45,7 +59,7 @@ namespace Taurus.Controllers.Test
                 Write("UrlReferrer : " + Request.UrlReferrer.ToString() + "\r\n<br/>");
             }
             Write("UserHostAddress : " + Request.UserHostAddress.ToString() + "\r\n<br/>");
-            Write("MicroService AppRunUrl : " + MicroService.MsConfig.AppRunUrl + Request.Url.LocalPath + " : " + Request.HttpMethod + " : " + msg ?? "Hello" + MicroService.MsConfig.ServerName);
+            Write("MicroService AppRunUrl : " + MvcConfig.RunUrl + Request.Url.LocalPath + " : " + Request.HttpMethod + " : " + msg ?? "Hello" + MicroService.MsConfig.Server.Name);
         }
 
         public void Cookie(string msg)

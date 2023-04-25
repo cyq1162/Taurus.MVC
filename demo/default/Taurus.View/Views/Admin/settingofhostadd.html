@@ -1,0 +1,71 @@
+﻿<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head itemref="common.head">
+    <link itemref="common.btcss" />
+    <link itemref="common.btcss_extend" />
+    <style type="text/css">
+        a {
+            cursor: pointer;
+        }
+
+        .table-bordered td {
+            text-align: left;
+        }
+
+        td {
+            padding-top: 10px;
+        }
+
+        .tdright {
+            width:82px;
+            text-align: left;
+        }
+
+        .tdleft {
+            text-align: left;
+        }
+    </style>
+</head>
+<body style="padding:0px;">
+    <div id="container">
+        <div>
+            Register the service manually ：for register center of master.
+        </div>
+        <hr />
+        <div style="margin: auto; text-align: center; ">
+            <form method="post">
+                <table width="100%" align="center">
+                    <tr>
+                        <td class="tdright"><span>Host List</span> ：</td>
+                        <td class="tdleft">
+                            Domains,ModuleNames#Http://ip:port 【*：all module,*.*：all domain】<br />
+                            as api.taurus.com,*#http://192.18.9.121:8000 (Split By New Line)
+                        </td>
+                    </tr>
+                    <tr>
+                        <td class="tdright"></td>
+                        <td class="tdleft">
+                            <textarea name="hostList" style="width: 84%;height:400px">${HostList}</textarea>
+                        </td>
+                        <td></td>
+                    </tr>
+                   
+                    <tr>
+                        <td class="tdright"></td>
+                        <td class="tdleft" colspan="2">
+                            <input name="btnAddHost" type="submit" value="Save" style="width: 71px; cursor: pointer; padding-top: 4px;" />
+                        </td>
+                    </tr>
+                    <tr>
+                        <td class="tdright"></td>
+                        <td class="tdleft" colspan="2">
+                            <div id="msg" style="color: #99ccff"></div>
+                        </td>
+                    </tr>
+                </table>
+            </form>
+
+        </div>
+    </div>
+</body>
+</html>

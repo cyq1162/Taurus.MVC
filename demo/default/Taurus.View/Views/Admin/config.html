@@ -1,7 +1,7 @@
 ﻿<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
 <html xmlns="http://www.w3.org/1999/xhtml">
 <head itemref="common.head">
-    <title>MicroService Config Info</title>
+    <title>AppSettings Config Info</title>
     <link itemref="common.btcss" />
     <link itemref="common.btcss_extend" />
     <style type="text/css">
@@ -18,7 +18,7 @@
 <body itemref="common.body">
     <div id="container">
         <div>
-            MicroService Version ：V${Version}<br />Process ID：${ProcessID}
+            AppSettings Config ：
         </div>
         <hr />
 
@@ -31,9 +31,19 @@
         </table>
         <hr />
         <table class="table table-striped">
-            <tbody id="configAppView" clearflag="1">
+            <tbody id="configPluginView" clearflag="1">
                 <tr>
-                    <td>MicroService.App.${ConfigKey}</td>
+                    <td>${ConfigKey}</td>
+                    <td>${ConfigValue}</td>
+                    <td>${Description}</td>
+                </tr>
+            </tbody>
+        </table>
+        <hr />
+        <table class="table table-striped">
+            <tbody id="configTaurusView" clearflag="1">
+                <tr>
+                    <td>Taurus.${ConfigKey}</td>
                     <td>${ConfigValue}</td>
                     <td>${Description}</td>
                 </tr>

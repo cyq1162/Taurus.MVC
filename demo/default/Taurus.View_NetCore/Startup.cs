@@ -1,11 +1,13 @@
-﻿using Microsoft.AspNetCore.Builder;
+﻿using CYQ.Data;
+using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
-using Microsoft.AspNetCore.Hosting.Server.Features;
 using Microsoft.AspNetCore.Http;
+using Microsoft.AspNetCore.Http.Features;
 using Microsoft.AspNetCore.Server.Kestrel.Core;
 using Microsoft.Extensions.DependencyInjection;
 using System.Net;
 using Taurus.MicroService;
+using Taurus.Mvc;
 
 namespace Taurus.View
 {
@@ -20,17 +22,34 @@ namespace Taurus.View
             services.AddSession();
             // services.AddDataProtection().PersistKeysToFileSystem(new DirectoryInfo(Directory.GetCurrentDirectory() + Path.DirectorySeparatorChar + "DataProtection"));
             services.AddHttpContext();
+            services.Configure<FormOptions>(options => options.MultipartBodyLengthLimit = long.MaxValue);
             services.Configure<KestrelServerOptions>((x) =>
             {
-                if (MsConfig.IsGateway && MsConfig.App.SslCertificate.Count > 0)
+                if (MsConfig.IsServer && MvcConfig.SslCertificate.Count > 0)
                 {
-                    // x.Listen(IPAddress.Any, 80);
+                    //if (MsConfig.IsRegCenter)
+                    //{
+                        string url = !string.IsNullOrEmpty(MvcConfig.RunUrl) ? MvcConfig.RunUrl : AppConfig.GetApp("Host");
+                        if (!string.IsNullOrEmpty(url) && !url.StartsWith("https"))
+                        {
+                            string[] items = url.Split(":");
+                            if (items.Length == 2)
+                            {
+                                x.Listen(IPAddress.Any, 80);
+                            }
+                            else if (items.Length == 3)
+                            {
+                                x.Listen(IPAddress.Any, int.Parse(items[2]));
+                            }
+                        }
+                    //}
+                    //x.Listen(IPAddress.Any, 9999);
                     x.Listen(IPAddress.Any, 443, op =>
                     {
 
                         op.UseHttps(opx =>
                         {
-                            var certificates = MsConfig.App.SslCertificate;
+                            var certificates = MvcConfig.SslCertificate;
                             opx.ServerCertificateSelector = (connectionContext, name) =>
                                name != null && certificates.TryGetValue(name, out var cert) ? cert : certificates["localhost"];
 
@@ -40,6 +59,9 @@ namespace Taurus.View
                     });
                 }
                 x.AllowSynchronousIO = true;
+                x.Limits.MaxRequestBufferSize = null;
+                x.Limits.MaxRequestBodySize = null;
+
                 //为整个应用设置并发打开的最大 TCP 连接数,默认情况下，最大连接数不受限制 (NULL)
                 // x.Limits.MaxConcurrentConnections = 100000;
                 //对于已从 HTTP 或 HTTPS 升级到另一个协议（例如，Websocket 请求）的连接，有一个单独的限制。 连接升级后，不会计入 MaxConcurrentConnections 限制
@@ -58,10 +80,11 @@ namespace Taurus.View
         public void Configure(IApplicationBuilder app, IWebHostEnvironment env)//把IHostingEnvironment IWebHostEnvironment
         {
             app.UseWebSockets();
-            app.UseStaticFiles();
             app.UseSession();
             app.UseHttpContext();
             app.UseTaurusMvc(env);
+            app.UseStaticFiles();//做为注册中心服务时，静态文件功能应该放后面。
+
         }
     }
 }

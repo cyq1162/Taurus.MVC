@@ -15,24 +15,24 @@
 <body itemref="common.body">
     <div id="container">
         <div>
-            MicroService Register Center ：V${Version}
+            MicroService Type ：<b>${MsType}</b>
         </div>
         <hr />
         <div style="float:left"><b>Server ：</b></div>
-        <div id="serverNamesView" style="float:left">
-            <a href="${'/'+module}/microservice/index?n=${Name}">${Name}（${Count}）</a>&nbsp;|&nbsp;
+        <div id="serverNamesView" style="float:left" clearflag="1">
+            <a href="index?n=${Name}">${Name}（${Count}）</a>&nbsp;|&nbsp;
         </div>
         <div style="clear:both; height:5px;">
         </div>
          <div style="float:left"><b>Domain ：</b></div>
-        <div id="domainNamesView" style="float:left">
-            <a href="${'/'+module}/microservice/index?n=${Name}">${Name}（${Count}）</a>&nbsp;|&nbsp;
+        <div id="domainNamesView" style="float:left" clearflag="1">
+            <a href="index?n=${Name}">${Name}（${Count}）</a>&nbsp;|&nbsp;
         </div>
         <div style="clear:both;height:5px;">
         </div>
         <div style="float:left"><b>Client ：</b></div>
-        <div id="clientNamesView" style="float:left">
-            <a href="${'/'+module}/microservice/index?n=${Name}">${Name}（${Count}）</a>&nbsp;|&nbsp;
+        <div id="clientNamesView" style="float:left" clearflag="1">
+            <a href="index?n=${Name}">${Name}（${Count}）</a>&nbsp;|&nbsp;
         </div>
         <div style="clear:both;">
         </div>
@@ -48,7 +48,7 @@
             <tbody id="defaultView" clearflag="1">
                 <tr>
                     <td><a target="_blank" href="${Host}/doc?g=${GatewayUrl}" title="doc">${Name}</a></td>
-                    <td><a href="${'/'+module}/microservice/index?h=${Host}">${Host}</a></td>
+                    <td><a href="index?h=${Host}">${Host}</a></td>
                     <td>${Version}</td>
                     <td>${RegTime}</td>
                     <td><a onclick="stop('${Host}',this);" title="stop application"><%# ('${Name}'=='RegCenter' || '${Name}'=='Gateway')?'':'${RemoteExit}'%></a></td>

@@ -4,6 +4,8 @@ using System.Text;
 using Taurus.Mvc;
 using CYQ.Data;
 using System.Web;
+using Taurus.Plugin.Limit;
+
 namespace Taurus.Controllers
 {
     /// <summary>
@@ -25,9 +27,8 @@ namespace Taurus.Controllers
         /// </summary>
         public static bool CheckAck(Controller controller, string ack)
         {
-            
             //需要自己实现Ack验证
-            return !string.IsNullOrEmpty(ack);
+            return AckLimit.IsValid(ack);
 
         }
 
@@ -47,7 +48,7 @@ namespace Taurus.Controllers
         /// </summary>
         public static bool CheckMicroService(Controller controller, string serverKey)
         {
-            return MicroService.MsConfig.ServerKey == serverKey;
+            return MicroService.MsConfig.Server.Key == serverKey;
         }
 
         /// <summary>

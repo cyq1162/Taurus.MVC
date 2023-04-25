@@ -16,22 +16,38 @@ namespace Taurus.Controllers
     /// </summary>
     public partial class APIController : BaseController
     {
+        public void Exit()
+        {
+            Environment.Exit(0);
+        }
         /// <summary>
         /// 文件测试
         /// </summary>
+        /// <param name="ab"></param>
         /// <param name="file" type="file"></param>
         [Require("file")]
-        public void FileTest(HttpPostedFile file)
+        public void FileTest(AB ab, HttpPostedFile file)
         {
-           //Taurus.MicroService.MSClient.R
-            Write(file.FileName);
+            string tip = "tip ab=null;";
+            if (ab != null)
+            {
+                tip = ab.A + "," + ab.B;
+            }
+            if (file != null)
+            {
+                //file.SaveAs(file.FileName);
+                tip += " : " + file.FileName + "(" + file.ContentLength + ")";
+            }
+            Write(tip);
         }
         /// <summary>
         /// 输出Hello (text/html)
         /// </summary>
         public void Hello()
         {
-            Write("APIController : Hello");
+            
+            string json=GetJson();
+            Write("APIController : Hello : "+ json);
         }
         /// <summary>
         /// 输出Hello (application/xml)
@@ -40,11 +56,14 @@ namespace Taurus.Controllers
         {
             Write("<?xml><content>hello Controllers.API<content></xml>");
         }
-        public override bool BeforeInvoke()
+        protected override bool CancelLoadHtml
         {
-            CancelLoadHtml = true;
-            return true;
+            get
+            {
+                return true;
+            }
         }
+
         /// <summary>
         /// 重写此方法时，此CheckToken的优先级>DefaultController中的静态方法CheckToken
         /// </summary>

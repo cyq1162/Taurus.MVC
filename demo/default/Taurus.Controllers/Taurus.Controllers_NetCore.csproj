@@ -26,10 +26,4 @@
     <ProjectReference Include="..\..\..\src\Taurus.Core\Taurus.Core_NetCore.csproj" />
   </ItemGroup>
 
-  <ItemGroup>
-    <Reference Include="CYQ.Data">
-      <HintPath>..\..\..\Packages\netcoreapp2.1\CYQ.Data.dll</HintPath>
-    </Reference>
-  </ItemGroup>
-
 </Project>

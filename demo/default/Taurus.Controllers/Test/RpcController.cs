@@ -3,6 +3,9 @@ using System.Collections.Generic;
 using Taurus.Mvc;
 using Taurus.MicroService;
 using System.Text;
+using CYQ.Data;
+using CYQ.Data.Tool;
+
 namespace Taurus.Controllers.Test
 {
 
@@ -112,10 +115,31 @@ namespace Taurus.Controllers.Test
         }
         public void Call3()
         {
-             // RpcTask task =Rpc.s
+            using (MAction action = new MAction("Users"))
+            {
+                action.BeginTransation();
 
-            //    Taurus.MicroService.
-            //    Rpc.GetHost.Proxy(Context, Rpc.GetHost("ms") + "/ms/hello", false);
+                if (action.Insert(true))
+                {
+                    RpcTask task = Rpc.StartPostAsync("ms", "/ms/post", null, null);
+                    if (task.Result.IsSuccess)
+                    {
+                        RpcTask task2 = Rpc.StartPostAsync("ms", "/ms/post", null, null);
+                        if (!task2.Result.IsSuccess)
+                        {
+                            //task.RollBack();
+                            action.RollBack();
+                        }
+                    }
+                }
+
+            }
+        }
+        public void Https()
+        {
+            RpcTask task = Rpc.StartGetAsync("https://cyq1162.cnblogs.com");
+            task.Wait();
+            Write(JsonHelper.ToJson(task.Result.Header));
         }
     }
 }

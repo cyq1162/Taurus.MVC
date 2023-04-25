@@ -2,14 +2,14 @@
 <html xmlns="http://www.w3.org/1999/xhtml">
 <head>
     <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
-    <title>MicroService Management Center</title>
+    <title>Taurus Admin Management Center</title>
     <style type="text/css">
         body {
             text-align: center;
             font: Verdana, Arial, Helvetica, sans-serif;
             font-size: 14px;
             font-weight: bold;
-            background-color: Black;
+            background-color: #184e48;
             color: White;
             margin: 0;
             padding: 0;
@@ -53,19 +53,25 @@
 </head>
 <body>
     <div style="margin: auto; text-align: center;margin-top: 250px;">
-        <h1 style="font-size: xx-large; color: #99ccff; font-style: italic;">MicroService Management Center</h1><div style="margin: auto; text-align: center;margin-top: 50px;">
+        <h1 style="font-size: xx-large; color: #99ccff; font-style: italic;">Taurus Admin Management Center</h1><div style="margin: auto; text-align: center;margin-top: 50px;">
             <form method="post">
-                <table width="420px" align="center">
-                    <tr><td class="tdright"><span>UserName</span> ：</td><td class="tdleft"><input name="uid" type="text" maxlength="25" /></td><td></td></tr>
+                <table width="460px" align="center">
+                    <tr><td class="tdright"><span>UserName</span> ：</td><td class="tdleft"><input name="uid" type="text" maxlength="25" value="admin" /></td><td></td></tr>
                     <tr><td class="tdright"><span>Password</span> ：</td><td class="tdleft"><input name="pwd" type="password" maxlength="30" size="20" /></td><td></td></tr>
                     <tr>
                         <td class="tdright"></td>
                         <td class="tdleft" colspan="2">
-                            <input name="btnLogin" type="submit" value="Login" style="width: 71px;margin-left: 10px; cursor: pointer; padding-top: 2px;" />
+                            <input name="btnLogin" type="submit" value="Login" style="width: 71px; cursor: pointer; padding: 3px;" />
+                        </td>
+                    </tr>
+                    <tr>
+                        <td class="tdright"></td>
+                        <td class="tdleft" colspan="2">
+                            <div id="msg" style="color: #99ccff"></div>
                         </td>
                     </tr>
                 </table>
-            </form><div id="msg" style="text-align:center;margin-top:20px;color:red"></div>
+            </form>
         </div>
     </div>
 </body>

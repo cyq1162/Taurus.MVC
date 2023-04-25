@@ -1,0 +1,43 @@
+﻿<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head itemref="common.head">
+    <title>Local Environment Info</title>
+    <link itemref="common.btcss" />
+    <link itemref="common.btcss_extend" />
+    <style type="text/css">
+        a {
+            cursor: pointer;
+        }
+
+        table td {
+            text-align: left;
+            width: 33%;
+        }
+    </style>
+</head>
+<body itemref="common.body">
+    <div id="container">
+        <div>
+            Local Environment ：
+        </div>
+        <hr />
+        <table class="table table-striped">
+            <tr>
+                <td>Config Key</td>
+                <td>Config Value</td>
+                <td>Description</td>
+            </tr>
+        </table>
+        <hr />
+        <table class="table table-striped">
+            <tbody id="defaultView" clearflag="1">
+                <tr>
+                    <td>${ConfigKey}</td>
+                    <td>${ConfigValue}</td>
+                    <td>${Description}</td>
+                </tr>
+            </tbody>
+        </table>
+    </div>
+</body>
+</html>

@@ -11,7 +11,7 @@ namespace Taurus.Controllers
     {
         public override void Default()
         {
-            Response.Redirect("/");
+            Response.Redirect("/home/index");
         }
         //public override bool BeforeInvoke(string methodName)
         //{

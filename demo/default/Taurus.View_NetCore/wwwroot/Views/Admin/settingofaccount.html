@@ -1,0 +1,78 @@
+﻿<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head itemref="common.head">
+    <title>MicroService Register Center</title>
+    <link itemref="common.btcss" />
+    <link itemref="common.btcss_extend" />
+    <style type="text/css">
+        a {
+            cursor: pointer;
+        }
+
+        .table-bordered td {
+            text-align: left;
+        }
+
+        td {
+            padding-top: 10px;
+        }
+
+        .tdright {
+            width:200px;
+            text-align: right;
+        }
+
+        .tdleft {
+            text-align: left;
+        }
+    </style>
+</head>
+<body style="padding:0px;">
+    <div id="container">
+        <div>
+           Admin account setting ：for admin management.
+        </div>
+        <hr />
+        <div style="margin: auto; text-align: center; margin-top: 50px;">
+            <form method="post">
+                <table width="100%" align="center">
+                    <tr>
+                        <td class="tdright"><span>UserName</span> ：</td>
+                        <td class="tdleft">
+                            <input name="uid" type="text" maxlength="25" value="${UserName}" />
+                        </td>
+                        <td></td>
+                    </tr>
+                    <tr>
+                        <td class="tdright"><span>Password</span> ：</td>
+                        <td class="tdleft">
+                            <input name="pwd" type="password" maxlength="20" size="20" />
+                        </td>
+                        <td></td>
+                    </tr>
+                    <tr>
+                        <td class="tdright"><span>Password Again</span> ：</td>
+                        <td class="tdleft">
+                            <input name="pwdAgain" type="password" maxlength="20" size="20" />
+                        </td>
+                        <td></td>
+                    </tr>
+                    <tr>
+                        <td class="tdright"></td>
+                        <td class="tdleft" colspan="2">
+                            <input name="btnSaveAccount" type="submit" value="Save" style="width: 71px; cursor: pointer; padding-top: 4px;" />
+                        </td>
+                    </tr>
+                    <tr>
+                        <td class="tdright"></td>
+                        <td class="tdleft" colspan="2" >
+                            <div id="msg" style="color: #99ccff"></div>
+                        </td>
+                    </tr>
+                </table>
+            </form>
+
+        </div>
+    </div>
+</body>
+</html>
