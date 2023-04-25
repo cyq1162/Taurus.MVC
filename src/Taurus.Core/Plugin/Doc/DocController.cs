@@ -17,6 +17,13 @@ namespace Taurus.Plugin.Doc
     /// </summary>
     internal partial class DocController : Controller
     {
+        protected override string HtmlFolderName
+        {
+            get
+            {
+                return DocConfig.HtmlFolderName;
+            }
+        }
         public override bool BeforeInvoke()
         {
             Init();

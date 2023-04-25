@@ -1,4 +1,9 @@
 ﻿using CYQ.Data;
+using CYQ.Data.Tool;
+using System.Collections.Generic;
+using System.IO;
+using System.Security.Cryptography.X509Certificates;
+using System;
 
 namespace Taurus.Mvc
 {
@@ -110,6 +115,61 @@ namespace Taurus.Mvc
             set
             {
                 AppConfig.SetApp("Taurus.SubAppName", value);
+            }
+        }
+
+        /// <summary>
+        /// 应用配置：Https 证书 存放路径【客户端默认开启、服务端默认关闭】
+        /// </summary>
+        public static string SslPath
+        {
+            get
+            {
+                return AppConfig.GetApp("Taurus.SslPath", "/App_Data/ssl");
+            }
+            set
+            {
+                AppConfig.SetApp("Taurus.SslPath", value);
+            }
+        }
+        /// <summary>
+        /// 获取应用证书【证书路径由SslPath配置】（只读）
+        /// </summary>
+        public static Dictionary<string, X509Certificate2> SslCertificate
+        {
+            get
+            {
+                var certificates = new Dictionary<string, X509Certificate2>(StringComparer.OrdinalIgnoreCase);
+                string sslFolder = AppConfig.WebRootPath + SslPath;
+                if (Directory.Exists(sslFolder))
+                {
+                    string[] files = Directory.GetFiles(sslFolder, "*.pfx", SearchOption.TopDirectoryOnly);
+                    foreach (string file in files)
+                    {
+                        string pwdPath = file.Replace(".pfx", ".txt");
+                        if (File.Exists(pwdPath))
+                        {
+                            string pwd = IOHelper.ReadAllText(pwdPath);
+                            string domain = Path.GetFileName(pwdPath).Replace(".txt", "");
+                            certificates.Add(domain, new X509Certificate2(file, pwd));
+                        }
+                    }
+                }
+                return certificates;
+            }
+        }
+        /// <summary>
+        /// 应用配置：当前Web Application运行Url【Kestrel启动运行需要】
+        /// </summary>
+        public static string RunUrl
+        {
+            get
+            {
+                return AppConfig.GetApp("Taurus.RunUrl", "").TrimEnd('/');
+            }
+            set
+            {
+                AppConfig.SetApp("Taurus.RunUrl", value);
             }
         }
     }

@@ -78,6 +78,9 @@
     <Compile Include="MicroService\MsLog.cs" />
     <Compile Include="MicroService\MsRun.cs" />
     <Compile Include="MicroService\RPC\Rpc.cs" />
+    <Compile Include="MicroService\RPC\RpcClient\MyWebClient.cs">
+      <SubType>Component</SubType>
+    </Compile>
     <Compile Include="MicroService\RPC\RpcClient\Net\RpcClient.cs">
       <SubType>Component</SubType>
     </Compile>
@@ -92,7 +95,6 @@
     <Compile Include="MicroService\Server\Server.Gateway.cs" />
     <Compile Include="MicroService\Server\Server.RegCenter.cs" />
     <Compile Include="MicroService\Server\Server.RegCenter.MicroServiceController.cs" />
-    <Compile Include="MicroService\Server\Server.RegCenter.UI.MicroServiceController.cs" />
     <Compile Include="MicroService\Server\Server.Run.cs" />
     <Compile Include="MVC\Config\MvcConfig.cs" />
     <Compile Include="MVC\Config\MvcConst.cs" />
@@ -106,14 +108,16 @@
     <Compile Include="MVC\SessionHandler.cs" />
     <Compile Include="MVC\ViewEngine.cs" />
     <Compile Include="MVC\LogicBase.cs" />
+    <Compile Include="Plugin\Admin\AdminConfig.cs" />
+    <Compile Include="Plugin\Admin\AdminConst.cs" />
+    <Compile Include="Plugin\Admin\AdminController.cs" />
     <Compile Include="Plugin\Doc\DocConfig.cs" />
     <Compile Include="Plugin\Doc\DocController.cs" />
     <Compile Include="Plugin\Doc\HttpPostedFileExtend.cs" />
     <Compile Include="Plugin\Limit\AckLimit.cs" />
+    <Compile Include="Plugin\Limit\IPLimit.cs" />
     <Compile Include="Plugin\Limit\LimitConfig.cs" />
     <Compile Include="Plugin\Limit\LimitRun.cs" />
-    <Compile Include="Plugin\Log\LogConfig.cs" />
-    <Compile Include="Plugin\Log\LogController.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="Tool\WebTool.cs" />
     <Compile Include="UrlRewrite.cs" />

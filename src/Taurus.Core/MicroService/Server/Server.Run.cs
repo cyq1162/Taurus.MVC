@@ -14,7 +14,6 @@ namespace Taurus.MicroService
     /// </summary>
     internal partial class MsRun
     {
-
         /// <summary>
         /// 网关、注册中心运行时。
         /// </summary>
@@ -55,6 +54,11 @@ namespace Taurus.MicroService
         /// <returns></returns>
         private static string RegHost2()
         {
+            if (string.IsNullOrEmpty(MvcConfig.RunUrl))
+            {
+                MsLog.WriteDebugLine(DateTime.Now.ToString("HH:mm:ss") + string.Format(" : PID : {0} RunUrl is empty.", MvcConst.ProcessID));
+                return "";
+            }
             string url = MsConfig.Server.RcUrl + "/microservice/reg2";
             try
             {
@@ -63,19 +67,19 @@ namespace Taurus.MicroService
                 {
                     wc.Headers.Add(MsConst.HeaderKey, MsConfig.Server.Key);
                     wc.Headers.Add("ack", AckLimit.CreateAck());
-                    wc.Headers.Add("Referer", MsConfig.App.RunUrl);
+                    wc.Headers.Add("Referer", MvcConfig.RunUrl);
                     wc.Headers.Add("Content-Type", "application/x-www-form-urlencoded");
                     string data = "host={0}&tick=" + Server.Tick;
-                    result = wc.UploadString(url, string.Format(data, MsConfig.App.RunUrl));
+                    result = wc.UploadString(url, string.Format(data, MvcConfig.RunUrl));
                 }
                 MsLog.WriteDebugLine(DateTime.Now.ToString("HH:mm:ss") + string.Format(" : PID : {0} Reg2 : {1}: ", MvcConst.ProcessID, result));
-                Server.RegCenterIsLive = true;
+                Server.IsLiveOfMasterRC = true;
                 return result;
             }
             catch (Exception err)
             {
                 MsLog.WriteDebugLine(DateTime.Now.ToString("HH:mm:ss") + string.Format(" : PID : {0} Reg2.Error : {1}: ", MvcConst.ProcessID, err.Message));
-                Server.RegCenterIsLive = false;
+                Server.IsLiveOfMasterRC = false;
                 MsLog.Write(err.Message, url, "POST", MsConfig.Server.Name);
                 return err.Message;
             }
@@ -86,6 +90,8 @@ namespace Taurus.MicroService
             if (!string.IsNullOrEmpty(result) && JsonHelper.IsSuccess(result))
             {
                 long tick = JsonHelper.GetValue<long>(result, "tick");
+                long ipTick = JsonHelper.GetValue<long>(result, "iptick");
+                IPLimit.SyncIPList(ipTick);
                 if (tick != Server.Tick)
                 {
                     if (Server.Tick > tick)//主机重启了。
@@ -116,17 +122,17 @@ namespace Taurus.MicroService
                 {
                     wc.Headers.Add(MsConst.HeaderKey, MsConfig.Server.Key);
                     wc.Headers.Add("ack", AckLimit.CreateAck());
-                    wc.Headers.Add("Referer", MsConfig.App.RunUrl);
+                    wc.Headers.Add("Referer", MvcConfig.RunUrl);
                     wc.Headers.Add("Content-Type", "application/x-www-form-urlencoded");
                     wc.UploadString(url, data);
                 }
-                Server.RegCenterIsLive = true;
+                Server.IsLiveOfMasterRC = true;
                 MsLog.WriteDebugLine(DateTime.Now.ToString("HH:mm:ss") + string.Format(" : PID : {0} SyncHostList : = > OK. ", MvcConst.ProcessID));
             }
             catch (Exception err)
             {
                 MsLog.WriteDebugLine(DateTime.Now.ToString("HH:mm:ss") + string.Format(" : PID : {0} SyncHostList.Error : {1}", MvcConst.ProcessID, err.Message));
-                Server.RegCenterIsLive = false;
+                Server.IsLiveOfMasterRC = false;
                 MsLog.Write(err.Message, url, "POST", MsConfig.Server.Name);
             }
         }
@@ -138,6 +144,9 @@ namespace Taurus.MicroService
         {
             if (!string.IsNullOrEmpty(result) && JsonHelper.IsSuccess(result))
             {
+                long ipTick = JsonHelper.GetValue<long>(result, "iptick");
+                IPLimit.SyncIPList(ipTick);
+
                 string host2 = JsonHelper.GetValue<string>(result, "host2");
                 string host = JsonHelper.GetValue<string>(result, "host");
                 if (!string.IsNullOrEmpty(host) && host != MsConfig.Server.RcUrl)
@@ -156,6 +165,12 @@ namespace Taurus.MicroService
                     PreConnection(keyValues);
                     Server.Gateway.HostList = keyValues;
                     Server.Gateway.HostListJson = json;
+                    if (MsConfig.IsRegCenter)
+                    {
+                        //做为一名 从 注册中心，要时刻把自己放在随时接替主的位置。
+                        Server.RegCenter.HostList = keyValues;
+                        Server.RegCenter.HostListJson = json;
+                    }
                 }
             }
         }
@@ -176,9 +191,9 @@ namespace Taurus.MicroService
                 {
                     wc.Headers.Add(MsConst.HeaderKey, MsConfig.Server.Key);
                     wc.Headers.Add("ack", AckLimit.CreateAck());
-                    wc.Headers.Add("Referer", MsConfig.App.RunUrl);
+                    wc.Headers.Add("Referer", MvcConfig.RunUrl);
                     string result = wc.DownloadString(url);
-                    Server.RegCenterIsLive = true;
+                    Server.IsLiveOfMasterRC = true;
                     MsLog.WriteDebugLine(DateTime.Now.ToString("HH:mm:ss") + string.Format(" : PID : {0} GetList : Tick : {1}  => OK", MvcConst.ProcessID, Server.Tick));
                     return result;
                 }
@@ -186,7 +201,7 @@ namespace Taurus.MicroService
             catch (Exception err)
             {
                 MsLog.WriteDebugLine(DateTime.Now.ToString("HH:mm:ss") + string.Format(" : PID : {0} GetList.Error : {1}", MvcConst.ProcessID, err.Message));
-                Server.RegCenterIsLive = false;
+                Server.IsLiveOfMasterRC = false;
                 if (!string.IsNullOrEmpty(Server.Host2))
                 {
                     MsConfig.Server.RcUrl = Server.Host2;//切换到备用库。
@@ -196,15 +211,16 @@ namespace Taurus.MicroService
             }
         }
 
-
         #endregion
 
         #region 服务主机清理。
         /// <summary>
-        /// 注册中心 - 清理过期服务。
+        /// 注册中心(主) - 清理过期服务。
+        /// 对于 注册中心（从），不调用此进行清理，哪怕切换到主(临时），也只做持续存档
         /// </summary>
         internal static void ClearExpireHost()
         {
+            bool isFirstRun = true;
             while (true)
             {
                 try
@@ -212,7 +228,8 @@ namespace Taurus.MicroService
                     var regCenterList = Server.RegCenter.HostList;
                     if (regCenterList != null)
                     {
-                        Server.RegCenter.AddHost("RegCenter", MsConfig.App.RunUrl);
+                        Server.RegCenter.AddHost("RegCenter", MvcConfig.RunUrl);
+                        Server.RegCenter.LoadHostByAdmin();//加载所有手工添加主机信息
                         List<string> keys = new List<string>(regCenterList.Count);
                         foreach (string item in regCenterList.Keys)
                         {
@@ -245,8 +262,9 @@ namespace Taurus.MicroService
                             }
                         }
 
-                        if (Server.IsChange)
+                        if (Server.IsChange || isFirstRun)
                         {
+                            isFirstRun = false;
                             Server.IsChange = false;
                             Server.Tick = DateTime.Now.Ticks;
                             Server.RegCenter.HostList = kvForRegCenter;
@@ -275,6 +293,7 @@ namespace Taurus.MicroService
                     MsLog.WriteDebugLine(err.Message);
                     MsLog.Write(err.Message, "MicroService.Run.ClearExpireHost()", "", MsConfig.Server.Name);
                 }
+
                 Thread.Sleep(3000);//测试并发。
             }
         }
@@ -283,7 +302,7 @@ namespace Taurus.MicroService
         {
             foreach (var items in keyValues)
             {
-                if (items.Key == "RegCenter" || items.Key == "Gateway")
+                if (items.Key == "RegCenter" || items.Key == "RegCenterOfSlave" || items.Key == "Gateway")
                 {
                     continue;//不需要对服务端进行预请求。
                 }

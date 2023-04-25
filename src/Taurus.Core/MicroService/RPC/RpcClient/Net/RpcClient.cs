@@ -5,24 +5,11 @@ using System.Net;
 
 namespace Taurus.MicroService
 {
-    internal class RpcClient : WebClient
+    internal class RpcClient : MyWebClient
     {
-        bool isHeadRequest = false;
-        protected override WebRequest GetWebRequest(Uri address)
+        static RpcClient()
         {
-            HttpWebRequest request = (HttpWebRequest)base.GetWebRequest(address);
-            //request.Proxy = null;
-            if (isHeadRequest)
-            {
-                request.Method = "HEAD";
-                isHeadRequest = false;
-            }
-            return request;
-        }
-        public void Head(string url)
-        {
-            isHeadRequest = true;
-            DownloadData(url);
+            ServicePointManager.SecurityProtocol = SecurityProtocolType.Tls | SecurityProtocolType.Ssl3 | (SecurityProtocolType)12288;
         }
     }
 }

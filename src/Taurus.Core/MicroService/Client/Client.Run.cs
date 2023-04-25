@@ -75,12 +75,11 @@ namespace Taurus.MicroService
                 {
                     wc.Headers.Add(MsConst.HeaderKey, MsConfig.Client.Key);
                     wc.Headers.Add("ack", AckLimit.CreateAck());
-                    wc.Headers.Add("Referer", MsConfig.App.RunUrl);
+                    wc.Headers.Add("Referer", MvcConfig.RunUrl);
                     wc.Headers.Add("Content-Type", "application/x-www-form-urlencoded");
                     //Content - Type: multipart / form - data; boundary = ----WebKitFormBoundaryxSUOuGdhfM6ceac8
                     string data = "name={0}&host={1}&version={2}";
-                    string result = wc.UploadString(url, string.Format(data, MsConfig.Client.Name, MsConfig.App.RunUrl, MsConfig.Client.Version));
-                    Client.RegCenterIsLive = true;
+                    string result = wc.UploadString(url, string.Format(data, MsConfig.Client.Name, MvcConfig.RunUrl, MsConfig.Client.Version));
                     if (JsonHelper.IsSuccess(result))
                     {
                         MsLog.WriteDebugLine(DateTime.Now.ToString("HH:mm:ss") + string.Format(" : PID : {0} Reg : {1} Version : {2} => OK", MvcConst.ProcessID, MsConfig.Client.Name, MsConfig.Client.Version));
@@ -95,7 +94,6 @@ namespace Taurus.MicroService
             catch (Exception err)
             {
                 MsLog.WriteDebugLine(DateTime.Now.ToString("HH:mm:ss") + string.Format(" : PID : {0} Reg.Error : {1}: ", MvcConst.ProcessID, err.Message));
-                Client.RegCenterIsLive = false;
                 if (!string.IsNullOrEmpty(Client.Host2))
                 {
                     MsConfig.Client.RcUrl = Client.Host2;//切换到备用库。
@@ -140,9 +138,8 @@ namespace Taurus.MicroService
                 {
                     wc.Headers.Add(MsConst.HeaderKey, MsConfig.Client.Key);
                     wc.Headers.Add("ack", AckLimit.CreateAck());
-                    wc.Headers.Add("Referer", MsConfig.App.RunUrl);
+                    wc.Headers.Add("Referer", MvcConfig.RunUrl);
                     string result = wc.DownloadString(url);
-                    Client.RegCenterIsLive = true;
                     MsLog.WriteDebugLine(DateTime.Now.ToString("HH:mm:ss") + string.Format(" : PID : {0} GetList : Tick : {1}  => OK", MvcConst.ProcessID, Client.Tick));
                     return result;
                 }
@@ -150,8 +147,6 @@ namespace Taurus.MicroService
             catch (Exception err)
             {
                 MsLog.WriteDebugLine(DateTime.Now.ToString("HH:mm:ss") + string.Format(" : PID : {0} GetList.Error : {1}", MvcConst.ProcessID, err.Message));
-
-                Client.RegCenterIsLive = false;
                 if (!string.IsNullOrEmpty(Client.Host2))
                 {
                     MsConfig.Client.RcUrl = Client.Host2;//切换到备用库。

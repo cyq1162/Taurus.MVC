@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Web;
 using CYQ.Data;
 using CYQ.Data.Tool;
+using Taurus.Plugin.Admin;
 
 namespace Taurus.Mvc
 {
@@ -32,7 +33,7 @@ namespace Taurus.Mvc
         }
         internal static void SetRunToEnd(HttpContext context)
         {
-            if (context!=null && !context.Items.Contains("IsRunToEnd"))
+            if (context != null && !context.Items.Contains("IsRunToEnd"))
             {
                 context.Items.Add("IsRunToEnd", 1);
             }
@@ -40,20 +41,38 @@ namespace Taurus.Mvc
         }
 
         /// <summary>
-        /// 是否请求微服务注册中心
+        /// 是否请求微服务
         /// </summary>
         /// <returns></returns>
-        internal static bool IsCallMicroServiceReg(Uri uri)
+        internal static bool IsCallMicroService(Uri uri)
         {
-            return uri.LocalPath.ToLower().Contains("/microservice/");
+            return uri != null && IsCallMicroService(uri.LocalPath);
         }
+        internal static bool IsCallMicroService(string localPath)
+        {
+            return localPath.ToLower().Contains("/microservice/");
+        }
+        /// <summary>
+        /// 是否请求后台管理中心
+        /// </summary>
+        /// <param name="uri"></param>
+        /// <returns></returns>
+        internal static bool IsCallAdmin(Uri uri)
+        {
+            return uri != null && IsCallAdmin(uri.LocalPath);
+        }
+        internal static bool IsCallAdmin(string localPath)
+        {
+            return AdminConfig.IsEnable && localPath.ToLower().Contains("/" + AdminConfig.Path + "/");
+        }
+
         /// <summary>
         /// 是否常规走MVC调用流程
         /// </summary>
         /// <returns></returns>
         internal static bool IsCallMvc(Uri uri)
         {
-            return !string.IsNullOrEmpty(MvcConfig.Controllers) || IsCallMicroServiceReg(uri);//有配置时才启动MVC，否则默认仅启动微服务。
+            return !string.IsNullOrEmpty(MvcConfig.Controllers) || IsCallMicroService(uri);//有配置时才启动MVC，否则默认仅启动微服务。
         }
 
         /// <summary>
@@ -73,13 +92,13 @@ namespace Taurus.Mvc
             }
             return localPath.IndexOf('.') == -1;
         }
-            #endregion
-            /// <summary>
-            /// 是否使用子目录部署网站
-            /// </summary>
-            internal static bool IsSubAppSite(Uri uri)
+        #endregion
+        /// <summary>
+        /// 是否使用子目录部署网站
+        /// </summary>
+        internal static bool IsSubAppSite(Uri uri)
         {
-            string ui =MvcConfig.SubAppName.ToLower();
+            string ui = MvcConfig.SubAppName.ToLower();
             if (ui != string.Empty)
             {
                 ui = ui.Trim('/');
@@ -89,7 +108,7 @@ namespace Taurus.Mvc
             return false;
         }
 
-       
+
 
         /// <summary>
         /// 过滤一般的字符串

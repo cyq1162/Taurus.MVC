@@ -1,4 +1,5 @@
-﻿using Taurus.Mvc;
+﻿using System;
+using Taurus.Mvc;
 
 namespace Taurus.Plugin.Limit
 {
@@ -11,8 +12,22 @@ namespace Taurus.Plugin.Limit
         /// 限制策略启动检测
         /// </summary>
         /// <param name="localPath">请求的相对路径</param>
+        /// <param name="uri">UrlReferrer</param>
         /// <returns></returns>
-        public static bool Check(string localPath)
+        public static bool CheckIP(string localPath, Uri uri)
+        {
+            if (!WebTool.IsCallAdmin(localPath) && !WebTool.IsCallAdmin(uri) && !WebTool.IsCallMicroService(localPath) && !IPLimit.IsValid())
+            {
+                return false;
+            }
+            return true;
+        }
+        /// <summary>
+        /// 限制策略启动检测
+        /// </summary>
+        /// <param name="localPath">请求的相对路径</param>
+        /// <returns></returns>
+        public static bool CheckAck(string localPath)
         {
             if (LimitConfig.IsEnable)
             {

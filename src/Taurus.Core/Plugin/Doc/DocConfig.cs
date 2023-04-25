@@ -25,6 +25,32 @@ namespace Taurus.Plugin.Doc
             }
         }
         /// <summary>
+        /// 配置Mvc的WebAPI文档访问路径
+        /// 如 Doc.Path ： "doc"， 默认值：doc
+        /// </summary>
+        public static string Path
+        {
+            get
+            {
+                return AppConfig.GetApp("Doc.Path", "doc").Trim('/');
+            }
+            set
+            {
+                AppConfig.SetApp("Doc.Path", value);
+            }
+        }
+        /// <summary>
+        /// 配置Doc的html加载文件夹名称
+        /// 如 Doc.HtmlFolderName ： "doc"， 默认值：doc
+        /// </summary>
+        internal static string HtmlFolderName
+        {
+            get
+            {
+                return AppConfig.GetApp("Doc.HtmlFolderName", "doc").Trim('/');
+            }
+        }
+        /// <summary>
         /// 只读：从默认图片转换成的：HttpPostedFile
         /// 需要配置：DefaultImg 图片相对路径
         /// </summary>

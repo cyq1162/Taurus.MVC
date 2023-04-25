@@ -5,8 +5,8 @@ using System.Reflection;
 using System.Text;
 using System.IO;
 using Taurus.Plugin.Doc;
+using Taurus.Plugin.Admin;
 using Taurus.MicroService;
-using Taurus.Plugin.Log;
 
 namespace Taurus.Mvc
 {
@@ -67,10 +67,10 @@ namespace Taurus.Mvc
                 _Assemblys = new List<Assembly>(dllItems.Length);
                 foreach (string dll in dllItems)
                 {
-                    
+
                     try
                     {
-                        if (dll.IndexOfAny(new char[] { '\\', '/' }) > 0 && dll[0]!='/')
+                        if (dll.IndexOfAny(new char[] { '\\', '/' }) > 0 && dll[0] != '/')
                         {
                             _Assemblys.Add(Assembly.LoadFile(dll)); // 可直接抛异常。
                         }
@@ -162,55 +162,31 @@ namespace Taurus.Mvc
                         //追加APIHelp
                         if (DocConfig.IsEnable)
                         {
-                            Type docType = typeof(Taurus.Plugin.Doc.DocController);
-                            if (!_Lv1Controllers.ContainsKey(ReflectConst.Doc))
+                            Type docType = typeof(DocController);
+                            if (!_Lv1Controllers.ContainsKey(DocConfig.Path))
                             {
-                                _Lv1Controllers.Add(ReflectConst.Doc, docType);
-                            }
-                            if (!_Lv2Controllers.ContainsKey(ReflectConst.CoreDoc))
-                            {
-                                _Lv2Controllers.Add(ReflectConst.CoreDoc, docType);
+                                _Lv1Controllers.Add(DocConfig.Path, docType);
                             }
                             MethodCollector.InitMethodInfo(docType);
                         }
-                        if(LogConfig.IsEnable)
+
+                        if (AdminConfig.IsEnable)
                         {
-                            Type logType = typeof(Taurus.Plugin.Log.LogController);
-                            if (!_Lv1Controllers.ContainsKey(ReflectConst.Log))
+                            Type adminType = typeof(AdminController);
+                            if (!_Lv1Controllers.ContainsKey(AdminConfig.Path))
                             {
-                                _Lv1Controllers.Add(ReflectConst.Log, logType);
+                                _Lv1Controllers.Add(AdminConfig.Path, adminType);//用path，允许调整路径
                             }
-                            if (!_Lv2Controllers.ContainsKey(ReflectConst.CoreLog))
-                            {
-                                _Lv2Controllers.Add(ReflectConst.CoreLog, logType);
-                            }
-                            MethodCollector.InitMethodInfo(logType);
+                            MethodCollector.InitMethodInfo(adminType);
                         }
-                        //if (ReflectConst.IsStartAuth)
-                        //{
-                        //    if (!_Lv1Controllers.ContainsKey(ReflectConst.Auth))
-                        //    {
-                        //        _Lv1Controllers.Add(ReflectConst.Auth, typeof(Taurus.Mvc.AuthController));
-                        //    }
-                        //    if (!_Lv2Controllers.ContainsKey(ReflectConst.CoreAuth))
-                        //    {
-                        //        _Lv2Controllers.Add(ReflectConst.CoreAuth, typeof(Taurus.Mvc.AuthController));
-                        //    }
-                        //}
-                        //if (MsConfig.IsRegCenter)//客户端新增Exit方法，因此客户端和网关也允许退出。
-                        //{
-                            Type msType = typeof(Taurus.MicroService.MicroServiceController);
-                            //微服务API
-                            if (!_Lv1Controllers.ContainsKey(ReflectConst.MicroService))
-                            {
-                                _Lv1Controllers.Add(ReflectConst.MicroService, msType);
-                            }
-                            if (!_Lv2Controllers.ContainsKey(ReflectConst.CoreMicroService))
-                            {
-                                _Lv2Controllers.Add(ReflectConst.CoreMicroService, msType);
-                            }
-                            MethodCollector.InitMethodInfo(msType);
-                        //}
+
+                        Type msType = typeof(MicroServiceController);
+                        //微服务API
+                        if (!_Lv1Controllers.ContainsKey(ReflectConst.MicroService))
+                        {
+                            _Lv1Controllers.Add(ReflectConst.MicroService, msType);
+                        }
+                        MethodCollector.InitMethodInfo(msType);
                     }
                 }
             }

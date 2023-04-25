@@ -1,9 +1,5 @@
-﻿using System;
-using System.Collections.Generic;
-using CYQ.Data;
-using CYQ.Data.Tool;
-using System.Security.Cryptography.X509Certificates;
-using System.IO;
+﻿using CYQ.Data;
+using Taurus.Mvc;
 
 namespace Taurus.MicroService
 {
@@ -145,124 +141,22 @@ namespace Taurus.MicroService
                     AppConfig.SetApp("MicroService.Client.Version", value.ToString());
                 }
             }
-        }
-        /// <summary>
-        /// 当前运行程序配置
-        /// </summary>
-        public static class App
-        {
             /// <summary>
-            /// 应用配置：当前Application运行Url【Kestrel启动运行需要】
-            /// </summary>
-            public static string RunUrl
-            {
-                get
-                {
-                    return AppConfig.GetApp("MicroService.App.RunUrl", "").TrimEnd('/');
-                }
-                set
-                {
-                    AppConfig.SetApp("MicroService.App.RunUrl", value);
-                }
-            }
-            /// <summary>
-            /// 应用配置：开启应用程序远程退出功能【客户端默认开启、服务端默认关闭】
+            /// 应用配置：开启应用程序远程退出功能【是否允许注册中心控制客户端退出】
             /// </summary>
             public static bool RemoteExit
             {
                 get
                 {
-                    return AppConfig.GetAppBool("MicroService.App.RemoteExit", IsClient);
+                    return AppConfig.GetAppBool("MicroService.Client.RemoteExit", IsClient);
                 }
                 set
                 {
-                    AppConfig.SetApp("MicroService.App.RemoteExit", value.ToString());
+                    AppConfig.SetApp("MicroService.Client.RemoteExit", value.ToString());
                 }
             }
-            /// <summary>
-            /// 应用配置：Https 证书 存放路径【客户端默认开启、服务端默认关闭】
-            /// </summary>
-            public static string SslPath
-            {
-                get
-                {
-                    return AppConfig.GetApp("MicroService.App.SslPath", "/App_Data/ssl");
-                }
-                set
-                {
-                    AppConfig.SetApp("MicroService.App.SslPath", value);
-                }
-            }
-            /// <summary>
-            /// 获取应用证书【证书路径由SslPath配置】（只读）
-            /// </summary>
-            public static Dictionary<string, X509Certificate2> SslCertificate
-            {
-                get
-                {
-                    var certificates = new Dictionary<string, X509Certificate2>(StringComparer.OrdinalIgnoreCase);
-                    string sslFolder = AppConfig.WebRootPath + SslPath;
-                    if (Directory.Exists(sslFolder))
-                    {
-                        string[] files = Directory.GetFiles(sslFolder, "*.pfx", SearchOption.TopDirectoryOnly);
-                        foreach (string file in files)
-                        {
-                            string pwdPath = file.Replace(".pfx", ".txt");
-                            if (File.Exists(pwdPath))
-                            {
-                                string pwd = IOHelper.ReadAllText(pwdPath);
-                                string domain = Path.GetFileName(pwdPath).Replace(".txt", "");
-                                certificates.Add(domain, new X509Certificate2(file, pwd));
-                            }
-                        }
-                    }
-                    return certificates;
-                }
-            }
-            /// <summary>
-            /// 应用配置：配置微服务管理后台访问账号【账号默认admin】
-            /// </summary>
-            public static string UserName
-            {
-                get
-                {
-                    return AppConfig.GetApp("MicroService.App.UserName", "admin");
-                }
-                set
-                {
-                    AppConfig.SetApp("MicroService.App.UserName", value);
-                }
-            }
-            /// <summary>
-            /// 应用配置：配置微服务管理后台访问密码【账号默认admin】
-            /// </summary>
-            public static string Password
-            {
-                get
-                {
-                    return AppConfig.GetApp("MicroService.App.Password", "");
-                }
-                set
-                {
-                    AppConfig.SetApp("MicroService.App.Password", value);
-                }
-            }
-            ///// <summary>
-            ///// 应用配置：应用程序绑定域名
-            ///// </summary>
-            //public static bool Domain
-            //{
-            //    get
-            //    {
-            //        return AppConfig.GetAppBool("MicroService.App.Domain", false);
-            //    }
-            //    set
-            //    {
-            //        AppConfig.SetApp("MicroService.App.Domain", value.ToString());
-            //    }
-            //}
         }
-
+       
         #endregion
 
 
@@ -275,7 +169,7 @@ namespace Taurus.MicroService
         {
             get
             {
-                return !string.IsNullOrEmpty(MsConfig.Client.Name) && !string.IsNullOrEmpty(MsConfig.Client.RcUrl) && MsConfig.Client.RcUrl != MsConfig.App.RunUrl;
+                return !string.IsNullOrEmpty(MsConfig.Client.Name) && !string.IsNullOrEmpty(MsConfig.Client.RcUrl) && MsConfig.Client.RcUrl != MvcConfig.RunUrl;
             }
         }
 
@@ -316,7 +210,7 @@ namespace Taurus.MicroService
         {
             get
             {
-                return MsConfig.Server.Name.ToLower() == MsConst.RegCenter && (string.IsNullOrEmpty(MsConfig.Server.RcUrl) || MsConfig.Server.RcUrl == MsConfig.App.RunUrl);
+                return IsRegCenter && (string.IsNullOrEmpty(MsConfig.Server.RcUrl) || MsConfig.Server.RcUrl == MvcConfig.RunUrl);
             }
         }
         #endregion

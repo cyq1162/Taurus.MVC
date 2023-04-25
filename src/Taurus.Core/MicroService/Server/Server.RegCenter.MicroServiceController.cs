@@ -4,6 +4,8 @@ using CYQ.Data.Tool;
 using Taurus.Mvc;
 using System.Collections.Generic;
 using Taurus.Mvc.Attr;
+using Taurus.Plugin.Admin;
+using Taurus.Plugin.Limit;
 
 namespace Taurus.MicroService
 {
@@ -37,19 +39,19 @@ namespace Taurus.MicroService
                         Write("Current Is Not Run As MicroService.", false);
                     }
                     //check ui login
-                    return UIAccountCheck(MethodName);
+                    return MsConfig.IsRegCenter;
             }
         }
 
         public override void EndInvoke()
         {
-            if (string.IsNullOrEmpty(MsConfig.App.RunUrl))
+            if (string.IsNullOrEmpty(MvcConfig.RunUrl))
             {
                 Uri uri = Context.Request.Url;
                 string urlAbs = uri.AbsoluteUri;
                 string urlPath = uri.PathAndQuery;
                 string host = urlAbs.Substring(0, urlAbs.Length - urlPath.Length);
-                MsConfig.App.RunUrl = host;
+                MvcConfig.RunUrl = host;
             }
         }
         /// <summary>
@@ -68,7 +70,7 @@ namespace Taurus.MicroService
             WriteLine(DateTime.Now.ToString("HH:mm:ss") + string.Format(" : Reg Host From : {0} Name : {1}", host, name));
 
             #region 注册中心【从】检测到【主】恢复后，推送host，让后续的请求转回【主】
-            if (Server.RegCenterIsLive && !MsConfig.IsRegCenterOfMaster)
+            if (Server.IsLiveOfMasterRC)// && !MsConfig.IsRegCenterOfMaster
             {
                 Write(JsonHelper.OutResult(true, "", "tick", Server.Tick, "host", MsConfig.Server.RcUrl));
                 return;
@@ -222,8 +224,8 @@ namespace Taurus.MicroService
             {
                 Server.Host2 = String.Empty;
             }
-            string host = Server.RegCenterIsLive ? MsConfig.Server.RcUrl : "";//注册中心【从】检测到【主】恢复后，推送host，让后续的请求转回【主】
-            if (host == MsConfig.App.RunUrl)//主机即是自己。
+            string host = Server.IsLiveOfMasterRC ? MsConfig.Server.RcUrl : "";//注册中心【从】检测到【主】恢复后，推送host，让后续的请求转回【主】
+            if (host == MvcConfig.RunUrl)//主机即是自己。
             {
                 host = string.Empty;
             }
@@ -233,16 +235,27 @@ namespace Taurus.MicroService
             }
             if (Server.RegCenter.HostList.Count == 0 || tick == Server.Tick)
             {
-                string result = JsonHelper.OutResult(true, "", "tick", Server.Tick, "host2", Server.Host2, "host", host);
+                string result = JsonHelper.OutResult(true, "", "tick", Server.Tick, "host2", Server.Host2, "host", host, "iptick", IPLimit.LastUpdateTime.Ticks);
                 Write(result);
             }
             else
             {
-                string result = JsonHelper.OutResult(true, Server.RegCenter.HostListJson, "tick", Server.Tick, "host2", Server.Host2, "host", host);
+                string result = JsonHelper.OutResult(true, Server.RegCenter.HostListJson, "tick", Server.Tick, "host2", Server.Host2, "host", host, "iptick", IPLimit.LastUpdateTime.Ticks);
                 Write(result);
             }
         }
-
+        /// <summary>
+        /// 注册中心 - 获取IP黑名单列表。
+        /// </summary>
+        [HttpGet]
+        [MicroService]
+        public void GetIPList()
+        {
+            WriteLine(Environment.NewLine + "--------------------------------------");
+            WriteLine(DateTime.Now.ToString("HH:mm:ss") + " : GetIPList From :" + Request.UrlReferrer);
+            string ipList = IO.Read(AdminConst.IPBlacknamePath);
+            Write(JsonHelper.OutResult(true, ipList));
+        }
         /// <summary>
         /// 注册中心 - 设置【从】的备用地址。
         /// </summary>
@@ -257,7 +270,7 @@ namespace Taurus.MicroService
             Server.RegCenter.AddHost("RegCenterOfSlave", host);
             Server.Host2 = host;
             Server.Host2LastRegTime = DateTime.Now;
-            string result = JsonHelper.OutResult(true, "", "tick", Server.Tick);
+            string result = JsonHelper.OutResult(true, "", "tick", Server.Tick, "iptick", IPLimit.LastUpdateTime.Ticks);
             Write(result);
         }
 

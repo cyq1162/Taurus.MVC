@@ -65,11 +65,11 @@ namespace Taurus.Plugin.Limit
         /// <summary>
         /// 以5分钟为间隔，存储前半5分钟
         /// </summary>
-        static Dictionary<int, bool> kvSmall = new Dictionary<int, bool>(10000);
+        static Dictionary<int, byte> kvSmall = new Dictionary<int, byte>(10000);
         /// <summary>
         /// 以5分钟为间隔，存储后半5分钟
         /// </summary>
-        static Dictionary<int, bool> kvBig = new Dictionary<int, bool>(10000);
+        static Dictionary<int, byte> kvBig = new Dictionary<int, byte>(10000);
         /// <summary>
         /// ack 是否已使用
         /// </summary>
@@ -77,12 +77,12 @@ namespace Taurus.Plugin.Limit
         public static bool IsAckUsed(string ack)
         {
             int code = ack.GetHashCode();
-            Dictionary<int, bool> kv = GetKeyValuePairs();
+            Dictionary<int, byte> kv = GetKeyValuePairs();
             if (kv.ContainsKey(code))
             {
                 return true;
             }
-            kv.Add(code, true);
+            kv.Add(code, 1);
             return false;
         }
 
@@ -90,7 +90,7 @@ namespace Taurus.Plugin.Limit
         /// 根据时间间隔获取字典。
         /// </summary>
         /// <returns></returns>
-        private static Dictionary<int, bool> GetKeyValuePairs()
+        private static Dictionary<int, byte> GetKeyValuePairs()
         {
             string mi = DateTime.Now.Minute.ToString();
             if (mi.Length == 2)

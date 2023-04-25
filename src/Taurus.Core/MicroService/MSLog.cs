@@ -1,6 +1,8 @@
 ﻿using CYQ.Data;
 using System;
 using System.Diagnostics;
+using Taurus.Mvc;
+
 namespace Taurus.MicroService
 {
     internal class MsLog
@@ -16,7 +18,7 @@ namespace Taurus.MicroService
             sysLogs.PageUrl = url;
             sysLogs.HttpMethod = httpMethod;
             sysLogs.ClientIP = sysLogs.Host;
-            sysLogs.Host = MsConfig.App.RunUrl;
+            sysLogs.Host = MvcConfig.RunUrl;
             sysLogs.HostName = moduleName;
             sysLogs.Write();
         }

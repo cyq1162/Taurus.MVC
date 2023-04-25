@@ -1,8 +1,4 @@
-﻿using CYQ.Data.Tool;
-using System;
-using System.Collections.Generic;
-using System.Text;
-
+﻿
 namespace Taurus.MicroService
 {
     /// <summary>
@@ -11,11 +7,6 @@ namespace Taurus.MicroService
     internal partial class Client
     {
         #region 对外开放的方法或属性
-
-        /// <summary>
-        /// 微服务应用程序 - 检测注册中心是否安在。
-        /// </summary>
-        public static bool RegCenterIsLive = false;
 
         #endregion
         /// <summary>

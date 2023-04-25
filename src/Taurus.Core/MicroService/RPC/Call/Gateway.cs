@@ -86,7 +86,7 @@ namespace Taurus.MicroService
 
                     //}
                     HostInfo info = infoList[callIndex];//并发下有异步抛出
-                    if (!isServerCall && info.Host == MsConfig.App.RunUrl)
+                    if (!isServerCall && info.Host == MvcConfig.RunUrl)
                     {
                         continue;
                     }
@@ -154,7 +154,6 @@ namespace Taurus.MicroService
                             request.InputStream.Read(data, (int)request.InputStream.Position, data.Length - (int)request.InputStream.Position);
                         }
                     }
-
                 }
 
 
@@ -179,6 +178,14 @@ namespace Taurus.MicroService
                             case "Accept-Encoding"://引发乱码
                             case "Accept"://引发下载类型错乱
                                           //case "Referer":
+                                break;
+                            case "Host":
+                                if (uri.Scheme == "https")
+                                {
+                                    //https 不调整 Host，可能会抛以下异常导致无法正常访问。
+                                    //The SSL connection could not be established, see inner exception.
+                                    wc.Headers.Add(key, uri.Host + (uri.Port == 443 ? "" : ":" + uri.Port));
+                                }
                                 break;
                             default:
                                 wc.Headers.Add(key, request.Headers[key]);
@@ -272,11 +279,16 @@ namespace Taurus.MicroService
                 }
                 finally
                 {
+                    if (wc.ResponseStatusCode > 0)
+                    {
+                        context.Response.StatusCode = wc.ResponseStatusCode;
+                    }
                     RpcClientPool.AddToPool(uri, wc);
-                    if (bytes != null)
+                    if (bytes != null && bytes.Length > 0)
                     {
                         context.Response.BinaryWrite(bytes);
                     }
+
                 }
                 return true;
 

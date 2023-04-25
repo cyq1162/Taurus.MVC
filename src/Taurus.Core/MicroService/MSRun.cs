@@ -27,9 +27,9 @@ namespace Taurus.MicroService
         /// </summary>
         internal static void Start(string host)
         {
-            if (string.IsNullOrEmpty(MsConfig.App.RunUrl))
+            if (string.IsNullOrEmpty(MvcConfig.RunUrl))
             {
-                MsConfig.App.RunUrl = host.ToLower().TrimEnd('/');//设置当前程序运行的请求网址。
+                MvcConfig.RunUrl = host.ToLower().TrimEnd('/');//设置当前程序运行的请求网址。
             }
             if (!isStart)
             {
@@ -39,20 +39,20 @@ namespace Taurus.MicroService
                 isStart = true;
                 if (MsConfig.IsServer)
                 {
+                    ServicePointManager.ServerCertificateValidationCallback = delegate { return true; };
                     if (ServicePointManager.DefaultConnectionLimit == 2)
                     {
                         ServicePointManager.DefaultConnectionLimit = 2048;//对.net framework有效。
                         ThreadPool.SetMinThreads(30, 50);
                     }
                 }
-                
                 if (MsConfig.IsRegCenterOfMaster)
                 {
                     MsLog.WriteDebugLine("Current MicroService Type ：RegCenter of Master");
                     Thread thread = new Thread(new ThreadStart(ClearExpireHost));
                     thread.Start();
                 }
-                if (!string.IsNullOrEmpty(MsConfig.Server.Name) && !string.IsNullOrEmpty(MsConfig.Server.RcUrl) && MsConfig.Server.RcUrl != MsConfig.App.RunUrl)
+                if (!string.IsNullOrEmpty(MsConfig.Server.Name) && !string.IsNullOrEmpty(MsConfig.Server.RcUrl) && MsConfig.Server.RcUrl != MvcConfig.RunUrl)
                 {
                     if (MsConfig.IsRegCenter || MsConfig.IsGateway)
                     {
@@ -68,9 +68,9 @@ namespace Taurus.MicroService
                         ThreadBreak.AddGlobalThread(new ParameterizedThreadStart(RunLoopOfServer));
                     }
                 }
-                if (!string.IsNullOrEmpty(MsConfig.Client.Name) && !string.IsNullOrEmpty(MsConfig.Client.RcUrl) && MsConfig.Client.RcUrl != MsConfig.App.RunUrl)
+                if (!string.IsNullOrEmpty(MsConfig.Client.Name) && !string.IsNullOrEmpty(MsConfig.Client.RcUrl) && MsConfig.Client.RcUrl != MvcConfig.RunUrl)
                 {
-                    MsLog.WriteDebugLine("Current MicroService Type ：Client of 【" + MsConfig.Client.Name+"】");
+                    MsLog.WriteDebugLine("Current MicroService Type ：Client of 【" + MsConfig.Client.Name + "】");
                     MsLog.WriteDebugLine("Current RegisterCenter Url：" + MsConfig.Client.RcUrl);
                     ThreadBreak.AddGlobalThread(new ParameterizedThreadStart(RunLoopOfClient));
                 }

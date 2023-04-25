@@ -21,9 +21,9 @@ namespace Taurus.MicroService
             {
                 message.Headers.Add("Referer", HttpContext.Current.Request.Url.AbsoluteUri);//当前运行地址。
             }
-            else if (!string.IsNullOrEmpty(MsConfig.App.RunUrl))
+            else if (!string.IsNullOrEmpty(MvcConfig.RunUrl))
             {
-                message.Headers.Add("Referer", MsConfig.App.RunUrl);//当前运行地址。
+                message.Headers.Add("Referer", MvcConfig.RunUrl);//当前运行地址。
             }
             if (task.Request.Header != null && task.Request.Header.Count > 0)
             {

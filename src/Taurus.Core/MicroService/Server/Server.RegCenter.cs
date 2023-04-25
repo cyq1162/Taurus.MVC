@@ -1,7 +1,7 @@
-﻿using CYQ.Data.Table;
-using CYQ.Data.Tool;
+﻿using CYQ.Data.Tool;
 using System;
 using System.Collections.Generic;
+using Taurus.Plugin.Admin;
 
 namespace Taurus.MicroService
 {
@@ -15,6 +15,17 @@ namespace Taurus.MicroService
         /// </summary>
         public class RegCenter
         {
+            static RegCenter()
+            {
+                if (hostListByAdmin.Count == 0)
+                {
+                    string hostList = IO.Read(AdminConst.HostAddPath);
+                    if (!string.IsNullOrEmpty(hostList))
+                    {
+                        AddHostByAdmin(hostList);
+                    }
+                }
+            }
             private static string _HostListJson = null;
 
             private static bool _IsReadFromFile = false;
@@ -120,6 +131,51 @@ namespace Taurus.MicroService
                     list.Add(info);
                 }
             }
+
+
+            #region Admin管理后台：手工添加Host
+
+            private static Dictionary<string, string> hostListByAdmin = new Dictionary<string, string>();
+            /// <summary>
+            /// Admin管理后台：手工添加Host
+            /// </summary>
+            /// <param name="hostList">手工添加HostList</param>
+            internal static void AddHostByAdmin(string hostList)
+            {
+                Dictionary<string, string> hostDic = new Dictionary<string, string>();
+                if (!string.IsNullOrEmpty(hostList))
+                {
+                    string[] rows = hostList.Split('\n');
+                    foreach (string row in rows)
+                    {
+                        string[] kv = row.Split('#');
+                        if (kv.Length == 2)
+                        {
+                            string host = kv[1];
+                            string[] names = kv[0].Split(',');
+                            foreach (string name in names)
+                            {
+                                hostDic.Add(name, host);
+                            }
+                        }
+                    }
+
+                }
+                hostListByAdmin = hostDic;
+            }
+            /// <summary>
+            /// 加载所有手工添加主机信息
+            /// </summary>
+            internal static void LoadHostByAdmin()
+            {
+                var hostList = hostListByAdmin;//获取引用
+                foreach (var item in hostList)
+                {
+                    AddHost(item.Key, item.Value);
+                }
+            }
+
+            #endregion
         }
 
         //internal static MDataTable GetHostTable()

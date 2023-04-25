@@ -47,7 +47,16 @@ namespace Taurus.Core
             #endregion
 
             #region 2、网关安全限制策略检测
-            if (!LimitRun.Check(uri.LocalPath))
+            if (!LimitRun.CheckIP(uri.LocalPath, context.Request.UrlReferrer))
+            {
+                WebTool.SetRunToEnd(context);
+                //网关请求限制，直接返回
+                context.Response.StatusCode = 403;
+                context.Response.Write("403.6 - Forbidden: IP address rejected.");
+                context.Response.End();
+                return;
+            }
+            if (!LimitRun.CheckAck(uri.LocalPath))
             {
                 WebTool.SetRunToEnd(context);
                 //网关请求限制，直接返回
@@ -69,7 +78,7 @@ namespace Taurus.Core
             #endregion
 
             #region 4、网关代理请求检测与转发
-            if (!WebTool.IsCallMicroServiceReg(uri) && Rpc.Gateway.Proxy(context, true))
+            if (!WebTool.IsCallMicroService(uri) && Rpc.Gateway.Proxy(context, true))
             {
                 WebTool.SetRunToEnd(context);
                 context.Response.End();
@@ -78,7 +87,7 @@ namespace Taurus.Core
             #endregion
 
             #region 5、纯网关检测（关闭Mvc功能模块）
-            if (MsConfig.IsGateway && !MsConfig.IsClient)
+            if (MsConfig.IsGateway && !MsConfig.IsClient && !WebTool.IsCallAdmin(uri) && !WebTool.IsCallAdmin(context.Request.UrlReferrer))
             {
                 WebTool.SetRunToEnd(context);
                 //单纯网关，直接返回

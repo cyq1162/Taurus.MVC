@@ -1,7 +1,4 @@
-﻿using CYQ.Data.Table;
-using CYQ.Data.Tool;
-using System;
-using System.Collections.Generic;
+﻿using System;
 
 namespace Taurus.MicroService
 {
@@ -12,10 +9,26 @@ namespace Taurus.MicroService
     {
         #region 对外开放接口或属性
 
+        private static int _IsLiveOfMasterRC = -1;
+
         /// <summary>
-        /// 注册中心备份或网关 - 检测注册中心是否安在。
+        /// 相对自身，是否存在其它主注册中心。
         /// </summary>
-        public static bool RegCenterIsLive = false;
+        public static bool IsLiveOfMasterRC
+        {
+            get
+            {
+                if (_IsLiveOfMasterRC == -1)
+                {
+                    _IsLiveOfMasterRC = MsConfig.IsRegCenterOfMaster ? 0 : 1;
+                }
+                return _IsLiveOfMasterRC == 1;
+            }
+            set
+            {
+                _IsLiveOfMasterRC = value ? 1 : 0;
+            }
+        }
 
         #endregion
 
@@ -27,7 +40,7 @@ namespace Taurus.MicroService
         /// 注册中心 - 数据是否发生改变
         /// </summary>
         internal static bool IsChange = false;
-       
+
         private static string _Host2 = null;
         /// <summary>
         /// 注册中心【存档】故障转移备用链接。

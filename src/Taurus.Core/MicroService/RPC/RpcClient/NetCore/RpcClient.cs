@@ -6,16 +6,36 @@ using System.Threading.Tasks;
 
 namespace Taurus.MicroService
 {
+
     internal class RpcClient
     {
+        static RpcClient()
+        {
+            ServicePointManager.SecurityProtocol = SecurityProtocolType.Tls | SecurityProtocolType.Tls11 | SecurityProtocolType.Tls12 | (SecurityProtocolType)12288;
+        }
+        private int _ResponseStatusCode = 0;
+        /// <summary>
+        /// 请求返回的状态码。
+        /// </summary>
+        public int ResponseStatusCode
+        {
+            get
+            {
+                if (wc != null)
+                {
+                    return wc.ResponseStatusCode;
+                }
+                return _ResponseStatusCode;
+            }
+        }
+
         private static bool isNet6 = Environment.Version.Major >= 6;
-        WebClient wc;
+        MyWebClient wc;
         public RpcClient()
         {
             if (isNet6)
             {
-                wc = new WebClient();
-                // wc.Proxy = null;
+                wc = new MyWebClient();
             }
         }
 
@@ -148,6 +168,7 @@ namespace Taurus.MicroService
             {
                 task.Wait(30000);
             }
+            _ResponseStatusCode = (int)task.Result.StatusCode;
             if (ResponseHeaders != null)
             {
                 ResponseHeaders.Clear();

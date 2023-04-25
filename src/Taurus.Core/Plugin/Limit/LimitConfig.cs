@@ -22,6 +22,23 @@ namespace Taurus.Plugin.Limit
                 AppConfig.SetApp("Limit.IsEnable", value.ToString());
             }
         }
+
+        /// <summary>
+        /// 配置是否启用 IP Blackname List （和注册中心）同步
+        /// 如 Limit.IsSyncIP ：true， 默认值：true
+        /// </summary>
+        public static bool IsSyncIP
+        {
+            get
+            {
+                return AppConfig.GetAppBool("Limit.IsSyncIP", true);
+            }
+            set
+            {
+                AppConfig.SetApp("Limit.IsSyncIP", value.ToString());
+            }
+        }
+
         /// <summary>
         /// 配置Ack的加密Key，默认2-3个字符。
         /// 如：Limit.AckKey ："abc"，默认值ts

@@ -10,6 +10,7 @@ using System.Text.RegularExpressions;
 using Taurus.Plugin.Doc;
 using Taurus.Mvc.Attr;
 using Taurus.MicroService;
+using System.Threading;
 
 namespace Taurus.Mvc
 {
@@ -31,11 +32,6 @@ namespace Taurus.Mvc
             }
         }
 
-        /// <summary>
-        /// to stop load view html
-        /// <para>是否取消加载Html文件</para>
-        /// </summary>
-        protected bool CancelLoadHtml = false;
         HttpContext context;
         public bool IsReusable
         {
@@ -373,7 +369,7 @@ namespace Taurus.Mvc
         {
             if (!CancelLoadHtml)
             {
-                _View = ViewEngine.Create(ControllerType.Name, MethodName);//这里ControllerName用原始大写，兼容Linux下大小写名称。
+                _View = ViewEngine.Create(HtmlFolderName, MethodName);//这里ControllerName用原始大写，兼容Linux下大小写名称。
                 if (_View != null)
                 {
                     //追加几个全局标签变量
@@ -470,6 +466,28 @@ namespace Taurus.Mvc
 
         }
         /// <summary>
+        /// to stop load view html
+        /// <para>是否取消加载Html文件</para>
+        /// </summary>
+        protected virtual bool CancelLoadHtml
+        {
+            get
+            {
+                return false;
+            }
+        }
+        /// <summary>
+        /// 默认返回控制器名称，可通过重写重定向到自定义html目录名
+        /// </summary>
+        /// <returns></returns>
+        protected virtual string HtmlFolderName
+        {
+            get
+            {
+                return ControllerName;
+            }
+        }
+        /// <summary>
         /// if the result is false will stop invoke method
         /// <para>检测身份是否通过</para>
         /// </summary>
@@ -538,7 +556,7 @@ namespace Taurus.Mvc
             ParameterInfo[] piList = methodEntity.Parameters;
             if (piList != null && piList.Length > 0)
             {
-                var files=Request.Files;
+                var files = Request.Files;
                 paras = new object[piList.Length];
                 for (int i = 0; i < piList.Length; i++)
                 {
@@ -1065,7 +1083,25 @@ namespace Taurus.Mvc
                                 // ////NetCore 3.0 会抛异常，可配置可以同步请求读取流数据
                                 //services.Configure<KestrelServerOptions>(x => x.AllowSynchronousIO = true)
                                 //    .Configure<IISServerOptions>(x => x.AllowSynchronousIO = true);
+                                stream.Position = 0;// 需要启用：context.Request.EnableBuffering();
                                 stream.Read(bytes, 0, bytes.Length);
+                                if (stream.Position < len)
+                                {
+                                    //Linux CentOS-8 大文件下读不全，会延时，导致：Unexpected end of Stream, the content may have already been read by another component.
+                                    int max = 0;
+                                    int timeout = MsConfig.Server.GatewayTimeout * 1000;
+                                    while (stream.Position < len)
+                                    {
+                                        max++;
+                                        if (max > timeout)//60秒超时
+                                        {
+                                            break;
+                                        }
+                                        Thread.Sleep(1);
+                                        stream.Read(bytes, (int)stream.Position, (int)(len - stream.Position));
+                                    }
+                                }
+                                stream.Position = 0;//重置，允许重复使用。
                                 string data = System.Text.Encoding.UTF8.GetString(bytes);
                                 if (data.IndexOf("%") > -1)
                                 {
