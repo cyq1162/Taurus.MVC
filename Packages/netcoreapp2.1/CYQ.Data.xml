@@ -327,7 +327,7 @@
         </member>
         <member name="P:CYQ.Data.AppConfig.Log.LogPath">
             <summary>
-            文本日志的配置相对路径（默认为：Logs/"）
+            文本日志的配置相对路径（默认为：Logs"）
             </summary>
         </member>
         <member name="P:CYQ.Data.AppConfig.Log.IsWriteLog">
@@ -2703,10 +2703,19 @@
         </member>
         <member name="M:CYQ.Data.Orm.DBFast.Delete``1(System.Object)">
             <summary>
-            删除记录
+            删除记录(受影响行数>0才为true)
             </summary>
             <typeparam name="T">实体类型</typeparam>
             <param name="where">条件</param>
+            <returns></returns>
+        </member>
+        <member name="M:CYQ.Data.Orm.DBFast.Delete``1(System.Object,System.Boolean)">
+            <summary>
+            删除记录(受影响行数>0才为true)
+            </summary>
+            <typeparam name="T">实体类型</typeparam>
+            <param name="where">条件</param>
+            <param name="isIgnoreDeleteField">是否忽略软删除标识</param>
             <returns></returns>
         </member>
         <member name="M:CYQ.Data.Orm.DBFast.Insert``1(``0,CYQ.Data.InsertOp,System.Boolean)">
@@ -2719,7 +2728,7 @@
         </member>
         <member name="M:CYQ.Data.Orm.DBFast.Update``1(``0,System.Object,System.String[])">
             <summary>
-            更新记录
+            更新记录(受影响行数>0才为true)
             </summary>
             <typeparam name="T">实体类型</typeparam>
             <param name="t">实体对象</param>
@@ -3104,36 +3113,39 @@
         </member>
         <member name="M:CYQ.Data.Orm.SimpleOrmBase.Update">
             <summary>
-             更新数据
+             更新数据(受影响行数>0才为true)
             </summary>
         </member>
         <member name="M:CYQ.Data.Orm.SimpleOrmBase.Update(System.Object,System.String[])">
             <summary>
-             更新数据
+             更新数据(受影响行数>0才为true)
             </summary>
             <param name="where">where条件,可直接传id的值如:[88],或传完整where条件如:[id=88 and name='路过秋天']</param>
-            <param name="onlyUpdateColumns">指定仅更新的列名，多个用逗号分隔</param>
+            <param name="updateColumns">指定仅更新的列名，多个用逗号分隔</param>
             <returns></returns>
         </member>
         <member name="M:CYQ.Data.Orm.SimpleOrmBase.Update(System.Object,System.Boolean,System.String[])">
             <summary>
-             更新数据
+             更新数据(受影响行数>0才为true)
             </summary>
             <param name="where">where条件,可直接传id的值如:[88],或传完整where条件如:[id=88 and name='路过秋天']</param>
             <param name="autoSetValue">是否自动获取值[自动从控件获取值,需要先调用SetAutoPrefix或SetAutoParentControl方法设置控件前缀]</param>
         </member>
         <member name="M:CYQ.Data.Orm.SimpleOrmBase.Delete">
             <summary>
-             删除数据
+             删除数据(受影响行数>0才为true)
             </summary>
         </member>
         <member name="M:CYQ.Data.Orm.SimpleOrmBase.Delete(System.Object)">
             <summary>
-             删除数据
+             删除数据(受影响行数>0才为true)
             </summary>
             <param name="where">where条件,可直接传id的值如:[88],或传完整where条件如:[id=88 and name='路过秋天']</param>
         </member>
         <member name="M:CYQ.Data.Orm.SimpleOrmBase.Delete(System.Object,System.Boolean)">
+            <summary>
+             删除数据(受影响行数>0才为true)
+            </summary>
             <param name="isIgnoreDeleteField">当表存在删除字段，如：IsDeleted标识时，默认会转成更新，此标识可以强制设置为删除</param>
             <returns></returns>
         </member>
@@ -7315,6 +7327,11 @@
             </summary>
             <param name="op"></param>
         </member>
+        <member name="F:System.Web.HttpCookieCollection.IsForResponse">
+            <summary>
+            是否来源Response.Cookie，反之Request.Cookie
+            </summary>
+        </member>
         <member name="T:System.Web.FormFile">
             <summary>
             新增（为了Taurus.MVC 动态创建HttpPostedFile参数）
@@ -7323,6 +7340,11 @@
         <member name="T:System.Web.HttpResponse">
             <summary>
             输出对象（单例存在，不该有自己的属性）
+            </summary>
+        </member>
+        <member name="P:System.Web.HttpResponse.HasStarted">
+            <summary>
+            是否已启用输出：（已输出到客户端 || 已调用Response.End() || 已调用Response.Write()）
             </summary>
         </member>
         <member name="M:System.Web.HttpResponse.Redirect(System.String)">
@@ -7338,9 +7360,37 @@
             <param name="location"></param>
             <param name="permanent">true 301跳转，默认false 是302跳转</param>
         </member>
-        <member name="M:System.Web.HttpSessionState.Add(System.String,System.Object)">
+        <member name="M:System.Web.HttpResponse.Write(System.String)">
             <summary>
-            向会话状态集合添加一个新项。
+            内部：异步执行的（未等待）
+            </summary>
+            <param name="text"></param>
+        </member>
+        <member name="M:System.Web.HttpResponse.WriteFile(System.String)">
+            <summary>
+            内部：异步执行的（并等待结束）
+            </summary>
+            <param name="fileName"></param>
+        </member>
+        <member name="M:System.Web.HttpResponse.BinaryWrite(System.Byte[])">
+            <summary>
+            内部：异步执行的（并等待结束）
+            </summary>
+            <param name="data"></param>
+        </member>
+        <member name="T:System.Web.HttpSessionState">
+            <summary>
+            分布式Session
+            </summary>
+        </member>
+        <member name="P:System.Web.HttpSessionState.Timeout">
+            <summary>
+            超时时间，默认20分钟
+            </summary>
+        </member>
+        <member name="M:System.Web.HttpSessionState.Clear">
+            <summary>
+            清空当前会话的所有数据。
             </summary>
         </member>
         <member name="T:System.Web.IHttpModule">
