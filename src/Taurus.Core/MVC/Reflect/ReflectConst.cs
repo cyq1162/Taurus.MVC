@@ -6,14 +6,8 @@ namespace Taurus.Mvc
         internal const string Default = "Default";
         internal const string Controller = "Controller";
         internal const string DefaultController = "DefaultController";
-        internal const string DocController = "DocController";
-        internal const string LogController = "LogController";
         internal const string TaurusMvcController = "Taurus.Mvc.Controller";
-        internal const string MicroServiceController = "MicroServiceController";
 
-        // 插件
-
-        internal const string MicroService = "MicroService";
 
         internal const string CheckToken = "CheckToken";
         internal const string CheckAck = "CheckAck";
@@ -31,16 +25,5 @@ namespace Taurus.Mvc
         internal const string HttpHeadAttribute = "HttpHeadAttribute";
         internal const string HttpPutAttribute = "HttpPutAttribute";
         internal const string HttpDeleteAttribute = "HttpDeleteAttribute";
-
-       // internal const string NeedConfigController = "Please make sure config appsettings : add key=\"Taurus.Controllers\" value=\"YourControllerProjectName\" is right!";
-
-
-        //internal static bool IsStartAuth
-        //{
-        //    get
-        //    {
-        //        return !string.IsNullOrEmpty(AppConfig.GetApp(MvcConfigConst.Auth));
-        //    }
-        //}
     }
 }

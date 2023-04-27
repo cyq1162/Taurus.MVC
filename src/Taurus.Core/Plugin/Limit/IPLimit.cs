@@ -3,7 +3,6 @@ using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Net;
-using System.Text;
 using System.Threading;
 using Taurus.MicroService;
 using Taurus.Mvc;
@@ -117,7 +116,7 @@ namespace Taurus.Plugin.Limit
                     LastUpdateTime = info.LastWriteTime;
                     ResetIPList(ipList);
                 }
-                else if (LimitConfig.IsSyncIP)
+                else if (LimitConfig.IP.IsSync)
                 {
                     if (MsConfig.IsServer && !MsConfig.IsRegCenterOfMaster)
                     {
@@ -132,7 +131,7 @@ namespace Taurus.Plugin.Limit
         /// <param name="serverIPTick"></param>
         internal static void SyncIPList(long serverIPTick)
         {
-            if (serverIPTick > LastUpdateTime.Ticks && LimitConfig.IsSyncIP)
+            if (serverIPTick > LastUpdateTime.Ticks && LimitConfig.IP.IsSync)
             {
                 SyncIPListWithRegisterCenter();
             }
@@ -145,7 +144,7 @@ namespace Taurus.Plugin.Limit
         }
         private static void GetIPList()
         {
-            string url = MsConfig.Server.RcUrl + "/microservice/getiplist";
+            string url = MsConfig.Server.RcUrl + "/" + MsConfig.Server.Path + "/getiplist";
             if (MsConfig.IsGateway)
             {
                 url += "?isGateway=1";

@@ -9,6 +9,8 @@ using Taurus.MicroService;
 using Taurus.Plugin.Limit;
 using System.Threading;
 using System.Diagnostics;
+using Taurus.Plugin.Doc;
+using System.Configuration;
 
 namespace Taurus.Plugin.Admin
 {
@@ -82,6 +84,31 @@ namespace Taurus.Plugin.Admin
             return Client.Gateway.GetHostList(name, withStar);
         }
 
+        private string GetMsType()
+        {
+
+            if (MsConfig.IsRegCenterOfMaster)
+            {
+                return "RegCenter of Master";
+            }
+            else if (MsConfig.IsRegCenter)
+            {
+                return "RegCenter of Slave" + (Server.IsLiveOfMasterRC ? "" : " ( To Be Master Temporarily )");
+            }
+            else if (MsConfig.IsGateway)
+            {
+                return "Gateway";
+            }
+            else if (MsConfig.IsClient)
+            {
+                return "Client of MicroService";
+            }
+            else
+            {
+                return "None";
+            }
+
+        }
         /// <summary>
         /// 微服务UI首页
         /// </summary>
@@ -90,30 +117,12 @@ namespace Taurus.Plugin.Admin
             if (View != null)
             {
                 View.KeyValue.Set("Version", MvcConst.Version);
-                if (MsConfig.IsRegCenterOfMaster)
-                {
-                    View.KeyValue.Set("MsType", "RegCenter of Master");
-                }
-                else if (MsConfig.IsRegCenter)
-                {
-                    View.KeyValue.Set("MsType", "RegCenter of Slave" + (Server.IsLiveOfMasterRC ? "" : " ( To Be Master Temporarily )"));
-                }
-                else if (MsConfig.IsGateway)
-                {
-                    View.KeyValue.Set("MsType", "Gateway");
-                }
-                else if (MsConfig.IsClient)
-                {
-                    View.KeyValue.Set("MsType", "Client of 【" + MsConfig.Client.Name + "】");
-                }
-                else
-                {
-                    View.KeyValue.Set("MsType", "None");
-                }
+                View.KeyValue.Set("MsType", GetMsType());
                 //基础信息：
                 if (MsConfig.IsServer)
                 {
-                    View.KeyValue.Set("ClientKey", MsConfig.Client.Key);
+                    View.KeyValue.Set("MsKey", MsConfig.Server.Key);
+                    View.KeyValue.Set("Path", MsConfig.Server.Path);
                 }
                 if (HostList != null && HostList.Count > 0)
                 {
@@ -264,7 +273,15 @@ namespace Taurus.Plugin.Admin
         }
         public void BtnLogin()
         {
-            if (Query<string>("uid") == AdminConfig.UserName && Query<string>("pwd") == AdminConfig.Password)
+            string uid = Query<string>("uid");
+            string pwd = Query<string>("pwd");
+            bool isOK = uid == AdminConfig.UserName && pwd == AdminConfig.Password;
+            if (!isOK)
+            {
+                string[] items = IO.Read(AdminConst.AccountPath).Split(',');
+                isOK = items.Length == 2 && items[0] == uid && items[1] == pwd;
+            }
+            if (isOK)
             {
                 Context.Session["login"] = "1";
                 Response.Redirect("index");
@@ -308,7 +325,7 @@ namespace Taurus.Plugin.Admin
                 if (files != null && files.Length > 0)
                 {
                     string logDetail = IOHelper.ReadAllText(files[0]);
-                    View.KeyValue.Set("detail", logDetail.Replace("\n", "<br/>"));
+                    View.KeyValue.Set("detail", System.Web.HttpUtility.HtmlEncode(logDetail).Replace("\n", "<br/>"));
                 }
             }
         }
@@ -319,74 +336,125 @@ namespace Taurus.Plugin.Admin
         public void Config()
         {
             View.KeyValue.Set("Version", MvcConst.Version);
+            string type = Query<string>("t", "mvc").ToLower();
 
-            MDataTable dtTaurus = new MDataTable();
-            dtTaurus.Columns.Add("ConfigKey,ConfigValue,Description");
-            dtTaurus.NewRow(true).Sets(0, "RunUrl", MvcConfig.RunUrl, "Web Run Url.");
-            dtTaurus.NewRow(true).Sets(0, "DefaultUrl", MvcConfig.DefaultUrl, "Web Default Url.");
-            dtTaurus.NewRow(true).Sets(0, "IsAllowCORS", MvcConfig.IsAllowCORS, "Is Allow CORS.");
-            dtTaurus.NewRow(true).Sets(0, "RouteMode", MvcConfig.RouteMode, "Taurus Route Mode.");
-            dtTaurus.NewRow(true).Sets(0, "Controllers", MvcConfig.Controllers, "Load Controller Names.");
-            dtTaurus.NewRow(true).Sets(0, "Views", MvcConfig.Views, "Taurus Mvc View Folder Name.");
-            dtTaurus.NewRow(true).Sets(0, "SslPath", MvcConfig.SslPath, "Ssl Folder Path For Https.");
-            dtTaurus.NewRow(true).Sets(0, "SslCertificate - Count", MvcConfig.SslCertificate.Count, "Num Of Ssl(Https) File (ReadOnly).");
-            if (MvcConfig.SslCertificate.Count > 0)
+            MDataTable dt = new MDataTable();
+            dt.Columns.Add("ConfigKey,ConfigValue,Description");
+            if (type == "mvc")
             {
-                int i = 1;
-                foreach (string name in MvcConfig.SslCertificate.Keys)
+                dt.NewRow(true).Sets(0, "Taurus.RunUrl", MvcConfig.RunUrl, "Web run url.");
+                dt.NewRow(true).Sets(0, "Taurus.DefaultUrl", MvcConfig.DefaultUrl, "Web default url.");
+                dt.NewRow(true).Sets(0, "Taurus.IsAllowCORS", MvcConfig.IsAllowCORS, "CORS is allow.");
+                dt.NewRow(true).Sets(0, "Taurus.RouteMode", MvcConfig.RouteMode, "Route mode for selected.");
+                dt.NewRow(true).Sets(0, "Taurus.Controllers", MvcConfig.Controllers, "Load controller names.");
+                dt.NewRow(true).Sets(0, "Taurus.Views", MvcConfig.Views, "Mvc view folder name.");
+                dt.NewRow(true).Sets(0, "Taurus.SslPath", MvcConfig.SslPath, "Ssl path for https.");
+                dt.NewRow(true).Sets(0, "----------SslCertificate - Count", MvcConfig.SslCertificate.Count, "Num of ssl file for https (Show Only).");
+                if (MvcConfig.SslCertificate.Count > 0)
                 {
-                    dtTaurus.NewRow(true).Sets(0, "SslCertificate - " + i, name, "Ssl(Https) (ReadOnly).");
-                    i++;
+                    int i = 1;
+                    foreach (string name in MvcConfig.SslCertificate.Keys)
+                    {
+                        dt.NewRow(true).Sets(0, "----------SslCertificate - " + i, name, "Domain ssl for https (Show Only).");
+                        i++;
+                    }
+                }
+                dt.NewRow(true).Sets(0, "Taurus.Suffix", MvcConfig.Suffix, "Deal with mvc suffix.");
+                dt.NewRow(true).Sets(0, "Taurus.SubAppName", MvcConfig.SubAppName, "Name of deploy as sub application.");
+
+            }
+            else if (type == "plugin")
+            {
+                dt.NewRow(true).Sets(0, "Admin.IsEnable", AdminConfig.IsEnable, "Admin plugin is enable.");
+                dt.NewRow(true).Sets(0, "Admin.Path", "/" + AdminConfig.Path, "Admin url path.");
+                dt.NewRow(true).Sets(0, "Admin.HtmlFolderName", AdminConfig.HtmlFolderName, "Mvc view folder name for admin.");
+                dt.NewRow(true);
+                dt.NewRow(true).Sets(0, "Admin.UserName", AdminConfig.UserName, "Admin account.");
+                dt.NewRow(true).Sets(0, "Admin.Password", string.IsNullOrEmpty(AdminConfig.Password) ? "" : "******", "Admin password.");
+
+                string[] items = IO.Read(AdminConst.AccountPath).Split(',');
+                if (items.Length == 2)
+                {
+                    dt.NewRow(true).Sets(0, "Admin.UserName - Setting ", items[0], "Admin account by setting.");
+                    dt.NewRow(true).Sets(0, "Admin.Password - Setting", "******", "Admin password by setting.");
+                }
+
+                dt.NewRow(true);
+                dt.NewRow(true).Sets(0, "Doc.IsEnable", DocConfig.IsEnable, "Doc plugin is enable.");
+                dt.NewRow(true).Sets(0, "Doc.Path", "/" + DocConfig.Path, "Doc url path.");
+                dt.NewRow(true).Sets(0, "Doc.HtmlFolderName", DocConfig.HtmlFolderName, "Mvc view folder name for doc.");
+                dt.NewRow(true).Sets(0, "Doc.DefaultImg", DocConfig.DefaultImg, "Default images path for doc auto test,as :/App_Data/xxx.jpg");
+                dt.NewRow(true).Sets(0, "Doc.DefaultParas", DocConfig.DefaultParas, "global para for doc auto test,as :ack,token");
+
+                dt.NewRow(true);
+                dt.NewRow(true).Sets(0, "Limit.IP.IsEnable", LimitConfig.IP.IsEnable, "IP limit plugin is enable.");
+                dt.NewRow(true).Sets(0, "Limit.IP.IsSync", LimitConfig.IP.IsSync, "IP limit : is sync ip blackname list from register center.");
+
+                dt.NewRow(true);
+                dt.NewRow(true).Sets(0, "Limit.Ack.IsEnable", LimitConfig.Ack.IsEnable, "Ack limit plugin is enable.");
+                dt.NewRow(true).Sets(0, "Limit.Ack.Key", LimitConfig.Ack.Key, "Ack limit : secret key.");
+                dt.NewRow(true).Sets(0, "Limit.Ack.IsVerifyDecode", LimitConfig.Ack.IsVerifyDecode, "Ack limit : ack must be decode and valid.");
+                dt.NewRow(true).Sets(0, "Limit.Ack.IsVerifyUsed", LimitConfig.Ack.IsVerifyUsed, "Ack limit : ack use once only.");
+
+
+            }
+            else if (type == "microservice")
+            {
+                dt.NewRow(true).Sets(0, "MicroServer Type", GetMsType(), "Type of current microservice (Show Only).");
+                if (MsConfig.IsServer)
+                {
+                    dt.NewRow(true).Sets(0, "MicroServer.Server.Name", MsConfig.Server.Name, "Server name.");
+                    dt.NewRow(true).Sets(0, "MicroServer.Server.Key", MsConfig.Server.Key, "Server secret key.");
+                    dt.NewRow(true).Sets(0, "MicroServer.Server.RcUrl", MsConfig.Server.RcUrl, "Register center host.");
+                    dt.NewRow(true).Sets(0, "MicroServer.Server.Path", "/" + MsConfig.Server.Path, "Register center local path.");
+                    dt.NewRow(true).Sets(0, "MicroServer.Server.GatewayTimeout", MsConfig.Server.GatewayTimeout + "s", "Timeout for big file upload.");
+                }
+
+                if (MsConfig.IsClient)
+                {
+                    if (MsConfig.IsServer)
+                    {
+                        dt.NewRow(true);
+                    }
+                    dt.NewRow(true).Sets(0, "MicroServer.Client.Name", MsConfig.Client.Name, "Client name.");
+                    dt.NewRow(true).Sets(0, "MicroServer.Client.Key", MsConfig.Client.Key, "Register center secret key.");
+                    dt.NewRow(true).Sets(0, "MicroServer.Client.Version", MsConfig.Client.Version, "Client web version.");
+                    dt.NewRow(true).Sets(0, "MicroServer.Client.RcUrl", MsConfig.Client.RcUrl, "Register center host.");
+                    dt.NewRow(true).Sets(0, "MicroServer.Client.Path", "/" + MsConfig.Client.Path, "Register center local path.");
+                    dt.NewRow(true).Sets(0, "MicroServer.Client.RemoteExit", MsConfig.Client.RemoteExit, "Is allow remote stop current application by register center.");
                 }
             }
-            dtTaurus.NewRow(true).Sets(0, "Suffix", MvcConfig.Suffix, "Deal With Suffix.");
-            dtTaurus.NewRow(true).Sets(0, "SubAppName", MvcConfig.SubAppName, "Deploy As Sub App Name.");
-            dtTaurus.Bind(View, "configTaurusView");
-
-            MDataTable dtPlugin = new MDataTable();
-            dtPlugin.Columns.Add("ConfigKey,ConfigValue,Description");
-
-            //dtPlugin.NewRow(true).Sets(0, "Doc.IsEnable", DocConfig.IsEnable, "Doc Plugin Is Enable.");
-            //dtPlugin.NewRow(true).Sets(0, "Limit.IsEnable", LimitConfig.IsEnable, "Limit Plugin Is Enable.");
-            //dtPlugin.NewRow(true).Sets(0, "Admin.IsEnable", AdminConfig.IsEnable, "Admin Plugin Is Enable.");
-            dtPlugin.NewRow(true).Sets(0, "Admin.Path", "/" + AdminConfig.Path, "Admin Url Path.");
-            //dtPlugin.NewRow(true).Sets(0, "Admin.HtmlFolderName", AdminConfig.HtmlFolderName, "Admin Html Folder Name.");
-            dtPlugin.NewRow(true).Sets(0, "Admin.UserName", AdminConfig.UserName, "Admin Account.");
-            dtPlugin.NewRow(true).Sets(0, "Admin.Password", string.IsNullOrEmpty(AdminConfig.Password) ? "" : "******", "Admin Password.");
-
-
-            dtPlugin.Bind(View, "configPluginView");
-
-            if (MsConfig.IsServer)
+            else if (type == "cyq.data")
             {
-                MDataTable dtServer = new MDataTable();
-                dtServer.Columns.Add("ConfigKey,ConfigValue,Description");
-                dtServer.NewRow(true).Sets(0, "Name", MsConfig.Server.Name, "Service Name.");
-                dtServer.NewRow(true).Sets(0, "Key", MsConfig.Server.Key, "Server Secret Key.");
-                dtServer.NewRow(true).Sets(0, "RcUrl", MsConfig.Server.RcUrl, "Register Center Url.");
-                dtServer.NewRow(true).Sets(0, "GatewayTimeout", MsConfig.Server.GatewayTimeout + "s", "Timeout For BigFile Upload.");
-                dtServer.Bind(View, "configServerView");
-            }
-            else
-            {
-                View.Remove("configServerNode");
-            }
+                dt.NewRow(true).Sets(0, "IsWriteLog", AppConfig.Log.IsWriteLog, "Write log to file or database on error,otherwise throw exception.");
+                dt.NewRow(true).Sets(0, "LogPath", AppConfig.Log.LogPath, "Log folder name or path.");
 
-            if (MsConfig.IsClient)
-            {
-                MDataTable dtClient = new MDataTable();
-                dtClient.Columns.Add("ConfigKey,ConfigValue,Description");
-                dtClient.NewRow(true).Sets(0, "Key", MsConfig.Client.Key, "Client Secret Key.");
-                dtClient.NewRow(true).Sets(0, "Name", MsConfig.Client.Name, "Client Name.");
-                dtClient.NewRow(true).Sets(0, "Version", MsConfig.Client.Version, "Client Version.");
-                dtClient.NewRow(true).Sets(0, "RcUrl", MsConfig.Client.RcUrl, "Register Center Url.");
-                dtClient.NewRow(true).Sets(0, "RemoteExit", MsConfig.Client.RemoteExit, "Allow Remote Stop Web Application By Register Center.");
-                dtClient.Bind(View, "configClientView");
+                //dt.NewRow(true).Sets(0, "LogConn", string.IsNullOrEmpty(AppConfig.Log.LogConn) ? "" : "******", "Log database connection string.");
+                //dt.NewRow(true).Sets(0, "LogTableName", AppConfig.Log.LogTableName, "Log tablename on log database.");
+                dt.NewRow(true);
+
+                dt.NewRow(true).Sets(0, "SchemaMapPath", AppConfig.DB.SchemaMapPath, "Database metadata cache path.");
+                dt.NewRow(true);
+                dt.NewRow(true).Sets(0, "OpenDebugInfo", AppConfig.Debug.OpenDebugInfo, "Record sql on dev debug.");
+                dt.NewRow(true);
+                dt.NewRow(true).Sets(0, "SqlFilter", AppConfig.Debug.SqlFilter + "ms", "Write sql to log file when sql exe time > value(value must>0).");
+
+                dt.NewRow(true);
+                dt.NewRow(true).Sets(0, "IsAutoCache", AppConfig.Cache.IsAutoCache, "Use auto cache.");
+                dt.NewRow(true).Sets(0, "DefaultCacheTime", AppConfig.Cache.DefaultCacheTime + "m", "Default cache time (minute).");
+
+                dt.NewRow(true);
+                dt.NewRow(true).Sets(0, "RedisServers", string.IsNullOrEmpty(AppConfig.Cache.RedisServers) ? "" : "******", "Redis servers.");
+                dt.NewRow(true).Sets(0, "RedisUseDBCount", AppConfig.Cache.RedisUseDBCount, "Redis use db count.");
+                dt.NewRow(true).Sets(0, "RedisUseDBIndex", AppConfig.Cache.RedisUseDBIndex, "Redis use db index.");
+
+                dt.NewRow(true);
+                foreach (ConnectionStringSettings item in ConfigurationManager.ConnectionStrings)
+                {
+                    dt.NewRow(true).Sets(0, item.Name, string.IsNullOrEmpty(item.ConnectionString) ? "" : "******", "Database connection string.");
+                }
             }
-            else
-            {
-                View.Remove("configClientNode");
-            }
+            dt.Bind(View);
         }
 
         /// <summary>
@@ -396,8 +464,14 @@ namespace Taurus.Plugin.Admin
         {
             MDataTable dtTaurus = new MDataTable();
             dtTaurus.Columns.Add("ConfigKey,ConfigValue,Description");
-            dtTaurus.NewRow(true).Sets(0, "Taurus-Version", MvcConst.Version, "Version of the Taurus.");
-            dtTaurus.NewRow(true).Sets(0, "Net-Version", Environment.Version, "Version of the common language runtime.");
+            dtTaurus.NewRow(true).Sets(0, "Client-IP", Request.UserHostAddress, "Client ip.");
+            dtTaurus.NewRow(true).Sets(0, "Server-IP", MvcConst.HostIP, "Server ip.");
+            dtTaurus.NewRow(true).Sets(0, "Gateway-Proxy - LastTime", Rpc.Gateway.LastProxyTime.ToString("yyyy-MM-dd HH:mm:ss"), "The last time the proxy forwarded the request.");
+            dtTaurus.NewRow(true).Sets(0, "Taurus-Version", "V" + MvcConst.Version, "Version of the Taurus.Core.dll.");
+            dtTaurus.NewRow(true).Sets(0, "CYQ-Version", "V" + AppConfig.Version, "Version of the CYQ.Data.dll.");
+            dtTaurus.NewRow(true).Sets(0, "WebPath", AppConfig.RunPath, "Web application path of the current working directory.");
+            dtTaurus.NewRow(true);
+            dtTaurus.NewRow(true).Sets(0, "Net-Version", (AppConfig.IsNetCore ? ".Net Core - " : ".Net Framework - ") + Environment.Version, "Version of the common language runtime.");
             dtTaurus.NewRow(true).Sets(0, "OS-Version", Environment.OSVersion, "Operating system.");
             dtTaurus.NewRow(true).Sets(0, "ProcessID", MvcConst.ProcessID, "Process id.");
             dtTaurus.NewRow(true).Sets(0, "ThreadID", Thread.CurrentThread.ManagedThreadId, "Identifier for the current managed thread.");
@@ -408,12 +482,13 @@ namespace Taurus.Plugin.Admin
             dtTaurus.NewRow(true).Sets(0, "UserName", Environment.UserName, "Name of the person who is logged on to Windows.");
             dtTaurus.NewRow(true).Sets(0, "WorkingSet", Environment.WorkingSet / 1024 + "KB | " + Environment.WorkingSet / 1024 / 1024 + "MB", "Physical memory mapped to the process context.");
             dtTaurus.NewRow(true).Sets(0, "CurrentDirectory", Environment.CurrentDirectory, "Fully qualified path of the current working directory.");
+
             dtTaurus.Bind(View);
         }
     }
 
     /// <summary>
-    /// 设置
+    /// 设置：账号、IP黑名单、手工添加微服务客户端
     /// </summary>
     internal partial class AdminController
     {
@@ -422,7 +497,10 @@ namespace Taurus.Plugin.Admin
 
         public void SettingOfAccount()
         {
-            View.KeyValue.Set("UserName", AdminConfig.UserName);
+            if (!IsHttpPost)
+            {
+                View.KeyValue.Set("UserName", AdminConfig.UserName);
+            }
         }
 
         public void BtnSaveAccount()
@@ -432,16 +510,22 @@ namespace Taurus.Plugin.Admin
             string pwdAgain = Query<string>("pwdAgain");
             if (string.IsNullOrEmpty(uid) || string.IsNullOrEmpty(pwd))
             {
-                View.Set("msg", "UserName or passowrd can't be empty.");
+                View.Set("msg", "User or passowrd can't be empty.");
             }
             else if (pwd != pwdAgain)
             {
                 View.Set("msg", "Password must be same.");
             }
+            if (uid.Contains(",") || pwd.Contains(","))
+            {
+                View.Set("msg", "User or password can't contain ','.");
+            }
             else
             {
+                IO.Write(AdminConst.AccountPath, uid + "," + pwd);
                 View.Set("msg", "Save success.");
             }
+
         }
 
         public void SettingOfHostAdd()
@@ -493,7 +577,7 @@ namespace Taurus.Plugin.Admin
         {
             string ipList = Query<string>("ipList");
             IPLimit.ResetIPList(ipList);
-            LimitConfig.IsSyncIP = false;//手工保存后，重启服务前不再与注册同心保持同步。
+            LimitConfig.IP.IsSync = false;//手工保存后，重启服务前不再与注册同心保持同步。
             View.KeyValue.Add("IPList", ipList);
             View.Set("msg", "Save success.");
         }

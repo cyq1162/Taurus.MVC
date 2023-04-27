@@ -20,6 +20,35 @@ namespace Taurus.MicroService
         public static class Server
         {
             /// <summary>
+            /// 配置注册中心的访问路径
+            /// 如 MicroService.Server.Path ： "microservice"， 默认值：microservice
+            /// </summary>
+            public static string Path
+            {
+                get
+                {
+                    return AppConfig.GetApp("MicroService.Server.Path", "microservice").Trim('/');
+                }
+                set
+                {
+                    AppConfig.SetApp("MicroService.Server.Path", value);
+                }
+            }
+            /// <summary>
+            /// 网关或注册中心配置：系统间调用密钥串【任意字符串】
+            /// </summary>
+            public static string Key
+            {
+                get
+                {
+                    return AppConfig.GetApp("MicroService.Server.Key", "Taurus.MicroService");
+                }
+                set
+                {
+                    AppConfig.SetApp("MicroService.Server.Key", value);
+                }
+            }
+            /// <summary>
             /// 网关或注册中心配置：服务端模块名称【可配置：Gateway或RegCenter】
             /// </summary>
             public static string Name
@@ -48,20 +77,7 @@ namespace Taurus.MicroService
                     AppConfig.SetApp("MicroService.Server.RcUrl", value);
                 }
             }
-            /// <summary>
-            /// 网关或注册中心配置：系统间调用密钥串【任意字符串】
-            /// </summary>
-            public static string Key
-            {
-                get
-                {
-                    return AppConfig.GetApp("MicroService.Server.Key", "Taurus.MicroService");
-                }
-                set
-                {
-                    AppConfig.SetApp("MicroService.Server.Key", value);
-                }
-            }
+
             /// <summary>
             /// 网关：接收请求（大文件上传）超时时间，单位秒（s）
             /// 默认：60（s）
@@ -83,6 +99,21 @@ namespace Taurus.MicroService
         /// </summary>
         public static class Client
         {
+            /// <summary>
+            /// 配置注册中心的访问路径
+            /// 如 MicroService.Client.Path ： "microservice"， 默认值：microservice
+            /// </summary>
+            public static string Path
+            {
+                get
+                {
+                    return AppConfig.GetApp("MicroService.Client.Path", "microservice").Trim('/');
+                }
+                set
+                {
+                    AppConfig.SetApp("MicroService.Client.Path", value);
+                }
+            }
             /// <summary>
             /// 微服务应用配置：系统间调用密钥串【任意字符串】
             /// </summary>

@@ -159,14 +159,16 @@ namespace Taurus.Plugin.Doc
                 foreach (KeyValuePair<string, Type> item in cType)
                 {
                     string fullName = item.Value.FullName;
-                    if (fullName.EndsWith(ReflectConst.DefaultController) || fullName.EndsWith(ReflectConst.DocController) || fullName.EndsWith(ReflectConst.LogController))
+                    //过滤插件控制器，插件只有一级，不用过滤。
+                    if (fullName.EndsWith(ReflectConst.DefaultController))
                     {
                         continue;
                     }
-                    else if (fullName.EndsWith(ReflectConst.MicroServiceController) && !MicroService.MsConfig.IsServer)
-                    {
-                        continue;
-                    }
+                    // || fullName.EndsWith(ReflectConst.DocController) || fullName.EndsWith(ReflectConst.LogController)
+                    //else if (fullName.EndsWith(ReflectConst.MicroServiceController) && !MicroService.MsConfig.IsServer)
+                    //{
+                    //    continue;
+                    //}
                     string desc = GetDescription(GetXml(), item.Value.FullName, "T:").Trim();
                     if (!string.IsNullOrEmpty(desc))
                     {

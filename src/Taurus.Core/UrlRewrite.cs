@@ -46,24 +46,27 @@ namespace Taurus.Core
             MsRun.Start(uri);//微服务检测、启动。
             #endregion
 
-            #region 2、网关安全限制策略检测
-            if (!LimitRun.CheckIP(uri.LocalPath, context.Request.UrlReferrer))
+            #region 2、网关安全限制策略检测 - Admin管理后台和微服务不处理。
+            if (!WebTool.IsCallAdmin(uri) && !WebTool.IsCallAdmin(context.Request.UrlReferrer) && !WebTool.IsCallMicroService(uri))
             {
-                WebTool.SetRunToEnd(context);
-                //网关请求限制，直接返回
-                context.Response.StatusCode = 403;
-                context.Response.Write("403.6 - Forbidden: IP address rejected.");
-                context.Response.End();
-                return;
-            }
-            if (!LimitRun.CheckAck(uri.LocalPath))
-            {
-                WebTool.SetRunToEnd(context);
-                //网关请求限制，直接返回
-                context.Response.StatusCode = 412;
-                context.Response.Write("412 Precondition failed, ack is invalid.");
-                context.Response.End();
-                return;
+                if (!LimitRun.CheckIP())
+                {
+                    WebTool.SetRunToEnd(context);
+                    //网关请求限制，直接返回
+                    context.Response.StatusCode = 403;
+                    context.Response.Write("403.6 - Forbidden: IP address rejected.");
+                    context.Response.End();
+                    return;
+                }
+                if (WebTool.IsMvcSuffix(uri.LocalPath) && !LimitRun.CheckAck())
+                {
+                    WebTool.SetRunToEnd(context);
+                    //网关请求限制，直接返回
+                    context.Response.StatusCode = 412;
+                    context.Response.Write("412 Precondition failed, ack is invalid.");
+                    context.Response.End();
+                    return;
+                }
             }
             #endregion
 
@@ -110,7 +113,7 @@ namespace Taurus.Core
                         return;
                     }
                 }
-                if (WebTool.IsTaurusSuffix(uri))
+                if (WebTool.IsMvcSuffix(uri))
                 {
                     MethodEntity routeMapInvoke = MethodCollector.GlobalRouteMapInvoke;
                     if (routeMapInvoke != null)
@@ -129,7 +132,7 @@ namespace Taurus.Core
         void context_PostMapRequestHandler(object sender, EventArgs e)
         {
             HttpContext cont = ((HttpApplication)sender).Context;
-            if (cont != null && WebTool.IsCallMvc(cont.Request.Url) && !WebTool.IsRunToEnd(cont) && WebTool.IsTaurusSuffix(cont.Request.Url))
+            if (cont != null && WebTool.IsCallMvc(cont.Request.Url) && !WebTool.IsRunToEnd(cont) && WebTool.IsMvcSuffix(cont.Request.Url))
             {
                 cont.Handler = SessionHandler.Instance;//注册Session
             }
@@ -137,7 +140,7 @@ namespace Taurus.Core
         void context_AcquireRequestState(object sender, EventArgs e)
         {
             HttpContext cont = ((HttpApplication)sender).Context;
-            if (cont != null && WebTool.IsCallMvc(cont.Request.Url) && !WebTool.IsRunToEnd(cont) && WebTool.IsTaurusSuffix(cont.Request.Url))
+            if (cont != null && WebTool.IsCallMvc(cont.Request.Url) && !WebTool.IsRunToEnd(cont) && WebTool.IsMvcSuffix(cont.Request.Url))
             {
                 ReplaceOutput(cont);
                 InvokeClass(cont);
@@ -147,7 +150,7 @@ namespace Taurus.Core
         void context_Error(object sender, EventArgs e)
         {
             HttpContext cont = ((HttpApplication)sender).Context;
-            if (cont != null && WebTool.IsCallMvc(cont.Request.Url) && WebTool.IsTaurusSuffix(cont.Request.Url))
+            if (cont != null && WebTool.IsCallMvc(cont.Request.Url) && WebTool.IsMvcSuffix(cont.Request.Url))
             {
                 Log.WriteLogToTxt(cont.Error);
             }

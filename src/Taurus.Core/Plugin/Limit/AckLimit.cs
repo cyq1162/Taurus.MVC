@@ -16,7 +16,7 @@ namespace Taurus.Plugin.Limit
         public static string CreateAck()
         {
             //1、Key+时间戳
-            string rndKey = LimitConfig.AckKey + DateTime.Now.Ticks.ToString();
+            string rndKey = LimitConfig.Ack.Key + DateTime.Now.Ticks.ToString();
             //2、转字节
             byte[] bytes = Encoding.ASCII.GetBytes(rndKey);
             //3、反转字节
@@ -25,14 +25,6 @@ namespace Taurus.Plugin.Limit
             string base64Key = Convert.ToBase64String(bytes);
             //5、返回 组合后的内容
             return "#" + (char)(DateTime.Now.Second + 65) + base64Key.Replace("=", "#");
-        }
-        /// <summary>
-        /// 检测ack是否有效。
-        /// </summary>
-        /// <returns></returns>
-        public static bool IsValid(string ack)
-        {
-            return Decode(ack).StartsWith(LimitConfig.AckKey);
         }
         /// <summary>
         /// 对ack进行解码。
@@ -58,10 +50,31 @@ namespace Taurus.Plugin.Limit
             }
             return string.Empty;
         }
+
     }
 
     public static partial class AckLimit
     {
+        /// <summary>
+        /// 检测ack是否有效。
+        /// </summary>
+        /// <returns></returns>
+        public static bool IsValid(string ack)
+        {
+            if (string.IsNullOrEmpty(ack))
+            {
+                return false;
+            }
+            if (LimitConfig.Ack.IsVerifyDecode && !Decode(ack).StartsWith(LimitConfig.Ack.Key))
+            {
+                return false;
+            }
+            if (LimitConfig.Ack.IsVerifyUsed && AckLimit.IsAckUsed(ack))
+            {
+                return false;
+            }
+            return true;
+        }
         /// <summary>
         /// 以5分钟为间隔，存储前半5分钟
         /// </summary>
@@ -70,6 +83,7 @@ namespace Taurus.Plugin.Limit
         /// 以5分钟为间隔，存储后半5分钟
         /// </summary>
         static Dictionary<int, byte> kvBig = new Dictionary<int, byte>(10000);
+
         /// <summary>
         /// ack 是否已使用
         /// </summary>

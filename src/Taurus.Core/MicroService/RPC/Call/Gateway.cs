@@ -1,11 +1,9 @@
 ﻿using System;
 using System.Web;
 using System.Collections.Generic;
-using System.Net;
 using Taurus.Mvc;
 using CYQ.Data;
 using System.Threading;
-using System.IO;
 
 namespace Taurus.MicroService
 {
@@ -16,7 +14,10 @@ namespace Taurus.MicroService
         /// </summary>
         internal static class Gateway
         {
-
+            /// <summary>
+            /// 最后一次网关处理转发的时间
+            /// </summary>
+            public static DateTime LastProxyTime = DateTime.Now;
             #region 网关代理。
             /// <summary>
             /// 网关代理转发方法
@@ -126,7 +127,7 @@ namespace Taurus.MicroService
                 {
                     return false;
                 }
-
+                LastProxyTime = DateTime.Now;
                 HttpRequest request = context.Request;
                 byte[] bytes = null, data = null;
                 string url = host + request.RawUrl;
@@ -257,25 +258,29 @@ namespace Taurus.MicroService
                 }
                 catch (Exception err)
                 {
-                    string msg = err.Message;
-                    bool isHasStatusCode = msg.Contains("(1") || msg.Contains("(2") || msg.Contains("(3") || msg.Contains("(4") || msg.Contains("(5") || msg.Contains("(6");
-                    if (!isHasStatusCode || msg.Contains("Connection refused") || msg.Contains("Could not find file") || msg.Contains("无法连接到远程服务器") || msg.Contains("未能解析此远程名称") || msg.Contains("不知道这样的主机"))//!err.Message.Contains("(40")400 系列，机器是通的， 404) Not Found
-                    {
-                        RpcClientPool.RemoveFromPool(uri);
-                        MsLog.Write(msg, url, request.HttpMethod, isServerCall ? MsConfig.Server.Name : MsConfig.Client.Name);
-                        return false;
-                    }
-                    else
-                    {
-                        //解析状态码
-                        int i = msg.IndexOf('(');
-                        int end = msg.IndexOf(')', i);
-                        if (end > i)
-                        {
-                            string code = msg.Substring(i + 1, end - i - 1);
-                            context.Response.StatusCode = int.Parse(code);
-                        }
-                    }
+                    RpcClientPool.RemoveFromPool(uri);
+                    MsLog.Write(err.Message, url, request.HttpMethod, isServerCall ? MsConfig.Server.Name : MsConfig.Client.Name);
+                    return false;
+                    //RpcClient 内部已重写处理，已无需要在外部进行判断。
+                    //string msg = err.Message;/
+                    //bool isHasStatusCode = msg.Contains("(1") || msg.Contains("(2") || msg.Contains("(3") || msg.Contains("(4") || msg.Contains("(5") || msg.Contains("(6");
+                    //if (!isHasStatusCode || msg.Contains("Connection refused") || msg.Contains("Could not find file") || msg.Contains("无法连接到远程服务器") || msg.Contains("未能解析此远程名称") || msg.Contains("不知道这样的主机"))//!err.Message.Contains("(40")400 系列，机器是通的， 404) Not Found
+                    //{
+                    //    RpcClientPool.RemoveFromPool(uri);
+                    //    MsLog.Write(msg, url, request.HttpMethod, isServerCall ? MsConfig.Server.Name : MsConfig.Client.Name);
+                    //    return false;
+                    //}
+                    //else
+                    //{
+                    //    //解析状态码
+                    //    int i = msg.IndexOf('(');
+                    //    int end = msg.IndexOf(')', i);
+                    //    if (end > i)
+                    //    {
+                    //        string code = msg.Substring(i + 1, end - i - 1);
+                    //        context.Response.StatusCode = int.Parse(code);
+                    //    }
+                    //}
                 }
                 finally
                 {

@@ -78,12 +78,12 @@ namespace Taurus.Mvc
         /// <summary>
         /// 当前请求是否Mvc处理范围。
         /// </summary>
-        internal static bool IsTaurusSuffix(Uri uri)
+        internal static bool IsMvcSuffix(Uri uri)
         {
             string localPath = uri.LocalPath;
-            return IsTaurusSuffix(localPath);
+            return IsMvcSuffix(localPath);
         }
-        internal static bool IsTaurusSuffix(string localPath)
+        internal static bool IsMvcSuffix(string localPath)
         {
             string suffix = MvcConfig.Suffix;
             if (suffix != "" && localPath.EndsWith(suffix))

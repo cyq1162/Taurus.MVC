@@ -68,7 +68,7 @@ namespace Taurus.MicroService
         private static string RegHost()
         {
 
-            string url = MsConfig.Client.RcUrl + "/microservice/reg";
+            string url = MsConfig.Client.RcUrl + "/" + MsConfig.Client.Path + "/reg";
             try
             {
                 using (WebClient wc = new WebClient())
@@ -131,7 +131,7 @@ namespace Taurus.MicroService
         /// </summary>
         internal static string GetListOfClient()
         {
-            string url = MsConfig.Client.RcUrl + "/microservice/getlist?tick=" + Client.Tick;
+            string url = MsConfig.Client.RcUrl + "/" + MsConfig.Client.Path + "/getlist?tick=" + Client.Tick;
             try
             {
                 using (WebClient wc = new WebClient())

@@ -165,6 +165,12 @@ CYQ.Data升级到V5.8.4.9
 6、优化：取消MicroService.App.XXX 相关配置：MicroService.App.RunUrl 变更为：MvcConfig.RunUrl。（2023-04-24）
 7、新增：Taurus.Plugin.Admin 插件：用于Taurus统一管理后台（配置项：Admin.IsEnable : true【默认】）。（2023-04-24）
 8、新增：Admin 管理后台插件：对应相关配置：Admin.UserName、Admin.Password、Admin.Url、Admin.HtmlPolderName。（2023-04-25）
+9、优化：RpcClient 内部优化调整。（2023-04-25）
+-----V3.1.6.1----------------
+1、优化：Limit 插件配置优化。（2023-04-26）
+2、优化：Admin 插件增加信息输出。（2023-04-26）
+3、优化：微服务增加Path配置参数，允许调整访问路径。（2023-04-26）
+4、优化：CYQ.Data 升级到5.8.6.2：优化数据表结构预缓存。（2023-04-26）
 
 
 网关：Linux 下内存占用问题测试。

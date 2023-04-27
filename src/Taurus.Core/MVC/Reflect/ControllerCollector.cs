@@ -181,11 +181,23 @@ namespace Taurus.Mvc
                         }
 
                         Type msType = typeof(MicroServiceController);
-                        //微服务API
-                        if (!_Lv1Controllers.ContainsKey(ReflectConst.MicroService))
+                        if (MsConfig.IsServer)
                         {
-                            _Lv1Controllers.Add(ReflectConst.MicroService, msType);
+                            //微服务API
+                            if (!_Lv1Controllers.ContainsKey(MsConfig.Server.Path))
+                            {
+                                _Lv1Controllers.Add(MsConfig.Server.Path, msType);
+                            }
                         }
+                        if (MsConfig.IsClient)
+                        {
+                            //微服务API
+                            if (!_Lv1Controllers.ContainsKey(MsConfig.Client.Path))
+                            {
+                                _Lv1Controllers.Add(MsConfig.Client.Path, msType);
+                            }
+                        }
+
                         MethodCollector.InitMethodInfo(msType);
                     }
                 }

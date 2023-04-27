@@ -14,7 +14,6 @@ namespace Taurus.MicroService
     /// </summary>
     internal partial class MicroServiceController : Controller
     {
-
         private void WriteLine(string msg)
         {
 #if DEBUG
