@@ -11,6 +11,7 @@ using System.Threading;
 using System.Diagnostics;
 using Taurus.Plugin.Doc;
 using System.Configuration;
+using System.Net;
 
 namespace Taurus.Plugin.Admin
 {

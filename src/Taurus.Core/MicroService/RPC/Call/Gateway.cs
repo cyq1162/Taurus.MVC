@@ -51,13 +51,13 @@ namespace Taurus.MicroService
                 }
                 List<HostInfo> infoList = new List<HostInfo>();
                 //存在域名，也存在模块，过滤出满足：域名+模块
-                foreach (var item in domainList)//过滤掉不在域名下的主机
+                foreach (var domainItem in domainList)//过滤掉不在域名下的主机
                 {
-                    foreach (var keyValue in moduleList)
+                    foreach (var moduleItem in moduleList)
                     {
-                        if (item.Host == keyValue.Host)
+                        if (domainItem.Host == moduleItem.Host)
                         {
-                            infoList.Add(item);
+                            infoList.Add(moduleItem);// 用模块，模块里有包含IsVirtual属性，而域名则没有。
                             break;
                         }
                     }
@@ -95,7 +95,7 @@ namespace Taurus.MicroService
                     {
                         continue;//已经断开服务的。
                     }
-                    if (Proxy(context, info.Host, isServerCall))
+                    if (Proxy(context, info.Host, module, info.IsVirtual, isServerCall))
                     {
                         firstInfo.CallIndex = callIndex + 1;//指向下一个。
                         return true;
@@ -120,7 +120,7 @@ namespace Taurus.MicroService
 
             }
 
-            public static bool Proxy(HttpContext context, string host, bool isServerCall)
+            public static bool Proxy(HttpContext context, string host, string module, bool isVirtual, bool isServerCall)
             {
                 Uri uri = new Uri(host);
                 if (!preConnectionDic.ContainsKey(uri) || !preConnectionDic[uri])
@@ -130,7 +130,12 @@ namespace Taurus.MicroService
                 LastProxyTime = DateTime.Now;
                 HttpRequest request = context.Request;
                 byte[] bytes = null, data = null;
-                string url = host + request.RawUrl;
+                string rawUrl = request.RawUrl;
+                if (isVirtual && rawUrl.ToLower().StartsWith("/" + module.ToLower()))
+                {
+                    rawUrl = rawUrl.Substring(module.Length + 1);
+                }
+                string url = host + rawUrl;
                 if (request.HttpMethod != "GET" && request.ContentLength > 0)
                 {
                     //Synchronous operations are disallowed. Call ReadAsync or set AllowSynchronousIO to true instead.”

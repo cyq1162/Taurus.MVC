@@ -41,7 +41,6 @@ namespace Taurus.Core
             HttpApplication app = (HttpApplication)sender;
             HttpContext context = app.Context;
             Uri uri = context.Request.Url;
-
             #region 1、微服务检测与启动
             MsRun.Start(uri);//微服务检测、启动。
             #endregion

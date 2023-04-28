@@ -100,6 +100,18 @@ namespace Taurus.MicroService
             public static void AddHost(string name, string host)
             {
                 if (string.IsNullOrEmpty(host)) { return; }
+                string[] items = name.Split('|');//允许模块域名带优先级版本号，和是否虚拟属性
+                name = items[0];
+                int ver = 0;
+                bool vir = false;
+                if (items.Length > 1)
+                {
+                    int.TryParse(items[1], out ver);
+                }
+                if (items.Length > 2)
+                {
+                    vir = items[2] == "1" || items[2].ToLower() == "true";
+                }
                 var kvTable = HostList;
                 if (!kvTable.ContainsKey(name))
                 {
@@ -109,6 +121,8 @@ namespace Taurus.MicroService
                     HostInfo info = new HostInfo();
                     info.Host = host;
                     info.RegTime = DateTime.Now;
+                    info.Version = ver;
+                    info.IsVirtual = vir;
                     list.Add(info);
                     kvTable.Add(name, list);
                 }
@@ -120,6 +134,8 @@ namespace Taurus.MicroService
                         HostInfo hostInfo = list[i];
                         if (hostInfo.Host == host)
                         {
+                            hostInfo.Version = ver;
+                            hostInfo.IsVirtual = vir;
                             hostInfo.RegTime = DateTime.Now;//更新时间。
                             return;
                         }
@@ -127,6 +143,8 @@ namespace Taurus.MicroService
                     Server.IsChange = true;
                     HostInfo info = new HostInfo();
                     info.Host = host;
+                    info.Version = ver;
+                    info.IsVirtual = vir;
                     info.RegTime = DateTime.Now;
                     list.Add(info);
                 }
@@ -155,7 +173,18 @@ namespace Taurus.MicroService
                             string[] names = kv[0].Split(',');
                             foreach (string name in names)
                             {
-                                hostDic.Add(name, host);
+                                if (string.IsNullOrEmpty(name))
+                                {
+                                    continue;
+                                }
+                                if (hostDic.ContainsKey(name))
+                                {
+                                    hostDic[name] = hostDic[name] + "," + host;
+                                }
+                                else
+                                {
+                                    hostDic.Add(name, host);
+                                }
                             }
                         }
                     }
@@ -171,7 +200,11 @@ namespace Taurus.MicroService
                 var hostList = hostListByAdmin;//获取引用
                 foreach (var item in hostList)
                 {
-                    AddHost(item.Key, item.Value);
+                    string[] hosts = item.Value.Split(',');
+                    foreach (string host in hosts)
+                    {
+                        AddHost(item.Key, host);
+                    }
                 }
             }
 

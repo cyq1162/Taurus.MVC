@@ -59,10 +59,11 @@ namespace Taurus.MicroService
         /// <param name="name">服务名称，多个用逗号分隔，【可绑定域名】【模块追加版本号|号分隔。】</param>
         /// <param name="host">服务的可访问地址</param>
         /// <param name="version">服务的版本号【用于版本升级】</param>
+        /// <param name="isVirtual">是否虚拟名称【名称路径不转发】</param>
         [HttpPost]
         [MicroService]
         [Require("name,host")]
-        public void Reg(string name, string host, int version)
+        public void Reg(string name, string host, int version, bool isVirtual)
         {
             WriteLine(Environment.NewLine);
             WriteLine("--------------------------------------");
@@ -103,11 +104,16 @@ namespace Taurus.MicroService
             foreach (string item in names)
             {
                 if (string.IsNullOrEmpty(item)) { continue; }
-                string[] items = item.Split('|');//允许模块域名带优先级版本号
-                int ver = 0;
-                if (items.Length < 2 || !int.TryParse(items[1], out ver))
+                string[] items = item.Split('|');//允许模块域名带优先级版本号，和是否虚拟属性
+                int ver = version;
+                bool vir = isVirtual;
+                if (items.Length > 1)
                 {
-                    ver = version;
+                    int.TryParse(items[1], out ver);
+                }
+                if (items.Length > 2)
+                {
+                    vir = items[2] == "1" || items[2] == "true";
                 }
                 string module = items[0];
                 if (!kvTable.ContainsKey(module))
@@ -119,6 +125,7 @@ namespace Taurus.MicroService
                     info.Host = host;
                     info.RegTime = DateTime.Now;
                     info.Version = ver;
+                    info.IsVirtual = vir;
                     list.Add(info);
                     kvTable.Add(module, list);
                 }
@@ -190,6 +197,7 @@ namespace Taurus.MicroService
                         info.Host = host;
                         info.RegTime = DateTime.Now;
                         info.Version = ver;
+                        info.IsVirtual = vir;
                         list.Add(info);
                     }
                 }

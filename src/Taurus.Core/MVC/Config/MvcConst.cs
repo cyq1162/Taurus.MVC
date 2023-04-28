@@ -4,6 +4,8 @@ using System.Net;
 using System;
 using System.Diagnostics;
 using CYQ.Data;
+using System.Net.NetworkInformation;
+using System.Net.Sockets;
 
 namespace Taurus.Mvc
 {
@@ -53,16 +55,23 @@ namespace Taurus.Mvc
             {
                 if (string.IsNullOrEmpty(_HostIP))
                 {
-                    IPAddress[] addressList = Dns.GetHostAddresses(Environment.MachineName);
-                    foreach (IPAddress address in addressList)
+                    var nets = NetworkInterface.GetAllNetworkInterfaces();
+                    foreach (var item in nets)
                     {
-                        string ip = address.ToString();
-                        if (ip.EndsWith(".1") || ip.Contains(":")) // 忽略路由和网卡地址。
+                        var ips = item.GetIPProperties().UnicastAddresses;
+                        foreach (var ip in ips)
                         {
-                            continue;
+                            if (ip.Address.AddressFamily == AddressFamily.InterNetwork && !IPAddress.IsLoopback(ip.Address))
+                            {
+                                string ipAddr = ip.Address.ToString();
+                                if (ipAddr.EndsWith(".1") || ipAddr.Contains(":")) // 忽略路由和网卡地址。
+                                {
+                                    continue;
+                                }
+                                _HostIP = ipAddr;
+                                break;
+                            }
                         }
-                        _HostIP = ip;
-                        break;
                     }
                 }
                 return _HostIP ?? "127.0.0.1";

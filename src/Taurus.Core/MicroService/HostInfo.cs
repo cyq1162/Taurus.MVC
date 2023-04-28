@@ -15,6 +15,11 @@ namespace Taurus.MicroService
         /// 版本号：用于版本升级。
         /// </summary>
         public int Version { get; set; }
+
+        /// <summary>
+        /// 是否虚拟名称【虚拟名称转发不带Name】
+        /// </summary>
+        public bool IsVirtual { get; set; }
         /// <summary>
         /// 注册时间（最新）
         /// </summary>

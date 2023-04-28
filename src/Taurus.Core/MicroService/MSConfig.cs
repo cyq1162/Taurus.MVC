@@ -173,6 +173,21 @@ namespace Taurus.MicroService
                 }
             }
             /// <summary>
+            /// 微服务应用配置：是否虚拟路径【，默认false,为true时，name名称不转发过来】
+            /// </summary>
+            public static bool IsVirtual
+            {
+                get
+                {
+                    return AppConfig.GetAppBool("MicroService.Client.IsVirtual", false);
+                }
+                set
+                {
+                    AppConfig.SetApp("MicroService.Client.IsVirtual", value.ToString());
+                }
+            }
+
+            /// <summary>
             /// 应用配置：开启应用程序远程退出功能【是否允许注册中心控制客户端退出】
             /// </summary>
             public static bool RemoteExit
@@ -187,7 +202,7 @@ namespace Taurus.MicroService
                 }
             }
         }
-       
+
         #endregion
 
 

@@ -124,7 +124,7 @@ namespace Taurus.MicroService
                     }
                     if (withStar)
                     {
-                        if (name.Contains("."))//域名
+                        if (name == "localhost" || name.Contains("."))//域名
                         {
                             if (list.Count == 0 && name.Split('.').Length > 2)//2级泛域名检测
                             {
