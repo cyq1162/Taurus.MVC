@@ -81,7 +81,7 @@
         </member>
         <member name="P:CYQ.Data.AppConfig.RunPath">
             <summary>
-            框架的运行路径(最外层的目录）
+            框架的运行路径(最外层的目录），以"\\" 或"/"结尾
             Win项目：是dll和exe所在的目录；
             Asp.net项目：是指根目录；
             Asp.net core 项目：是指运行的路径（dll所在的路径，同Win项目）。
@@ -89,7 +89,7 @@
         </member>
         <member name="P:CYQ.Data.AppConfig.AssemblyPath">
             <summary>
-            框架的程序集所在的运行路径
+            框架的程序集所在的运行路径，以"\\" 或"/"结尾
             </summary>
         </member>
         <member name="P:CYQ.Data.AppConfig.EncryptKey">
@@ -99,7 +99,8 @@
         </member>
         <member name="P:CYQ.Data.AppConfig.WebRootPath">
             <summary>
-            Web根目录(ASP.NET Core 项目时，由于机制不同，指向的路径需要调整，所以该值可以修改)
+            Web根目录，以"/"或"\"结尾。
+            (ASP.NET Core 项目时，由于机制不同，指向的路径需要调整，所以该值可以修改)
             </summary>
         </member>
         <member name="P:CYQ.Data.AppConfig.IsWeb">
@@ -189,6 +190,7 @@
         <member name="P:CYQ.Data.AppConfig.DB.SchemaMapPath">
             <summary>
             MAction 可将表架构映射到外部指定相对路径[外部存储,可避开数据库读取]
+            Web 下默认路径：App_Data/schema
             </summary>
         </member>
         <member name="P:CYQ.Data.AppConfig.DB.DeleteField">
@@ -303,7 +305,7 @@
         </member>
         <member name="P:CYQ.Data.AppConfig.Log.LogPath">
             <summary>
-            文本日志的配置相对路径（默认为：Logs"）
+            文本日志的配置相对路径（Web 默认为：App_Data/log"）
             </summary>
         </member>
         <member name="P:CYQ.Data.AppConfig.Log.IsWriteLog">
@@ -3190,6 +3192,9 @@
         </member>
         <member name="T:CYQ.Data.SQL.TableSchema">
             <summary>
+            管理表（字段结构）
+            </summary>
+            <summary>
             从实体转成列
             </summary>
             <summary>
@@ -3200,6 +3205,19 @@
             <summary>
             全局缓存实体类的表结构（仅会对Type读取的结构）
             </summary>
+        </member>
+        <member name="M:CYQ.Data.SQL.TableSchema.Remove(System.String,System.String)">
+            <summary>
+            清空对应表的缓存
+            </summary>
+            <param name="tableName"></param>
+            <param name="conn"></param>
+        </member>
+        <member name="M:CYQ.Data.SQL.TableSchema.Remove(System.String)">
+            <summary>
+            清空缓存
+            </summary>
+            <param name="key"></param>
         </member>
         <member name="M:CYQ.Data.SQL.TableSchema.GetSchemaKey(System.String,System.String)">
             <summary>
@@ -3242,30 +3260,47 @@
             <summary>
             是否存在指定的表名、视图名、存储过程名
             </summary>
-            <param name="newName"></param>
             <param name="conn"></param>
             <returns></returns>
         </member>
+        <member name="T:CYQ.Data.SQL.DBSchema">
+            <summary>
+            管理数据库（N个库）
+            </summary>
+            <summary>
+            初始化。
+            </summary>
+        </member>
         <member name="F:CYQ.Data.SQL.DBSchema._DBScheams">
             <summary>
-            首次初始化的数据库
+            首次初始化的数据库。
             </summary>
         </member>
-        <member name="F:CYQ.Data.SQL.DBSchema._DBScheamsTemp">
+        <member name="F:CYQ.Data.SQL.DBSchema.DBScheamKeys">
             <summary>
-            后续代码初始化的数据库
+            存档数据库对应的keys，用于遍历。
             </summary>
         </member>
-        <member name="M:CYQ.Data.SQL.DBSchema.GetSchema(System.String,System.Boolean)">
+        <member name="M:CYQ.Data.SQL.DBSchema.GetSchema(System.String)">
             <summary>
             获取(并缓存)数据库的“表、视图、存储过程”名称列表。
             </summary>
         </member>
-        <member name="M:CYQ.Data.SQL.DBSchema.InitDBSchemasForCache(System.Object)">
+        <member name="M:CYQ.Data.SQL.DBSchema.Remove(System.String)">
             <summary>
-            预先把结构缓存起来。
+            移除数据库缓存
             </summary>
-            <param name="para"></param>
+            <param name="key"></param>
+        </member>
+        <member name="M:CYQ.Data.SQL.DBSchema.Clear">
+            <summary>
+            清空所有数据库缓存
+            </summary>
+        </member>
+        <member name="M:CYQ.Data.SQL.DBSchema.InitDBSchemasOnStart">
+            <summary>
+            初始化 基础表结构，只运行1次
+            </summary>
         </member>
         <member name="T:CYQ.Data.SQL.SqlCreateForSchema">
             <summary>
@@ -4666,6 +4701,16 @@
             </summary>
             <returns></returns>
         </member>
+        <member name="M:CYQ.Data.Tool.TableInfo.Reflesh">
+            <summary>
+            刷新表列结构缓存
+            </summary>
+        </member>
+        <member name="M:CYQ.Data.Tool.TableInfo.RemoveCache">
+            <summary>
+            清空缓存【内存和硬盘】
+            </summary>
+        </member>
         <member name="P:CYQ.Data.Tool.TableInfo.Name">
             <summary>
             （表、视图、存储过程）名称（只读）
@@ -4696,12 +4741,75 @@
             数据库信息
             </summary>
         </member>
+        <member name="F:CYQ.Data.Tool.DBInfo.TableKeys">
+            <summary>
+            用于遍历使用（多线程下）
+            </summary>
+        </member>
+        <member name="F:CYQ.Data.Tool.DBInfo.ViewKeys">
+            <summary>
+            用于遍历使用（多线程下）
+            </summary>
+        </member>
+        <member name="F:CYQ.Data.Tool.DBInfo.ProcKeys">
+            <summary>
+            用于遍历使用（多线程下）
+            </summary>
+        </member>
+        <member name="M:CYQ.Data.Tool.DBInfo.GetTableInfo(System.String)">
+            <summary>
+            根据名称（按顺序）获取表、视图、存储过程信息。
+            </summary>
+            <param name="name">名称</param>
+            <returns></returns>
+        </member>
+        <member name="M:CYQ.Data.Tool.DBInfo.GetTableInfo(System.String,System.String)">
+            <summary>
+            根据名称获取指定类型（表、视图、存储过程）的信息。
+            </summary>
+            <param name="name">名称</param>
+            <param name="type">指定类型：U、V或P</param>
+            <returns></returns>
+        </member>
+        <member name="M:CYQ.Data.Tool.DBInfo.Remove(System.String,System.String)">
+            <summary>
+            DBTool Drop Table 时调用
+            </summary>
+            <param name="tableHash"></param>
+            <param name="type"></param>
+            <returns></returns>
+        </member>
+        <member name="M:CYQ.Data.Tool.DBInfo.Add(System.String,System.String,System.String)">
+            <summary>
+            DBTool Add Table 时调用
+            </summary>
+            <param name="tableHash"></param>
+            <param name="type"></param>
+            <param name="name"></param>
+            <returns></returns>
+        </member>
+        <member name="M:CYQ.Data.Tool.DBInfo.RefleshKeys(System.Collections.Generic.List{System.String}@,System.String,System.Boolean)">
+            <summary>
+            多线程下，不能直接操作Keys的添加或移除
+            </summary>
+        </member>
         <member name="M:CYQ.Data.Tool.DBInfo.GetHashKey(System.String)">
             <summary>
             获取指定数据库链接的HashKey
             </summary>
             <param name="connNameOrString">配置名或链接字符串</param>
             <returns></returns>
+        </member>
+        <member name="M:CYQ.Data.Tool.DBInfo.Reflesh">
+            <summary>
+            刷新：表、视图、存储过程 缓存。
+            </summary>
+        </member>
+        <member name="M:CYQ.Data.Tool.DBInfo.Reflesh(System.String)">
+            <summary>
+            刷新：表、视图或存储过程列表 缓存。
+            <para name="type">指定类型：U、V或P</para>
+            </summary>
         </member>
         <member name="T:CYQ.Data.Tool.EncryptHelper">
             <summary>
