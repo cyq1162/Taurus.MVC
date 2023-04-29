@@ -20,36 +20,8 @@ namespace Taurus.MicroService
         public static class Server
         {
             /// <summary>
-            /// 配置注册中心的访问路径
-            /// 如 MicroService.Server.Path ： "microservice"， 默认值：microservice
-            /// </summary>
-            public static string Path
-            {
-                get
-                {
-                    return AppConfig.GetApp("MicroService.Server.Path", "microservice").Trim('/');
-                }
-                set
-                {
-                    AppConfig.SetApp("MicroService.Server.Path", value);
-                }
-            }
-            /// <summary>
-            /// 网关或注册中心配置：系统间调用密钥串【任意字符串】
-            /// </summary>
-            public static string Key
-            {
-                get
-                {
-                    return AppConfig.GetApp("MicroService.Server.Key", "Taurus.MicroService");
-                }
-                set
-                {
-                    AppConfig.SetApp("MicroService.Server.Key", value);
-                }
-            }
-            /// <summary>
             /// 网关或注册中心配置：服务端模块名称【可配置：Gateway或RegCenter】
+            /// 如 MicroService.Server.Name ： "RegCenter"
             /// </summary>
             public static string Name
             {
@@ -62,9 +34,9 @@ namespace Taurus.MicroService
                     AppConfig.SetApp("MicroService.Server.Name", value);
                 }
             }
-
             /// <summary>
-            /// 网关或注册中心配置：注册中心地址【示例：http://localhost:9999】
+            /// 网关或注册中心配置：注册中心地址
+            /// 如 MicroService.Server.RcUrl ： "http://localhost:8000"
             /// </summary>
             public static string RcUrl
             {
@@ -77,6 +49,40 @@ namespace Taurus.MicroService
                     AppConfig.SetApp("MicroService.Server.RcUrl", value);
                 }
             }
+
+            /// <summary>
+            /// 配置注册中心的访问路径
+            /// 如 MicroService.Server.RcPath ： "microservice"， 默认值：microservice
+            /// </summary>
+            public static string RcPath
+            {
+                get
+                {
+                    return AppConfig.GetApp("MicroService.Server.RcPath", "microservice").Trim('/');
+                }
+                set
+                {
+                    AppConfig.SetApp("MicroService.Server.RcPath", value);
+                }
+            }
+            /// <summary>
+            /// 网关或注册中心配置：系统间调用密钥串【任意字符串】
+            /// 如 MicroService.Server.RcKey ： "Taurus.MicroService"， 默认值：Taurus.MicroService
+            /// </summary>
+            public static string RcKey
+            {
+                get
+                {
+                    return AppConfig.GetApp("MicroService.Server.RcKey", "Taurus.MicroService");
+                }
+                set
+                {
+                    AppConfig.SetApp("MicroService.Server.RcKey", value);
+                }
+            }
+            
+
+
 
             /// <summary>
             /// 网关：接收请求（大文件上传）超时时间，单位秒（s）
@@ -100,35 +106,6 @@ namespace Taurus.MicroService
         public static class Client
         {
             /// <summary>
-            /// 配置注册中心的访问路径
-            /// 如 MicroService.Client.Path ： "microservice"， 默认值：microservice
-            /// </summary>
-            public static string Path
-            {
-                get
-                {
-                    return AppConfig.GetApp("MicroService.Client.Path", "microservice").Trim('/');
-                }
-                set
-                {
-                    AppConfig.SetApp("MicroService.Client.Path", value);
-                }
-            }
-            /// <summary>
-            /// 微服务应用配置：系统间调用密钥串【任意字符串】
-            /// </summary>
-            public static string Key
-            {
-                get
-                {
-                    return AppConfig.GetApp("MicroService.Client.Key", "Taurus.MicroService");
-                }
-                set
-                {
-                    AppConfig.SetApp("MicroService.Client.Key", value);
-                }
-            }
-            /// <summary>
             /// 微服务应用配置：客户端模块名称【示例：Test】
             /// </summary>
             public static string Name
@@ -142,19 +119,18 @@ namespace Taurus.MicroService
                     AppConfig.SetApp("MicroService.Client.Name", value);
                 }
             }
-
             /// <summary>
-            /// 微服务应用配置：注册中心的Url
+            /// 微服务应用配置：客户端模块绑定域名【示例：www.cyqdata.com】
             /// </summary>
-            public static string RcUrl
+            public static string Domain
             {
                 get
                 {
-                    return AppConfig.GetApp("MicroService.Client.RcUrl", "").TrimEnd('/');
+                    return AppConfig.GetApp("MicroService.Client.Domain", "*.*");
                 }
                 set
                 {
-                    AppConfig.SetApp("MicroService.Client.RcUrl", value);
+                    AppConfig.SetApp("MicroService.Client.Domain", value);
                 }
             }
 
@@ -199,6 +175,51 @@ namespace Taurus.MicroService
                 set
                 {
                     AppConfig.SetApp("MicroService.Client.RemoteExit", value.ToString());
+                }
+            }
+            /// <summary>
+            /// 微服务应用配置：注册中心的Url
+            /// 如 MicroService.Client.RcUrl ： "http://192.168.9.121:8000"
+            /// </summary>
+            public static string RcUrl
+            {
+                get
+                {
+                    return AppConfig.GetApp("MicroService.Client.RcUrl", "").TrimEnd('/');
+                }
+                set
+                {
+                    AppConfig.SetApp("MicroService.Client.RcUrl", value);
+                }
+            }
+            /// <summary>
+            /// 配置注册中心的访问路径
+            /// 如 MicroService.Client.RcPath ： "microservice"， 默认值：microservice
+            /// </summary>
+            public static string RcPath
+            {
+                get
+                {
+                    return AppConfig.GetApp("MicroService.Client.RcPath", "microservice").Trim('/');
+                }
+                set
+                {
+                    AppConfig.SetApp("MicroService.Client.RcPath", value);
+                }
+            }
+            /// <summary>
+            /// 微服务应用配置：系统间调用密钥串【任意字符串】
+            /// 如 MicroService.Client.RcKey ： "Taurus.MicroService"， 默认值：Taurus.MicroService
+            /// </summary>
+            public static string RcKey
+            {
+                get
+                {
+                    return AppConfig.GetApp("MicroService.Client.RcKey", "Taurus.MicroService");
+                }
+                set
+                {
+                    AppConfig.SetApp("MicroService.Client.RcKey", value);
                 }
             }
         }

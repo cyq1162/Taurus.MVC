@@ -144,7 +144,7 @@ namespace Taurus.Plugin.Limit
         }
         private static void GetIPList()
         {
-            string url = MsConfig.Server.RcUrl + "/" + MsConfig.Server.Path + "/getiplist";
+            string url = MsConfig.Server.RcUrl + "/" + MsConfig.Server.RcPath + "/getiplist";
             if (MsConfig.IsGateway)
             {
                 url += "?isGateway=1";
@@ -153,7 +153,7 @@ namespace Taurus.Plugin.Limit
             {
                 using (WebClient wc = new WebClient())
                 {
-                    wc.Headers.Add(MsConst.HeaderKey, MsConfig.Server.Key);
+                    wc.Headers.Add(MsConst.HeaderKey, MsConfig.Server.RcKey);
                     wc.Headers.Add("ack", AckLimit.CreateAck());
                     wc.Headers.Add("Referer", MvcConfig.RunUrl);
                     string result = wc.DownloadString(url);

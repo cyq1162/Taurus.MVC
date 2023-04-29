@@ -57,6 +57,10 @@ namespace Taurus.MicroService
                     {
                         if (domainItem.Host == moduleItem.Host)
                         {
+                            if (uri.AbsoluteUri.StartsWith(domainItem.Host))
+                            {
+                                return false;//请求自身，直接返回，避免死循环。
+                            }
                             infoList.Add(moduleItem);// 用模块，模块里有包含IsVirtual属性，而域名则没有。
                             break;
                         }
@@ -127,15 +131,21 @@ namespace Taurus.MicroService
                 {
                     return false;
                 }
-                LastProxyTime = DateTime.Now;
+
                 HttpRequest request = context.Request;
+                //if (request.Url.Authority == uri.Authority)
+                //{
+                //    return false;//请求自身，直接返回，避免死循环。
+                //}
+
+                LastProxyTime = DateTime.Now;
                 byte[] bytes = null, data = null;
                 string rawUrl = request.RawUrl;
                 if (isVirtual && rawUrl.ToLower().StartsWith("/" + module.ToLower()))
                 {
                     rawUrl = rawUrl.Substring(module.Length + 1);
                 }
-                string url = host + rawUrl;
+                string url = host.TrimEnd('/') + rawUrl;
                 if (request.HttpMethod != "GET" && request.ContentLength > 0)
                 {
                     //Synchronous operations are disallowed. Call ReadAsync or set AllowSynchronousIO to true instead.”
@@ -167,7 +177,7 @@ namespace Taurus.MicroService
                 if (wc == null) { return false; }
                 try
                 {
-                    wc.Headers.Add(MsConst.HeaderKey, (isServerCall ? MsConfig.Server.Key : MsConfig.Client.Key));
+                    wc.Headers.Add(MsConst.HeaderKey, (isServerCall ? MsConfig.Server.RcKey : MsConfig.Client.RcKey));
                     //if (!string.IsNullOrEmpty(MsConfig.App.RunUrl))
                     //{
                     //    wc.Headers.Add("Referer", MsConfig.App.RunUrl);//当前运行地址。
@@ -333,15 +343,8 @@ namespace Taurus.MicroService
                     }
                     catch (Exception err)
                     {
-                        if (!err.Message.Contains("(40"))//400 系列，机器是通的， 404) Not Found
-                        {
-                            preConnectionDic.Remove(uri);//清空，以便下次仍进行检测。
-                            MsLog.Write(err.Message, "MicroService.Run.PreConnection(" + uri.AbsoluteUri + ")", "GET", MsConfig.Server.Name);
-                        }
-                        else
-                        {
-                            preConnectionDic[uri] = true;
-                        }
+                        preConnectionDic.Remove(uri);//清空，以便下次仍进行检测。
+                        MsLog.Write(err.Message, "MicroService.Run.PreConnection(" + uri.AbsoluteUri + ")", "GET", MsConfig.Server.Name);
                     }
                     finally
                     {

@@ -38,7 +38,7 @@ namespace Taurus.MicroService
             try
             {
                 wc = RpcClientPool.Create(task.Request.Uri);
-                wc.Headers.Add(MsConst.HeaderKey, (MsConfig.IsClient ? MsConfig.Client.Key : MsConfig.Server.Key));
+                wc.Headers.Add(MsConst.HeaderKey, (MsConfig.IsClient ? MsConfig.Client.RcKey : MsConfig.Server.RcKey));
                 //wc.Headers.Add("X-Real-IP", MvcConst.HostIP);
                 if (HttpContext.Current != null && HttpContext.Current.Request != null)
                 {

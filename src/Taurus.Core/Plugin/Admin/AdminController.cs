@@ -90,19 +90,19 @@ namespace Taurus.Plugin.Admin
 
             if (MsConfig.IsRegCenterOfMaster)
             {
-                return "RegCenter of Master";
+                return "Register Center of Master";
             }
             else if (MsConfig.IsRegCenter)
             {
-                return "RegCenter of Slave" + (Server.IsLiveOfMasterRC ? "" : " ( To Be Master Temporarily )");
+                return "Register Center of Slave" + (Server.IsLiveOfMasterRC ? "" : " ( Master connection refused )");
             }
             else if (MsConfig.IsGateway)
             {
-                return "Gateway";
+                return "Gateway" + (Server.IsLiveOfMasterRC ? "" : " ( Register center connection refused )"); ;
             }
             else if (MsConfig.IsClient)
             {
-                return "Client of MicroService";
+                return "Client of MicroService" + (Client.IsLiveOfMasterRC ? "" : " ( Register center connection refused )");
             }
             else
             {
@@ -122,8 +122,8 @@ namespace Taurus.Plugin.Admin
                 //基础信息：
                 if (MsConfig.IsServer)
                 {
-                    View.KeyValue.Set("MsKey", MsConfig.Server.Key);
-                    View.KeyValue.Set("Path", MsConfig.Server.Path);
+                    View.KeyValue.Set("MsKey", MsConfig.Server.RcKey);
+                    View.KeyValue.Set("Path", MsConfig.Server.RcPath);
                 }
                 if (HostList != null && HostList.Count > 0)
                 {
@@ -343,14 +343,14 @@ namespace Taurus.Plugin.Admin
             dt.Columns.Add("ConfigKey,ConfigValue,Description");
             if (type == "mvc")
             {
-                dt.NewRow(true).Sets(0, "Taurus.RunUrl", MvcConfig.RunUrl, "Web run url.");
-                dt.NewRow(true).Sets(0, "Taurus.DefaultUrl", MvcConfig.DefaultUrl, "Web default url.");
+                dt.NewRow(true).Sets(0, "Taurus.RunUrl", MvcConfig.RunUrl, "App run url.");
+                dt.NewRow(true).Sets(0, "Taurus.DefaultUrl", MvcConfig.DefaultUrl, "App default url.");
                 dt.NewRow(true).Sets(0, "Taurus.IsAllowCORS", MvcConfig.IsAllowCORS, "CORS is allow.");
                 dt.NewRow(true).Sets(0, "Taurus.RouteMode", MvcConfig.RouteMode, "Route mode for selected.");
                 dt.NewRow(true).Sets(0, "Taurus.Controllers", MvcConfig.Controllers, "Load controller names.");
                 dt.NewRow(true).Sets(0, "Taurus.Views", MvcConfig.Views, "Mvc view folder name.");
                 dt.NewRow(true).Sets(0, "Taurus.SslPath", MvcConfig.SslPath, "Ssl path for https.");
-                dt.NewRow(true).Sets(0, "----------SslCertificate - Count", MvcConfig.SslCertificate.Count, "Num of ssl file for https (Show Only).");
+                dt.NewRow(true).Sets(0, "----------SslCertificate - Count", MvcConfig.SslCertificate.Count, "Num of ssl for https (Show Only).");
                 if (MvcConfig.SslCertificate.Count > 0)
                 {
                     int i = 1;
@@ -405,10 +405,11 @@ namespace Taurus.Plugin.Admin
                 if (MsConfig.IsServer)
                 {
                     dt.NewRow(true).Sets(0, "MicroServer.Server.Name", MsConfig.Server.Name, "Server name.");
-                    dt.NewRow(true).Sets(0, "MicroServer.Server.Key", MsConfig.Server.Key, "Server secret key.");
-                    dt.NewRow(true).Sets(0, "MicroServer.Server.RcUrl", MsConfig.Server.RcUrl, "Register center host.");
-                    dt.NewRow(true).Sets(0, "MicroServer.Server.Path", "/" + MsConfig.Server.Path, "Register center local path.");
-                    dt.NewRow(true).Sets(0, "MicroServer.Server.GatewayTimeout", MsConfig.Server.GatewayTimeout + "s", "Timeout for big file upload.");
+                    dt.NewRow(true).Sets(0, "MicroServer.Server.RcKey", MsConfig.Server.RcKey, "Register center secret key.");
+                    dt.NewRow(true).Sets(0, "MicroServer.Server.RcUrl", MsConfig.Server.RcUrl, "Register center url.");
+                    dt.NewRow(true).Sets(0, "MicroServer.Server.RcPath", "/" + MsConfig.Server.RcPath, "Register center local path.");
+                    dt.NewRow(true).Sets(0, "MicroServer.Server.GatewayTimeout", MsConfig.Server.GatewayTimeout + "s", "Gateway timeout for big file upload.");
+                    dt.NewRow(true).Sets(0, "MicroServer Gateway Proxy LastTime", Rpc.Gateway.LastProxyTime.ToString("yyyy-MM-dd HH:mm:ss"), "The last time the proxy forwarded the request (Show Only).");
                 }
 
                 if (MsConfig.IsClient)
@@ -417,12 +418,14 @@ namespace Taurus.Plugin.Admin
                     {
                         dt.NewRow(true);
                     }
-                    dt.NewRow(true).Sets(0, "MicroServer.Client.Name", MsConfig.Client.Name, "Client name.");
-                    dt.NewRow(true).Sets(0, "MicroServer.Client.Key", MsConfig.Client.Key, "Register center secret key.");
+                    dt.NewRow(true).Sets(0, "MicroServer.Client.Name", MsConfig.Client.Name, "Client module name.");
+                    dt.NewRow(true).Sets(0, "MicroServer.Client.Domain", MsConfig.Client.Domain, "Client bind domain.");
                     dt.NewRow(true).Sets(0, "MicroServer.Client.Version", MsConfig.Client.Version, "Client web version.");
-                    dt.NewRow(true).Sets(0, "MicroServer.Client.RcUrl", MsConfig.Client.RcUrl, "Register center host.");
-                    dt.NewRow(true).Sets(0, "MicroServer.Client.Path", "/" + MsConfig.Client.Path, "Register center local path.");
-                    dt.NewRow(true).Sets(0, "MicroServer.Client.RemoteExit", MsConfig.Client.RemoteExit, "Is allow remote stop current application by register center.");
+                    dt.NewRow(true).Sets(0, "MicroServer.Client.RemoteExit", MsConfig.Client.RemoteExit, "Client is allow remote stop by register center.");
+                    dt.NewRow(true).Sets(0, "MicroServer.Client.RcKey", MsConfig.Client.RcKey, "Register center secret key.");
+                    dt.NewRow(true).Sets(0, "MicroServer.Client.RcUrl", MsConfig.Client.RcUrl, "Register center url.");
+                    dt.NewRow(true).Sets(0, "MicroServer.Client.RcPath", "/" + MsConfig.Client.RcPath, "Register center local path.");
+                    
                 }
             }
             else if (type == "cyq.data")
@@ -467,22 +470,21 @@ namespace Taurus.Plugin.Admin
             dtTaurus.Columns.Add("ConfigKey,ConfigValue,Description");
             dtTaurus.NewRow(true).Sets(0, "Client-IP", Request.UserHostAddress, "Client ip.");
             dtTaurus.NewRow(true).Sets(0, "Server-IP", MvcConst.HostIP, "Server ip.");
-            dtTaurus.NewRow(true).Sets(0, "Gateway-Proxy - LastTime", Rpc.Gateway.LastProxyTime.ToString("yyyy-MM-dd HH:mm:ss"), "The last time the proxy forwarded the request.");
             dtTaurus.NewRow(true).Sets(0, "Taurus-Version", "V" + MvcConst.Version, "Version of the Taurus.Core.dll.");
-            dtTaurus.NewRow(true).Sets(0, "CYQ-Version", "V" + AppConfig.Version, "Version of the CYQ.Data.dll.");
-            dtTaurus.NewRow(true).Sets(0, "WebPath", AppConfig.RunPath, "Web application path of the current working directory.");
+            dtTaurus.NewRow(true).Sets(0, "Orm-Version", "V" + AppConfig.Version, "Version of the CYQ.Data.dll.");
+            dtTaurus.NewRow(true).Sets(0, "AppPath", AppConfig.RunPath, "Web application path of the working directory.");
             dtTaurus.NewRow(true);
-            dtTaurus.NewRow(true).Sets(0, "Net-Version", (AppConfig.IsNetCore ? ".Net Core - " : ".Net Framework - ") + Environment.Version, "Version of the common language runtime.");
+            dtTaurus.NewRow(true).Sets(0, "Runtime-Version", (AppConfig.IsNetCore ? ".Net Core - " : ".Net Framework - ") + Environment.Version, "Version of the common language runtime.");
             dtTaurus.NewRow(true).Sets(0, "OS-Version", Environment.OSVersion, "Operating system.");
             dtTaurus.NewRow(true).Sets(0, "ProcessID", MvcConst.ProcessID, "Process id.");
-            dtTaurus.NewRow(true).Sets(0, "ThreadID", Thread.CurrentThread.ManagedThreadId, "Identifier for the current managed thread.");
-            dtTaurus.NewRow(true).Sets(0, "ThreadCount", Process.GetCurrentProcess().Threads.Count, "Number of threads for the current process.");
+            dtTaurus.NewRow(true).Sets(0, "ThreadID", Thread.CurrentThread.ManagedThreadId, "Identifier for the managed thread.");
+            dtTaurus.NewRow(true).Sets(0, "ThreadCount", Process.GetCurrentProcess().Threads.Count, "Number of threads for the process.");
             dtTaurus.NewRow(true).Sets(0, "TickCount", (Environment.TickCount / 1000) + "s | " + (Environment.TickCount / 1000 / 60) + "m | " + (Environment.TickCount / 1000 / 3600) + "h | " + (Environment.TickCount / 1000 / 3600 / 24) + "d", "Time since the system started.");
-            dtTaurus.NewRow(true).Sets(0, "ProcessorCount", Environment.ProcessorCount, "Number of processors on the current machine.");
-            dtTaurus.NewRow(true).Sets(0, "MachineName", Environment.MachineName, "Name of this computer.");
+            dtTaurus.NewRow(true).Sets(0, "ProcessorCount", Environment.ProcessorCount, "Number of processors on the machine.");
+            dtTaurus.NewRow(true).Sets(0, "MachineName", Environment.MachineName, "Name of computer.");
             dtTaurus.NewRow(true).Sets(0, "UserName", Environment.UserName, "Name of the person who is logged on to Windows.");
             dtTaurus.NewRow(true).Sets(0, "WorkingSet", Environment.WorkingSet / 1024 + "KB | " + Environment.WorkingSet / 1024 / 1024 + "MB", "Physical memory mapped to the process context.");
-            dtTaurus.NewRow(true).Sets(0, "CurrentDirectory", Environment.CurrentDirectory, "Fully qualified path of the current working directory.");
+            dtTaurus.NewRow(true).Sets(0, "CurrentDirectory", Environment.CurrentDirectory, "Fully qualified path of the working directory.");
 
             dtTaurus.Bind(View);
         }

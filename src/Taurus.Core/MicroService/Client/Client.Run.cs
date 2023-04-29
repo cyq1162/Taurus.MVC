@@ -67,19 +67,19 @@ namespace Taurus.MicroService
         /// <returns></returns>
         private static string RegHost()
         {
-
-            string url = MsConfig.Client.RcUrl + "/" + MsConfig.Client.Path + "/reg";
+            string url = MsConfig.Client.RcUrl + "/" + MsConfig.Client.RcPath + "/reg";
             try
             {
                 using (WebClient wc = new WebClient())
                 {
-                    wc.Headers.Add(MsConst.HeaderKey, MsConfig.Client.Key);
+                    wc.Headers.Add(MsConst.HeaderKey, MsConfig.Client.RcKey);
                     wc.Headers.Add("ack", AckLimit.CreateAck());
                     wc.Headers.Add("Referer", MvcConfig.RunUrl);
                     wc.Headers.Add("Content-Type", "application/x-www-form-urlencoded");
                     //Content - Type: multipart / form - data; boundary = ----WebKitFormBoundaryxSUOuGdhfM6ceac8
-                    string data = "name={0}&host={1}&version={2}&isVirtual={3}";
-                    string result = wc.UploadString(url, string.Format(data, MsConfig.Client.Name, MvcConfig.RunUrl, MsConfig.Client.Version, MsConfig.Client.IsVirtual ? 1 : 0));
+                    string data = "name={0}&host={1}&version={2}&isVirtual={3}&domain={4}";
+                    data = string.Format(data, MsConfig.Client.Name, MvcConfig.RunUrl, MsConfig.Client.Version, MsConfig.Client.IsVirtual ? 1 : 0, MsConfig.Client.Domain);
+                    string result = wc.UploadString(url, data);
                     if (JsonHelper.IsSuccess(result))
                     {
                         MsLog.WriteDebugLine(DateTime.Now.ToString("HH:mm:ss") + string.Format(" : PID : {0} Reg : {1} Version : {2} => OK", MvcConst.ProcessID, MsConfig.Client.Name, MsConfig.Client.Version));
@@ -88,11 +88,13 @@ namespace Taurus.MicroService
                     {
                         MsLog.WriteDebugLine(DateTime.Now.ToString("HH:mm:ss") + string.Format(" : PID : {0} Reg.Fail : {1}: ", MvcConst.ProcessID, result));
                     }
+                    Client.IsLiveOfMasterRC = true;
                     return result;
                 }
             }
             catch (Exception err)
             {
+                Client.IsLiveOfMasterRC = true;
                 MsLog.WriteDebugLine(DateTime.Now.ToString("HH:mm:ss") + string.Format(" : PID : {0} Reg.Error : {1}: ", MvcConst.ProcessID, err.Message));
                 if (!string.IsNullOrEmpty(Client.Host2))
                 {
@@ -131,12 +133,12 @@ namespace Taurus.MicroService
         /// </summary>
         internal static string GetListOfClient()
         {
-            string url = MsConfig.Client.RcUrl + "/" + MsConfig.Client.Path + "/getlist?tick=" + Client.Tick;
+            string url = MsConfig.Client.RcUrl + "/" + MsConfig.Client.RcPath + "/getlist?tick=" + Client.Tick;
             try
             {
                 using (WebClient wc = new WebClient())
                 {
-                    wc.Headers.Add(MsConst.HeaderKey, MsConfig.Client.Key);
+                    wc.Headers.Add(MsConst.HeaderKey, MsConfig.Client.RcKey);
                     wc.Headers.Add("ack", AckLimit.CreateAck());
                     wc.Headers.Add("Referer", MvcConfig.RunUrl);
                     string result = wc.DownloadString(url);

@@ -184,17 +184,17 @@ namespace Taurus.Mvc
                         if (MsConfig.IsServer)
                         {
                             //微服务API
-                            if (!_Lv1Controllers.ContainsKey(MsConfig.Server.Path))
+                            if (!_Lv1Controllers.ContainsKey(MsConfig.Server.RcPath))
                             {
-                                _Lv1Controllers.Add(MsConfig.Server.Path, msType);
+                                _Lv1Controllers.Add(MsConfig.Server.RcPath, msType);
                             }
                         }
                         if (MsConfig.IsClient)
                         {
                             //微服务API
-                            if (!_Lv1Controllers.ContainsKey(MsConfig.Client.Path))
+                            if (!_Lv1Controllers.ContainsKey(MsConfig.Client.RcPath))
                             {
-                                _Lv1Controllers.Add(MsConfig.Client.Path, msType);
+                                _Lv1Controllers.Add(MsConfig.Client.RcPath, msType);
                             }
                         }
 

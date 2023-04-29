@@ -169,10 +169,11 @@ namespace Taurus.MicroService
                         string[] kv = row.Split('#');
                         if (kv.Length == 2)
                         {
-                            string host = kv[1];
+                            string host = kv[1].Trim(' ', '/', '\r', '\n');
                             string[] names = kv[0].Split(',');
-                            foreach (string name in names)
+                            foreach (string item in names)
                             {
+                                string name = item.Trim(' ', '/', '\r', '\n');
                                 if (string.IsNullOrEmpty(name))
                                 {
                                     continue;

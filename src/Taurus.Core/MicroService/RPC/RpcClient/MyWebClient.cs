@@ -1,5 +1,9 @@
-﻿using System;
+﻿using CYQ.Data;
+using CYQ.Data.Table;
+using System;
 using System.Net;
+using System.Net.Mime;
+using System.Web.UI;
 
 namespace Taurus.MicroService
 {
@@ -18,74 +22,70 @@ namespace Taurus.MicroService
             }
         }
         bool isHeadRequest = false;
-        protected override WebRequest GetWebRequest(Uri address)
+        private WebRequest GetHttpWebRequestByNet(Uri address)
         {
-            try
+
+            //必须使用适当的属性或方法修改“Content-Length”标头。
+            var accept = Headers["Accept"];
+            var connection = Headers["Connection"];
+            var proxyConnection = Headers["Proxy-Connection"];
+            var length = Headers["Content-Length"];
+            var contentType = Headers["Content-Type"];
+            var referer = Headers["Referer"];
+            var userAgent = Headers["User-Agent"];
+            var range = Headers["Range"];
+            var ifModifiedSince = Headers["If-Modified-Since"];
+            var expect = Headers["Expect"];
+            //var date = Headers["Date"];
+            #region MyRegion
+
+            if (accept != null)
             {
+                Headers.Remove("Accept");
+            }
+            if (connection != null)
+            {
+                Headers.Remove("Connection");
+            }
+            if (proxyConnection != null)
+            {
+                Headers.Remove("Proxy-Connection");
+            }
+            if (length != null)
+            {
+                Headers.Remove("Content-Length");
+            }
+            if (contentType != null)
+            {
+                Headers.Remove("Content-Type");
+            }
+            if (referer != null)
+            {
+                Headers.Remove("Referer");
+            }
+            if (userAgent != null)
+            {
+                Headers.Remove("User-Agent");
+            }
+            if (range != null)
+            {
+                Headers.Remove("Range");
+            }
+            if (ifModifiedSince != null)
+            {
+                Headers.Remove("If-Modified-Since");
+            }
+            if (expect != null)
+            {
+                Headers.Remove("Expect");
+            }
 
+            #endregion
 
-                //必须使用适当的属性或方法修改“Content-Length”标头。
-                var accept = Headers["Accept"];
-                var connection = Headers["Connection"];
-                var proxyConnection = Headers["Proxy-Connection"];
-                var length = Headers["Content-Length"];
-                var contentType = Headers["Content-Type"];
-                var referer = Headers["Referer"];
-                var userAgent = Headers["User-Agent"];
-                var range = Headers["Range"];
-                var ifModifiedSince = Headers["If-Modified-Since"];
-                var expect = Headers["Expect"];
-                //var date = Headers["Date"];
-                #region MyRegion
-
-                if (accept != null)
-                {
-                    Headers.Remove("Accept");
-                }
-                if (connection != null)
-                {
-                    Headers.Remove("Connection");
-                }
-                if (proxyConnection != null)
-                {
-                    Headers.Remove("Proxy-Connection");
-                }
-                if (length != null)
-                {
-                    Headers.Remove("Content-Length");
-                }
-                if (contentType != null)
-                {
-                    Headers.Remove("Content-Type");
-                }
-                if (referer != null)
-                {
-                    Headers.Remove("Referer");
-                }
-                if (userAgent != null)
-                {
-                    Headers.Remove("User-Agent");
-                }
-                if (range != null)
-                {
-                    Headers.Remove("Range");
-                }
-                if (ifModifiedSince != null)
-                {
-                    Headers.Remove("If-Modified-Since");
-                }
-                if (expect != null)
-                {
-                    Headers.Remove("Expect");
-                }
-                //if (date != null)
-                //{
-                //    Headers.Remove("Date");
-                //}
-                #endregion
-
-                HttpWebRequest request = (HttpWebRequest)base.GetWebRequest(address);
-
+            WebRequest webRequest = base.GetWebRequest(address);
+            if (webRequest is HttpWebRequest)
+            {
+                HttpWebRequest request = (HttpWebRequest)webRequest;
                 #region MyRegion
 
                 if (accept != null)
@@ -148,19 +148,89 @@ namespace Taurus.MicroService
                 {
                     request.Expect = expect;
                 }
-                //if (date != null)
-                //{
-                //    request.SendChunked
-                //}
                 #endregion
-
-                request.Proxy = null;
-                request.AllowAutoRedirect = false;
+                return request;
+            }
+            else
+            {
+                //if (webRequest is FileWebRequest)
+                //{
+                //    FileWebRequest request = (FileWebRequest)webRequest;
+                //    if (length != null)
+                //    {
+                //        request.ContentLength = long.Parse(length);
+                //    }
+                //    request.
+                //}
+                //FileWebRequest
+                #region MyRegion
+                if (accept != null)
+                {
+                    Headers.Add("Accept", accept);
+                }
+                if (connection != null)
+                {
+                    Headers.Add("Connection", connection);
+                }
+                if (proxyConnection != null)
+                {
+                    Headers.Add("Proxy-Connection", proxyConnection);
+                }
+                if (length != null)
+                {
+                    Headers.Add("Content-Length", length);
+                }
+                if (contentType != null)
+                {
+                    Headers.Add("Content-Type", contentType);
+                }
+                if (referer != null)
+                {
+                    Headers.Add("Referer", referer);
+                }
+                if (userAgent != null)
+                {
+                    Headers.Add("User-Agent", userAgent);
+                }
+                if (range != null)
+                {
+                    Headers.Add("Range", range);
+                }
+                if (ifModifiedSince != null)
+                {
+                    Headers.Add("If-Modified-Since", ifModifiedSince);
+                }
+                if (expect != null)
+                {
+                    Headers.Add("Expect", expect);
+                }
+                #endregion
+            }
+            return webRequest;
+        }
+        protected override WebRequest GetWebRequest(Uri address)
+        {
+            try
+            {
+                WebRequest request = null;
+                if (AppConfig.IsNetCore)
+                {
+                    request = base.GetWebRequest(address);
+                }
+                else
+                {
+                    request = GetHttpWebRequestByNet(address);
+                }
+                if (request is HttpWebRequest)
+                {
+                    ((HttpWebRequest)request).AllowAutoRedirect = false;
+                }
                 if (isHeadRequest)
                 {
                     request.Method = "HEAD";
                     isHeadRequest = false;
                 }
+                request.Proxy = null;
                 return request;
             }
             catch (Exception err)
@@ -171,11 +241,10 @@ namespace Taurus.MicroService
         }
         protected override WebResponse GetWebResponse(WebRequest request)
         {
-            HttpWebResponse response = null;
+            WebResponse response = null;
             try
             {
-                response = (HttpWebResponse)base.GetWebResponse(request);
-
+                response = base.GetWebResponse(request);
                 return response;
             }
             catch (WebException err)
@@ -184,13 +253,16 @@ namespace Taurus.MicroService
                 {
                     throw;
                 }
-                response = (HttpWebResponse)err.Response;
+                response = err.Response;
             }
             finally
             {
                 if (response != null)
                 {
-                    _ResponseStatusCode = (int)response.StatusCode;
+                    if (response is HttpWebResponse)
+                    {
+                        _ResponseStatusCode = (int)((HttpWebResponse)response).StatusCode;
+                    }
                 }
 
             }

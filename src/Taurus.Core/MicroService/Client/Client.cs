@@ -7,7 +7,10 @@ namespace Taurus.MicroService
     internal partial class Client
     {
         #region 对外开放的方法或属性
-
+        /// <summary>
+        /// 注册中心是否在线
+        /// </summary>
+        public static bool IsLiveOfMasterRC = false;
         #endregion
         /// <summary>
         /// 读取：注册中心时的最后更新标识.

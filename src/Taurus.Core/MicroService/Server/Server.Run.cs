@@ -59,13 +59,13 @@ namespace Taurus.MicroService
                 MsLog.WriteDebugLine(DateTime.Now.ToString("HH:mm:ss") + string.Format(" : PID : {0} RunUrl is empty.", MvcConst.ProcessID));
                 return "";
             }
-            string url = MsConfig.Server.RcUrl + "/" + MsConfig.Server.Path + "/reg2";
+            string url = MsConfig.Server.RcUrl + "/" + MsConfig.Server.RcPath + "/reg2";
             try
             {
                 string result = string.Empty;
                 using (WebClient wc = new WebClient())
                 {
-                    wc.Headers.Add(MsConst.HeaderKey, MsConfig.Server.Key);
+                    wc.Headers.Add(MsConst.HeaderKey, MsConfig.Server.RcKey);
                     wc.Headers.Add("ack", AckLimit.CreateAck());
                     wc.Headers.Add("Referer", MvcConfig.RunUrl);
                     wc.Headers.Add("Content-Type", "application/x-www-form-urlencoded");
@@ -113,14 +113,14 @@ namespace Taurus.MicroService
         /// <returns></returns>
         private static void SyncHostList()
         {
-            string url = MsConfig.Server.RcUrl + "/" + MsConfig.Server.Path + "/synclist";
+            string url = MsConfig.Server.RcUrl + "/" + MsConfig.Server.RcPath + "/synclist";
             try
             {
 
                 string data = string.Format("json={0}&tick=" + Server.Tick, Server.Gateway.HostListJson);
                 using (WebClient wc = new WebClient())
                 {
-                    wc.Headers.Add(MsConst.HeaderKey, MsConfig.Server.Key);
+                    wc.Headers.Add(MsConst.HeaderKey, MsConfig.Server.RcKey);
                     wc.Headers.Add("ack", AckLimit.CreateAck());
                     wc.Headers.Add("Referer", MvcConfig.RunUrl);
                     wc.Headers.Add("Content-Type", "application/x-www-form-urlencoded");
@@ -180,7 +180,7 @@ namespace Taurus.MicroService
         /// </summary>
         internal static string GetListOfServer()
         {
-            string url = MsConfig.Server.RcUrl + "/" + MsConfig.Server.Path + "/getlist?tick=" + Server.Tick;
+            string url = MsConfig.Server.RcUrl + "/" + MsConfig.Server.RcPath + "/getlist?tick=" + Server.Tick;
             if (MsConfig.IsGateway)
             {
                 url += "&isGateway=1";
@@ -189,7 +189,7 @@ namespace Taurus.MicroService
             {
                 using (WebClient wc = new WebClient())
                 {
-                    wc.Headers.Add(MsConst.HeaderKey, MsConfig.Server.Key);
+                    wc.Headers.Add(MsConst.HeaderKey, MsConfig.Server.RcKey);
                     wc.Headers.Add("ack", AckLimit.CreateAck());
                     wc.Headers.Add("Referer", MvcConfig.RunUrl);
                     string result = wc.DownloadString(url);

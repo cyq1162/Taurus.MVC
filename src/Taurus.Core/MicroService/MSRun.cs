@@ -71,6 +71,11 @@ namespace Taurus.MicroService
                 if (!string.IsNullOrEmpty(MsConfig.Client.Name) && !string.IsNullOrEmpty(MsConfig.Client.RcUrl) && MsConfig.Client.RcUrl != MvcConfig.RunUrl)
                 {
                     MsLog.WriteDebugLine("Current MicroService Type ：Client of 【" + MsConfig.Client.Name + "】");
+                    
+                    if (!string.IsNullOrEmpty(MsConfig.Client.Domain))
+                    {
+                        MsLog.WriteDebugLine("Current MicroService Domin：" + MsConfig.Client.Domain);
+                    }
                     MsLog.WriteDebugLine("Current RegisterCenter Url：" + MsConfig.Client.RcUrl);
                     ThreadBreak.AddGlobalThread(new ParameterizedThreadStart(RunLoopOfClient));
                 }

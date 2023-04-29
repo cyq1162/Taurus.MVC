@@ -515,9 +515,9 @@ namespace Taurus.Mvc
         {
             if (MicroService.MsConfig.IsServer)
             {
-                return MicroService.MsConfig.Server.Key == msKey;
+                return MicroService.MsConfig.Server.RcKey == msKey;
             }
-            return MicroService.MsConfig.Client.Key == msKey;
+            return MicroService.MsConfig.Client.RcKey == msKey;
         }
 
         /// <summary>

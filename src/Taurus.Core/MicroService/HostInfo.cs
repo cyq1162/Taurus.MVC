@@ -1,4 +1,5 @@
-﻿using System;
+﻿using CYQ.Data;
+using System;
 
 namespace Taurus.MicroService
 {
@@ -7,6 +8,10 @@ namespace Taurus.MicroService
     /// </summary>
     internal class HostInfo
     {
+        ///// <summary>
+        ///// 绑定的主机域名
+        ///// </summary>
+        //public string Domain { get; set; }
         /// <summary>
         /// 主机地址：http://localhost:8080
         /// </summary>
@@ -27,10 +32,12 @@ namespace Taurus.MicroService
         /// <summary>
         /// 记录调用时间，用于隔离无法调用的服务，延时调用。
         /// </summary>
+        [JsonIgnore]
         public DateTime CallTime { get; set; }
         /// <summary>
         /// 记录调用顺序，用于负载均衡
         /// </summary>
+        [JsonIgnore]
         public int CallIndex { get; set; }
     }
 }

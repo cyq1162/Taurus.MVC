@@ -60,10 +60,11 @@ namespace Taurus.MicroService
         /// <param name="host">服务的可访问地址</param>
         /// <param name="version">服务的版本号【用于版本升级】</param>
         /// <param name="isVirtual">是否虚拟名称【名称路径不转发】</param>
+        /// <param name="domain">绑定的域名</param>
         [HttpPost]
         [MicroService]
         [Require("name,host")]
-        public void Reg(string name, string host, int version, bool isVirtual)
+        public void Reg(string name, string host, string domain, int version, bool isVirtual)
         {
             WriteLine(Environment.NewLine);
             WriteLine("--------------------------------------");
@@ -79,6 +80,8 @@ namespace Taurus.MicroService
             var kvTable = Server.RegCenter.HostList;
 
             StringBuilder sb = new StringBuilder();
+            host = host.Trim(' ', '/', '\r', '\n').ToLower();
+            name = name + "," + domain;
             #region 注册名字[版本号检测]
             if (name.Contains("."))//包含域名
             {
@@ -100,7 +103,8 @@ namespace Taurus.MicroService
             {
                 name += ",*.*";//未绑定域名的，添加通用域名模块。
             }
-            string[] names = name.ToLower().Trim(',').Split(',');//允许一次注册多个模块。
+
+            string[] names = name.Trim(' ', '/', '\r', '\n').ToLower().Split(',');//允许一次注册多个模块。
             foreach (string item in names)
             {
                 if (string.IsNullOrEmpty(item)) { continue; }
