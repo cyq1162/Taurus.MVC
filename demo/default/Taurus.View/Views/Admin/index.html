@@ -41,6 +41,7 @@
             <tr>
                 <td>Register Name</td>
                 <td>Host</td>
+                <td>IsVirtual</td>
                 <td>Version</td>
                 <td>LastActiveTime</td>
                 <td>Remote Exit</td>
@@ -49,6 +50,7 @@
                 <tr>
                     <td><a target="_blank" href="${Host}/doc?g=${GatewayUrl}" title="doc">${Name}</a></td>
                     <td><a href="index?h=${Host}">${Host}</a></td>
+                    <td>${IsVirtual}</td>
                     <td>${Version}</td>
                     <td>${RegTime}</td>
                     <td><a onclick="stop('${Host}',this);" title="stop application"><%# ('${Name}'=='RegCenter' || '${Name}'=='Gateway')?'':'${RemoteExit}'%></a></td>
