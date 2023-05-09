@@ -11,7 +11,8 @@
 
         table td {
             text-align: left;
-            width: 33%;
+            word-break: break-all;
+            word-wrap: break-word;
         }
     </style>
 </head>
@@ -23,18 +24,18 @@
         <hr />
         <table class="table table-striped">
             <tr>
-                <td>Config Key</td>
-                <td>Config Value</td>
-                <td>Description</td>
+                <td width="27%">Config Key</td>
+                <td width="38%">Config Value</td>
+                <td width="35%">Description</td>
             </tr>
         </table>
         <hr />
         <table class="table table-striped">
             <tbody id="defaultView" clearflag="1">
                 <tr>
-                    <td>${ConfigKey}</td>
-                    <td>${ConfigValue}</td>
-                    <td>${Description}</td>
+                    <td width="27%">${ConfigKey}</td>
+                    <td width="38%">${ConfigValue}</td>
+                    <td width="35%">${Description}</td>
                 </tr>
             </tbody>
         </table>

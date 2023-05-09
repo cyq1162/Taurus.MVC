@@ -17,15 +17,10 @@
 </head>
 <body itemref="common.body">
     <div id="container">
-        <div>
-            Taurus Setting
-        </div>
-        <hr />
-        <div style="float:left"><b>Type ：</b></div>
-        <div id="clientNamesView" style="float:left">
+        <div id="menu" style="float:left">
             <a target="setting" href="settingofaccount">Admin - Account</a>&nbsp;|&nbsp;
             <a target="setting" href="settingofipblackname">IP - Blackname</a>&nbsp;|&nbsp;
-            <a target="setting" href="settingofhostadd">MS - Host - Add</a>&nbsp;|&nbsp;
+            <a target="setting" href="settingofhostadd">MS - Host - Add</a>
 
         </div>
         <div style="clear:both;">
@@ -34,7 +29,7 @@
         <iframe name="setting" src="about:blank" frameborder="0" width="100%" height="880px" scrolling="auto"></iframe>
         <script>
 window.onload = function () {
-                document.getElementById("clientNamesView").childNodes[0].click();
+                document.getElementById("menu").childNodes[0].click();
                 //document.getElementsByName("detail")[0].clientHeight = window.clientHeight;
 }
         </script>
