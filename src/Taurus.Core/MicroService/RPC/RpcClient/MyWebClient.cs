@@ -230,6 +230,7 @@ namespace Taurus.MicroService
                     request.Method = "HEAD";
                     isHeadRequest = false;
                 }
+                request.Timeout = MsConfig.Server.GatewayTimeout * 1000;
                 request.Proxy = null;
                 return request;
             }

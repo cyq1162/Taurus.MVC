@@ -1,4 +1,4 @@
-﻿using CYQ.Data;
+﻿using CYQ.Data.Tool;
 using System;
 
 namespace Taurus.MicroService

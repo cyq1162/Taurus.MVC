@@ -29,7 +29,7 @@ namespace Taurus.Mvc
                 return _Version;
             }
         }
-        public static int _ProcessID;
+        private static int _ProcessID;
         /// <summary>
         /// 当前进程ID
         /// </summary>

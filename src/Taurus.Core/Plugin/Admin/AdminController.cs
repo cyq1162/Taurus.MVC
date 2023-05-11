@@ -343,9 +343,9 @@ namespace Taurus.Plugin.Admin
             dt.Columns.Add("ConfigKey,ConfigValue,Description");
             if (type == "mvc")
             {
-                dt.NewRow(true).Sets(0, "Taurus.RunUrl", MvcConfig.RunUrl, "App run url.");
-                dt.NewRow(true).Sets(0, "Taurus.DefaultUrl", MvcConfig.DefaultUrl, "App default url.");
-                dt.NewRow(true).Sets(0, "Taurus.IsAllowCORS", MvcConfig.IsAllowCORS, "CORS is allow.");
+                dt.NewRow(true).Sets(0, "Taurus.RunUrl", MvcConfig.RunUrl, "Application run url.");
+                dt.NewRow(true).Sets(0, "Taurus.DefaultUrl", MvcConfig.DefaultUrl, "Application default url.");
+                dt.NewRow(true).Sets(0, "Taurus.IsAllowCORS", MvcConfig.IsAllowCORS, "Application is allow cross-origin resource sharing.");
                 dt.NewRow(true).Sets(0, "Taurus.RouteMode", MvcConfig.RouteMode, "Route mode for selected.");
                 dt.NewRow(true).Sets(0, "Taurus.Controllers", MvcConfig.Controllers, "Load controller names.");
                 dt.NewRow(true).Sets(0, "Taurus.Views", MvcConfig.Views, "Mvc view folder name.");
