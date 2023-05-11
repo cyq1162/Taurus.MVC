@@ -67,12 +67,14 @@ namespace Taurus.Mvc
                 _Assemblys = new List<Assembly>(dllItems.Length);
                 foreach (string dll in dllItems)
                 {
-
                     try
                     {
-                        if (dll.IndexOfAny(new char[] { '\\', '/' }) > 0 && dll[0] != '/')
+                        if (AppConfig.IsNetCore && dll.IndexOfAny(new char[] { '\\', '/' }) > 0 && dll[0] != '/')
                         {
-                            _Assemblys.Add(Assembly.LoadFile(dll)); // 可直接抛异常。
+                            //1、NetCore 程序 部署在Linux 环境，有些无理要求此方式才能正常加载。
+                            //2、NetCore 程序 部署在Window IIS，反正会被W3wp.exe 锁定，因此用此法也无啥影响。
+                            //3、传统.Net Framewok 应避开此方式加载（会独站锁定dll文件），重复停止应用程序影响开发效率。
+                            _Assemblys.Add(Assembly.LoadFile(dll));
                         }
                         else
                         {
