@@ -135,18 +135,9 @@ namespace Taurus.Mvc
         }
         internal static void InitMethodInfo(Type t)
         {
-            #region 处理Route Controller 映射
-            //object[] objects = t.GetCustomAttributes(typeof(RoutePrefixAttribute), true);
+            #region 处理 Controller RoutePrefix 属性映射。
             RoutePrefixAttribute[] rpas = t.GetCustomAttributes(typeof(RoutePrefixAttribute), true) as RoutePrefixAttribute[];
-            //if (objects != null && objects.Length > 0)
-            //{
-            //    rpas = objects as RoutePrefixAttribute[];
-            //    foreach (RoutePrefixAttribute rpa in rpas)
-            //    {
-            //        RouteEngine.AddPrefix(rpa.MappingControllerName, t);
-            //    }
-
-            //}
+            string moduleName = GetLevelName(t.FullName, MvcConfig.RouteMode);
             #endregion
 
             bool hasToken = t.GetCustomAttributes(typeof(TokenAttribute), true).Length > 0;
@@ -194,7 +185,7 @@ namespace Taurus.Mvc
                 }
                 dic.Add(name, new MethodEntity(method, attributeEntity));
 
-                #region 处理Route Url 映射
+                #region 处理 Method Route 属性映射。
                 objects = method.GetCustomAttributes(typeof(RouteAttribute), true);
                 if (objects != null && objects.Length > 0)
                 {
@@ -209,25 +200,25 @@ namespace Taurus.Mvc
                             foreach (RoutePrefixAttribute rpa in rpas)
                             {
                                 string fromUrl = "/" + rpa.PrefixName.Trim('/') + "/" + ra.LocalPath.Trim('/');
-                                string toUrl = "/" + t.Name.Replace(ReflectConst.Controller, "") + "/" + name;
+                                string toUrl = moduleName + name;
                                 RouteEngine.Add(fromUrl, toUrl);
                             }
                         }
                         else
                         {
                             string fromUrl = "/" + ra.LocalPath.Trim('/');
-                            string toUrl = "/" + t.Name.Replace(ReflectConst.Controller, "") + "/" + name;
+                            string toUrl = moduleName + name;
                             RouteEngine.Add(fromUrl, toUrl);
                         }
                     }
                 }
-                else if(rpas!=null && rpas.Length > 0)
+                else if (rpas != null && rpas.Length > 0)
                 {
                     //未配置的
                     foreach (RoutePrefixAttribute rpa in rpas)
                     {
                         string fromUrl = "/" + rpa.PrefixName.Trim('/') + "/" + name;
-                        string toUrl = "/" + t.Name.Replace(ReflectConst.Controller, "") + "/" + name;
+                        string toUrl = moduleName + name;
                         RouteEngine.Add(fromUrl, toUrl);
                     }
                 }
@@ -259,6 +250,22 @@ namespace Taurus.Mvc
                 return methods[ReflectConst.Default];
             }
             return null;
+        }
+
+        /// <summary>
+        /// 存档N级名称（/Module/Controller/)
+        /// </summary>
+        /// <param name="fullName"></param>
+        /// <returns></returns>
+        private static string GetLevelName(string fullName, int level)
+        {
+            string[] items = fullName.Split('.');
+            string lv1Name = items[items.Length - 1].Replace(ReflectConst.Controller, "");
+            if (level == 2)
+            {
+                return "/" + items[items.Length - 2] + "/" + lv1Name + "/";
+            }
+            return "/" + lv1Name+ "/";
         }
     }
 
