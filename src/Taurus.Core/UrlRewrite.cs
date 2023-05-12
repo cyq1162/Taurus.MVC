@@ -112,6 +112,16 @@ namespace Taurus.Core
                         return;
                     }
                 }
+                else
+                {
+                    string mapUrl = RouteEngine.Get(uri.LocalPath);
+                    if (!string.IsNullOrEmpty(mapUrl))
+                    {
+                        context.Items.Add("Uri", uri);
+                        context.RewritePath(mapUrl);
+                        return;
+                    }
+                }
                 if (WebTool.IsMvcSuffix(uri))
                 {
                     MethodEntity routeMapInvoke = MethodCollector.GlobalRouteMapInvoke;
@@ -120,6 +130,7 @@ namespace Taurus.Core
                         string url = Convert.ToString(routeMapInvoke.Method.Invoke(null, new object[] { context.Request }));
                         if (!string.IsNullOrEmpty(url))
                         {
+                            context.Items.Add("Uri", uri);
                             context.RewritePath(url);
                         }
                     }

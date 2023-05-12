@@ -5,7 +5,7 @@
     <AssemblyName>Taurus.Core</AssemblyName>
     <RootNamespace>Taurus.Mvc</RootNamespace>
     <Description>Taurus.mvc is a high-performance mvc and webapi framework for asp.net or asp.net core（适合场景：对性能和并发有较高要求的电商、站点、WebAPI等系统，支持.Net Core）(开源地址：https://github.com/cyq1162/cyqdata)</Description>
-    <Company>路过秋天 （2023-05-11）</Company>
+    <Company>路过秋天 （2023-05-12）</Company>
     <Authors>路过秋天</Authors>
     <Copyright>Copyright ©  路过秋天 2016-2096</Copyright>
     <Version>2.3.4</Version>

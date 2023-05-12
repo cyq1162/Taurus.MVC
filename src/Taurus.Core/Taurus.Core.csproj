@@ -65,6 +65,8 @@
     <Compile Include="Attribute\MicroServiceAttribute.cs" />
     <Compile Include="Attribute\RegexConst.cs" />
     <Compile Include="Attribute\RequireAttribute.cs" />
+    <Compile Include="Attribute\RouteAttribute.cs" />
+    <Compile Include="Attribute\RoutePrefixAttribute.cs" />
     <Compile Include="Attribute\TokenAttribute.cs" />
     <Compile Include="Attribute\WebSocketAttribute.cs" />
     <Compile Include="MicroService\Client\Client.cs" />
@@ -106,6 +108,7 @@
     <Compile Include="MVC\Reflect\MethodCollector.cs" />
     <Compile Include="MVC\Reflect\ReflectConst.cs" />
     <Compile Include="MVC\Controller.cs" />
+    <Compile Include="MVC\RouteEngine.cs" />
     <Compile Include="MVC\SessionHandler.cs" />
     <Compile Include="MVC\ViewEngine.cs" />
     <Compile Include="MVC\LogicBase.cs" />

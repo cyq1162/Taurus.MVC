@@ -135,6 +135,20 @@ namespace Taurus.Mvc
         }
         internal static void InitMethodInfo(Type t)
         {
+            #region 处理Route Controller 映射
+            //object[] objects = t.GetCustomAttributes(typeof(RoutePrefixAttribute), true);
+            RoutePrefixAttribute[] rpas = t.GetCustomAttributes(typeof(RoutePrefixAttribute), true) as RoutePrefixAttribute[];
+            //if (objects != null && objects.Length > 0)
+            //{
+            //    rpas = objects as RoutePrefixAttribute[];
+            //    foreach (RoutePrefixAttribute rpa in rpas)
+            //    {
+            //        RouteEngine.AddPrefix(rpa.MappingControllerName, t);
+            //    }
+
+            //}
+            #endregion
+
             bool hasToken = t.GetCustomAttributes(typeof(TokenAttribute), true).Length > 0;
             bool hasAck = t.GetCustomAttributes(typeof(AckAttribute), true).Length > 0;
             bool hasMicroService = t.GetCustomAttributes(typeof(MicroServiceAttribute), true).Length > 0;
@@ -179,6 +193,45 @@ namespace Taurus.Mvc
                     attributeEntity.RequireAttributes = objects as RequireAttribute[];
                 }
                 dic.Add(name, new MethodEntity(method, attributeEntity));
+
+                #region 处理Route Url 映射
+                objects = method.GetCustomAttributes(typeof(RouteAttribute), true);
+                if (objects != null && objects.Length > 0)
+                {
+                    //手动配置了映射路径：
+                    RouteAttribute[] ras = objects as RouteAttribute[];
+                    attributeEntity.HasRoute = true;
+                    attributeEntity.RouteAttributes = ras;
+                    foreach (RouteAttribute ra in ras)
+                    {
+                        if (ra.LocalPath[0] != '/' && rpas != null && rpas.Length > 0)
+                        {
+                            foreach (RoutePrefixAttribute rpa in rpas)
+                            {
+                                string fromUrl = "/" + rpa.PrefixName.Trim('/') + "/" + ra.LocalPath.Trim('/');
+                                string toUrl = "/" + t.Name.Replace(ReflectConst.Controller, "") + "/" + name;
+                                RouteEngine.Add(fromUrl, toUrl);
+                            }
+                        }
+                        else
+                        {
+                            string fromUrl = "/" + ra.LocalPath.Trim('/');
+                            string toUrl = "/" + t.Name.Replace(ReflectConst.Controller, "") + "/" + name;
+                            RouteEngine.Add(fromUrl, toUrl);
+                        }
+                    }
+                }
+                else if(rpas!=null && rpas.Length > 0)
+                {
+                    //未配置的
+                    foreach (RoutePrefixAttribute rpa in rpas)
+                    {
+                        string fromUrl = "/" + rpa.PrefixName.Trim('/') + "/" + name;
+                        string toUrl = "/" + t.Name.Replace(ReflectConst.Controller, "") + "/" + name;
+                        RouteEngine.Add(fromUrl, toUrl);
+                    }
+                }
+                #endregion
             }
             if (!typeMethods.ContainsKey(t.FullName))//有概念会重复。
             {

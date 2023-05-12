@@ -18,6 +18,10 @@ namespace Taurus.Mvc
         public bool HasPut { get; set; }
         public bool HasDelete { get; set; }
 
+        public bool HasRoute { get; set; }
+
+        public RouteAttribute[] RouteAttributes { get; set; }
+
         public bool HasRequire { get; set; }
         public RequireAttribute[] RequireAttributes { get; set; }
 
