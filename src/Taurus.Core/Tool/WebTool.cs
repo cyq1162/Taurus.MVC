@@ -4,6 +4,7 @@ using System.Web;
 using CYQ.Data;
 using CYQ.Data.Tool;
 using Taurus.Plugin.Admin;
+using Taurus.Plugin.Doc;
 
 namespace Taurus.Mvc
 {
@@ -41,6 +42,16 @@ namespace Taurus.Mvc
         }
 
         /// <summary>
+        /// 是否系统内部Url（不转发）
+        /// </summary>
+        /// <param name="uri"></param>
+        /// <returns></returns>
+        internal static bool IsSysInternalUrl(Uri uri)
+        {
+            return IsCallMicroService(uri) || IsCallAdmin(uri) || IsCallDoc(uri);
+        }
+
+        /// <summary>
         /// 是否请求微服务
         /// </summary>
         /// <returns></returns>
@@ -64,6 +75,20 @@ namespace Taurus.Mvc
         internal static bool IsCallAdmin(string localPath)
         {
             return AdminConfig.IsEnable && localPath.ToLower().Contains("/" + AdminConfig.Path + "/");
+        }
+
+        /// <summary>
+        /// 是否请求Doc接口测试
+        /// </summary>
+        /// <param name="uri"></param>
+        /// <returns></returns>
+        internal static bool IsCallDoc(Uri uri)
+        {
+            return uri != null && IsCallDoc(uri.LocalPath);
+        }
+        internal static bool IsCallDoc(string localPath)
+        {
+            return DocConfig.IsEnable && localPath.ToLower().Contains("/" + DocConfig.Path + "/");
         }
 
         /// <summary>

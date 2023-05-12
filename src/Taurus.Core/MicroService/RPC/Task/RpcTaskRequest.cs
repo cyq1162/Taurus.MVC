@@ -14,14 +14,14 @@ namespace Taurus.MicroService
         /// </summary>
         public string Method { get; set; }
         /// <summary>
-        /// 请求的Url。【可由Rpc.GetHost(name)根据服服务名称获取主机地址】
+        /// 请求的Url（http或https）。【PS：主机地址部分可由：Rpc.GetHost(name)根据微服务注册模块名称获取】
         /// </summary>
         public string Url { get; set; }
         internal Uri Uri
         {
             get
             {
-                if (!string.IsNullOrEmpty(Url))
+                if (!string.IsNullOrEmpty(Url) && Url.StartsWith("http"))
                 {
                     return new Uri(Url);
                 }
@@ -36,5 +36,10 @@ namespace Taurus.MicroService
         /// 当前请求的数据
         /// </summary>
         public byte[] Data { get; set; }
+
+        /// <summary>
+        /// 超时：单位毫秒（ms）。
+        /// </summary>
+        public int Timeout { get; set; }
     }
 }

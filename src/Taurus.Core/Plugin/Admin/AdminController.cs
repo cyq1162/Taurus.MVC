@@ -425,7 +425,7 @@ namespace Taurus.Plugin.Admin
                     dt.NewRow(true).Sets(0, "MicroServer.Client.RcKey", MsConfig.Client.RcKey, "Register center secret key.");
                     dt.NewRow(true).Sets(0, "MicroServer.Client.RcUrl", MsConfig.Client.RcUrl, "Register center url.");
                     dt.NewRow(true).Sets(0, "MicroServer.Client.RcPath", "/" + MsConfig.Client.RcPath, "Register center local path.");
-                    
+
                 }
             }
             else if (type == "cyq.data")
@@ -479,7 +479,9 @@ namespace Taurus.Plugin.Admin
             dtTaurus.NewRow(true).Sets(0, "ProcessID", MvcConst.ProcessID, "Process id.");
             dtTaurus.NewRow(true).Sets(0, "ThreadID", Thread.CurrentThread.ManagedThreadId, "Identifier for the managed thread.");
             dtTaurus.NewRow(true).Sets(0, "ThreadCount", Process.GetCurrentProcess().Threads.Count, "Number of threads for the process.");
-            dtTaurus.NewRow(true).Sets(0, "TickCount", (Environment.TickCount / 1000) + "s | " + (Environment.TickCount / 1000 / 60) + "m | " + (Environment.TickCount / 1000 / 3600) + "h | " + (Environment.TickCount / 1000 / 3600 / 24) + "d", "Time since the system started.");
+            long tc = Environment.TickCount > 0 ? (long)Environment.TickCount : ((long)int.MaxValue + (Environment.TickCount & int.MaxValue));
+            TimeSpan ts = TimeSpan.FromMilliseconds(tc);
+            dtTaurus.NewRow(true).Sets(0, "TickCount", (int)ts.TotalSeconds + "s | " + (int)ts.TotalMinutes + "m | " + (int)ts.TotalHours + "h | " + (int)ts.TotalDays + "d", "Time since the system started(max(days)<=49.8)).");
             dtTaurus.NewRow(true).Sets(0, "ProcessorCount", Environment.ProcessorCount, "Number of processors on the machine.");
             dtTaurus.NewRow(true).Sets(0, "MachineName", Environment.MachineName, "Name of computer.");
             dtTaurus.NewRow(true).Sets(0, "UserName", Environment.UserName, "Name of the person who is logged on to Windows.");

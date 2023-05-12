@@ -38,8 +38,7 @@ namespace Taurus.MicroService
         public static void ExeTaskAsync(RpcTask task)
         {
             task.State = RpcTaskState.Running;
-            HttpClient httpClient = HttpClientPool.Create(task.Request.Uri);
-
+            HttpClient httpClient = HttpClientPool.Create(task.Request.Uri, task.Request.Timeout);
 
             //Task<HttpResponseMessage>[] httpResponseMessages = new Task<HttpResponseMessage>[1000];
 
@@ -68,21 +67,21 @@ namespace Taurus.MicroService
                 //}
                 //else
                 //{
-                    //                MultipartFormDataContent =》multipart / form - data
+                //                MultipartFormDataContent =》multipart / form - data
 
-                    //FormUrlEncodedContent =》application / x - www - form - urlencoded
+                //FormUrlEncodedContent =》application / x - www - form - urlencoded
 
-                    //StringContent =》application / json等
+                //StringContent =》application / json等
 
-                    //StreamContent =》binary
+                //StreamContent =》binary
 
-                    HttpRequestMessage request = new HttpRequestMessage(new HttpMethod(task.Request.Method), task.Request.Url);
-                    if (task.Request.Data != null)
-                    {
-                        request.Content = new StreamContent(new MemoryStream(task.Request.Data)) { };
-                    }
-                    AddHeader(task, request);
-                    task.task = httpClient.SendAsync(request);
+                HttpRequestMessage request = new HttpRequestMessage(new HttpMethod(task.Request.Method), task.Request.Url);
+                if (task.Request.Data != null)
+                {
+                    request.Content = new StreamContent(new MemoryStream(task.Request.Data)) { };
+                }
+                AddHeader(task, request);
+                task.task = httpClient.SendAsync(request);
                 //}
             }
             catch (Exception err)

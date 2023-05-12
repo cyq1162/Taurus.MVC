@@ -38,6 +38,10 @@ namespace Taurus.MicroService
             try
             {
                 wc = RpcClientPool.Create(task.Request.Uri);
+                if (task.Request.Timeout > 0)
+                {
+                    wc.Timeout = task.Request.Timeout;
+                }
                 wc.Headers.Add(MsConst.HeaderKey, (MsConfig.IsClient ? MsConfig.Client.RcKey : MsConfig.Server.RcKey));
                 //wc.Headers.Add("X-Real-IP", MvcConst.HostIP);
                 if (HttpContext.Current != null && HttpContext.Current.Request != null)
@@ -68,22 +72,12 @@ namespace Taurus.MicroService
                     case "PUT":
                     case "DELETE":
                     case "PATCH":
-                        if (task.Request.Method.ToLower() != "head")
+                        if (task.Request.Data == null)
                         {
-                            if (task.Request.Data == null)
-                            {
-                                task.Request.Data = new byte[0];
-                            }
+                            task.Request.Data = new byte[0];
                         }
                         SetResult(wc, rpcResult, wc.UploadData(task.Request.Uri, task.Request.Method, task.Request.Data));
                         break;
-                    //case "HEAD":
-                    //    Stream stream = wc.OpenWrite(task.Request.Url, "HEAD");
-                    //    SetResult(wc, rpcResult, null);
-                    //    stream.Close();
-                    //    break;
-
-
                 }
 
             }
@@ -230,7 +224,7 @@ namespace Taurus.MicroService
                     }
                     else
                     {
-                       // System.Diagnostics.Debug.WriteLine("Thread_" + i.ToString() + " : " + threadExeCountArray[i] + "/" + exeTaskTotalCount);
+                        // System.Diagnostics.Debug.WriteLine("Thread_" + i.ToString() + " : " + threadExeCountArray[i] + "/" + exeTaskTotalCount);
                         auto.WaitOne();
                     }
                 }

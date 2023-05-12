@@ -80,7 +80,7 @@ namespace Taurus.Core
             #endregion
 
             #region 4、网关代理请求检测与转发
-            if (!WebTool.IsCallMicroService(uri) && Rpc.Gateway.Proxy(context, true))
+            if (!WebTool.IsSysInternalUrl(uri) && Rpc.Gateway.Proxy(context, true))
             {
                 WebTool.SetRunToEnd(context);
                 context.Response.End();

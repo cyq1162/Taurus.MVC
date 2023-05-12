@@ -71,6 +71,7 @@ namespace Taurus.MicroService
             {
                 return;
             }
+            wc.Timeout = 0;//重置为默认超时时间。
             wc.Headers.Clear();
             if (rpcClientPool.ContainsKey(uri.Authority))
             {

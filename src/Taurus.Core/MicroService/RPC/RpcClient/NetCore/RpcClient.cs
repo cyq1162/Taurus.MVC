@@ -28,7 +28,36 @@ namespace Taurus.MicroService
                 return _ResponseStatusCode;
             }
         }
-
+        private int _Timeout = 0;
+        /// <summary>
+        /// 请求超时，单位：毫秒（ms）。
+        /// </summary>
+        public int Timeout
+        {
+            get
+            {
+                if (wc != null)
+                {
+                    return wc.Timeout;
+                }
+                if (_Timeout <= 0)
+                {
+                    _Timeout = MsConfig.Server.GatewayTimeout * 1000;
+                }
+                return _Timeout;
+            }
+            set
+            {
+                if (wc != null)
+                {
+                    wc.Timeout = value;
+                }
+                else
+                {
+                    _Timeout = value;
+                }
+            }
+        }
         private static bool isNet6 = Environment.Version.Major >= 6;
         MyWebClient wc;
         public RpcClient()
@@ -142,6 +171,18 @@ namespace Taurus.MicroService
             return ExeTask(method, address, data);
         }
 
+        public void Head(string url)
+        {
+            if (wc != null)
+            {
+                wc.Head(url);
+            }
+            else
+            {
+                ExeTask("HEAD", new Uri(url), null);
+            }
+        }
+
         private byte[] ExeTask(string method, Uri address, byte[] data)
         {
             HttpRequestMessage request = new HttpRequestMessage(new HttpMethod(method), address.AbsoluteUri);
@@ -156,7 +197,7 @@ namespace Taurus.MicroService
             {
                 request.Content = new StreamContent(new MemoryStream(data)) { };
             }
-            HttpClient httpClient = HttpClientPool.Create(address);
+            HttpClient httpClient = HttpClientPool.Create(address, Timeout);
             Task<HttpResponseMessage> task = httpClient.SendAsync(request);
             return GetHttpClientBytes(task);
         }
@@ -166,7 +207,7 @@ namespace Taurus.MicroService
         {
             if (task.Status != TaskStatus.RanToCompletion)
             {
-                task.Wait(30000);
+                task.Wait(Timeout);
             }
             _ResponseStatusCode = (int)task.Result.StatusCode;
             if (ResponseHeaders != null)

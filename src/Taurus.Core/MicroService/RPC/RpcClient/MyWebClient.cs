@@ -3,6 +3,7 @@ using CYQ.Data.Table;
 using System;
 using System.Net;
 using System.Net.Mime;
+using System.Threading;
 using System.Web.UI;
 
 namespace Taurus.MicroService
@@ -21,6 +22,27 @@ namespace Taurus.MicroService
                 _ResponseStatusCode = value;
             }
         }
+
+        private int _Timeout = 0;
+        /// <summary>
+        /// 超时【单位：毫秒】
+        /// </summary>
+        public int Timeout
+        {
+            get
+            {
+                if (_Timeout <= 0)
+                {
+                    _Timeout = MsConfig.Server.GatewayTimeout * 1000;
+                }
+                return _Timeout;
+            }
+            set
+            {
+                _Timeout = value;
+            }
+        }
+
         bool isHeadRequest = false;
         private WebRequest GetHttpWebRequestByNet(Uri address)
         {
@@ -230,7 +252,7 @@ namespace Taurus.MicroService
                     request.Method = "HEAD";
                     isHeadRequest = false;
                 }
-                request.Timeout = MsConfig.Server.GatewayTimeout * 1000;
+                request.Timeout = Timeout;
                 request.Proxy = null;
                 return request;
             }

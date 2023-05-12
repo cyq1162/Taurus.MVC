@@ -23,6 +23,7 @@ namespace Taurus.MicroService
         {
             return Wait(30000);
         }
+        private bool WaitIsThrowException = false;
         /// <summary>
         /// 等待请求【指定超时时间】
         /// </summary>
@@ -30,9 +31,20 @@ namespace Taurus.MicroService
         /// <returns></returns>
         public bool Wait(int millisecondsTimeout)
         {
-            if (task != null)
+            if (task != null && !WaitIsThrowException)
             {
-                return task.Wait(millisecondsTimeout);
+                try
+                {
+                    return task.Wait(millisecondsTimeout);
+                }
+                catch (Exception err)
+                {
+                    WaitIsThrowException = true;
+                    State = RpcTaskState.Complete;
+                    Result = new RpcTaskResult() { Error = err };
+                    return false;
+                }
+
             }
             return false;
         }
@@ -105,12 +117,22 @@ namespace Taurus.MicroService
                     result.ResultByte = content.ReadAsByteArrayAsync().Result;
                     foreach (var item in content.Headers)
                     {
-                        string value = string.Empty;
-                        foreach (var v in item.Value)
-                        {
-                            value = v;
-                            break;
-                        }
+                        string value = string.Join(" ", item.Value);
+                        //foreach (var v in item.Value)
+                        //{
+                        //    value = v;
+                        //    break;
+                        //}
+                        result.Header.Add(item.Key, value);
+                    }
+                    foreach (var item in message.Headers)
+                    {
+                        string value = string.Join(" ", item.Value);
+                        //foreach (var v in item.Value)
+                        //{
+                        //    value = v;
+                        //    break;
+                        //}
                         result.Header.Add(item.Key, value);
                     }
                 }

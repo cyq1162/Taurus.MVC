@@ -36,13 +36,14 @@ namespace Taurus.Plugin.Limit
                 {
                     continue;
                 }
-                if (item.Contains("*"))
+                string key = item.Trim();
+                if (key.Contains("*"))
                 {
-                    list.Add(item.Split('*')[0]);
+                    key = key.Split('*')[0];
                 }
-                else
+                if (!dic.ContainsKey(key))
                 {
-                    dic.Add(item, 1);
+                    dic.Add(key, 1);
                 }
             }
             //重新赋值，修改引用
