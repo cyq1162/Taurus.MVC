@@ -7,7 +7,7 @@ using Taurus.MicroService;
 using Taurus.Mvc;
 using Taurus.Core;
 using Microsoft.AspNetCore.Hosting.Server.Features;
-using Microsoft.AspNetCore.Http.Internal;
+using System.Configuration;
 
 namespace Microsoft.AspNetCore.Http
 {
@@ -128,7 +128,15 @@ namespace Microsoft.AspNetCore.Http
                         }
                     }
                 }
-                SetAppRunUrl(AppConfig.GetApp("Host"));
+                if (!SetAppRunUrl(AppConfig.GetApp("Host")))
+                {
+                    object urls = ConfigurationManager.GetSection("urls");
+                    if (urls != null)
+                    {
+                        SetAppRunUrl(urls.ToString());
+                    }
+                }
+
             }
         }
     }
