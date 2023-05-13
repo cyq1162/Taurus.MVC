@@ -172,8 +172,6 @@ namespace Taurus.Mvc
         }
 
         #region 处理Shared模板View
-        static MDictionary<string, XHtmlAction> sharedViews = new MDictionary<string, XHtmlAction>();
-        static readonly object lockObj = new object();
         /// <summary>
         /// 获取Shared文件View
         /// </summary>
@@ -203,33 +201,9 @@ namespace Taurus.Mvc
                     return null;
                 }
             }
-            XHtmlAction sharedView = null;
-            string key = EncryptHelper.GetHashKey(path);
-
-            if (sharedViews.ContainsKey(key))
-            {
-                sharedView = sharedViews[key];
-                if (sharedView.IsXHtmlChanged)
-                {
-                    sharedViews.Remove(key);
-                    sharedView = null;
-                }
-                else
-                {
-                    return sharedView;
-                }
-            }
-
-            sharedView = new XHtmlAction(true, true);
+            XHtmlAction sharedView = new XHtmlAction(true, true);
             if (sharedView.Load(path, XmlCacheLevel.Day, true))
             {
-                lock (lockObj)
-                {
-                    if (!sharedView.Contains(key))
-                    {
-                        sharedViews.Add(key, sharedView);
-                    }
-                }
                 return sharedView;
             }
 

@@ -27,7 +27,7 @@ namespace Taurus.MicroService
         /// </summary>
         internal static void Start(string host)
         {
-            if (string.IsNullOrEmpty(MvcConfig.RunUrl))
+            if (string.IsNullOrEmpty(MvcConfig.RunUrl) && !string.IsNullOrEmpty(host))
             {
                 MvcConfig.RunUrl = host.ToLower().TrimEnd('/');//设置当前程序运行的请求网址。
             }
@@ -71,7 +71,7 @@ namespace Taurus.MicroService
                 if (!string.IsNullOrEmpty(MsConfig.Client.Name) && !string.IsNullOrEmpty(MsConfig.Client.RcUrl) && MsConfig.Client.RcUrl != MvcConfig.RunUrl)
                 {
                     MsLog.WriteDebugLine("Current MicroService Type ：Client of 【" + MsConfig.Client.Name + "】");
-                    
+
                     if (!string.IsNullOrEmpty(MsConfig.Client.Domain))
                     {
                         MsLog.WriteDebugLine("Current MicroService Domin：" + MsConfig.Client.Domain);
