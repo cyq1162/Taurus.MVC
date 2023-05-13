@@ -5,7 +5,7 @@ using Taurus.MicroService;
 namespace Taurus.Plugin.Doc
 {
     /// <summary>
-    /// 为WebAPI文档自动化测试设置全局图片默认值|追加参数(其它参数设置用当前Controller控制器的SetQuery方法设置)。
+    /// 为WebAPI文档自动化测试设置全局图片默认值|追加参数(其它参数设置用当前Controller控制器的SetQuery方法设置)
     /// </summary>
     public static class DocConfig
     {
