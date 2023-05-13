@@ -1,5 +1,6 @@
 ﻿using CYQ.Data;
 using System.Web;
+using Taurus.MicroService;
 
 namespace Taurus.Plugin.Doc
 {
@@ -11,13 +12,13 @@ namespace Taurus.Plugin.Doc
 
         /// <summary>
         /// 配置是否启用WebAPI文档自动生成功能 
-        /// 如 Doc.IsEnable ：true， 默认值：true
+        /// 如 Doc.IsEnable ：true， 默认值：纯网关：false，其它：true
         /// </summary>
         public static bool IsEnable
         {
             get
             {
-                return AppConfig.GetAppBool("Doc.IsEnable", true);
+                return AppConfig.GetAppBool("Doc.IsEnable", MsConfig.IsClient || MsConfig.IsRegCenter);
             }
             set
             {
