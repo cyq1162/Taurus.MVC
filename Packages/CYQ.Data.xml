@@ -1391,15 +1391,41 @@
                      }
             </code></example>
         </member>
+        <member name="M:CYQ.Data.Cache.CacheManage.Add(System.String,System.Object)">
+            <summary>
+            添一个Cache对象(不存在则添加，存在则返回false)
+            </summary>
+        </member>
         <member name="M:CYQ.Data.Cache.CacheManage.Set(System.String,System.Object)">
             <summary>
-            设置一个Cache对象
+            设置一个Cache对象(存在则更新，不存在则添加)
             </summary>
+        </member>
+        <member name="M:CYQ.Data.Cache.CacheManage.Lock(System.String,System.Int32)">
+            <summary>
+            加锁（分布式锁需要启用Redis或Memcached）
+            </summary>
+            <param name="key">key</param>
+            <param name="waitTimeoutSeconds">尝试获取锁的最大等待时间（s秒），超过这个值，则认为获取锁失败</param>
+            <returns></returns>
+        </member>
+        <member name="M:CYQ.Data.Cache.CacheManage.UnLock(System.String)">
+            <summary>
+            释放（分布式锁）
+            </summary>
+            <returns></returns>
         </member>
         <member name="M:CYQ.Data.Cache.CacheManage.Clear">
             <summary>
             清除所有缓存
             </summary>
+        </member>
+        <member name="M:CYQ.Data.Cache.CacheManage.Contains(System.String)">
+            <summary>
+            是否存在缓存
+            </summary>
+            <param name="key"></param>
+            <returns></returns>
         </member>
         <member name="M:CYQ.Data.Cache.CacheManage.Get(System.String)">
             <summary>
@@ -1750,6 +1776,15 @@
             This method returns true if the value was successfully set.
             </summary>
         </member>
+        <member name="M:CYQ.Data.Cache.MemcachedClient.Add(System.String,System.Object)">
+            <summary>
+            This method corresponds to the "add" command in the memcached protocol. 
+            It will set the given key to the given value only if the key does not already exist.
+            Using the overloads it is possible to specify an expiry time, either relative as a TimeSpan or 
+            absolute as a DateTime. It is also possible to specify a custom hash to override server selection.
+            This method returns true if the value was successfully added.
+            </summary>
+        </member>
         <member name="M:CYQ.Data.Cache.MemcachedClient.Get(System.String)">
             <summary>
             This method corresponds to the "get" command in the memcached protocol.
@@ -1857,6 +1892,12 @@
             Reads from the socket until the sequence '\r\n' is encountered.
             </summary>
         </member>
+        <member name="M:CYQ.Data.Cache.MSocket.SkipToEndOfLine(System.Int32)">
+            <summary>
+            //跳过N个命令的结果
+            </summary>
+            <param name="cmdCount"></param>
+        </member>
         <member name="M:CYQ.Data.Cache.MSocket.Reset">
             <summary>
             Resets this PooledSocket by making sure the incoming buffer of the socket is empty.
@@ -1939,6 +1980,11 @@
         <member name="P:CYQ.Data.Cache.HostServer.HostList">
             <summary>
             主机列表。
+            </summary>
+        </member>
+        <member name="P:CYQ.Data.Cache.HostServer.HashNodeCount">
+            <summary>
+            一致性Hash产生的结点数，数越大，分布越平均
             </summary>
         </member>
         <member name="T:CYQ.Data.Cache.HostNode">
@@ -2346,6 +2392,11 @@
             本机内网IP，若无，则返回主机名
             </summary>
         </member>
+        <member name="P:CYQ.Data.LocalEnvironment.ProcessID">
+            <summary>
+            当前进程ID
+            </summary>
+        </member>
         <member name="P:CYQ.Data.LocalEnvironment.ProcessWorkingSet">
             <summary>
             当前进程占用的内存（M）
@@ -2746,21 +2797,6 @@
         <member name="T:CYQ.Data.Orm.TableNameAttribute">
             <summary>
             数据库：表名
-            </summary>
-        </member>
-        <member name="T:CYQ.Data.JsonIgnoreAttribute">
-            <summary>
-            Json 转换忽略的字段
-            </summary>
-        </member>
-        <member name="T:CYQ.Data.JsonEnumToStringAttribute">
-            <summary>
-            Json 枚举字段转字符串
-            </summary>
-        </member>
-        <member name="T:CYQ.Data.JsonEnumToDescriptionAttribute">
-            <summary>
-            Json 枚举字段转属性描述
             </summary>
         </member>
         <member name="T:CYQ.Data.Orm.DBFast">
@@ -4894,6 +4930,26 @@
             <param name="value"></param>
             <returns></returns>
         </member>
+        <member name="T:CYQ.Data.Tool.JsonIgnoreAttribute">
+            <summary>
+            Json 转换忽略的字段
+            </summary>
+        </member>
+        <member name="T:CYQ.Data.Tool.JsonFormatAttribute">
+            <summary>
+            Json 格式化【时间】
+            </summary>
+        </member>
+        <member name="T:CYQ.Data.Tool.JsonEnumToStringAttribute">
+            <summary>
+            Json 枚举字段转字符串
+            </summary>
+        </member>
+        <member name="T:CYQ.Data.Tool.JsonEnumToDescriptionAttribute">
+            <summary>
+            Json 枚举字段转属性描述
+            </summary>
+        </member>
         <member name="T:CYQ.Data.Tool.ReflectTool">
             <summary>
             反射工具（带缓存）
@@ -5812,12 +5868,7 @@
             系统内部使用： ascii小于32（包括\n \t \r）、"(双引号)，\(转义符号) 进行编码（规则为：@#{0}#@ {0}为asciii值，系统转的时候会自动解码）
             </summary>
         </member>
-        <member name="T:CYQ.Data.Tool.JsonHelper">
-            <summary>
-            Json class for you easy to operate json
-            <para>功能全面的json帮助类</para>
-            </summary>
-        </member>
+        <!-- 对于成员“T:CYQ.Data.Tool.JsonHelper”忽略有格式错误的 XML 注释 -->
         <member name="M:CYQ.Data.Tool.JsonHelper.#ctor(System.Boolean)">
             <param name="addHead">with easyui header ?<para>是否带输出头</para></param>
         </member>
@@ -6333,31 +6384,43 @@
         </member>
         <member name="M:CYQ.Data.Tool.MDictionary`2.Add(`0,`1)">
             <summary>
-            添加值【不存则，则添加；存在，则忽略】
+            添加值（带锁）【不存则，则添加；存在，则忽略】
             </summary>
+        </member>
+        <member name="M:CYQ.Data.Tool.MDictionary`2.Remove(`0)">
+            <summary>
+            移除（带锁）
+            </summary>
+            <param name="key"></param>
+            <returns></returns>
         </member>
         <member name="M:CYQ.Data.Tool.MDictionary`2.Get(`0)">
             <summary>
-            当Key为int时，通过此方法取值
+            当Key为int时，通过此方法取值（带锁）
             </summary>
             <param name="key"></param>
             <returns></returns>
         </member>
         <member name="M:CYQ.Data.Tool.MDictionary`2.Set(`0,`1)">
             <summary>
-            检查值存在【则更新】，不存在则添加
+            检查值存在【则更新】，不存在则添加（带锁）
+            </summary>
+        </member>
+        <member name="M:CYQ.Data.Tool.MDictionary`2.Clear">
+            <summary>
+            清空数据（带锁）
             </summary>
         </member>
         <member name="P:CYQ.Data.Tool.MDictionary`2.Item(`0)">
             <summary>
-            索引取值
+            索引取值（带锁）
             </summary>
             <param name="key"></param>
             <returns></returns>
         </member>
         <member name="P:CYQ.Data.Tool.MDictionary`2.Item(System.Int32)">
             <summary>
-            通过index索引取值
+            通过index索引取值（带锁）
             </summary>
             <returns></returns>
         </member>
