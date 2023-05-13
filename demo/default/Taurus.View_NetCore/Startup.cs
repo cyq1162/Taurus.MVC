@@ -18,8 +18,8 @@ namespace Taurus.View
         public void ConfigureServices(IServiceCollection services)
         {
             // Taurus
-            services.AddDistributedMemoryCache();//支持Session的必要组件
-            services.AddSession();
+            // services.AddDistributedMemoryCache();//支持Session的必要组件
+            //services.AddSession();
             // services.AddDataProtection().PersistKeysToFileSystem(new DirectoryInfo(Directory.GetCurrentDirectory() + Path.DirectorySeparatorChar + "DataProtection"));
             services.AddHttpContext();
             services.Configure<FormOptions>(options => options.MultipartBodyLengthLimit = long.MaxValue);
@@ -27,23 +27,20 @@ namespace Taurus.View
             {
                 if (MsConfig.IsServer && MvcConfig.SslCertificate.Count > 0)
                 {
-                    //if (MsConfig.IsRegCenter)
-                    //{
-                        string url = !string.IsNullOrEmpty(MvcConfig.RunUrl) ? MvcConfig.RunUrl : AppConfig.GetApp("Host");
-                        if (!string.IsNullOrEmpty(url) && !url.StartsWith("https"))
+                    string url = !string.IsNullOrEmpty(MvcConfig.RunUrl) ? MvcConfig.RunUrl : AppConfig.GetApp("Host");
+                    if (!string.IsNullOrEmpty(url) && !url.StartsWith("https"))
+                    {
+                        string[] items = url.Split(":");
+                        if (items.Length == 2)
                         {
-                            string[] items = url.Split(":");
-                            if (items.Length == 2)
-                            {
-                                x.Listen(IPAddress.Any, 80);
-                            }
-                            else if (items.Length == 3)
-                            {
-                                x.Listen(IPAddress.Any, int.Parse(items[2]));
-                            }
+                            x.Listen(IPAddress.Any, 80);
                         }
-                    //}
-                    //x.Listen(IPAddress.Any, 9999);
+                        else if (items.Length == 3)
+                        {
+                            x.Listen(IPAddress.Any, int.Parse(items[2]));
+                        }
+                    }
+
                     x.Listen(IPAddress.Any, 443, op =>
                     {
 
@@ -80,7 +77,7 @@ namespace Taurus.View
         public void Configure(IApplicationBuilder app, IWebHostEnvironment env)//把IHostingEnvironment IWebHostEnvironment
         {
             app.UseWebSockets();
-            app.UseSession();
+            //app.UseSession();
             app.UseHttpContext();
             app.UseTaurusMvc(env);
             app.UseStaticFiles();//做为注册中心服务时，静态文件功能应该放后面。

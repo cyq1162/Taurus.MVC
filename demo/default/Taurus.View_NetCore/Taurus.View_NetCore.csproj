@@ -11,16 +11,11 @@
 
 
   <ItemGroup>
-    <None Include="wwwroot\Setting\DTD\xhtml-lat1.ent" />
-    <None Include="wwwroot\Setting\DTD\xhtml-special.ent" />
-    <None Include="wwwroot\Setting\DTD\xhtml-symbol.ent" />
-    <None Include="wwwroot\Setting\DTD\xhtml1-transitional.dtd" />
-    <None Include="wwwroot\style\js\bootstrap.min.js" />
-    <None Include="wwwroot\style\js\jquery.min.js" />
-    <None Include="wwwroot\style\js\master.js" />
-    <None Include="wwwroot\style\js\webapidemo.js" />
-    <None Include="wwwroot\Views\Doc\js\doc.js" />
-    <None Include="wwwroot\Views\Doc\js\jquery.min.js" />
+    <None Include="wwwroot\Views\styles\js\bootstrap.min.js" />
+    <None Include="wwwroot\Views\styles\js\jquery.min.js" />
+    <None Include="wwwroot\Views\styles\js\master.js" />
+    <None Include="wwwroot\Views\styles\js\webapidemo.js" />
+    <None Include="wwwroot\Views\styles\js\doc.js" />
   </ItemGroup>
 
   <ItemGroup>
@@ -38,6 +33,16 @@
   <ItemGroup>
     <Content Update="appsettings.json">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
+    <Content Update="wwwroot\App_Data\log\MicroService_20230427.txt">
+      <ExcludeFromSingleFile>true</ExcludeFromSingleFile>
+      <CopyToPublishDirectory>PreserveNewest</CopyToPublishDirectory>
+    </Content>
+    <Content Update="wwwroot\Views\Admin\setting.html">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
+    <Content Update="wwwroot\Views\Admin\osInfo.html">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </Content>
     <Content Update="wwwroot\Views\Demo\default.html">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
@@ -63,16 +68,18 @@
     <Content Update="wwwroot\Views\Home\webapi.html">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </Content>
-    <Content Update="wwwroot\Views\MicroService\index.html">
+    <Content Update="wwwroot\Views\Admin\config.html">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
+    <Content Update="wwwroot\Views\Admin\index.html">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
+    <Content Update="wwwroot\Views\Admin\common.html">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </Content>
     <Content Update="wwwroot\Views\Shared\master.html">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </Content>
-  </ItemGroup>
-
-  <ItemGroup>
-    <Folder Include="wwwroot\Logs\" />
   </ItemGroup>
 
 </Project>
