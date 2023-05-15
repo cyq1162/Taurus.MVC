@@ -69,7 +69,7 @@ namespace Taurus.Mvc
                                     continue;
                                 }
                                 _HostIP = ipAddr;
-                                break;
+                                return _HostIP;
                             }
                         }
                     }
