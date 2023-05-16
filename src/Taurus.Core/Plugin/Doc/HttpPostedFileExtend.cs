@@ -11,7 +11,7 @@ namespace Taurus.Plugin.Doc
     /// <summary>
     /// 创建HttpPostedFile文件扩展类(为实现DocController自动化测试实现的功能)
     /// </summary>
-    internal class HttpPostedFileExtend
+    public class HttpPostedFileExtend
     {
         public static HttpPostedFile Create(string path)
         {

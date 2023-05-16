@@ -8,6 +8,7 @@ using Taurus.Mvc;
 using Taurus.Core;
 using Microsoft.AspNetCore.Hosting.Server.Features;
 using System.Configuration;
+using System.Threading;
 
 namespace Microsoft.AspNetCore.Http
 {
@@ -84,13 +85,10 @@ namespace Microsoft.AspNetCore.Http
         }
         public static IApplicationBuilder UseTaurusMvc(this IApplicationBuilder builder, string webRootPath)
         {
-            SetAppRunUrl(builder);
-            MsRun.Start(MvcConfig.RunUrl);//
-            //if (!string.IsNullOrEmpty(MsConfig.AppRunUrl) || MsConfig.IsRegCenterOfMaster)
-            //{
-            //    MsRun.Start(MsConfig.AppRunUrl);//
-            //}
-            //System.Web.HttpContext.Configure(httpContextAccessor);
+            Thread thread = new Thread(new ParameterizedThreadStart(StartMicroService));
+            thread.Start(builder);
+
+
             AppConfig.WebRootPath = webRootPath;//设置根目录地址，ASPNETCore的根目录和其它应用不一样。
             //执行一次，用于注册事件
             UrlRewrite url = new UrlRewrite();
@@ -98,6 +96,14 @@ namespace Microsoft.AspNetCore.Http
             ControllerCollector.InitControllers();
             return builder.UseMiddleware<TaurusMiddleware>();
         }
+
+        private static void StartMicroService(object builderObj)
+        {
+            Thread.Sleep(1000);//线程延时，待监听后，再获取监听端口号。
+            SetAppRunUrl(builderObj as IApplicationBuilder);
+            MsRun.Start(MvcConfig.RunUrl);
+        }
+
         private static bool SetAppRunUrl(string host)
         {
             if (string.IsNullOrEmpty(host) || host.EndsWith(":0"))
@@ -124,6 +130,7 @@ namespace Microsoft.AspNetCore.Http
                     {
                         if (SetAppRunUrl(host))
                         {
+                            Console.WriteLine("Set MvcConfig.RunUrl = " + MvcConfig.RunUrl);
                             return;
                         }
                     }

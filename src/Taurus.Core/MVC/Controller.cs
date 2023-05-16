@@ -590,9 +590,9 @@ namespace Taurus.Mvc
                     try
                     {
                         //特殊值处理
-                        if (t.Name == "HttpPostedFile" && value is string && Convert.ToString(value) == DocConfig.DefaultImg.ToLower())
+                        if (t.Name == "HttpPostedFile" && value is string)
                         {
-                            if (!string.IsNullOrEmpty(DocConfig.DefaultImg))
+                            if (!string.IsNullOrEmpty(DocConfig.DefaultImg) && Convert.ToString(value) == DocConfig.DefaultImg.ToLower())
                             {
                                 paras[i] = DocConfig.DefaultImgHttpPostedFile;
                             }
