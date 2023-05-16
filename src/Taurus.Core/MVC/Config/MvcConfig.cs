@@ -132,6 +132,7 @@ namespace Taurus.Mvc
                 AppConfig.SetApp("Taurus.SslPath", value);
             }
         }
+        public static Dictionary<string, X509Certificate2> _SslCertificate = new Dictionary<string, X509Certificate2>(StringComparer.OrdinalIgnoreCase);
         /// <summary>
         /// 获取应用证书【证书路径由SslPath配置】（只读）
         /// </summary>
@@ -139,7 +140,6 @@ namespace Taurus.Mvc
         {
             get
             {
-                var certificates = new Dictionary<string, X509Certificate2>(StringComparer.OrdinalIgnoreCase);
                 string sslFolder = AppConfig.WebRootPath + SslPath;
                 if (Directory.Exists(sslFolder))
                 {
@@ -151,11 +151,15 @@ namespace Taurus.Mvc
                         {
                             string pwd = IOHelper.ReadAllText(pwdPath);
                             string domain = Path.GetFileName(pwdPath).Replace(".txt", "");
-                            certificates.Add(domain, new X509Certificate2(file, pwd));
+                            if (!_SslCertificate.ContainsKey(domain))
+                            {
+                                _SslCertificate.Add(domain, new X509Certificate2(file, pwd));//实例化比较耗时，避开重复实例化，兼顾缓存更新。
+                            }
                         }
                     }
                 }
-                return certificates;
+
+                return _SslCertificate;
             }
         }
         /// <summary>

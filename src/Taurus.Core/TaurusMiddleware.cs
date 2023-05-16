@@ -110,10 +110,17 @@ namespace Microsoft.AspNetCore.Http
             {
                 return false;
             }
-            string[] items = host.Split(":");
-            string port = items[items.Length - 1];
-            string url = items[0] + "://" + MvcConst.HostIP + ":" + port;
-            MvcConfig.RunUrl = url;
+            if (host.Contains("*:"))
+            {
+                string[] items = host.Split(":");
+                string port = items[items.Length - 1];
+                string url = items[0] + "://" + MvcConst.HostIP + ":" + port;
+                MvcConfig.RunUrl = url;
+            }
+            else
+            {
+                MvcConfig.RunUrl = host;
+            }
             return true;
         }
 

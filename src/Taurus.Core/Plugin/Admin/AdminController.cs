@@ -349,7 +349,7 @@ namespace Taurus.Plugin.Admin
                 dt.NewRow(true).Sets(0, "Taurus.RouteMode", MvcConfig.RouteMode, "Route mode for selected.");
                 dt.NewRow(true).Sets(0, "Taurus.Controllers", MvcConfig.Controllers, "Load controller names.");
                 dt.NewRow(true).Sets(0, "Taurus.Views", MvcConfig.Views, "Mvc view folder name.");
-                dt.NewRow(true).Sets(0, "Taurus.SslPath", MvcConfig.SslPath, "Ssl path for https.");
+                dt.NewRow(true).Sets(0, "Taurus.SslPath", MvcConfig.SslPath, "Ssl path for https (*.pfx for ssl , *.txt for pwd).");
                 dt.NewRow(true).Sets(0, "----------SslCertificate - Count", MvcConfig.SslCertificate.Count, "Num of ssl for https (Show Only).");
                 if (MvcConfig.SslCertificate.Count > 0)
                 {
@@ -439,19 +439,57 @@ namespace Taurus.Plugin.Admin
 
                 dt.NewRow(true).Sets(0, "SchemaMapPath", AppConfig.DB.SchemaMapPath, "Database metadata cache path.");
                 dt.NewRow(true);
-                dt.NewRow(true).Sets(0, "OpenDebugInfo", AppConfig.Debug.OpenDebugInfo, "Record sql on dev debug.");
+                dt.NewRow(true).Sets(0, "OpenDebugInfo", AppConfig.Debug.OpenDebugInfo, "Record sql when dev debug.");
                 dt.NewRow(true);
-                dt.NewRow(true).Sets(0, "SqlFilter", AppConfig.Debug.SqlFilter + "ms", "Write sql to log file when sql exe time > value(value must>0).");
+                dt.NewRow(true).Sets(0, "SqlFilter", AppConfig.Debug.SqlFilter + " (ms)", "Write sql to log file when sql exe time > value(value must>0).");
 
                 dt.NewRow(true);
                 dt.NewRow(true).Sets(0, "IsAutoCache", AppConfig.Cache.IsAutoCache, "Use auto cache.");
-                dt.NewRow(true).Sets(0, "DefaultCacheTime", AppConfig.Cache.DefaultCacheTime + "m", "Default cache time (minute).");
+                dt.NewRow(true).Sets(0, "DefaultCacheTime", AppConfig.Cache.DefaultCacheTime + " (m)", "Default cache time (minute).");
 
-                dt.NewRow(true);
-                dt.NewRow(true).Sets(0, "RedisServers", string.IsNullOrEmpty(AppConfig.Cache.RedisServers) ? "" : "******", "Redis servers.");
-                dt.NewRow(true).Sets(0, "RedisUseDBCount", AppConfig.Cache.RedisUseDBCount, "Redis use db count.");
-                dt.NewRow(true).Sets(0, "RedisUseDBIndex", AppConfig.Cache.RedisUseDBIndex, "Redis use db index.");
+                if (!string.IsNullOrEmpty(AppConfig.Cache.RedisServers))
+                {
+                    dt.NewRow(true);
+                    dt.NewRow(true).Sets(0, "RedisUseDBCount", AppConfig.Cache.RedisUseDBCount, "Redis use db count.");
+                    dt.NewRow(true).Sets(0, "RedisUseDBIndex", AppConfig.Cache.RedisUseDBIndex, "Redis use db index.");
+                    string[] items = AppConfig.Cache.RedisServers.Split(',');
+                    dt.NewRow(true).Sets(0, "----------RedisServers - Count", items.Length, "Num of server node for redis (Show Only).");
 
+                    for (int i = 0; i < items.Length; i++)
+                    {
+                        dt.NewRow(true).Sets(0, "----------RedisServers - " + (i + 1), items[i], "Server node for redis (Show Only).");
+                    }
+
+                    if (!string.IsNullOrEmpty(AppConfig.Cache.RedisServersBak))
+                    {
+                        items = AppConfig.Cache.RedisServersBak.Split(',');
+                        dt.NewRow(true).Sets(0, "----------RedisServersBak - Count", items.Length, "Num of server node for redis bak(Show Only).");
+                        for (int i = 0; i < items.Length; i++)
+                        {
+                            dt.NewRow(true).Sets(0, "----------RedisServersBak - " + (i + 1), items[i], "Server node for redis (Show Only).");
+                        }
+                    }
+                }
+                if (!string.IsNullOrEmpty(AppConfig.Cache.MemCacheServers))
+                {
+                    string[] items = AppConfig.Cache.MemCacheServers.Split(',');
+                    dt.NewRow(true).Sets(0, "----------MemCacheServers - Count", items.Length, "Num of server node for memcache (Show Only).");
+
+                    for (int i = 0; i < items.Length; i++)
+                    {
+                        dt.NewRow(true).Sets(0, "----------MemCacheServers - " + (i + 1), items[i], "Server node for memcache (Show Only).");
+                    }
+
+                    if (!string.IsNullOrEmpty(AppConfig.Cache.MemCacheServersBak))
+                    {
+                        items = AppConfig.Cache.MemCacheServersBak.Split(',');
+                        dt.NewRow(true).Sets(0, "----------MemCacheServersBak - Count", items.Length, "Num of server node for memcache bak(Show Only).");
+                        for (int i = 0; i < items.Length; i++)
+                        {
+                            dt.NewRow(true).Sets(0, "----------MemCacheServersBak - " + (i + 1), items[i], "Server node for memcache (Show Only).");
+                        }
+                    }
+                }
                 dt.NewRow(true);
                 foreach (ConnectionStringSettings item in ConfigurationManager.ConnectionStrings)
                 {
