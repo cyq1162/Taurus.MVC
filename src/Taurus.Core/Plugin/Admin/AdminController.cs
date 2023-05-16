@@ -110,6 +110,19 @@ namespace Taurus.Plugin.Admin
             }
 
         }
+
+        private string GetRouteMode()
+        {
+            switch (MvcConfig.RouteMode)
+            {
+                case 1:
+                    return "1 【/controller/method】";
+                case 2:
+                    return "2 【/module/controller/method】";
+            }
+            return "0 【/method】 (code in DefaultController.cs)";
+        }
+
         /// <summary>
         /// 微服务UI首页
         /// </summary>
@@ -346,7 +359,8 @@ namespace Taurus.Plugin.Admin
                 dt.NewRow(true).Sets(0, "Taurus.RunUrl", MvcConfig.RunUrl, "Application run url.");
                 dt.NewRow(true).Sets(0, "Taurus.DefaultUrl", MvcConfig.DefaultUrl, "Application default url.");
                 dt.NewRow(true).Sets(0, "Taurus.IsAllowCORS", MvcConfig.IsAllowCORS, "Application is allow cross-origin resource sharing.");
-                dt.NewRow(true).Sets(0, "Taurus.RouteMode", MvcConfig.RouteMode, "Route mode for selected.");
+
+                dt.NewRow(true).Sets(0, "Taurus.RouteMode", GetRouteMode(), "Route mode for selected.");
                 dt.NewRow(true).Sets(0, "Taurus.Controllers", MvcConfig.Controllers, "Load controller names.");
                 dt.NewRow(true).Sets(0, "Taurus.Views", MvcConfig.Views, "Mvc view folder name.");
                 dt.NewRow(true).Sets(0, "Taurus.SslPath", MvcConfig.SslPath, "Ssl path for https (*.pfx for ssl , *.txt for pwd).");
@@ -408,7 +422,7 @@ namespace Taurus.Plugin.Admin
                     dt.NewRow(true).Sets(0, "MicroServer.Server.RcKey", MsConfig.Server.RcKey, "Register center secret key.");
                     dt.NewRow(true).Sets(0, "MicroServer.Server.RcUrl", MsConfig.Server.RcUrl, "Register center url.");
                     dt.NewRow(true).Sets(0, "MicroServer.Server.RcPath", "/" + MsConfig.Server.RcPath, "Register center local path.");
-                    dt.NewRow(true).Sets(0, "MicroServer.Server.GatewayTimeout", MsConfig.Server.GatewayTimeout + "s", "Gateway timeout for big file upload.");
+                    dt.NewRow(true).Sets(0, "MicroServer.Server.GatewayTimeout", MsConfig.Server.GatewayTimeout + " (s)", "Gateway timeout (second) for request forward.");
                     dt.NewRow(true).Sets(0, "MicroServer Gateway Proxy LastTime", Rpc.Gateway.LastProxyTime.ToString("yyyy-MM-dd HH:mm:ss"), "The last time the proxy forwarded the request (Show Only).");
                 }
 
