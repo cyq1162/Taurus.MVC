@@ -230,11 +230,7 @@ namespace Taurus.MicroService
                     {
                         Server.RegCenter.AddHost("RegCenter", MvcConfig.RunUrl);
                         Server.RegCenter.LoadHostByAdmin();//加载所有手工添加主机信息
-                        List<string> keys = new List<string>(regCenterList.Count);
-                        foreach (string item in regCenterList.Keys)
-                        {
-                            keys.Add(item);
-                        }
+                        List<string> keys = regCenterList.GetKeys();
                         var kvForRegCenter = new MDictionary<string, List<HostInfo>>(StringComparer.OrdinalIgnoreCase);
                         var kvForGateway = new MDictionary<string, List<HostInfo>>(StringComparer.OrdinalIgnoreCase);
                         foreach (string key in keys)
