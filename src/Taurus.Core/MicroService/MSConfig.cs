@@ -123,7 +123,7 @@ namespace Taurus.MicroService
             {
                 get
                 {
-                    return AppConfig.GetApp("MicroService.Client.Domain", "*.*");
+                    return AppConfig.GetApp("MicroService.Client.Domain", "");
                 }
                 set
                 {
