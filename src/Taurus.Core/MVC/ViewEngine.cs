@@ -50,6 +50,7 @@ namespace Taurus.Mvc
         /// </summary>
         public static XHtmlAction Create(string controlName, string actionName)
         {
+
             string cName = controlName.Replace(ReflectConst.Controller, "");
             if (Directory.Exists(ViewsPath))
             {
@@ -93,7 +94,7 @@ namespace Taurus.Mvc
         /// <summary>
         /// 创建视图对象
         /// </summary>
-        /// <param name="path">相对路径，如：/abc/cyq/a.html</param>
+        /// <param name="fullPath">相对路径，如：/abc/cyq/a.html</param>
         public static XHtmlAction Create(string fullPath)
         {
             XHtmlAction view = new XHtmlAction(true, false);

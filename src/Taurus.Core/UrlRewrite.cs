@@ -214,7 +214,7 @@ namespace Taurus.Core
         #region 逻辑反射调用Controlls的方法
         private void InvokeClass(HttpContext context)
         {
-            Type t = null;
+
             //ViewController是由页面的前两个路径决定了。
             string[] items = WebTool.GetLocalPath(context.Request.Url).Trim('/').Split('/');
             string className = ReflectConst.Default;
@@ -226,7 +226,7 @@ namespace Taurus.Core
             {
                 className = items.Length > 1 ? items[0] + "." + items[1] : items[0];
             }
-            t = ControllerCollector.GetController(className);
+            Type t = ControllerCollector.GetController(className);
             //if (t == null || t.Name == ReflectConst.DefaultController)
             //{
             //    if (Rpc.Gateway.Proxy(context, false))//客户端禁用做为网关，避免死循环。
@@ -236,7 +236,9 @@ namespace Taurus.Core
             //}
             if (t == null)
             {
-                WriteError("You need a " + className + " controller for coding!", context);
+                context.Response.StatusCode = 503;
+                context.Response.Write("503 Service unavailable.");
+                // WriteError("You need a " + className + " controller for coding!", context);
             }
             else
             {

@@ -198,7 +198,7 @@ CYQ.Data升级到V5.8.4.9
 -----V3.1.6.6----------------
 1、优化：Server.Run ClearExpireHost：获取Keys 加锁。（2023-05-16）
 2、优化：MDictionary 内部锁优化【lock变更为读写锁】。（2023-05-17）
-
+3、修复：NetCore：dotnet /home/xxx/xx.dll 启动方式时，AppConfig.WebRootPath 获取问题。（2023-05-18）
 
 待处理------------------------
 网关：手动添加转发地址（如其它静态站：www.xxx.com）
