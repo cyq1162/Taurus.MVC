@@ -12,6 +12,8 @@ using System.Diagnostics;
 using Taurus.Plugin.Doc;
 using System.Configuration;
 using System.Net;
+using System.Reflection;
+using System.Xml;
 
 namespace Taurus.Plugin.Admin
 {
@@ -314,7 +316,7 @@ namespace Taurus.Plugin.Admin
         /// </summary>
         public void Log()
         {
-            string logPath = AppConfig.WebRootPath + AppConfig.Log.LogPath;
+            string logPath = AppConfig.WebRootPath + AppConfig.Log.Path;
             if (Directory.Exists(logPath))
             {
                 string[] files = Directory.GetFiles(logPath, "*.txt", SearchOption.TopDirectoryOnly);
@@ -334,7 +336,7 @@ namespace Taurus.Plugin.Admin
             string fileName = Query<string>("filename");
             if (!string.IsNullOrEmpty(fileName))
             {
-                string logPath = AppConfig.WebRootPath + AppConfig.Log.LogPath;
+                string logPath = AppConfig.WebRootPath + AppConfig.Log.Path;
                 string[] files = Directory.GetFiles(logPath, fileName, SearchOption.TopDirectoryOnly);
                 if (files != null && files.Length > 0)
                 {
@@ -356,6 +358,8 @@ namespace Taurus.Plugin.Admin
             dt.Columns.Add("ConfigKey,ConfigValue,Description");
             if (type == "mvc")
             {
+                #region Mvc
+
                 dt.NewRow(true).Sets(0, "Taurus.RunUrl", MvcConfig.RunUrl, "Application run url.");
                 dt.NewRow(true).Sets(0, "Taurus.DefaultUrl", MvcConfig.DefaultUrl, "Application default url.");
                 dt.NewRow(true).Sets(0, "Taurus.IsAllowCORS", MvcConfig.IsAllowCORS, "Application is allow cross-origin resource sharing.");
@@ -376,10 +380,12 @@ namespace Taurus.Plugin.Admin
                 }
                 dt.NewRow(true).Sets(0, "Taurus.Suffix", MvcConfig.Suffix, "Deal with mvc suffix.");
                 dt.NewRow(true).Sets(0, "Taurus.SubAppName", MvcConfig.SubAppName, "Name of deploy as sub application.");
-
+                #endregion
             }
             else if (type == "plugin")
             {
+                #region Plugin
+
                 dt.NewRow(true).Sets(0, "Admin.IsEnable", AdminConfig.IsEnable, "Admin plugin is enable.");
                 dt.NewRow(true).Sets(0, "Admin.Path", "/" + AdminConfig.Path, "Admin url path.");
                 dt.NewRow(true).Sets(0, "Admin.HtmlFolderName", AdminConfig.HtmlFolderName, "Mvc view folder name for admin.");
@@ -411,10 +417,12 @@ namespace Taurus.Plugin.Admin
                 dt.NewRow(true).Sets(0, "Limit.Ack.IsVerifyDecode", LimitConfig.Ack.IsVerifyDecode, "Ack limit : ack must be decode and valid.");
                 dt.NewRow(true).Sets(0, "Limit.Ack.IsVerifyUsed", LimitConfig.Ack.IsVerifyUsed, "Ack limit : ack use once only.");
 
-
+                #endregion
             }
             else if (type == "microservice")
             {
+                #region MicroService
+
                 dt.NewRow(true).Sets(0, "MicroServer Type", GetMsType(), "Type of current microservice (Show Only).");
                 if (MsConfig.IsServer)
                 {
@@ -441,32 +449,56 @@ namespace Taurus.Plugin.Admin
                     dt.NewRow(true).Sets(0, "MicroServer.Client.RcPath", "/" + MsConfig.Client.RcPath, "Register center local path.");
 
                 }
+                #endregion
             }
             else if (type == "cyq.data")
             {
-                dt.NewRow(true).Sets(0, "IsWriteLog", AppConfig.Log.IsWriteLog, "Write log to file or database on error,otherwise throw exception.");
-                dt.NewRow(true).Sets(0, "LogPath", AppConfig.Log.LogPath, "Log folder name or path.");
-
-                //dt.NewRow(true).Sets(0, "LogConn", string.IsNullOrEmpty(AppConfig.Log.LogConn) ? "" : "******", "Log database connection string.");
-                //dt.NewRow(true).Sets(0, "LogTableName", AppConfig.Log.LogTableName, "Log tablename on log database.");
+                dt.NewRow(true).Sets(0, "AutoCache.IsEnable", AppConfig.AutoCache.IsEnable, "Use auto cache.");
+                dt.NewRow(true).Sets(0, "Debug.IsEnable", AppConfig.Debug.IsEnable, "Record sql when dev debug.");
                 dt.NewRow(true);
-
-                dt.NewRow(true).Sets(0, "SchemaMapPath", AppConfig.DB.SchemaMapPath, "Database metadata cache path.");
+                dt.NewRow(true).Sets(0, "Log.IsEnable", AppConfig.Log.IsEnable, "Write log to file or database on error,otherwise throw exception.");
+                dt.NewRow(true).Sets(0, "Log.Path", AppConfig.Log.Path, "Log folder name or path.");
                 dt.NewRow(true);
-                dt.NewRow(true).Sets(0, "OpenDebugInfo", AppConfig.Debug.OpenDebugInfo, "Record sql when dev debug.");
+                dt.NewRow(true).Sets(0, "DB.SchemaMapPath", AppConfig.DB.SchemaMapPath, "Database metadata cache path.");
+                dt.NewRow(true).Sets(0, "DB.CommandTimeout", AppConfig.DB.CommandTimeout + " (s)", "Timeout for database command.");
+                dt.NewRow(true).Sets(0, "DB.SqlFilter", AppConfig.DB.SqlFilter + " (ms)", "Write sql to log file when sql exe time > value(value must>0).");
                 dt.NewRow(true);
-                dt.NewRow(true).Sets(0, "SqlFilter", AppConfig.Debug.SqlFilter + " (ms)", "Write sql to log file when sql exe time > value(value must>0).");
+                dt.NewRow(true).Sets(0, "Aop", AppConfig.Aop, "Aop config :【Aop-Class-FullName,DllName】");
+                dt.NewRow(true).Sets(0, "EncryptKey", AppConfig.EncryptKey, "Encrypt key for EncryptHelper tool.");
+                dt.NewRow(true).Sets(0, "DefaultCacheTime", AppConfig.DefaultCacheTime + " (m)", "Default cache time (minute).");
+            }
+            else if (type == "log")
+            {
+                dt.NewRow(true).Sets(0, "Log.IsEnable", AppConfig.Log.IsEnable, "Write log to file or database on error,otherwise throw exception.");
+                dt.NewRow(true).Sets(0, "Log.Path", AppConfig.Log.Path, "Log folder name or path.");
+                dt.NewRow(true).Sets(0, "Log.TableName", AppConfig.Log.TableName, "Log tablename on log database.");
+                dt.NewRow(true).Sets(0, "LogConn", HideConnPassword(AppConfig.Log.Conn), "Log database connection string.");
+            }
+            else if (type == "conn")
+            {
+                foreach (ConnectionStringSettings item in ConfigurationManager.ConnectionStrings)
+                {
+                    dt.NewRow(true).Sets(0, item.Name, HideConnPassword(item.ConnectionString), "DataBaseType : " + DBTool.GetDataBaseType(item.ConnectionString));
+                }
+            }
+            else if (type == "autocache")
+            {
+                dt.NewRow(true).Sets(0, "AutoCache.IsEnable", AppConfig.AutoCache.IsEnable, "AutoCache is enabled.");
+                dt.NewRow(true).Sets(0, "AutoCache.Tables", AppConfig.AutoCache.Tables, "Set the tables that need to be cached by specifying their names separated by commas.");
+                dt.NewRow(true).Sets(0, "AutoCache.IngoreTables", AppConfig.AutoCache.IngoreTables, "Set the tables that no need to be cached by specifying their names separated by commas.");
+                dt.NewRow(true).Sets(0, "AutoCache.IngoreColumns", AppConfig.AutoCache.IngoreColumns, "Set column names that will not be affected by updates, using a JSON format as {tablename:'col1,col2'}.");
+                dt.NewRow(true).Sets(0, "AutoCache.TaskTime", AppConfig.AutoCache.TaskTime + " (ms)", "When AutoCacheConn is enabled, the task time (in milliseconds) for regularly scanning the database.");
+                dt.NewRow(true).Sets(0, "AutoCacheConn", HideConnPassword(AppConfig.AutoCache.Conn), "For auto remove cache when database data change.");
+            }
 
-                dt.NewRow(true);
-                dt.NewRow(true).Sets(0, "IsAutoCache", AppConfig.Cache.IsAutoCache, "Use auto cache.");
-                dt.NewRow(true).Sets(0, "DefaultCacheTime", AppConfig.Cache.DefaultCacheTime + " (m)", "Default cache time (minute).");
-
-                if (!string.IsNullOrEmpty(AppConfig.Cache.RedisServers))
+            else if (type == "redis")
+            {
+                if (!string.IsNullOrEmpty(AppConfig.Redis.Servers))
                 {
                     dt.NewRow(true);
-                    dt.NewRow(true).Sets(0, "RedisUseDBCount", AppConfig.Cache.RedisUseDBCount, "Redis use db count.");
-                    dt.NewRow(true).Sets(0, "RedisUseDBIndex", AppConfig.Cache.RedisUseDBIndex, "Redis use db index.");
-                    string[] items = AppConfig.Cache.RedisServers.Split(',');
+                    dt.NewRow(true).Sets(0, "RedisUseDBCount", AppConfig.Redis.UseDBCount, "Redis use db count.");
+                    dt.NewRow(true).Sets(0, "RedisUseDBIndex", AppConfig.Redis.UseDBIndex, "Redis use db index.");
+                    string[] items = AppConfig.Redis.Servers.Split(',');
                     dt.NewRow(true).Sets(0, "----------RedisServers - Count", items.Length, "Num of server node for redis (Show Only).");
 
                     for (int i = 0; i < items.Length; i++)
@@ -474,9 +506,9 @@ namespace Taurus.Plugin.Admin
                         dt.NewRow(true).Sets(0, "----------RedisServers - " + (i + 1), items[i], "Server node for redis (Show Only).");
                     }
 
-                    if (!string.IsNullOrEmpty(AppConfig.Cache.RedisServersBak))
+                    if (!string.IsNullOrEmpty(AppConfig.Redis.ServersBak))
                     {
-                        items = AppConfig.Cache.RedisServersBak.Split(',');
+                        items = AppConfig.Redis.ServersBak.Split(',');
                         dt.NewRow(true).Sets(0, "----------RedisServersBak - Count", items.Length, "Num of server node for redis bak(Show Only).");
                         for (int i = 0; i < items.Length; i++)
                         {
@@ -484,9 +516,12 @@ namespace Taurus.Plugin.Admin
                         }
                     }
                 }
-                if (!string.IsNullOrEmpty(AppConfig.Cache.MemCacheServers))
+            }
+            else if (type == "memcache")
+            {
+                if (!string.IsNullOrEmpty(AppConfig.MemCache.Servers))
                 {
-                    string[] items = AppConfig.Cache.MemCacheServers.Split(',');
+                    string[] items = AppConfig.MemCache.Servers.Split(',');
                     dt.NewRow(true).Sets(0, "----------MemCacheServers - Count", items.Length, "Num of server node for memcache (Show Only).");
 
                     for (int i = 0; i < items.Length; i++)
@@ -494,9 +529,9 @@ namespace Taurus.Plugin.Admin
                         dt.NewRow(true).Sets(0, "----------MemCacheServers - " + (i + 1), items[i], "Server node for memcache (Show Only).");
                     }
 
-                    if (!string.IsNullOrEmpty(AppConfig.Cache.MemCacheServersBak))
+                    if (!string.IsNullOrEmpty(AppConfig.MemCache.ServersBak))
                     {
-                        items = AppConfig.Cache.MemCacheServersBak.Split(',');
+                        items = AppConfig.MemCache.ServersBak.Split(',');
                         dt.NewRow(true).Sets(0, "----------MemCacheServersBak - Count", items.Length, "Num of server node for memcache bak(Show Only).");
                         for (int i = 0; i < items.Length; i++)
                         {
@@ -504,15 +539,53 @@ namespace Taurus.Plugin.Admin
                         }
                     }
                 }
+            }
+
+            else if (type == "debug")
+            {
+                dt.NewRow(true).Sets(0, "Debug.IsEnable", AppConfig.Debug.IsEnable, "Record sql when dev debug.");
+            }
+            else if (type == "database")
+            {
+                dt.NewRow(true).Sets(0, "DB.CommandTimeout", AppConfig.DB.CommandTimeout + " (s)", "Timeout for database command.");
+                dt.NewRow(true).Sets(0, "DB.SchemaMapPath", AppConfig.DB.SchemaMapPath, "Database metadata cache path.");
+                dt.NewRow(true).Sets(0, "DB.SqlFilter", AppConfig.DB.SqlFilter + " (ms)", "Write sql to log file when sql exe time > value(value must>0).");
                 dt.NewRow(true);
-                foreach (ConnectionStringSettings item in ConfigurationManager.ConnectionStrings)
-                {
-                    dt.NewRow(true).Sets(0, item.Name, string.IsNullOrEmpty(item.ConnectionString) ? "" : "******", "Database connection string.");
-                }
+                dt.NewRow(true).Sets(0, "DB.HiddenFields", AppConfig.DB.HiddenFields, "Hide fields that are not returned when querying.");
+                dt.NewRow(true).Sets(0, "DB.DeleteField", AppConfig.DB.DeleteField, "Soft-deletion field name (if a table has this specified field name, MAction's delete operation will be changed to an update operation).");
+                dt.NewRow(true).Sets(0, "DB.EditTimeFields", AppConfig.DB.EditTimeFields, "Name of the update time field (if the specified field name exists in the table, the update time will be automatically updated).");
+                dt.NewRow(true);
+
+                dt.NewRow(true).Sets(0, "DB.IsPostgreLower", AppConfig.DB.IsPostgreLower, "Postgres is in lowercase mode.");
+                dt.NewRow(true).Sets(0, "DB.IsTxtReadOnly", AppConfig.DB.IsTxtReadOnly, "Txt database is read-only (used for demo purposes to prevent demo accounts or data from being deleted).");
+                dt.NewRow(true);
+                dt.NewRow(true).Sets(0, "DB.AutoID", AppConfig.DB.AutoID, "The sequence id config for oracle.");
+                dt.NewRow(true).Sets(0, "DB.EntitySuffix", AppConfig.DB.EntitySuffix, "Entity suffix which will be ignore when orm operate.");
+                dt.NewRow(true).Sets(0, "DB.MasterSlaveTime", AppConfig.DB.MasterSlaveTime + " (s)", "The duration of user operations on the primary database when using read-write separation.");
             }
             dt.Bind(View);
         }
+        private string HideConnPassword(string conn)
+        {
+            if (!string.IsNullOrEmpty(conn))
+            {
+                int i = conn.IndexOf("pwd=");
+                if (i > 0)
+                {
+                    int end = conn.IndexOf(";", i);
+                    if (end > 0)
+                    {
+                        return conn.Substring(0, i + 4) + "******" + conn.Substring(end);
+                    }
+                    else
+                    {
+                        return conn.Substring(0, i + 4) + "******";
+                    }
+                }
+            }
 
+            return conn;
+        }
         /// <summary>
         /// 操作系统环境信息
         /// </summary>
@@ -520,26 +593,54 @@ namespace Taurus.Plugin.Admin
         {
             MDataTable dtTaurus = new MDataTable();
             dtTaurus.Columns.Add("ConfigKey,ConfigValue,Description");
-            dtTaurus.NewRow(true).Sets(0, "Client-IP", Request.UserHostAddress, "Client ip.");
-            dtTaurus.NewRow(true).Sets(0, "Server-IP", MvcConst.HostIP, "Server ip.");
-            dtTaurus.NewRow(true).Sets(0, "Taurus-Version", "V" + MvcConst.Version, "Version of the Taurus.Core.dll.");
-            dtTaurus.NewRow(true).Sets(0, "Orm-Version", "V" + AppConfig.Version, "Version of the CYQ.Data.dll.");
-            dtTaurus.NewRow(true).Sets(0, "AppPath", AppConfig.RunPath, "Web application path of the working directory.");
-            dtTaurus.NewRow(true);
-            dtTaurus.NewRow(true).Sets(0, "Runtime-Version", (AppConfig.IsNetCore ? ".Net Core - " : ".Net Framework - ") + Environment.Version, "Version of the common language runtime.");
-            dtTaurus.NewRow(true).Sets(0, "OS-Version", Environment.OSVersion, "Operating system.");
-            dtTaurus.NewRow(true).Sets(0, "ProcessID", MvcConst.ProcessID, "Process id.");
-            dtTaurus.NewRow(true).Sets(0, "ThreadID", Thread.CurrentThread.ManagedThreadId, "Identifier for the managed thread.");
-            dtTaurus.NewRow(true).Sets(0, "ThreadCount", Process.GetCurrentProcess().Threads.Count, "Number of threads for the process.");
-            long tc = Environment.TickCount > 0 ? (long)Environment.TickCount : ((long)int.MaxValue + (Environment.TickCount & int.MaxValue));
-            TimeSpan ts = TimeSpan.FromMilliseconds(tc);
-            dtTaurus.NewRow(true).Sets(0, "TickCount", (int)ts.TotalSeconds + "s | " + (int)ts.TotalMinutes + "m | " + (int)ts.TotalHours + "h | " + (int)ts.TotalDays + "d", "Time since the system started(max(days)<=49.8)).");
-            dtTaurus.NewRow(true).Sets(0, "ProcessorCount", Environment.ProcessorCount, "Number of processors on the machine.");
-            dtTaurus.NewRow(true).Sets(0, "MachineName", Environment.MachineName, "Name of computer.");
-            dtTaurus.NewRow(true).Sets(0, "UserName", Environment.UserName, "Name of the person who is logged on to Windows.");
-            dtTaurus.NewRow(true).Sets(0, "WorkingSet", Environment.WorkingSet / 1024 + "KB | " + Environment.WorkingSet / 1024 / 1024 + "MB", "Physical memory mapped to the process context.");
-            dtTaurus.NewRow(true).Sets(0, "CurrentDirectory", Environment.CurrentDirectory, "Fully qualified path of the working directory.");
+            string type = Query<string>("t", "os").ToLower();
 
+            if (type == "os")
+            {
+                dtTaurus.NewRow(true).Sets(0, "Client-IP", Request.UserHostAddress, "Client ip.");
+                dtTaurus.NewRow(true).Sets(0, "Server-IP", MvcConst.HostIP, "Server ip.");
+                dtTaurus.NewRow(true).Sets(0, "Taurus-Version", "V" + MvcConst.Version, "Version of the Taurus.Core.dll.");
+                dtTaurus.NewRow(true).Sets(0, "Orm-Version", "V" + AppConfig.Version, "Version of the CYQ.Data.dll.");
+                dtTaurus.NewRow(true).Sets(0, "AppPath", AppConfig.RunPath, "Web application path of the working directory.");
+                dtTaurus.NewRow(true);
+                dtTaurus.NewRow(true).Sets(0, "Runtime-Version", (AppConfig.IsNetCore ? ".Net Core - " : ".Net Framework - ") + Environment.Version, "Version of the common language runtime.");
+                dtTaurus.NewRow(true).Sets(0, "OS-Version", Environment.OSVersion, "Operating system.");
+                dtTaurus.NewRow(true).Sets(0, "ProcessID", MvcConst.ProcessID, "Process id.");
+                dtTaurus.NewRow(true).Sets(0, "ThreadID", Thread.CurrentThread.ManagedThreadId, "Identifier for the managed thread.");
+                dtTaurus.NewRow(true).Sets(0, "ThreadCount", Process.GetCurrentProcess().Threads.Count, "Number of threads for the process.");
+                long tc = Environment.TickCount > 0 ? (long)Environment.TickCount : ((long)int.MaxValue + (Environment.TickCount & int.MaxValue));
+                TimeSpan ts = TimeSpan.FromMilliseconds(tc);
+                dtTaurus.NewRow(true).Sets(0, "TickCount", (int)ts.TotalSeconds + "s | " + (int)ts.TotalMinutes + "m | " + (int)ts.TotalHours + "h | " + (int)ts.TotalDays + "d", "Time since the system started(max(days)<=49.8)).");
+                dtTaurus.NewRow(true).Sets(0, "ProcessorCount", Environment.ProcessorCount, "Number of processors on the machine.");
+                dtTaurus.NewRow(true).Sets(0, "MachineName", Environment.MachineName, "Name of computer.");
+                dtTaurus.NewRow(true).Sets(0, "UserName", Environment.UserName, "Name of the person who is logged on to Windows.");
+                dtTaurus.NewRow(true).Sets(0, "WorkingSet", Environment.WorkingSet / 1024 + "KB | " + Environment.WorkingSet / 1024 / 1024 + "MB", "Physical memory mapped to the process context.");
+                dtTaurus.NewRow(true).Sets(0, "CurrentDirectory", Environment.CurrentDirectory, "Fully qualified path of the working directory.");
+            }
+            else if (type == "ass")
+            {
+                Assembly[] assList = AppDomain.CurrentDomain.GetAssemblies();
+                foreach (Assembly assembly in assList)
+                {
+                    string desc = assembly.FullName;
+                    object[] attrs = assembly.GetCustomAttributes(typeof(AssemblyDescriptionAttribute), false);
+                    if (attrs != null && attrs.Length > 0)
+                    {
+                        desc = ((AssemblyDescriptionAttribute)attrs[0]).Description;
+                    }
+                    else
+                    {
+                        attrs = assembly.GetCustomAttributes(typeof(AssemblyTitleAttribute), false);
+                        if (attrs != null && attrs.Length > 0)
+                        {
+                            desc = ((AssemblyTitleAttribute)attrs[0]).Title;
+                        }
+                    }
+                    AssemblyName assName = assembly.GetName();
+                    dtTaurus.NewRow(true).Sets(0, assName.Name, assName.Version.ToString(), desc);
+                }
+                dtTaurus.Rows.Sort("ConfigKey");
+            }
             dtTaurus.Bind(View);
         }
     }
@@ -549,7 +650,66 @@ namespace Taurus.Plugin.Admin
     /// </summary>
     internal partial class AdminController
     {
+        #region 页面呈现
+
         public void Setting() { }
+
+        private MDataTable menuTable;
+        public void Menu()
+        {
+            string menuList = IO.Read(AdminConst.MenuAddPath);
+            if (!string.IsNullOrEmpty(menuList))
+            {
+                menuTable = new MDataTable();
+                menuTable.Columns.Add("MenuName,HostName,HostUrl");
+                MDataTable dt = new MDataTable();
+                dt.Columns.Add("MenuName");
+                List<string> menus = new List<string>();
+                string[] items = menuList.Split('\n');
+                foreach (string item in items)
+                {
+                    string[] names = item.Split(',');
+                    if (names.Length > 2)
+                    {
+                        menuTable.NewRow(true).Sets(0, names[0].Trim(), names[1].Trim(), names[2].Trim());
+                    }
+                    string name = names[0].Trim();
+                    if (!menus.Contains(name.ToLower()))
+                    {
+                        menus.Add(name.ToLower());
+                        dt.NewRow(true).Set(0, name);
+                    }
+                }
+                View.OnForeach += View_OnForeach_Menu;
+                dt.Bind(View, "menuList");
+            }
+        }
+
+        private string View_OnForeach_Menu(string text, MDictionary<string, string> values, int rowIndex)
+        {
+            string menu = values["MenuName"];
+            if (!string.IsNullOrEmpty(menu))
+            {
+                //循环嵌套：1-获取子数据
+                MDataTable dt = menuTable.FindAll("MenuName='" + menu + "'");
+                if (dt != null && dt.Rows.Count > 0)
+                {
+                    //循环嵌套：2 - 转为节点
+                    XmlNode xmlNode = View.CreateNode("div", text);
+                    //循环嵌套：3 - 获取子节点，以便进行循环
+                    XmlNode hostNode = View.GetByID("hostList", xmlNode);
+                    if (hostNode != null)
+                    {
+                        //循环嵌套：4 - 子节点，循环绑定数据。
+                        View.SetForeach(dt, hostNode, hostNode.InnerXml, null);
+                        //循环嵌套：5 - 返回整个节点的内容。
+                        return xmlNode.InnerXml;
+                    }
+                }
+            }
+
+            return text;
+        }
 
 
         public void SettingOfAccount()
@@ -560,6 +720,39 @@ namespace Taurus.Plugin.Admin
             }
         }
 
+
+        public void SettingOfHostAdd()
+        {
+            if (!IsHttpPost)
+            {
+                if (MsConfig.IsRegCenterOfMaster)
+                {
+                    string hostList = IO.Read(AdminConst.HostAddPath);
+                    View.KeyValue.Add("HostList", hostList);
+                }
+                else
+                {
+                    View.Set("btnAddHost", CYQ.Data.Xml.SetType.Disabled, "true");
+                    View.Set("hostList", CYQ.Data.Xml.SetType.Disabled, "true");
+                }
+            }
+        }
+
+        public void SettingOfMenuAdd()
+        {
+            if (!IsHttpPost)
+            {
+                string menuList = IO.Read(AdminConst.MenuAddPath);
+                View.KeyValue.Add("MenuList", menuList);
+            }
+        }
+        #endregion
+
+        #region 页面点击事件
+
+        /// <summary>
+        /// 添加管理员2账号
+        /// </summary>
         public void BtnSaveAccount()
         {
             string uid = Query<string>("uid");
@@ -584,23 +777,6 @@ namespace Taurus.Plugin.Admin
             }
 
         }
-
-        public void SettingOfHostAdd()
-        {
-            if (!IsHttpPost)
-            {
-                if (MsConfig.IsRegCenterOfMaster)
-                {
-                    string hostList = IO.Read(AdminConst.HostAddPath);
-                    View.KeyValue.Add("HostList", hostList);
-                }
-                else
-                {
-                    View.Set("btnAddHost", CYQ.Data.Xml.SetType.Disabled, "true");
-                    View.Set("hostList", CYQ.Data.Xml.SetType.Disabled, "true");
-                }
-            }
-        }
         /// <summary>
         /// 添加注册主机
         /// </summary>
@@ -618,7 +794,9 @@ namespace Taurus.Plugin.Admin
             View.KeyValue.Add("HostList", hostList);
             View.Set("msg", "Save success.");
         }
-
+        /// <summary>
+        /// 添加IP黑名单
+        /// </summary>
         public void SettingOfIpBlackname()
         {
             if (!IsHttpPost)
@@ -638,5 +816,17 @@ namespace Taurus.Plugin.Admin
             View.KeyValue.Add("IPList", ipList);
             View.Set("msg", "Save success.");
         }
+
+        /// <summary>
+        /// 添加自定义菜单
+        /// </summary>
+        public void BtnAddMenu()
+        {
+            string menuList = Query<string>("menuList");
+            IO.Write(AdminConst.MenuAddPath, menuList);
+            View.KeyValue.Add("MenuList", menuList);
+            View.Set("msg", "Save success.");
+        }
+        #endregion
     }
 }

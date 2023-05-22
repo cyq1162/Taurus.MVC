@@ -10,6 +10,7 @@ using Microsoft.AspNetCore.Hosting.Server.Features;
 using System.Configuration;
 using System.Threading;
 using CYQ.Data.Tool;
+using System.Diagnostics;
 
 namespace Microsoft.AspNetCore.Http
 {
@@ -58,34 +59,42 @@ namespace Microsoft.AspNetCore.Http
             }
             catch (Exception ex)
             {
-                Log.WriteLogToTxt(ex);
+                CYQ.Data.Log.WriteLogToTxt(ex);
             }
         }
     }
     public static class TaurusExtensions
     {
-        ///// <summary>
-        ///// 使用Taurus.MVC中件间功能：Net Core 3.1 把IHostingEnvironment 拆分成了：IWebHostEnvironment和IHostEnvironment 
-        ///// 所以增加重载方法适应。
-        ///// </summary>
-        ///// <param name="builder"></param>
-        ///// <param name="env"></param>
-        ///// <returns></returns>
-        //public static IApplicationBuilder UseTaurusMvc(this IApplicationBuilder builder, object env)
-        //{
-        //    if (env is IHostingEnvironment)
-        //    {
-        //        return UseTaurusMvc(builder, env as IHostingEnvironment);
-        //    }
-        //    throw new Exception("env must be IWebHostEnvironment or IHostingEnvironment or String");
-        //}
-        //public static IApplicationBuilder UseTaurusMvc(this IApplicationBuilder builder, IHostingEnvironment env)
-        //{
-        //    //Console.WriteLine(App);
-        //   // Console.WriteLine(JsonHelper.ToJson(env));
-        //    //Net6新建的项目，WebRootPath竟然是空。
-        //    return UseTaurusMvc(builder, env.WebRootPath ?? env.ContentRootPath.TrimEnd('/', '\\') + "/wwwroot");
-        //}
+        /// <summary>
+        /// 使用Taurus.MVC中件间功能：Net Core 3.1 把IHostingEnvironment 拆分成了：IWebHostEnvironment和IHostEnvironment 
+        /// 所以增加重载方法适应。
+        /// </summary>
+        /// <param name="builder"></param>
+        /// <param name="env">传递参数，Debug模式下，设置项目目录为根目录</param>
+        /// <returns></returns>
+        public static IApplicationBuilder UseTaurusMvc(this IApplicationBuilder builder, object env)
+        {
+            if (env is IHostingEnvironment)
+            {
+                return UseTaurusMvc(builder, env as IHostingEnvironment);
+            }
+            throw new Exception("env must be IWebHostEnvironment or IHostingEnvironment or String");
+        }
+        public static IApplicationBuilder UseTaurusMvc(this IApplicationBuilder builder, IHostingEnvironment env)
+        {
+            char c = env.WebRootPath.StartsWith("/") ? '/' : '\\';
+            string path = (env.WebRootPath ?? env.ContentRootPath.TrimEnd('/', '\\') + c + "wwwroot") + c;
+            SetWebRootPath(path);
+            //Net6新建的项目，WebRootPath竟然是空。
+            return UseTaurusMvc(builder);
+        }
+
+        [Conditional("DEBUG")]
+        private static void SetWebRootPath(string path)
+        {
+            AppConfig.WebRootPath = path;
+        }
+
         public static IApplicationBuilder UseTaurusMvc(this IApplicationBuilder builder)
         {
             Thread thread = new Thread(new ParameterizedThreadStart(StartMicroService));

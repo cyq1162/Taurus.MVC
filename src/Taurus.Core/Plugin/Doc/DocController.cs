@@ -39,36 +39,6 @@ namespace Taurus.Plugin.Doc
             BindController();
             BindDetail();
         }
-
-        /// <summary>
-        /// 记录请求 ( 先不开 启)
-        /// </summary>
-        //public static void Record(IController controller, string methodName)
-        //{
-        //    if (controller.View == null)
-        //    {
-        //
-        //        string json = controller.APIResult;
-        //        if (!string.IsNullOrEmpty(json) && json.Contains("success\":true"))
-        //        {
-        //            //遍历请求头
-        //            StringBuilder rqHeader = new StringBuilder();
-        //            rqHeader.AppendLine(controller.Request.HttpMethod + " " + controller.Request.RawUrl + "<hr/>");
-        //            foreach (string key in controller.Request.Headers.AllKeys)
-        //            {
-        //                rqHeader.AppendLine(key + ":" + controller.Request.Headers[key]);
-        //            }
-        //            rqHeader.AppendLine("");
-        //            rqHeader.AppendLine(JsonHelper.ToJson(controller.Request.Form));
-        //            rqHeader.AppendLine("<hr />");
-        //            rqHeader.AppendLine(json);
-
-        //            controller.Write(rqHeader.ToString());
-        //            //写入文件中。
-        //        }
-
-        //    }
-        //}
     }
     internal partial class DocController
     {
