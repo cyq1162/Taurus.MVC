@@ -1,7 +1,7 @@
 ﻿<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
 <html xmlns="http://www.w3.org/1999/xhtml">
 <head itemref="common.head">
-    <title>AppSettings Config Info.</title>
+    <title>Application Config Info.</title>
     <link itemref="common.btcss" />
     <link itemref="common.btcss_extend" />
     <style type="text/css">
@@ -18,31 +18,44 @@
 </head>
 <body itemref="common.body">
     <div id="container">
-
+        <div>
+            Application Config ：
+        </div>
+        <hr />
+        <div style="float:left"><b>Taurus （Framework）：</b></div>
         <div style="float:left">
-            <a href="config?t=Mvc">Taurus - Mvc</a>&nbsp;|&nbsp;
-            <a href="config?t=Plugin">Taurus - Plugin</a>&nbsp;|&nbsp;
-            <a href="config?t=Microservice">Taurus - MicroService</a>&nbsp;|&nbsp;
-            <a href="config?t=CYQ.Data">CYQ.Data - Orm</a>&nbsp;|&nbsp;
+            <a href="config?t=Mvc">Mvc</a>&nbsp;|&nbsp;
+            <a href="config?t=Plugin">Plugin</a>&nbsp;|&nbsp;
+            <a href="config?t=Microservice">MicroService</a>
+        </div>
+        <div style="clear:both; height:5px;">
+        </div>
+        <div style="float:left"><b>CYQ.Data （ ORM ）：</b></div>
+        <div style="float:left">
+            <a href="config?t=CYQ.Data">Summary</a>（&nbsp;<a href="config?t=Log">Log</a>&nbsp;|&nbsp;
+            <a href="config?t=Conn&t1=20&t2=60&t3=20">Conn</a>&nbsp;|&nbsp;
+            <a href="config?t=DataBase">DataBase</a>&nbsp;|&nbsp;
+            <a href="config?t=AutoCache">AutoCache</a>&nbsp;|&nbsp;
+            <a href="config?t=Redis">Redis</a>&nbsp;|&nbsp;
+            <a href="config?t=MemCache">MemCache</a>&nbsp;|&nbsp;
+            <a href="config?t=Debug">Debug</a>&nbsp;）
         </div>
         <div style="clear:both;">
         </div>
         <hr />
-        <div style="text-align:left;padding-left:8px;"><h4>${t:Mvc} config :</h4> </div>
-        <hr />
         <table class="table table-striped">
             <tr>
-                <td width="30%">Config Key</td>
-                <td width="30%">Config Value</td>
-                <td width="40%">Description</td>
+                <td width="${t1:30}%">Config Key</td>
+                <td width="${t2:30}%">Config Value</td>
+                <td width="${t3:40}%">Description</td>
             </tr>
         </table>
         <table class="table table-striped">
             <tbody id="defaultView" clearflag="1">
                 <tr>
-                    <td width="30%">${ConfigKey}</td>
-                    <td width="30%">${ConfigValue}</td>
-                    <td width="40%">${Description}</td>
+                    <td width="${t1:30}%">${ConfigKey}</td>
+                    <td width="${t2:30}%">${ConfigValue}</td>
+                    <td width="${t3:40}%">${Description}</td>
                 </tr>
             </tbody>
         </table>

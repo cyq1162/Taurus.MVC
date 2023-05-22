@@ -22,20 +22,28 @@
             Local Environment ：
         </div>
         <hr />
+        <div style="float:left"><b>Environment ：</b></div>
+        <div style="float:left">
+            <a href="osinfo?t=os">Operator-System</a>&nbsp;|&nbsp;
+            <a href="osinfo?t=ass&t1=33&t2=10&t3=57">Runtime-Assembly</a>
+        </div>
+        <div style="clear:both; height:5px;">
+        </div>
+        <hr />
         <table class="table table-striped">
             <tr>
-                <td width="27%">Config Key</td>
-                <td width="38%">Config Value</td>
-                <td width="35%">Description</td>
+                <td width="${t1:27}%">Config Key</td>
+                <td width="${t2:38}%">Config Value</td>
+                <td width="${t3:35}%">Description</td>
             </tr>
         </table>
         <hr />
         <table class="table table-striped">
             <tbody id="defaultView" clearflag="1">
                 <tr>
-                    <td width="27%">${ConfigKey}</td>
-                    <td width="38%">${ConfigValue}</td>
-                    <td width="35%">${Description}</td>
+                    <td width="${t1:27}%">${ConfigKey}</td>
+                    <td width="${t2:38}%">${ConfigValue}</td>
+                    <td width="${t3:35}%">${Description}</td>
                 </tr>
             </tbody>
         </table>

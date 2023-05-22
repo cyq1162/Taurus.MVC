@@ -1,0 +1,35 @@
+﻿<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head itemref="common.head">
+    <title>Extend Menu.</title>
+    <link itemref="common.btcss" />
+    <link itemref="common.btcss_extend" />
+    <style type="text/css">
+        html { /* 解决页面会出现双滚动条问题。 */
+            overflow: hidden;
+        }
+
+        a {
+            cursor: pointer;
+        }
+
+        .table-bordered td {
+            text-align: left;
+        }
+    </style>
+</head>
+<body itemref="common.body">
+    <div id="container">
+        <div id="menuList">
+            <div style="float:left"><b>${0} ：</b></div>
+            <div id="hostList" style="float:left">
+                <a target="frame" href="${HostUrl}">${HostName}</a>&nbsp;|&nbsp;
+            </div>
+            <div style="clear:both;height:5px;">
+            </div>
+        </div>
+        <hr />
+        <iframe name="frame" src="about:blank" frameborder="0" width="100%" height="880px" scrolling="auto"></iframe>
+    </div>
+</body>
+</html>
