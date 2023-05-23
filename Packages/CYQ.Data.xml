@@ -69,11 +69,6 @@
             Tool.ThreadBreak 使用时，外置的文件配置相对路径（默认在环境变量Temp对应文件中）
             </summary>
         </member>
-        <member name="P:CYQ.Data.AppConfig.EntitySuffix">
-            <summary>
-            生成的实体类的后缀。
-            </summary>
-        </member>
         <member name="P:CYQ.Data.AppConfig.Version">
             <summary>
             获取当前Dll的版本号
@@ -89,12 +84,17 @@
         </member>
         <member name="P:CYQ.Data.AppConfig.AssemblyPath">
             <summary>
-            框架的程序集所在的运行路径，以"\\" 或"/"结尾
+            框架的程序集(dll)所在的运行路径，以"\\" 或"/"结尾
             </summary>
         </member>
         <member name="P:CYQ.Data.AppConfig.EncryptKey">
             <summary>
             EncryptHelper加密的Key。
+            </summary>
+        </member>
+        <member name="P:CYQ.Data.AppConfig.DefaultCacheTime">
+            <summary>
+            Cache.CacheManage 默认缓存项的时间[分钟(默认60)]
             </summary>
         </member>
         <member name="P:CYQ.Data.AppConfig.WebRootPath">
@@ -148,16 +148,6 @@
             DataBase 相关的配置
             </summary>
         </member>
-        <member name="P:CYQ.Data.AppConfig.DB.IsTxtReadOnly">
-            <summary>
-            文本数据库是否只读（用于Demo演示，避免演示账号或数据被删除）
-            </summary>
-        </member>
-        <member name="P:CYQ.Data.AppConfig.DB.IsPostgreLower">
-            <summary>
-            Postgre 是否小写模式(默认false)。
-            </summary>
-        </member>
         <member name="P:CYQ.Data.AppConfig.DB.DefaultConn">
             <summary>
             默认数据库链接（可赋完整链接语句或Web.config配置项名称）
@@ -174,123 +164,170 @@
             默认数据库类型（只读）
             </summary>
         </member>
+        <member name="P:CYQ.Data.AppConfig.DB.IsTxtReadOnly">
+            <summary>
+            文本数据库是否只读（用于Demo演示，避免演示账号或数据被删除）
+            配置项：DB.IsTxtReadOnly ：false
+            </summary>
+        </member>
+        <member name="P:CYQ.Data.AppConfig.DB.IsPostgreLower">
+            <summary>
+            Postgre 是否小写模式(默认false)。
+            配置项：DB.IsPostgreLower ：false
+            </summary>
+        </member>
         <member name="P:CYQ.Data.AppConfig.DB.FilterSqlInjection">
             <summary>
             MAction所有操作中的where条件，默认有超强的过滤单词，来过滤Sql注入关键字，如果语句包含指定的过滤词，则会返回错误信息，并记录日志。
             如果需要自定义关键字，可配置此项，如：“delete;from,truncate，其它单词”，分号表词组，需要同时包含两个词； 多个过滤词组以","逗号分隔
+            配置项：DB.FilterSqlInjection ：
             </summary>
         </member>
         <member name="P:CYQ.Data.AppConfig.DB.AutoID">
             <summary>
             MAction 操作 Oracle 时自增加int类型id所需要配置的序列id，Guid为id则不用。
             如果需要为每个表都配置一个序列号，可以使用：SEQ_{0} 其中{0}会自动配对成表名，如果没有{0}，则为整个数据库共用一个序列。
-            默认参数值：SEQ_{0}
+             配置项：DB.AutoID ：SEQ_{0}
             </summary>
         </member>
         <member name="P:CYQ.Data.AppConfig.DB.SchemaMapPath">
             <summary>
             MAction 可将表架构映射到外部指定相对路径[外部存储,可避开数据库读取]
-            Web 下默认路径：App_Data/schema
+            配置项：DB.SchemaMapPath ： App_Data/schema
             </summary>
         </member>
         <member name="P:CYQ.Data.AppConfig.DB.DeleteField">
             <summary>
             软删除字段名称（若表存在此设置的字段名称时，MActon的删除操作将变更变为更新操作）
-            默认：IsDeleted（若不想启用，配置为空。）
+            配置项：DB.DeleteField ： IsDeleted
             </summary>
         </member>
         <member name="P:CYQ.Data.AppConfig.DB.EditTimeFields">
             <summary>
             更新时间字段名称（若表存在指定字段名称时，自动更新时间，多个用逗号分隔）
+            配置项：DB.EditTimeFields ： 
             </summary>
         </member>
         <member name="P:CYQ.Data.AppConfig.DB.HiddenFields">
-             <summary>
+            <summary>
             系统全局要隐藏的字段名称（默认值为："cyqrownum,rowguid,deletefield"）
-             </summary>
+            配置项：DB.HiddenFields ： cyqrownum,rowguid
+            </summary>
         </member>
         <member name="P:CYQ.Data.AppConfig.DB.CommandTimeout">
             <summary>
             全局的数据库命令默认超时设置，默认值120秒（单位：秒）
+            配置项：DB.CommandTimeout ： 120
             </summary>
         </member>
         <member name="P:CYQ.Data.AppConfig.DB.MasterSlaveTime">
             <summary>
             读写分离时用户对主数据库操作持续时间，默认值10秒s（单位：秒s）
+            配置项：DB.MasterSlaveTime ： 10
             </summary>
         </member>
-        <member name="T:CYQ.Data.AppConfig.Cache">
+        <member name="P:CYQ.Data.AppConfig.DB.SqlFilter">
             <summary>
-            缓存相关的配置
+            毫秒数（记录数据库执行时时长(ms)的SQL语句写入日志，对应配置项Log.Path的配置路径）
+            配置项：DB.SqlFilter ： -1
             </summary>
         </member>
-        <member name="P:CYQ.Data.AppConfig.Cache.MemCacheServers">
+        <member name="P:CYQ.Data.AppConfig.DB.EntitySuffix">
             <summary>
-            MemCache分布式缓存的服务器配置，多个用逗号（,）分隔
+            生成的实体类的后缀。
+            配置项：DB.EntitySuffix ：Bean
             </summary>
         </member>
-        <member name="P:CYQ.Data.AppConfig.Cache.MemCacheServersBak">
+        <member name="T:CYQ.Data.AppConfig.Redis">
             <summary>
-            MemCache 备份服务器（当主服务器挂了后，请求会转向备用机）
+            Redis 配置
             </summary>
         </member>
-        <member name="P:CYQ.Data.AppConfig.Cache.RedisServers">
+        <member name="P:CYQ.Data.AppConfig.Redis.Servers">
             <summary>
             Redis分布式缓存的服务器配置，多个用逗号（,）分隔
             格式：ip:port - password
+            配置项：Redis.Servers ：192.168.1.9:6379 - 888888
             </summary>
         </member>
-        <member name="P:CYQ.Data.AppConfig.Cache.RedisUseDBCount">
+        <member name="P:CYQ.Data.AppConfig.Redis.UseDBCount">
             <summary>
             Redis 使用的DB数（默认1，使用db0）
+            配置项：Redis.UseDBCount ：1
             </summary>
         </member>
-        <member name="P:CYQ.Data.AppConfig.Cache.RedisUseDBIndex">
+        <member name="P:CYQ.Data.AppConfig.Redis.UseDBIndex">
             <summary>
             Redis 使用的DB 索引（默认0，若配置，则会忽略RedisUseDBCount）
+            配置项：Redis.UseDBIndex ：0
             </summary>
         </member>
-        <member name="P:CYQ.Data.AppConfig.Cache.RedisServersBak">
+        <member name="P:CYQ.Data.AppConfig.Redis.ServersBak">
             <summary>
             Redis  备份服务器（当主服务器挂了后，请求会转向备用机），多个用逗号（,）分隔
             格式：ip:port - password
+            配置项：Redis.ServersBak ：192.168.1.9:6379 - 888888
             </summary>
         </member>
-        <member name="P:CYQ.Data.AppConfig.Cache.DefaultCacheTime">
+        <member name="T:CYQ.Data.AppConfig.MemCache">
             <summary>
-            Cache.CacheManage 默认缓存项的时间[分钟(默认60)]
+            MemCache 配置
             </summary>
         </member>
-        <member name="P:CYQ.Data.AppConfig.Cache.IsAutoCache">
+        <member name="P:CYQ.Data.AppConfig.MemCache.Servers">
             <summary>
-            是否智能缓存数据（默认开启）
+            MemCache分布式缓存的服务器配置，多个用逗号（,）分隔
+            格式：ip:port
+            配置项：MemCache.Servers ：192.168.1.9:12121
             </summary>
         </member>
-        <member name="P:CYQ.Data.AppConfig.Cache.CacheTables">
+        <member name="P:CYQ.Data.AppConfig.MemCache.ServersBak">
+            <summary>
+            MemCache 备份服务器（当主服务器挂了后，请求会转向备用机）
+            格式：ip:port
+            配置项：MemCache.ServersBak ：192.168.1.9:12121
+            </summary>
+        </member>
+        <member name="T:CYQ.Data.AppConfig.AutoCache">
+            <summary>
+            自动缓存相关的配置
+            </summary>
+        </member>
+        <member name="P:CYQ.Data.AppConfig.AutoCache.IsEnable">
+            <summary>
+            是否启用智能自动缓存数据（默认开启）
+            配置项：AutoCache.IsEnable ：true
+            </summary>
+        </member>
+        <member name="P:CYQ.Data.AppConfig.AutoCache.Tables">
             <summary>
             AutoCache开启时，可以设置仅需要缓存的Table，多个用逗号分隔（此项配置时，NoCacheTables配置则被无忽略）
+            配置项：AutoCache.Tables ：users,user_vip
             </summary>
         </member>
-        <member name="P:CYQ.Data.AppConfig.Cache.NoCacheTables">
+        <member name="P:CYQ.Data.AppConfig.AutoCache.IngoreTables">
             <summary>
             AutoCache开启时，可以设置不缓存的Table，多个用逗号分隔
+            配置项：AutoCache.IngoreTables ：logs,logs_temp
             </summary>
         </member>
-        <member name="P:CYQ.Data.AppConfig.Cache.IngoreCacheColumns">
+        <member name="P:CYQ.Data.AppConfig.AutoCache.IngoreColumns">
             <summary>
             AutoCache开启时，可以设置不受更新影响的列名，用Json格式。
-            {talbeName1:'column1,column2',talbeName2:'column1,column2'}
+            配置项：AutoCache.IngoreColumns ：{user:'updatetime,createtime',tb2:'col1,2'}
             </summary>
         </member>
-        <member name="P:CYQ.Data.AppConfig.Cache.AutoCacheConn">
+        <member name="P:CYQ.Data.AppConfig.AutoCache.Conn">
             <summary>
             CYQ.Data.Cache 自动缓存 - 数据库链接配置
             在多个不同的应用项目里操作同一个数据库时（又不想使用分布式缓存MemCache或Redis），可以开启此项，达到缓存智能清除的效果。
+            配置项：AutoCacheConn：server=.;database=x;uid=s;pwd=p;
             </summary>
         </member>
-        <member name="P:CYQ.Data.AppConfig.Cache.AutoCacheTaskTime">
+        <member name="P:CYQ.Data.AppConfig.AutoCache.TaskTime">
             <summary>
             当AutoCacheConn开启后，定时扫描数据库的任务时间（毫秒）,默认1000
+            配置项：AutoCache.TaskTime：1000
             </summary>
         </member>
         <member name="T:CYQ.Data.AppConfig.Log">
@@ -298,24 +335,28 @@
             日志类Log 相关的配置
             </summary>
         </member>
-        <member name="P:CYQ.Data.AppConfig.Log.LogConn">
-            <summary>
-            CYQ.Data.Log 类记录数据库异常日志 - 数据库链接配置
-            </summary>
-        </member>
-        <member name="P:CYQ.Data.AppConfig.Log.LogPath">
-            <summary>
-            文本日志的配置相对路径（Web 默认为：App_Data/log"）
-            </summary>
-        </member>
-        <member name="P:CYQ.Data.AppConfig.Log.IsWriteLog">
+        <member name="P:CYQ.Data.AppConfig.Log.IsEnable">
             <summary>
             是否写数据库异常日志（默认true）:开启时：有异常不抛出，转写入数据库；不开启：有异常会抛出
+            配置项：Log.IsEnable ：true
             </summary>
         </member>
-        <member name="P:CYQ.Data.AppConfig.Log.LogTableName">
+        <member name="P:CYQ.Data.AppConfig.Log.Conn">
+            <summary>
+            CYQ.Data.Log 类记录数据库异常日志 - 数据库链接配置
+            配置项：LogConn：server=.;database=x;uid=s;pwd=p;
+            </summary>
+        </member>
+        <member name="P:CYQ.Data.AppConfig.Log.Path">
+            <summary>
+            文本日志的配置相对路径（Web 默认为：App_Data/log"）
+            配置项：Log.Path ：App_Data/log
+            </summary>
+        </member>
+        <member name="P:CYQ.Data.AppConfig.Log.TableName">
             <summary>
             异常日志表名（默认为SysLogs，可配置）
+            配置项：Log.TableName ：SysLogs
             </summary>
         </member>
         <member name="T:CYQ.Data.AppConfig.Debug">
@@ -323,27 +364,22 @@
             调试类AppDebug 相关的配置
             </summary>
         </member>
-        <member name="P:CYQ.Data.AppConfig.Debug.SqlFilter">
-             <summary>
-            毫秒数（这个是在对所有SQL语句的：将所有长时间(ms)的SQL语句写入日志，对应配置项LogPath的路径）
-             此项设置后，即启用（无视OpenDebugInfo是否设置）
-             </summary>
-        </member>
-        <member name="P:CYQ.Data.AppConfig.Debug.InfoFilter">
-            <summary>
-            毫秒数（这个是在AppDebug开启后的：可通过此项设置条件过滤出时间(ms)较长的SQL语句）
-            OpenDebugInfo为true，同时 AppDebug.Start() 后，此项才有效。
-            </summary>
-        </member>
-        <member name="P:CYQ.Data.AppConfig.Debug.OpenDebugInfo">
+        <member name="P:CYQ.Data.AppConfig.Debug.IsEnable">
             <summary>
             开启信息调试记录：开启后MAction.DebugInfo可输出执行日志。
             同时AppDebug若要使用，也需要开启此项。
+            配置项：Debug.IsEnable ：false
+            </summary>
+        </member>
+        <member name="T:CYQ.Data.AppConfig.UI">
+            <summary>
+            有UI界面的Web、Winform、WPF。
             </summary>
         </member>
         <member name="P:CYQ.Data.AppConfig.UI.AutoPrefixs">
             <summary>
             UI取值的默认前缀（ddl,chb,txt)，多个用逗号（,）分隔
+            配置项：UI.AutoPrefixs ：txt,chb,ddl
             </summary>
         </member>
         <member name="T:CYQ.Data.AppConst">
@@ -406,6 +442,11 @@
             <summary>
             get sql detail info
             <para>获取调试信息</para>
+            </summary>
+        </member>
+        <member name="P:CYQ.Data.AppDebug.InfoFilter">
+            <summary>
+            设置Info信息进行过滤（毫秒ms)SQL语句。
             </summary>
         </member>
         <member name="T:CYQ.Data.MAction">
@@ -1691,6 +1732,11 @@
             清除所有缓存
             </summary>
         </member>
+        <member name="M:CYQ.Data.Cache.LocalCache.ClearDB">
+            <summary>
+            清空外部缓存数据
+            </summary>
+        </member>
         <member name="P:CYQ.Data.Cache.LocalCache.CacheInfo">
             <summary>
             获取缓存信息对象列表
@@ -2361,6 +2407,11 @@
             <summary>
             insert and select top 1 data to fill row
             <para>使用此项：插入数据后,会根据返回id进行查询后填充数据行。</para>
+            </summary>
+        </member>
+        <member name="T:System.Threading.ReaderWriterLockSlim">
+            <summary>
+            仅 2.0 或 3.0 下编绎使用，其它环境编绎可以移除。
             </summary>
         </member>
         <member name="T:CYQ.Data.LocalEnvironment">
@@ -3255,6 +3306,13 @@
             </summary>
             <param name="key"></param>
         </member>
+        <member name="M:CYQ.Data.SQL.TableSchema.GetSchemaFile(System.String)">
+            <summary>
+            获取表结构Key：*.txt
+            </summary>
+            <param name="key"></param>
+            <returns></returns>
+        </member>
         <member name="M:CYQ.Data.SQL.TableSchema.GetSchemaKey(System.String,System.String)">
             <summary>
             缓存表架构Key
@@ -3286,7 +3344,7 @@
         </member>
         <member name="M:CYQ.Data.SQL.CrossDB.GetTableInfoByName(System.String,System.String)">
             <summary>
-            获得数据库表相关信息
+            获得数据库表相关信息（会搜寻最新数据库内容）
             </summary>
             <param name="conn">指定时优先寻找。</param>
             <param name="name">表名</param>
@@ -3312,11 +3370,6 @@
             首次初始化的数据库。
             </summary>
         </member>
-        <member name="F:CYQ.Data.SQL.DBSchema.DBScheamKeys">
-            <summary>
-            存档数据库对应的keys，用于遍历。
-            </summary>
-        </member>
         <member name="M:CYQ.Data.SQL.DBSchema.GetSchema(System.String)">
             <summary>
             获取(并缓存)数据库的“表、视图、存储过程”名称列表。
@@ -3336,6 +3389,11 @@
         <member name="M:CYQ.Data.SQL.DBSchema.InitDBSchemasOnStart">
             <summary>
             初始化 基础表结构，只运行1次
+            </summary>
+        </member>
+        <member name="P:CYQ.Data.SQL.DBSchema.DBScheams">
+            <summary>
+            获取所有表架构（如果未缓存完成，会重新读取完整后才进行返回（有阻塞可能）
             </summary>
         </member>
         <member name="T:CYQ.Data.SQL.SqlCreateForSchema">
@@ -4418,11 +4476,6 @@
             存储列名的索引
             </summary>
         </member>
-        <member name="F:CYQ.Data.Table.MDataColumn.CheckDuplicate">
-            <summary>
-            添加列时，检测名称是否重复(默认为true)。
-            </summary>
-        </member>
         <member name="M:CYQ.Data.Table.MDataColumn.op_Implicit(System.Data.DataColumnCollection)~CYQ.Data.Table.MDataColumn">
             <summary>
             隐式转换列头
@@ -4521,6 +4574,11 @@
             <param name="jsonOrFileName">Json或文件（完整路径）名称</param>
             <param name="readTxtOrXml">是否从.txt或.xml文件中读取架构（默认为true）</param>
             <returns></returns>
+        </member>
+        <member name="P:CYQ.Data.Table.MDataColumn.CheckDuplicate">
+            <summary>
+            添加列时，检测名称是否重复(默认为true)。
+            </summary>
         </member>
         <member name="P:CYQ.Data.Table.MDataColumn.Table">
             <summary>
@@ -4777,17 +4835,7 @@
             数据库信息
             </summary>
         </member>
-        <member name="F:CYQ.Data.Tool.DBInfo.TableKeys">
-            <summary>
-            用于遍历使用（多线程下）
-            </summary>
-        </member>
-        <member name="F:CYQ.Data.Tool.DBInfo.ViewKeys">
-            <summary>
-            用于遍历使用（多线程下）
-            </summary>
-        </member>
-        <member name="F:CYQ.Data.Tool.DBInfo.ProcKeys">
+        <member name="F:CYQ.Data.Tool.DBInfo._Procs">
             <summary>
             用于遍历使用（多线程下）
             </summary>
@@ -4823,11 +4871,6 @@
             <param name="type"></param>
             <param name="name"></param>
             <returns></returns>
-        </member>
-        <member name="M:CYQ.Data.Tool.DBInfo.RefleshKeys(System.Collections.Generic.List{System.String}@,System.String,System.Boolean)">
-            <summary>
-            多线程下，不能直接操作Keys的添加或移除
-            </summary>
         </member>
         <member name="M:CYQ.Data.Tool.DBInfo.GetHashKey(System.String)">
             <summary>
@@ -6411,6 +6454,16 @@
             清空数据（带锁）
             </summary>
         </member>
+        <member name="M:CYQ.Data.Tool.MDictionary`2.GetKeys">
+            <summary>
+            获取键列表（带锁）
+            </summary>
+        </member>
+        <member name="M:CYQ.Data.Tool.MDictionary`2.GetValues">
+            <summary>
+            获取值列表（带锁）
+            </summary>
+        </member>
         <member name="P:CYQ.Data.Tool.MDictionary`2.Item(`0)">
             <summary>
             索引取值（带锁）
@@ -6954,6 +7007,9 @@
             <summary>
             Xml/Html操作类
             </summary>
+            <summary>
+            Json 交互
+            </summary>
         </member>
         <member name="T:CYQ.Data.Xml.XHtmlBase">
             <summary>
@@ -7255,15 +7311,22 @@
             <param name="idOrName"></param>
             <param name="value"></param>
         </member>
-        <member name="M:CYQ.Data.Xml.XHtmlAction.LoadData(System.Object)">
+        <member name="M:CYQ.Data.Xml.XHtmlAction.FormatHtml(System.String,CYQ.Data.Tool.MDictionary{System.String,System.String})">
             <summary>
-            加载MDataTable的多行数据
+            对Html的内容，进行标签替换【1次替换】
             </summary>
+            <param name="html">需要被替换的内容</param>
+            <param name="values">用于值替换搜索的字典数据</param>
+            <returns></returns>
         </member>
-        <member name="M:CYQ.Data.Xml.XHtmlAction.LoadData(CYQ.Data.Table.MDataTable)">
+        <member name="M:CYQ.Data.Xml.XHtmlAction.SetForeach(CYQ.Data.Table.MDataTable,System.Xml.XmlNode,System.String,CYQ.Data.Xml.XHtmlAction.SetForeachEventHandler)">
             <summary>
-            装载数据行 （一般后续配合SetForeach方法使用）
+            对列表进行循环绑定处理
             </summary>
+            <param name="dataSource">数据源</param>
+            <param name="node">处理的节点</param>
+            <param name="text">用于循环的内容【通常传递node.InnerXml】</param>
+            <param name="eventOnForeach">自定义事件</param>
         </member>
         <member name="F:CYQ.Data.Xml.XHtmlAction.KeyValue">
             <summary>
@@ -7292,7 +7355,7 @@
             <summary>
             为节点设置值，通常在LoadData后使用。
             </summary>
-            <param name="id">节点的id</param>
+            <param name="idOrName">节点的id或name</param>
         </member>
         <member name="M:CYQ.Data.Xml.XHtmlAction.SetFor(System.String,CYQ.Data.Xml.SetType)">
             <summary>
