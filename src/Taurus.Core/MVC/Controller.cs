@@ -914,7 +914,7 @@ namespace Taurus.Mvc
         /// 缓存参数值，内部字典（Query方法可查。）
         /// </summary>
         private MDictionary<string, string> queryCache = new MDictionary<string, string>(StringComparer.OrdinalIgnoreCase);
-        static string[] autoPrefixs = ("," + AppConfig.UI.AutoPrefixs).Split(',');
+        static string[] autoPrefixs = (string.IsNullOrEmpty(AppConfig.UI.AutoPrefixs) ? "" : ("," + AppConfig.UI.AutoPrefixs)).Split(',');
         /// <summary>
         /// Get Request value
         /// </summary>
