@@ -65,7 +65,7 @@
                     el.style = "text-decoration: none; cursor: default; opacity: 0.2";
                     $.ajax({
                         type: "GET",
-                        url: host + "/${Path}/exit?mskey=${MsKey}",
+                        url: host + "${RcPath}/exit?mskey=${RcKey}",
                         success: function (result) {
                             if (result) {
                                 alert(result.msg);
