@@ -36,8 +36,22 @@ namespace Taurus.Plugin.Admin
         /// <returns></returns>
         public override bool BeforeInvoke()
         {
-            switch (MethodName)
+            string nameLower = MethodName.ToLower();
+            switch (nameLower)
             {
+                //无界面
+                case "btnsaveconfig":
+                    break;
+                default:
+                    if (View == null)
+                    {
+                        return false;
+                    }
+                    break;
+            }
+            switch (nameLower)
+            {
+
                 case "login":
                     return true;
                 default:
@@ -137,8 +151,8 @@ namespace Taurus.Plugin.Admin
                 //基础信息：
                 if (MsConfig.IsServer)
                 {
-                    View.KeyValue.Set("MsKey", MsConfig.Server.RcKey);
-                    View.KeyValue.Set("Path", MsConfig.Server.RcPath);
+                    View.KeyValue.Set("RcKey", MsConfig.Server.RcKey);
+                    View.KeyValue.Set("RcPath", MsConfig.Server.RcPath);
                 }
                 if (HostList != null && HostList.Count > 0)
                 {
@@ -316,7 +330,7 @@ namespace Taurus.Plugin.Admin
         /// </summary>
         public void Log()
         {
-            string logPath = AppConfig.WebRootPath + AppConfig.Log.Path;
+            string logPath = AppConfig.WebRootPath + AppConfig.Log.Path.Trim('/', '\\');
             if (Directory.Exists(logPath))
             {
                 string[] files = Directory.GetFiles(logPath, "*.txt", SearchOption.TopDirectoryOnly);
@@ -336,7 +350,7 @@ namespace Taurus.Plugin.Admin
             string fileName = Query<string>("filename");
             if (!string.IsNullOrEmpty(fileName))
             {
-                string logPath = AppConfig.WebRootPath + AppConfig.Log.Path;
+                string logPath = AppConfig.WebRootPath + AppConfig.Log.Path.Trim('/', '\\');
                 string[] files = Directory.GetFiles(logPath, fileName, SearchOption.TopDirectoryOnly);
                 if (files != null && files.Length > 0)
                 {
@@ -360,78 +374,84 @@ namespace Taurus.Plugin.Admin
             {
                 #region Mvc
 
-                dt.NewRow(true).Sets(0, "Taurus.RunUrl", MvcConfig.RunUrl, "Application run url.");
-                dt.NewRow(true).Sets(0, "Taurus.DefaultUrl", MvcConfig.DefaultUrl, "Application default url.");
-                dt.NewRow(true).Sets(0, "Taurus.IsAllowCORS", MvcConfig.IsAllowCORS, "Application is allow cross-origin resource sharing.");
+                Sets(dt, "Taurus.RunUrl", MvcConfig.RunUrl, "Application run url.");
+                Sets(dt, "Taurus.DefaultUrl", MvcConfig.DefaultUrl, "Application default url.");
+                Sets(dt, "Taurus.IsAllowCORS", MvcConfig.IsAllowCORS, "Application is allow cross-origin resource sharing.");
 
-                dt.NewRow(true).Sets(0, "Taurus.RouteMode", GetRouteMode(), "Route mode for selected.");
-                dt.NewRow(true).Sets(0, "Taurus.Controllers", MvcConfig.Controllers, "Load controller names.");
-                dt.NewRow(true).Sets(0, "Taurus.Views", MvcConfig.Views, "Mvc view folder name.");
-                dt.NewRow(true).Sets(0, "Taurus.SslPath", MvcConfig.SslPath, "Ssl path for https (*.pfx for ssl , *.txt for pwd).");
-                dt.NewRow(true).Sets(0, "----------SslCertificate - Count", MvcConfig.SslCertificate.Count, "Num of ssl for https (Show Only).");
+                Sets(dt, "Taurus.RouteMode", GetRouteMode(), "Route mode for selected.");
+                Sets(dt, "Taurus.Controllers", MvcConfig.Controllers, "Load controller names.");
+                Sets(dt, "Taurus.Views", MvcConfig.Views, "Mvc view folder name.");
+                Sets(dt, "Taurus.SslPath", MvcConfig.SslPath, "Ssl path for https (*.pfx for ssl , *.txt for pwd).");
+                Sets(dt, "----------SslCertificate - Count", MvcConfig.SslCertificate.Count, "Num of ssl for https (Show Only).");
                 if (MvcConfig.SslCertificate.Count > 0)
                 {
                     int i = 1;
                     foreach (string name in MvcConfig.SslCertificate.Keys)
                     {
-                        dt.NewRow(true).Sets(0, "----------SslCertificate - " + i, name, "Domain ssl for https (Show Only).");
+                        Sets(dt, "----------SslCertificate - " + i, name, "Domain ssl for https (Show Only).");
                         i++;
                     }
                 }
-                dt.NewRow(true).Sets(0, "Taurus.Suffix", MvcConfig.Suffix, "Deal with mvc suffix.");
-                dt.NewRow(true).Sets(0, "Taurus.SubAppName", MvcConfig.SubAppName, "Name of deploy as sub application.");
+                Sets(dt, "Taurus.Suffix", MvcConfig.Suffix, "Deal with mvc suffix.");
+                Sets(dt, "Taurus.SubAppName", MvcConfig.SubAppName, "Name of deploy as sub application.");
                 #endregion
             }
-            else if (type == "plugin")
+            else if (type == "plugin-admin")
             {
-                #region Plugin
-
-                dt.NewRow(true).Sets(0, "Admin.IsEnable", AdminConfig.IsEnable, "Admin plugin is enable.");
-                dt.NewRow(true).Sets(0, "Admin.Path", "/" + AdminConfig.Path, "Admin url path.");
-                dt.NewRow(true).Sets(0, "Admin.HtmlFolderName", AdminConfig.HtmlFolderName, "Mvc view folder name for admin.");
+                Sets(dt, "Admin.IsEnable", AdminConfig.IsEnable, "Admin plugin is enable.");
+                Sets(dt, "Admin.Path", AdminConfig.Path, "Admin url path.");
+                Sets(dt, "Admin.HtmlFolderName", AdminConfig.HtmlFolderName, "Mvc view folder name for admin.");
                 dt.NewRow(true);
-                dt.NewRow(true).Sets(0, "Admin.UserName", AdminConfig.UserName, "Admin account.");
-                dt.NewRow(true).Sets(0, "Admin.Password", string.IsNullOrEmpty(AdminConfig.Password) ? "" : "******", "Admin password.");
+                Sets(dt, "Admin.UserName", AdminConfig.UserName, "Admin account.");
+                Sets(dt, "Admin.Password", string.IsNullOrEmpty(AdminConfig.Password) ? "" : "******", "Admin password.");
 
                 string[] items = IO.Read(AdminConst.AccountPath).Split(',');
                 if (items.Length == 2)
                 {
-                    dt.NewRow(true).Sets(0, "Admin.UserName - Setting ", items[0], "Admin account by setting.");
-                    dt.NewRow(true).Sets(0, "Admin.Password - Setting", "******", "Admin password by setting.");
+                    Sets(dt, "Admin.UserName - Setting ", items[0], "Admin account by setting.");
+                    Sets(dt, "Admin.Password - Setting", "******", "Admin password by setting.");
                 }
+            }
+            else if (type == "plugin-doc")
+            {
+                Sets(dt, "Doc.IsEnable", DocConfig.IsEnable, "Doc plugin is enable.");
+                Sets(dt, "Doc.Path", DocConfig.Path, "Doc url path.");
+                Sets(dt, "Doc.HtmlFolderName", DocConfig.HtmlFolderName, "Mvc view folder name for doc.");
+                Sets(dt, "Doc.DefaultImg", DocConfig.DefaultImg, "Default images path for doc auto test,as :/App_Data/xxx.jpg");
+                Sets(dt, "Doc.DefaultParas", DocConfig.DefaultParas, "global para for doc auto test,as :ack,token");
+            }
+            else if (type == "plugin-limit")
+            {
+                Sets(dt, "Limit.IP.IsEnable", LimitConfig.IP.IsEnable, "IP limit plugin is enable.");
+                Sets(dt, "Limit.IP.IsSync", LimitConfig.IP.IsSync, "IP limit : is sync ip blackname list from register center.");
+                Sets(dt, "Limit.IP.IsXRealIP", LimitConfig.IP.IsXRealIP, "IP limit : is use X-Real-IP to obtain the client IP address.");
+                Sets(dt, "Limit.IP.IsIgnoreLAN", LimitConfig.IP.IsIgnoreLAN, "IP limit : is ignore LAN (Local Area Network) IP address.");
 
                 dt.NewRow(true);
-                dt.NewRow(true).Sets(0, "Doc.IsEnable", DocConfig.IsEnable, "Doc plugin is enable.");
-                dt.NewRow(true).Sets(0, "Doc.Path", "/" + DocConfig.Path, "Doc url path.");
-                dt.NewRow(true).Sets(0, "Doc.HtmlFolderName", DocConfig.HtmlFolderName, "Mvc view folder name for doc.");
-                dt.NewRow(true).Sets(0, "Doc.DefaultImg", DocConfig.DefaultImg, "Default images path for doc auto test,as :/App_Data/xxx.jpg");
-                dt.NewRow(true).Sets(0, "Doc.DefaultParas", DocConfig.DefaultParas, "global para for doc auto test,as :ack,token");
+                Sets(dt, "Limit.Rate.IsEnable", LimitConfig.Rate.IsEnable, "Rate limit plugin is enable.");
+                Sets(dt, "Limit.Rate.Period", LimitConfig.Rate.Period + " (s)", "Rate limit : interval period (second).");
+                Sets(dt, "Limit.Rate.Limit", LimitConfig.Rate.Limit, "Rate limit : maximum number of requests within an interval time.");
+                Sets(dt, "Limit.Rate.IsUseTokenAsKey", LimitConfig.Rate.IsUseTokenAsKey, "Rate limit : use token as key to replace ip.");
 
                 dt.NewRow(true);
-                dt.NewRow(true).Sets(0, "Limit.IP.IsEnable", LimitConfig.IP.IsEnable, "IP limit plugin is enable.");
-                dt.NewRow(true).Sets(0, "Limit.IP.IsSync", LimitConfig.IP.IsSync, "IP limit : is sync ip blackname list from register center.");
-
-                dt.NewRow(true);
-                dt.NewRow(true).Sets(0, "Limit.Ack.IsEnable", LimitConfig.Ack.IsEnable, "Ack limit plugin is enable.");
-                dt.NewRow(true).Sets(0, "Limit.Ack.Key", LimitConfig.Ack.Key, "Ack limit : secret key.");
-                dt.NewRow(true).Sets(0, "Limit.Ack.IsVerifyDecode", LimitConfig.Ack.IsVerifyDecode, "Ack limit : ack must be decode and valid.");
-                dt.NewRow(true).Sets(0, "Limit.Ack.IsVerifyUsed", LimitConfig.Ack.IsVerifyUsed, "Ack limit : ack use once only.");
-
-                #endregion
+                Sets(dt, "Limit.Ack.IsEnable", LimitConfig.Ack.IsEnable, "Ack limit plugin is enable.");
+                Sets(dt, "Limit.Ack.Key", LimitConfig.Ack.Key, "Ack limit : secret key.");
+                Sets(dt, "Limit.Ack.IsVerifyDecode", LimitConfig.Ack.IsVerifyDecode, "Ack limit : ack must be decode and valid.");
+                Sets(dt, "Limit.Ack.IsVerifyUsed", LimitConfig.Ack.IsVerifyUsed, "Ack limit : ack use once only.");
             }
             else if (type == "microservice")
             {
                 #region MicroService
 
-                dt.NewRow(true).Sets(0, "MicroServer Type", GetMsType(), "Type of current microservice (Show Only).");
+                Sets(dt, "MicroService Type", GetMsType(), "Type of current microservice (Show Only).");
                 if (MsConfig.IsServer)
                 {
-                    dt.NewRow(true).Sets(0, "MicroServer.Server.Name", MsConfig.Server.Name, "Server name.");
-                    dt.NewRow(true).Sets(0, "MicroServer.Server.RcKey", MsConfig.Server.RcKey, "Register center secret key.");
-                    dt.NewRow(true).Sets(0, "MicroServer.Server.RcUrl", MsConfig.Server.RcUrl, "Register center url.");
-                    dt.NewRow(true).Sets(0, "MicroServer.Server.RcPath", "/" + MsConfig.Server.RcPath, "Register center local path.");
-                    dt.NewRow(true).Sets(0, "MicroServer.Server.GatewayTimeout", MsConfig.Server.GatewayTimeout + " (s)", "Gateway timeout (second) for request forward.");
-                    dt.NewRow(true).Sets(0, "MicroServer Gateway Proxy LastTime", Rpc.Gateway.LastProxyTime.ToString("yyyy-MM-dd HH:mm:ss"), "The last time the proxy forwarded the request (Show Only).");
+                    Sets(dt, "MicroService.Server.Name", MsConfig.Server.Name, "Server name.");
+                    Sets(dt, "MicroService.Server.RcKey", MsConfig.Server.RcKey, "Register center secret key.");
+                    Sets(dt, "MicroService.Server.RcUrl", MsConfig.Server.RcUrl, "Register center url.");
+                    Sets(dt, "MicroService.Server.RcPath", MsConfig.Server.RcPath, "Register center local path.");
+                    Sets(dt, "MicroService.Server.GatewayTimeout", MsConfig.Server.GatewayTimeout + " (s)", "Gateway timeout (second) for request forward.");
+                    Sets(dt, "MicroService Gateway Proxy LastTime", Rpc.Gateway.LastProxyTime.ToString("yyyy-MM-dd HH:mm:ss"), "The last time the proxy forwarded the request (Show Only).");
                 }
 
                 if (MsConfig.IsClient)
@@ -440,55 +460,55 @@ namespace Taurus.Plugin.Admin
                     {
                         dt.NewRow(true);
                     }
-                    dt.NewRow(true).Sets(0, "MicroServer.Client.Name", MsConfig.Client.Name, "Client module name.");
-                    dt.NewRow(true).Sets(0, "MicroServer.Client.Domain", MsConfig.Client.Domain, "Client bind domain.");
-                    dt.NewRow(true).Sets(0, "MicroServer.Client.Version", MsConfig.Client.Version, "Client web version.");
-                    dt.NewRow(true).Sets(0, "MicroServer.Client.RemoteExit", MsConfig.Client.RemoteExit, "Client is allow remote stop by register center.");
-                    dt.NewRow(true).Sets(0, "MicroServer.Client.RcKey", MsConfig.Client.RcKey, "Register center secret key.");
-                    dt.NewRow(true).Sets(0, "MicroServer.Client.RcUrl", MsConfig.Client.RcUrl, "Register center url.");
-                    dt.NewRow(true).Sets(0, "MicroServer.Client.RcPath", "/" + MsConfig.Client.RcPath, "Register center local path.");
+                    Sets(dt, "MicroService.Client.Name", MsConfig.Client.Name, "Client module name.");
+                    Sets(dt, "MicroService.Client.Domain", MsConfig.Client.Domain, "Client bind domain.");
+                    Sets(dt, "MicroService.Client.Version", MsConfig.Client.Version, "Client web version.");
+                    Sets(dt, "MicroService.Client.RemoteExit", MsConfig.Client.RemoteExit, "Client is allow remote stop by register center.");
+                    Sets(dt, "MicroService.Client.RcKey", MsConfig.Client.RcKey, "Register center secret key.");
+                    Sets(dt, "MicroService.Client.RcUrl", MsConfig.Client.RcUrl, "Register center url.");
+                    Sets(dt, "MicroService.Client.RcPath", MsConfig.Client.RcPath, "Register center local path.");
 
                 }
                 #endregion
             }
             else if (type == "cyq.data")
             {
-                dt.NewRow(true).Sets(0, "AutoCache.IsEnable", AppConfig.AutoCache.IsEnable, "Use auto cache.");
-                dt.NewRow(true).Sets(0, "Debug.IsEnable", AppConfig.Debug.IsEnable, "Record sql when dev debug.");
+                Sets(dt, "AutoCache.IsEnable", AppConfig.AutoCache.IsEnable, "Use auto cache.");
+                Sets(dt, "Debug.IsEnable", AppConfig.Debug.IsEnable, "Record sql when dev debug.");
                 dt.NewRow(true);
-                dt.NewRow(true).Sets(0, "Log.IsEnable", AppConfig.Log.IsEnable, "Write log to file or database on error,otherwise throw exception.");
-                dt.NewRow(true).Sets(0, "Log.Path", AppConfig.Log.Path, "Log folder name or path.");
+                Sets(dt, "Log.IsEnable", AppConfig.Log.IsEnable, "Write log to file or database on error,otherwise throw exception.");
+                Sets(dt, "Log.Path", AppConfig.Log.Path, "Log folder name or path.");
                 dt.NewRow(true);
-                dt.NewRow(true).Sets(0, "DB.SchemaMapPath", AppConfig.DB.SchemaMapPath, "Database metadata cache path.");
-                dt.NewRow(true).Sets(0, "DB.CommandTimeout", AppConfig.DB.CommandTimeout + " (s)", "Timeout for database command.");
-                dt.NewRow(true).Sets(0, "DB.SqlFilter", AppConfig.DB.SqlFilter + " (ms)", "Write sql to log file when sql exe time > value(value must>0).");
+                Sets(dt, "DB.SchemaMapPath", AppConfig.DB.SchemaMapPath, "Database metadata cache path.");
+                Sets(dt, "DB.CommandTimeout", AppConfig.DB.CommandTimeout + " (s)", "Timeout for database command.");
+                Sets(dt, "DB.SqlFilter", AppConfig.DB.SqlFilter + " (ms)", "Write sql to log file when sql exe time > value(value must>0).");
                 dt.NewRow(true);
-                dt.NewRow(true).Sets(0, "Aop", AppConfig.Aop, "Aop config :【Aop-Class-FullName,DllName】");
-                dt.NewRow(true).Sets(0, "EncryptKey", AppConfig.EncryptKey, "Encrypt key for EncryptHelper tool.");
-                dt.NewRow(true).Sets(0, "DefaultCacheTime", AppConfig.DefaultCacheTime + " (m)", "Default cache time (minute).");
+                Sets(dt, "Aop", AppConfig.Aop, "Aop config :【Aop-Class-FullName,DllName】");
+                Sets(dt, "EncryptKey", AppConfig.EncryptKey, "Encrypt key for EncryptHelper tool.");
+                Sets(dt, "DefaultCacheTime", AppConfig.DefaultCacheTime + " (m)", "Default cache time (minute).");
             }
             else if (type == "log")
             {
-                dt.NewRow(true).Sets(0, "Log.IsEnable", AppConfig.Log.IsEnable, "Write log to file or database on error,otherwise throw exception.");
-                dt.NewRow(true).Sets(0, "Log.Path", AppConfig.Log.Path, "Log folder name or path.");
-                dt.NewRow(true).Sets(0, "Log.TableName", AppConfig.Log.TableName, "Log tablename on log database.");
-                dt.NewRow(true).Sets(0, "LogConn", HideConnPassword(AppConfig.Log.Conn), "Log database connection string.");
+                Sets(dt, "Log.IsEnable", AppConfig.Log.IsEnable, "Write log to file or database on error,otherwise throw exception.");
+                Sets(dt, "Log.Path", AppConfig.Log.Path, "Log folder name or path.");
+                Sets(dt, "Log.TableName", AppConfig.Log.TableName, "Log tablename on log database.");
+                Sets(dt, "LogConn", HideConnPassword(AppConfig.Log.Conn), "Log database connection string.");
             }
             else if (type == "conn")
             {
                 foreach (ConnectionStringSettings item in ConfigurationManager.ConnectionStrings)
                 {
-                    dt.NewRow(true).Sets(0, item.Name, HideConnPassword(item.ConnectionString), "DataBaseType : " + DBTool.GetDataBaseType(item.ConnectionString));
+                    Sets(dt, item.Name, HideConnPassword(item.ConnectionString), "DataBaseType : " + DBTool.GetDataBaseType(item.ConnectionString));
                 }
             }
             else if (type == "autocache")
             {
-                dt.NewRow(true).Sets(0, "AutoCache.IsEnable", AppConfig.AutoCache.IsEnable, "AutoCache is enabled.");
-                dt.NewRow(true).Sets(0, "AutoCache.Tables", AppConfig.AutoCache.Tables, "Set the tables that need to be cached by specifying their names separated by commas.");
-                dt.NewRow(true).Sets(0, "AutoCache.IngoreTables", AppConfig.AutoCache.IngoreTables, "Set the tables that no need to be cached by specifying their names separated by commas.");
-                dt.NewRow(true).Sets(0, "AutoCache.IngoreColumns", AppConfig.AutoCache.IngoreColumns, "Set column names that will not be affected by updates, using a JSON format as {tablename:'col1,col2'}.");
-                dt.NewRow(true).Sets(0, "AutoCache.TaskTime", AppConfig.AutoCache.TaskTime + " (ms)", "When AutoCacheConn is enabled, the task time (in milliseconds) for regularly scanning the database.");
-                dt.NewRow(true).Sets(0, "AutoCacheConn", HideConnPassword(AppConfig.AutoCache.Conn), "For auto remove cache when database data change.");
+                Sets(dt, "AutoCache.IsEnable", AppConfig.AutoCache.IsEnable, "AutoCache is enabled.");
+                Sets(dt, "AutoCache.Tables", AppConfig.AutoCache.Tables, "Set the tables that need to be cached by specifying their names separated by commas.");
+                Sets(dt, "AutoCache.IngoreTables", AppConfig.AutoCache.IngoreTables, "Set the tables that no need to be cached by specifying their names separated by commas.");
+                Sets(dt, "AutoCache.IngoreColumns", AppConfig.AutoCache.IngoreColumns, "Set column names that will not be affected by updates, using a JSON format as {tablename:'col1,col2'}.");
+                Sets(dt, "AutoCache.TaskTime", AppConfig.AutoCache.TaskTime + " (ms)", "When AutoCacheConn is enabled, the task time (in milliseconds) for regularly scanning the database.");
+                Sets(dt, "AutoCacheConn", HideConnPassword(AppConfig.AutoCache.Conn), "For auto remove cache when database data change.");
             }
 
             else if (type == "redis")
@@ -496,23 +516,23 @@ namespace Taurus.Plugin.Admin
                 if (!string.IsNullOrEmpty(AppConfig.Redis.Servers))
                 {
                     dt.NewRow(true);
-                    dt.NewRow(true).Sets(0, "RedisUseDBCount", AppConfig.Redis.UseDBCount, "Redis use db count.");
-                    dt.NewRow(true).Sets(0, "RedisUseDBIndex", AppConfig.Redis.UseDBIndex, "Redis use db index.");
+                    Sets(dt, "RedisUseDBCount", AppConfig.Redis.UseDBCount, "Redis use db count.");
+                    Sets(dt, "RedisUseDBIndex", AppConfig.Redis.UseDBIndex, "Redis use db index.");
                     string[] items = AppConfig.Redis.Servers.Split(',');
-                    dt.NewRow(true).Sets(0, "----------RedisServers - Count", items.Length, "Num of server node for redis (Show Only).");
+                    Sets(dt, "----------RedisServers - Count", items.Length, "Num of server node for redis (Show Only).");
 
                     for (int i = 0; i < items.Length; i++)
                     {
-                        dt.NewRow(true).Sets(0, "----------RedisServers - " + (i + 1), items[i], "Server node for redis (Show Only).");
+                        Sets(dt, "----------RedisServers - " + (i + 1), items[i], "Server node for redis (Show Only).");
                     }
 
                     if (!string.IsNullOrEmpty(AppConfig.Redis.ServersBak))
                     {
                         items = AppConfig.Redis.ServersBak.Split(',');
-                        dt.NewRow(true).Sets(0, "----------RedisServersBak - Count", items.Length, "Num of server node for redis bak(Show Only).");
+                        Sets(dt, "----------RedisServersBak - Count", items.Length, "Num of server node for redis bak(Show Only).");
                         for (int i = 0; i < items.Length; i++)
                         {
-                            dt.NewRow(true).Sets(0, "----------RedisServersBak - " + (i + 1), items[i], "Server node for redis (Show Only).");
+                            Sets(dt, "----------RedisServersBak - " + (i + 1), items[i], "Server node for redis (Show Only).");
                         }
                     }
                 }
@@ -522,20 +542,20 @@ namespace Taurus.Plugin.Admin
                 if (!string.IsNullOrEmpty(AppConfig.MemCache.Servers))
                 {
                     string[] items = AppConfig.MemCache.Servers.Split(',');
-                    dt.NewRow(true).Sets(0, "----------MemCacheServers - Count", items.Length, "Num of server node for memcache (Show Only).");
+                    Sets(dt, "----------MemCacheServers - Count", items.Length, "Num of server node for memcache (Show Only).");
 
                     for (int i = 0; i < items.Length; i++)
                     {
-                        dt.NewRow(true).Sets(0, "----------MemCacheServers - " + (i + 1), items[i], "Server node for memcache (Show Only).");
+                        Sets(dt, "----------MemCacheServers - " + (i + 1), items[i], "Server node for memcache (Show Only).");
                     }
 
                     if (!string.IsNullOrEmpty(AppConfig.MemCache.ServersBak))
                     {
                         items = AppConfig.MemCache.ServersBak.Split(',');
-                        dt.NewRow(true).Sets(0, "----------MemCacheServersBak - Count", items.Length, "Num of server node for memcache bak(Show Only).");
+                        Sets(dt, "----------MemCacheServersBak - Count", items.Length, "Num of server node for memcache bak(Show Only).");
                         for (int i = 0; i < items.Length; i++)
                         {
-                            dt.NewRow(true).Sets(0, "----------MemCacheServersBak - " + (i + 1), items[i], "Server node for memcache (Show Only).");
+                            Sets(dt, "----------MemCacheServersBak - " + (i + 1), items[i], "Server node for memcache (Show Only).");
                         }
                     }
                 }
@@ -543,25 +563,25 @@ namespace Taurus.Plugin.Admin
 
             else if (type == "debug")
             {
-                dt.NewRow(true).Sets(0, "Debug.IsEnable", AppConfig.Debug.IsEnable, "Record sql when dev debug.");
+                Sets(dt, "Debug.IsEnable", AppConfig.Debug.IsEnable, "Record sql when dev debug.");
             }
             else if (type == "database")
             {
-                dt.NewRow(true).Sets(0, "DB.CommandTimeout", AppConfig.DB.CommandTimeout + " (s)", "Timeout for database command.");
-                dt.NewRow(true).Sets(0, "DB.SchemaMapPath", AppConfig.DB.SchemaMapPath, "Database metadata cache path.");
-                dt.NewRow(true).Sets(0, "DB.SqlFilter", AppConfig.DB.SqlFilter + " (ms)", "Write sql to log file when sql exe time > value(value must>0).");
+                Sets(dt, "DB.CommandTimeout", AppConfig.DB.CommandTimeout + " (s)", "Timeout for database command.");
+                Sets(dt, "DB.SchemaMapPath", AppConfig.DB.SchemaMapPath, "Database metadata cache path.");
+                Sets(dt, "DB.SqlFilter", AppConfig.DB.SqlFilter + " (ms)", "Write sql to log file when sql exe time > value(value must>0).");
                 dt.NewRow(true);
-                dt.NewRow(true).Sets(0, "DB.HiddenFields", AppConfig.DB.HiddenFields, "Hide fields that are not returned when querying.");
-                dt.NewRow(true).Sets(0, "DB.DeleteField", AppConfig.DB.DeleteField, "Soft-deletion field name (if a table has this specified field name, MAction's delete operation will be changed to an update operation).");
-                dt.NewRow(true).Sets(0, "DB.EditTimeFields", AppConfig.DB.EditTimeFields, "Name of the update time field (if the specified field name exists in the table, the update time will be automatically updated).");
+                Sets(dt, "DB.HiddenFields", AppConfig.DB.HiddenFields, "Hide fields that are not returned when querying.");
+                Sets(dt, "DB.DeleteField", AppConfig.DB.DeleteField, "Soft-deletion field name (if a table has this specified field name, MAction's delete operation will be changed to an update operation).");
+                Sets(dt, "DB.EditTimeFields", AppConfig.DB.EditTimeFields, "Name of the update time field (if the specified field name exists in the table, the update time will be automatically updated).");
                 dt.NewRow(true);
 
-                dt.NewRow(true).Sets(0, "DB.IsPostgreLower", AppConfig.DB.IsPostgreLower, "Postgres is in lowercase mode.");
-                dt.NewRow(true).Sets(0, "DB.IsTxtReadOnly", AppConfig.DB.IsTxtReadOnly, "Txt database is read-only (used for demo purposes to prevent demo accounts or data from being deleted).");
+                Sets(dt, "DB.IsPostgreLower", AppConfig.DB.IsPostgreLower, "Postgres is in lowercase mode.");
+                Sets(dt, "DB.IsTxtReadOnly", AppConfig.DB.IsTxtReadOnly, "Txt database is read-only (used for demo purposes to prevent demo accounts or data from being deleted).");
                 dt.NewRow(true);
-                dt.NewRow(true).Sets(0, "DB.AutoID", AppConfig.DB.AutoID, "The sequence id config for oracle.");
-                dt.NewRow(true).Sets(0, "DB.EntitySuffix", AppConfig.DB.EntitySuffix, "Entity suffix which will be ignore when orm operate.");
-                dt.NewRow(true).Sets(0, "DB.MasterSlaveTime", AppConfig.DB.MasterSlaveTime + " (s)", "The duration of user operations on the primary database when using read-write separation.");
+                Sets(dt, "DB.AutoID", AppConfig.DB.AutoID, "The sequence id config for oracle.");
+                Sets(dt, "DB.EntitySuffix", AppConfig.DB.EntitySuffix, "Entity suffix which will be ignore when orm operate.");
+                Sets(dt, "DB.MasterSlaveTime", AppConfig.DB.MasterSlaveTime + " (s)", "The duration of user operations on the primary database when using read-write separation.");
             }
             dt.Bind(View);
         }
@@ -642,6 +662,20 @@ namespace Taurus.Plugin.Admin
                 dtTaurus.Rows.Sort("ConfigKey");
             }
             dtTaurus.Bind(View);
+        }
+
+        private void Sets(MDataTable dt, string key, object objValue, string description)
+        {
+            string value = Convert.ToString(objValue);
+            if (AdminConfig.IsContainsDurableKey(key))
+            {
+                value = value + " 【durable】";
+            }
+            else if (AdminConfig.IsContainsTempKey(key))
+            {
+                value = value + " 【temp modify】";
+            }
+            dt.NewRow(true).Sets(0, key, value, description);
         }
     }
 
@@ -827,6 +861,45 @@ namespace Taurus.Plugin.Admin
             View.KeyValue.Add("MenuList", menuList);
             View.Set("msg", "Save success.");
         }
+
+        public void BtnSaveConfig()
+        {
+            string key = Query<string>("key");
+            string value = Query<string>("value");
+            bool isDurable = Query<bool>("durable");
+            string oldValue = string.Empty;
+
+            //需要特殊处理的值
+            switch (key)
+            {
+                case "Admin.Path":
+                    oldValue = AdminConfig.Path; break;
+                case "Doc.Path":
+                    oldValue = DocConfig.Path; break;
+                case "MicroService.Server.RcPath":
+                    oldValue = MsConfig.Server.RcPath; break;
+                case "MicroService.Client.RcPath":
+                    oldValue = MsConfig.Client.RcPath; break;
+                case "Taurus.Views":
+                    ViewEngine.ViewsPath = null;
+                    break;
+            }
+            if (!string.IsNullOrEmpty(oldValue))
+            {
+                ControllerCollector.ChangePath(oldValue, value);
+            }
+            AppConfig.SetApp(key, value);
+            if (isDurable)
+            {
+                AdminConfig.AddDurableConfig(key, value);
+            }
+            else
+            {
+                AdminConfig.RemoveDurableConfig(key, value);
+            }
+            Write("Save success.", true);
+        }
+
         #endregion
     }
 }

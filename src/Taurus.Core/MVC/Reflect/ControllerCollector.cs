@@ -161,42 +161,44 @@ namespace Taurus.Mvc
                                 }
                             }
                         }
-                        //追加APIHelp
-                        if (DocConfig.IsEnable)
-                        {
-                            Type docType = typeof(DocController);
-                            if (!_Lv1Controllers.ContainsKey(DocConfig.Path))
-                            {
-                                _Lv1Controllers.Add(DocConfig.Path, docType);
-                            }
-                            MethodCollector.InitMethodInfo(docType);
-                        }
 
-                        if (AdminConfig.IsEnable)
+                        #region Admin（优化，内部有初始化配置功能）、Doc、 插件
+                        Type adminType = typeof(AdminController);
+                        string path = AdminConfig.Path.Trim('/', '\\');
+                        if (!_Lv1Controllers.ContainsKey(path))
                         {
-                            Type adminType = typeof(AdminController);
-                            if (!_Lv1Controllers.ContainsKey(AdminConfig.Path))
-                            {
-                                _Lv1Controllers.Add(AdminConfig.Path, adminType);//用path，允许调整路径
-                            }
-                            MethodCollector.InitMethodInfo(adminType);
+                            _Lv1Controllers.Add(path, adminType);//用path，允许调整路径
                         }
+                        MethodCollector.InitMethodInfo(adminType);
+
+                        Type docType = typeof(DocController);
+                        path = DocConfig.Path.Trim('/', '\\');
+                        if (!_Lv1Controllers.ContainsKey(path))
+                        {
+                            _Lv1Controllers.Add(path, docType);
+                        }
+                        MethodCollector.InitMethodInfo(docType);
+
+
+                        #endregion
 
                         Type msType = typeof(MicroServiceController);
                         if (MsConfig.IsServer)
                         {
+                            path = MsConfig.Server.RcPath.Trim('/', '\\');
                             //微服务API
-                            if (!_Lv1Controllers.ContainsKey(MsConfig.Server.RcPath))
+                            if (!_Lv1Controllers.ContainsKey(path))
                             {
-                                _Lv1Controllers.Add(MsConfig.Server.RcPath, msType);
+                                _Lv1Controllers.Add(path, msType);
                             }
                         }
                         if (MsConfig.IsClient)
                         {
+                            path = MsConfig.Client.RcPath.Trim('/', '\\');
                             //微服务API
-                            if (!_Lv1Controllers.ContainsKey(MsConfig.Client.RcPath))
+                            if (!_Lv1Controllers.ContainsKey(path))
                             {
-                                _Lv1Controllers.Add(MsConfig.Client.RcPath, msType);
+                                _Lv1Controllers.Add(path, msType);
                             }
                         }
 
@@ -235,7 +237,7 @@ namespace Taurus.Mvc
         /// <returns></returns>
         public static Type GetController(string className)
         {
-            if (string.IsNullOrEmpty(className))
+            if (string.IsNullOrEmpty(className) || !IsModuleEnable(className))
             {
                 className = ReflectConst.Default;
             }
@@ -278,8 +280,45 @@ namespace Taurus.Mvc
             return null;
         }
 
+        public static bool IsModuleEnable(string name)
+        {
+            if (!AdminConfig.IsEnable && name == AdminConfig.Path.Trim('/', '\\'))
+            {
+                return false;
+            }
+            if (!DocConfig.IsEnable && name == DocConfig.Path.Trim('/', '\\'))
+            {
+                return false;
+            }
+
+            return true;
+        }
+
         #endregion
 
+        #region 修改控制器路径
 
+        /// <summary>
+        /// 修改控制器路径
+        /// </summary>
+        /// <returns></returns>
+        public static bool ChangePath(string oldPath, string newPath)
+        {
+            if (string.IsNullOrEmpty(oldPath) || string.IsNullOrEmpty(newPath))
+            {
+                return false;
+            }
+            oldPath = oldPath.Trim('/', '\\');
+            newPath = newPath.Trim('/', '\\');
+            if (oldPath != newPath && _Lv1Controllers.ContainsKey(oldPath) && !_Lv1Controllers.ContainsKey(newPath))
+            {
+                _Lv1Controllers.Add(newPath, _Lv1Controllers[oldPath]);
+                _Lv1Controllers.Remove(oldPath);
+                return true;
+            }
+            return false;
+        }
+
+        #endregion
     }
 }

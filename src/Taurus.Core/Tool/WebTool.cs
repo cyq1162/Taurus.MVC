@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Web;
 using CYQ.Data;
 using CYQ.Data.Tool;
+using Taurus.MicroService;
 using Taurus.Plugin.Admin;
 using Taurus.Plugin.Doc;
 
@@ -61,7 +62,11 @@ namespace Taurus.Mvc
         }
         internal static bool IsCallMicroService(string localPath)
         {
-            return localPath.ToLower().Contains("/microservice/");
+            if (MsConfig.IsServer)
+            {
+                return localPath.ToLower().Contains("/" + MsConfig.Server.RcPath.Trim('/', '\\') + "/");
+            }
+            return localPath.ToLower().Contains("/" + MsConfig.Client.RcPath.Trim('/', '\\') + "/");
         }
         /// <summary>
         /// 是否请求后台管理中心
@@ -74,7 +79,7 @@ namespace Taurus.Mvc
         }
         internal static bool IsCallAdmin(string localPath)
         {
-            return AdminConfig.IsEnable && localPath.ToLower().Contains("/" + AdminConfig.Path + "/");
+            return AdminConfig.IsEnable && localPath.ToLower().Contains("/" + AdminConfig.Path.Trim('/', '\\') + "/");
         }
 
         /// <summary>
@@ -88,7 +93,7 @@ namespace Taurus.Mvc
         }
         internal static bool IsCallDoc(string localPath)
         {
-            return DocConfig.IsEnable && localPath.ToLower().Contains("/" + DocConfig.Path + "/");
+            return DocConfig.IsEnable && localPath.ToLower().Contains("/" + DocConfig.Path.Trim('/', '\\') + "/");
         }
 
         /// <summary>
@@ -152,6 +157,60 @@ namespace Taurus.Mvc
             }
             return returnValue.Trim(' ');
         }
+        private static char[] startingChars = new char[2] { '<', '&' };
+
+        /// <summary>
+        /// 安全检测（防脚本注入）
+        /// </summary>
+        /// <param name="s">被检测的字符串</param>
+        /// <returns></returns>
+        public static bool IsDangerousString(string s, out int matchIndex)
+        {
+            matchIndex = 0;
+            int startIndex = 0;
+            while (true)
+            {
+                int num = s.IndexOfAny(startingChars, startIndex);
+                if (num < 0)
+                {
+                    return false;
+                }
+                if (num == s.Length - 1)
+                {
+                    break;
+                }
+                matchIndex = num;
+                switch (s[num])
+                {
+                    case '<':
+                        if (IsAtoZ(s[num + 1]) || s[num + 1] == '!' || s[num + 1] == '/' || s[num + 1] == '?')
+                        {
+                            return true;
+                        }
+                        break;
+                    case '&':
+                        if (s[num + 1] == '#')
+                        {
+                            return true;
+                        }
+                        break;
+                }
+                startIndex = num + 1;
+            }
+            return false;
+        }
+        private static bool IsAtoZ(char c)
+        {
+            if (c < 'a' || c > 'z')
+            {
+                if (c >= 'A')
+                {
+                    return c <= 'Z';
+                }
+                return false;
+            }
+            return true;
+        }
     }
 
 
@@ -169,16 +228,21 @@ namespace Taurus.Mvc
         /// </summary>
         public static T Query<T>(string key, T defaultValue, bool filter)
         {
-            var files = HttpContext.Current.Request.Files;
-            string value = HttpContext.Current.Request[key] ?? HttpContext.Current.Request.QueryString[key] ?? HttpContext.Current.Request.Headers[key];
-            if (value == null && files != null && files[key] != null)
+            var request = HttpContext.Current.Request;
+            string value = request[key] ?? request.QueryString[key] ?? request.Headers[key];
+            if (value == null)
             {
-                object file = files[key];
-                if (typeof(T) == typeof(string))
+                var files = request.Files;
+                if (files != null && files[key] != null)
                 {
-                    file = ((HttpPostedFile)file).FileName;
+                    object file = files[key];
+                    if (typeof(T) == typeof(string))
+                    {
+                        file = ((HttpPostedFile)file).FileName;
+                    }
+                    return (T)file;
                 }
-                return (T)file;
+                return defaultValue;
             }
             return ChangeValueType<T>(value, defaultValue, filter);
         }

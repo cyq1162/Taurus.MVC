@@ -123,9 +123,9 @@ namespace Taurus.Mvc
                 {
                     if (CheckMethodAttributeLimit(methodEntity))
                     {
+                        LoadHtmlView();
                         if (ExeBeforeInvoke(methodEntity.AttrEntity.HasIgnoreDefaultController))
                         {
-                            LoadHtmlView();
                             if (ExeMethodInvoke(methodEntity))
                             {
                                 ExeEndInvoke(methodEntity.AttrEntity.HasIgnoreDefaultController);

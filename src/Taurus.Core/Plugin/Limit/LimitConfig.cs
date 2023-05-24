@@ -105,9 +105,111 @@ namespace Taurus.Plugin.Limit
                     AppConfig.SetApp("Limit.IP.IsSync", value.ToString());
                 }
             }
+            /// <summary>
+            /// 配置是否启用 X-Real-IP 来获取客户端IP
+            /// 如 Limit.IP.IsXRealIP ：false
+            /// </summary>
+            public static bool IsXRealIP
+            {
+                get
+                {
+                    return AppConfig.GetAppBool("Limit.IP.IsXRealIP", !MsConfig.IsServer);
+                }
+                set
+                {
+                    AppConfig.SetApp("Limit.IP.IsXRealIP", value.ToString());
+                }
+            }
+            /// <summary>
+            /// 配置是否忽略内网IP的请求
+            /// 如 Limit.IP.IsIgnoreLAN ：true， 默认值：true
+            /// </summary>
+            public static bool IsIgnoreLAN
+            {
+                get
+                {
+                    return AppConfig.GetAppBool("Limit.IP.IsIgnoreLAN", true);
+                }
+                set
+                {
+                    AppConfig.SetApp("Limit.IP.IsIgnoreLAN", value.ToString());
+                }
+            }
+        }
+        public static class Rate
+        {
+            /// <summary>
+            /// 配置是否启用 Rate Limit 安全限制请求频繁
+            /// 如 Limit.Rate.IsEnable ：true， 默认值：false
+            /// </summary>
+            public static bool IsEnable
+            {
+                get
+                {
+                    return AppConfig.GetAppBool("Limit.Rate.IsEnable", true);
+                }
+                set
+                {
+                    AppConfig.SetApp("Limit.Rate.IsEnable", value.ToString());
+                }
+            }
+            /// <summary>
+            /// 配置是否使用 Token 做为限制请求频繁的key
+            /// 如 Limit.Rate.IsUseTokenAsKey ：true， 默认值：false
+            /// </summary>
+            public static bool IsUseTokenAsKey
+            {
+                get
+                {
+                    return AppConfig.GetAppBool("Limit.Rate.IsUseTokenAsKey", false);
+                }
+                set
+                {
+                    AppConfig.SetApp("Limit.Rate.IsUseTokenAsKey", value.ToString());
+                }
+            }
+            /// <summary>
+            /// 配置时间段
+            /// 如 Limit.Rate.Period ：5（s）， （单位秒）
+            /// </summary>
+            public static int Period
+            {
+                get
+                {
+                    int period = AppConfig.GetAppInt("Limit.Rate.Period", 5);
+                    if (period <= 0)
+                    {
+                        return 1;
+                    }
+                    return period;
+                }
+                set
+                {
+                    AppConfig.SetApp("Limit.Rate.Period", value.ToString());
+                }
+            }
+            /// <summary>
+            /// 配置时间段内允许的最大请求数
+            /// 如 Limit.Rate.Limit ：50
+            /// </summary>
+            public static int Limit
+            {
+                get
+                {
+                    int limit = AppConfig.GetAppInt("Limit.Rate.Limit", 50);
+                    if (limit <= 0)
+                    {
+                        return 1;
+                    }
+                    return limit;
+                }
+                set
+                {
+                    AppConfig.SetApp("Limit.Rate.Limit", value.ToString());
+                }
+            }
         }
 
 
-       
     }
 }

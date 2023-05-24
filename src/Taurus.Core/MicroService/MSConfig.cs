@@ -52,13 +52,13 @@ namespace Taurus.MicroService
 
             /// <summary>
             /// 配置注册中心的访问路径
-            /// 如 MicroService.Server.RcPath ： "microservice"， 默认值：microservice
+            /// 如 MicroService.Server.RcPath ： "/microservice"， 默认值：/microservice
             /// </summary>
             public static string RcPath
             {
                 get
                 {
-                    return AppConfig.GetApp("MicroService.Server.RcPath", "microservice").Trim('/');
+                    return AppConfig.GetApp("MicroService.Server.RcPath", "/microservice");
                 }
                 set
                 {
@@ -191,13 +191,13 @@ namespace Taurus.MicroService
             }
             /// <summary>
             /// 配置注册中心的访问路径
-            /// 如 MicroService.Client.RcPath ： "microservice"， 默认值：microservice
+            /// 如 MicroService.Client.RcPath ： "/microservice"， 默认值：/microservice
             /// </summary>
             public static string RcPath
             {
                 get
                 {
-                    return AppConfig.GetApp("MicroService.Client.RcPath", "microservice").Trim('/');
+                    return AppConfig.GetApp("MicroService.Client.RcPath", "/microservice");
                 }
                 set
                 {

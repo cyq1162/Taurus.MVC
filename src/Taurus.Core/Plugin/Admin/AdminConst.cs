@@ -10,5 +10,6 @@ namespace Taurus.Plugin.Admin
         internal static readonly string HostAddPath = AdminConfig.Path + "/host.ini";
         internal static readonly string MenuAddPath = AdminConfig.Path + "/menu.ini";
         internal static readonly string AccountPath = AdminConfig.Path + "/account.ini";
+        internal static readonly string ConfigPath = AdminConfig.Path + "/config.ini";
     }
 }

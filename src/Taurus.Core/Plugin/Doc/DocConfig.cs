@@ -33,7 +33,7 @@ namespace Taurus.Plugin.Doc
         {
             get
             {
-                return AppConfig.GetApp("Doc.Path", "doc").Trim('/');
+                return AppConfig.GetApp("Doc.Path", "/doc");
             }
             set
             {

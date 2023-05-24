@@ -26,6 +26,11 @@ namespace Taurus.Mvc
                 }
                 return _ViewPath;
             }
+            set
+            {
+                //允许重置
+                _ViewPath = value;
+            }
 
         }
         private static string _SharedPath = string.Empty;

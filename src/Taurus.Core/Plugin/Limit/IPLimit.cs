@@ -79,22 +79,27 @@ namespace Taurus.Plugin.Limit
             if (ipBlackDic.Count > 0 || ipBlackList.Count > 0)
             {
                 System.Web.HttpRequest request = System.Web.HttpContext.Current.Request;
-                string ip = request.UserHostAddress;
-                if (ip[0] != ':') // 非本机IP
+                string ip = null;
+                if (LimitConfig.IP.IsXRealIP)
                 {
-                    if (IsBlack(ip))
+                    ip = request.Headers["X-Real-IP"];
+                }
+                if (string.IsNullOrEmpty(ip))
+                {
+                    ip = request.UserHostAddress;
+                }
+                if (LimitConfig.IP.IsIgnoreLAN)
+                {
+                    if (ip[0] == ':' || ip.StartsWith("192.168.") || ip.StartsWith("10.") || ip.StartsWith("172.") || ip.StartsWith("127."))
                     {
-                        return false;
-                    }
-                    string xRealIP = request.Headers["X-Real-IP"];
-                    if (!string.IsNullOrEmpty(xRealIP) && xRealIP != ip)
-                    {
-                        if (IsBlack(xRealIP))
-                        {
-                            return false;
-                        }
+                        return true;//内网不检测
                     }
                 }
+                if (IsBlack(ip))
+                {
+                    return false;
+                }
+
             }
             return true;
         }
@@ -145,7 +150,7 @@ namespace Taurus.Plugin.Limit
         }
         private static void GetIPList()
         {
-            string url = MsConfig.Server.RcUrl + "/" + MsConfig.Server.RcPath + "/getiplist";
+            string url = MsConfig.Server.RcUrl + MsConfig.Server.RcPath + "/getiplist";
             if (MsConfig.IsGateway)
             {
                 url += "?isGateway=1";

@@ -85,7 +85,7 @@ namespace Taurus.Mvc
         {
             get
             {
-                return AppConfig.WebRootPath + "/App_Data/";
+                return AppConfig.WebRootPath + "/App_Data";
             }
         }
     }

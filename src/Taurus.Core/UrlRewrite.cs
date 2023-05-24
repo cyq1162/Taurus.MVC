@@ -57,14 +57,26 @@ namespace Taurus.Core
                     context.Response.End();
                     return;
                 }
-                if (WebTool.IsMvcSuffix(uri.LocalPath) && !LimitRun.CheckAck())
+                if (WebTool.IsMvcSuffix(uri.LocalPath))
                 {
-                    WebTool.SetRunToEnd(context);
-                    //网关请求限制，直接返回
-                    context.Response.StatusCode = 412;
-                    context.Response.Write("412 Precondition failed, ack is invalid.");
-                    context.Response.End();
-                    return;
+                    if (!LimitRun.CheckRate())
+                    {
+                        WebTool.SetRunToEnd(context);
+                        //网关请求限制，直接返回
+                        context.Response.StatusCode = 429;
+                        context.Response.Write("429 - Too many requests.");
+                        context.Response.End();
+                        return;
+                    }
+                    if (!LimitRun.CheckAck())
+                    {
+                        WebTool.SetRunToEnd(context);
+                        //网关请求限制，直接返回
+                        context.Response.StatusCode = 412;
+                        context.Response.Write("412 Precondition failed, ack is invalid.");
+                        context.Response.End();
+                        return;
+                    }
                 }
             }
             #endregion
