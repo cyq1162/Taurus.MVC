@@ -20,9 +20,7 @@ namespace Taurus.Plugin.Admin
         private static Dictionary<string, string> tempConfig = new Dictionary<string, string>();
         static AdminConfig()
         {
-            Log.WriteLogToTxt("config 1:" + AdminConst.ConfigPath);
             string config = IO.Read(AdminConst.ConfigPath);
-            Log.WriteLogToTxt("config 2:" + config);
             if (!string.IsNullOrEmpty(config))
             {
                 var dic = JsonHelper.Split(config);

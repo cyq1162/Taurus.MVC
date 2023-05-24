@@ -1,6 +1,5 @@
 ﻿using CYQ.Data;
 using CYQ.Data.Tool;
-using Taurus.Mvc;
 
 namespace Taurus.MicroService
 {
@@ -35,7 +34,6 @@ namespace Taurus.MicroService
         public static string Read(string path)
         {
             path = AppConfig.WebRootPath + "App_Data" + path;
-            Log.WriteLogToTxt("Read path :" + path);
             return IOHelper.ReadAllText(path);
         }
         /// <summary>
