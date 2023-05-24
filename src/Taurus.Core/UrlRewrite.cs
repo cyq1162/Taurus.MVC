@@ -63,8 +63,8 @@ namespace Taurus.Core
                     {
                         WebTool.SetRunToEnd(context);
                         //网关请求限制，直接返回
-                        context.Response.StatusCode = 429;
-                        context.Response.Write("429 - Too many requests.");
+                        context.Response.StatusCode = 403;
+                        context.Response.Write("403.502 - Forbidden: Too many requests from the same client IP; Dynamic IP Restriction limit reached.");
                         context.Response.End();
                         return;
                     }

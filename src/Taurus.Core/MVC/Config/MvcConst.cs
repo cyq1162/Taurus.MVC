@@ -77,16 +77,5 @@ namespace Taurus.Mvc
                 return _HostIP ?? "127.0.0.1";
             }
         }
-
-        /// <summary>
-        /// 应用程序受保护的目录路径：App_Data目录路径。
-        /// </summary>
-        public static string AppDataFolderPath
-        {
-            get
-            {
-                return AppConfig.WebRootPath + "/App_Data";
-            }
-        }
     }
 }

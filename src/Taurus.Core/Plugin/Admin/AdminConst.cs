@@ -6,10 +6,10 @@ namespace Taurus.Plugin.Admin
     /// </summary>
     internal class AdminConst
     {
-        internal static readonly string IPBlacknamePath = AdminConfig.Path + "/ipblackname.ini";
-        internal static readonly string HostAddPath = AdminConfig.Path + "/host.ini";
-        internal static readonly string MenuAddPath = AdminConfig.Path + "/menu.ini";
-        internal static readonly string AccountPath = AdminConfig.Path + "/account.ini";
-        internal static readonly string ConfigPath = AdminConfig.Path + "/config.ini";
+        internal const string IPBlacknamePath = "/admin/ipblackname.ini";
+        internal const string HostAddPath = "/admin/host.ini";
+        internal const string MenuAddPath = "/admin/menu.ini";
+        internal const string AccountPath = "/admin/account.ini";
+        internal const string ConfigPath = "/admin/config.ini";
     }
 }

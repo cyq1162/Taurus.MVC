@@ -19,10 +19,10 @@ namespace Taurus.MicroService
         /// </summary>
         internal const string RegCenter = "regcenter";
 
-        internal const string ServerRegCenterJsonPath = "microservice/server_regcenter.json";
-        internal const string ServerGatewayJsonPath = "microservice/server_gateway.json";
-        internal const string ClientGatewayJsonPath = "microservice/client_gateway.json";
-        internal const string ServerHost2Path = "microservice/server_host2.json";
-        internal const string ClientHost2Path = "microservice/client_host2.json";
+        internal const string ServerRegCenterJsonPath = "/microservice/server_regcenter.json";
+        internal const string ServerGatewayJsonPath = "/microservice/server_gateway.json";
+        internal const string ClientGatewayJsonPath = "/microservice/client_gateway.json";
+        internal const string ServerHost2Path = "/microservice/server_host2.json";
+        internal const string ClientHost2Path = "/microservice/client_host2.json";
     }
 }

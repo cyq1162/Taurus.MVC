@@ -40,6 +40,7 @@ namespace Taurus.Plugin.Admin
             switch (nameLower)
             {
                 //无界面
+                case "logout":
                 case "btnsaveconfig":
                     break;
                 default:
@@ -731,7 +732,7 @@ namespace Taurus.Plugin.Admin
                     //循环嵌套：2 - 转为节点
                     XmlNode xmlNode = View.CreateNode("div", text);
                     //循环嵌套：3 - 获取子节点，以便进行循环
-                    XmlNode hostNode = View.GetByID("hostList", xmlNode);
+                    XmlNode hostNode = View.Get("hostList", xmlNode);
                     if (hostNode != null)
                     {
                         //循环嵌套：4 - 子节点，循环绑定数据。

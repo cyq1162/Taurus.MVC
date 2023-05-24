@@ -20,7 +20,9 @@ namespace Taurus.Plugin.Admin
         private static Dictionary<string, string> tempConfig = new Dictionary<string, string>();
         static AdminConfig()
         {
+            Log.WriteLogToTxt("config 1:" + AdminConst.ConfigPath);
             string config = IO.Read(AdminConst.ConfigPath);
+            Log.WriteLogToTxt("config 2:" + config);
             if (!string.IsNullOrEmpty(config))
             {
                 var dic = JsonHelper.Split(config);
@@ -99,7 +101,7 @@ namespace Taurus.Plugin.Admin
 
         /// <summary>
         /// 配置Mvc的Admin后台管理访问路径
-        /// 如 Admin.Admin ： "admin"， 默认值：admin
+        /// 如 Admin.Admin ： "/admin"， 默认值：/admin
         /// </summary>
         public static string Path
         {

@@ -338,7 +338,7 @@ namespace Taurus.MicroService
                 {
                     try
                     {
-                        wc.Timeout = 1500;//超时设定。
+                        wc.Timeout = 2500;//超时设定。
                         wc.DownloadData(uri.AbsoluteUri);
                         preConnectionDic[uri] = true;
                     }
