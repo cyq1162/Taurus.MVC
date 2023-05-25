@@ -119,9 +119,9 @@ namespace Microsoft.AspNetCore.Http
             {
                 return false;
             }
-            if (host.Contains("*:") || host.Contains("[::]"))//IP6 保留地址。
+            if (host.Contains("*:") || host.Contains("[::]") || host.Contains("0.0.0.0"))//IP6 保留地址。
             {
-                MvcConfig.RunUrl = host.Replace("*", MvcConst.HostIP).Replace("[::]", MvcConst.HostIP);
+                MvcConfig.RunUrl = host.Replace("*", MvcConst.HostIP).Replace("[::]", MvcConst.HostIP).Replace("0.0.0.0", MvcConst.HostIP);
             }
             else
             {
@@ -156,7 +156,10 @@ namespace Microsoft.AspNetCore.Http
                         SetAppRunUrl(urls.ToString());
                     }
                 }
-
+            }
+            else
+            {
+                Console.WriteLine("MvcConfig.RunUrl = " + MvcConfig.RunUrl);
             }
         }
     }

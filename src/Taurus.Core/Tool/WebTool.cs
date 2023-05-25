@@ -37,6 +37,8 @@ namespace Taurus.Mvc
         {
             if (context != null && !context.Items.Contains("IsRunToEnd"))
             {
+                //context.Response.Charset = "utf-8";
+                //context.Response.ContentType = "application/json";
                 context.Items.Add("IsRunToEnd", 1);
             }
 
@@ -47,9 +49,9 @@ namespace Taurus.Mvc
         /// </summary>
         /// <param name="uri"></param>
         /// <returns></returns>
-        internal static bool IsSysInternalUrl(Uri uri)
+        internal static bool IsSysInternalUrl(Uri uri, Uri referrerUrl)
         {
-            return IsCallMicroService(uri) || IsCallAdmin(uri) || IsCallDoc(uri);
+            return IsCallMicroService(uri) || IsCallAdmin(uri, referrerUrl) || IsCallDoc(uri, referrerUrl);
         }
 
         /// <summary>
@@ -62,20 +64,24 @@ namespace Taurus.Mvc
         }
         internal static bool IsCallMicroService(string localPath)
         {
-            if (MsConfig.IsServer)
+            if (MsConfig.IsServer && MsConfig.Server.IsEnable)
             {
                 return localPath.ToLower().Contains("/" + MsConfig.Server.RcPath.Trim('/', '\\') + "/");
             }
-            return localPath.ToLower().Contains("/" + MsConfig.Client.RcPath.Trim('/', '\\') + "/");
+            if (MsConfig.IsClient && MsConfig.Client.IsEnable)
+            {
+                return localPath.ToLower().Contains("/" + MsConfig.Client.RcPath.Trim('/', '\\') + "/");
+            }
+            return false;
         }
         /// <summary>
         /// 是否请求后台管理中心
         /// </summary>
         /// <param name="uri"></param>
         /// <returns></returns>
-        internal static bool IsCallAdmin(Uri uri)
+        internal static bool IsCallAdmin(Uri uri, Uri referrerUrl)
         {
-            return uri != null && IsCallAdmin(uri.LocalPath);
+            return (uri != null && IsCallAdmin(uri.LocalPath)) || (referrerUrl != null && IsCallAdmin(referrerUrl.LocalPath));
         }
         internal static bool IsCallAdmin(string localPath)
         {
@@ -87,9 +93,9 @@ namespace Taurus.Mvc
         /// </summary>
         /// <param name="uri"></param>
         /// <returns></returns>
-        internal static bool IsCallDoc(Uri uri)
+        internal static bool IsCallDoc(Uri uri, Uri referrerUrl)
         {
-            return uri != null && IsCallDoc(uri.LocalPath);
+            return (uri != null && IsCallDoc(uri.LocalPath)) || (referrerUrl != null && IsCallDoc(referrerUrl.LocalPath));
         }
         internal static bool IsCallDoc(string localPath)
         {

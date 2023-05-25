@@ -84,7 +84,13 @@
     <Compile Include="MVC\LogicBase.cs" />
     <Compile Include="Plugin\Admin\AdminConfig.cs" />
     <Compile Include="Plugin\Admin\AdminConst.cs" />
+    <Compile Include="Plugin\Admin\AdminController.Config.cs" />
     <Compile Include="Plugin\Admin\AdminController.cs" />
+    <Compile Include="Plugin\Admin\AdminController.Index.cs" />
+    <Compile Include="Plugin\Admin\AdminController.Log.cs" />
+    <Compile Include="Plugin\Admin\AdminController.Login.cs" />
+    <Compile Include="Plugin\Admin\AdminController.OSInfo.cs" />
+    <Compile Include="Plugin\Admin\AdminController.Setting.cs" />
     <Compile Include="Plugin\Doc\DocConfig.cs" />
     <Compile Include="Plugin\Doc\DocController.cs" />
     <Compile Include="Plugin\Doc\HttpPostedFileExtend.cs" />
@@ -93,6 +99,7 @@
     <Compile Include="Plugin\Limit\LimitConfig.cs" />
     <Compile Include="Plugin\Limit\LimitRun.cs" />
     <Compile Include="Plugin\Limit\RateLimit.cs" />
+    <Compile Include="Plugin\MicroService\Client\Client.Config.cs" />
     <Compile Include="Plugin\MicroService\Client\Client.cs" />
     <Compile Include="Plugin\MicroService\Client\Client.Gateway.cs" />
     <Compile Include="Plugin\MicroService\Client\Client.MicroServiceController.cs" />
@@ -118,6 +125,7 @@
     <Compile Include="Plugin\MicroService\RPC\Task\RpcTaskRequest.cs" />
     <Compile Include="Plugin\MicroService\RPC\Task\RpcTaskResult.cs" />
     <Compile Include="Plugin\MicroService\RPC\Task\RpcTaskState.cs" />
+    <Compile Include="Plugin\MicroService\Server\Server.Config.cs" />
     <Compile Include="Plugin\MicroService\Server\Server.cs" />
     <Compile Include="Plugin\MicroService\Server\Server.Gateway.cs" />
     <Compile Include="Plugin\MicroService\Server\Server.RegCenter.cs" />

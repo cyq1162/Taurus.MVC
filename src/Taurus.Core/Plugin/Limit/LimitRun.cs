@@ -1,6 +1,5 @@
 ﻿using System;
 using Taurus.Mvc;
-using static Microsoft.AspNetCore.Hosting.Internal.HostingApplication;
 
 namespace Taurus.Plugin.Limit
 {
@@ -15,7 +14,7 @@ namespace Taurus.Plugin.Limit
         /// <returns></returns>
         public static bool IsIgnoreUrl(Uri uri, Uri referrerUri)
         {
-            if (LimitConfig.IsIgnoreAdmin && (WebTool.IsCallAdmin(uri) || WebTool.IsCallAdmin(referrerUri)))
+            if (LimitConfig.IsIgnoreAdmin && WebTool.IsCallAdmin(uri, referrerUri))
             {
                 return true;
             }
@@ -23,7 +22,7 @@ namespace Taurus.Plugin.Limit
             {
                 return true;
             }
-            if (LimitConfig.IsIgnoreDoc && (WebTool.IsCallDoc(uri) || WebTool.IsCallDoc(referrerUri)))
+            if (LimitConfig.IsIgnoreDoc && WebTool.IsCallDoc(uri,referrerUri))
             {
                 return true;
             }

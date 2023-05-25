@@ -24,7 +24,7 @@ namespace Taurus.Plugin.MicroService
             {
                 try
                 {
-                    if (MsConfig.IsApplicationExit)
+                    if (MsConfig.Client.IsApplicationExit)
                     {
                         break;//停止注册，即注销。
                     }
@@ -39,15 +39,16 @@ namespace Taurus.Plugin.MicroService
                     #endregion
 
                     //获取列表，再注册【Rpc的调用，需要有列表，再注册自身（获得请求分配）】
-
-                    if (isFirst)
+                    if (MsConfig.Client.IsEnable)
                     {
-                        isFirst = false;
-                        AfterGetListOfClient(GetListOfClient());
-                        Thread.Sleep(1000);
+                        if (isFirst)
+                        {
+                            isFirst = false;
+                            AfterGetListOfClient(GetListOfClient());
+                            Thread.Sleep(1000);
+                        }
+                        AfterRegHost(RegHost());
                     }
-
-                    AfterRegHost(RegHost());
                 }
                 catch (Exception err)
                 {

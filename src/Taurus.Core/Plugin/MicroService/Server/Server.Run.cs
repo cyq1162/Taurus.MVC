@@ -23,17 +23,16 @@ namespace Taurus.Plugin.MicroService
             {
                 try
                 {
-                    if (MsConfig.IsApplicationExit)
+                    if (MsConfig.Server.IsEnable)
                     {
-                        break;//停止注册，即注销。
-                    }
-                    if (MsConfig.IsGateway)
-                    {
-                        AfterGetListOfServer(GetListOfServer());//仅读取服务列表
-                    }
-                    else if (MsConfig.IsRegCenter)
-                    {
-                        AfterRegHost2(RegHost2());//注册中心（备用节点、走数据同步）
+                        if (MsConfig.IsGateway)
+                        {
+                            AfterGetListOfServer(GetListOfServer());//仅读取服务列表
+                        }
+                        else if (MsConfig.IsRegCenter)
+                        {
+                            AfterRegHost2(RegHost2());//注册中心（备用节点、走数据同步）
+                        }
                     }
                 }
                 catch (Exception err)
@@ -223,73 +222,75 @@ namespace Taurus.Plugin.MicroService
             bool isFirstRun = true;
             while (true)
             {
-                try
+                if (MsConfig.Server.IsEnable)
                 {
-                    var regCenterList = Server.RegCenter.HostList;
-                    if (regCenterList != null)
+                    try
                     {
-                        Server.RegCenter.AddHost("RegCenter", MvcConfig.RunUrl);
-                        Server.RegCenter.LoadHostByAdmin();//加载所有手工添加主机信息
-                        List<string> keys = regCenterList.GetKeys();
-                        var kvForRegCenter = new MDictionary<string, List<HostInfo>>(StringComparer.OrdinalIgnoreCase);
-                        var kvForGateway = new MDictionary<string, List<HostInfo>>(StringComparer.OrdinalIgnoreCase);
-                        foreach (string key in keys)
+                        var regCenterList = Server.RegCenter.HostList;
+                        if (regCenterList != null)
                         {
-                            var items = regCenterList[key];
-                            List<HostInfo> regList = new List<HostInfo>();
-                            List<HostInfo> gatewayList = new List<HostInfo>();
-                            for (int i = 0; i < items.Count; i++)
+                            Server.RegCenter.AddHost("RegCenter", MvcConfig.RunUrl);
+                            Server.RegCenter.LoadHostByAdmin();//加载所有手工添加主机信息
+                            List<string> keys = regCenterList.GetKeys();
+                            var kvForRegCenter = new MDictionary<string, List<HostInfo>>(StringComparer.OrdinalIgnoreCase);
+                            var kvForGateway = new MDictionary<string, List<HostInfo>>(StringComparer.OrdinalIgnoreCase);
+                            foreach (string key in keys)
                             {
-                                var info = items[i];
-                                if (info.RegTime < DateTime.Now.AddSeconds(-11) || info.Version < 0)
+                                var items = regCenterList[key];
+                                List<HostInfo> regList = new List<HostInfo>();
+                                List<HostInfo> gatewayList = new List<HostInfo>();
+                                for (int i = 0; i < items.Count; i++)
                                 {
-                                    Server.IsChange = true;
+                                    var info = items[i];
+                                    if (info.RegTime < DateTime.Now.AddSeconds(-11) || info.Version < 0)
+                                    {
+                                        Server.IsChange = true;
+                                    }
+                                    else
+                                    {
+                                        regList.Add(info);
+                                        gatewayList.Add(info);
+                                    }
                                 }
-                                else
+                                if (regList.Count > 0)
                                 {
-                                    regList.Add(info);
-                                    gatewayList.Add(info);
+                                    kvForRegCenter.Add(key, regList);
+                                    kvForGateway.Add(key, gatewayList);
                                 }
                             }
-                            if (regList.Count > 0)
-                            {
-                                kvForRegCenter.Add(key, regList);
-                                kvForGateway.Add(key, gatewayList);
-                            }
-                        }
 
-                        if (Server.IsChange || isFirstRun)
-                        {
-                            isFirstRun = false;
-                            Server.IsChange = false;
-                            Server.Tick = DateTime.Now.Ticks;
-                            Server.RegCenter.HostList = kvForRegCenter;
-                            Server.RegCenter.HostListJson = JsonHelper.ToJson(kvForRegCenter);
-                            PreConnection(kvForGateway);
-                            Server.Gateway.HostList = kvForGateway;
-                            //WriteToDb(kvForGateway);//为了性能，取消写数据库操作。
-                        }
-                        else
-                        {
-                            if (Server.Gateway.HostList == null)
+                            if (Server.IsChange || isFirstRun)
                             {
+                                isFirstRun = false;
+                                Server.IsChange = false;
+                                Server.Tick = DateTime.Now.Ticks;
+                                Server.RegCenter.HostList = kvForRegCenter;
+                                Server.RegCenter.HostListJson = JsonHelper.ToJson(kvForRegCenter);
+                                PreConnection(kvForGateway);
                                 Server.Gateway.HostList = kvForGateway;
+                                //WriteToDb(kvForGateway);//为了性能，取消写数据库操作。
                             }
                             else
                             {
-                                kvForGateway = null;
+                                if (Server.Gateway.HostList == null)
+                                {
+                                    Server.Gateway.HostList = kvForGateway;
+                                }
+                                else
+                                {
+                                    kvForGateway = null;
+                                }
+                                kvForRegCenter = null;
                             }
-                            kvForRegCenter = null;
                         }
+
                     }
-
+                    catch (Exception err)
+                    {
+                        MsLog.WriteDebugLine(err.Message);
+                        MsLog.Write(err.Message, "MicroService.Run.ClearExpireHost()", "", MsConfig.Server.Name);
+                    }
                 }
-                catch (Exception err)
-                {
-                    MsLog.WriteDebugLine(err.Message);
-                    MsLog.Write(err.Message, "MicroService.Run.ClearExpireHost()", "", MsConfig.Server.Name);
-                }
-
                 Thread.Sleep(3000);//测试并发。
             }
         }

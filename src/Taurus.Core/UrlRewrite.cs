@@ -92,60 +92,76 @@ namespace Taurus.Core
             }
             #endregion
 
-            #region 4、网关代理请求检测与转发
-            if (!WebTool.IsSysInternalUrl(uri) && Rpc.Gateway.Proxy(context, true))
+            #region 4、网关代理请求检测与转发 - 5、纯网关检测 - 6、Mvc模块禁用
+            if (!WebTool.IsSysInternalUrl(uri, context.Request.UrlReferrer))
             {
-                WebTool.SetRunToEnd(context);
-                context.Response.End();
-                return;
-            }
-            #endregion
-
-            #region 5、纯网关检测（关闭Mvc功能模块）
-            if (MsConfig.IsGateway && !MsConfig.IsClient && !WebTool.IsCallAdmin(uri) && !WebTool.IsCallAdmin(context.Request.UrlReferrer))
-            {
-                WebTool.SetRunToEnd(context);
-                //单纯网关，直接返回
-                context.Response.StatusCode = 503;
-                context.Response.Write("503 Service unavailable.");
-                context.Response.End();
-                return;
-            }
-            #endregion
-
-            #region 6、Mvc模块运行
-            if (WebTool.IsCallMvc(uri))
-            {
-                if (context.Request.Url.LocalPath == "/")//设置默认首页
+                if (MsConfig.Server.IsEnable)
                 {
-                    string defaultUrl = MvcConfig.DefaultUrl;
-                    if (!string.IsNullOrEmpty(defaultUrl))
+                    #region 4、网关代理请求检测与转发
+                    if (Rpc.Gateway.Proxy(context, true))
                     {
-                        context.RewritePath(defaultUrl);
+                        WebTool.SetRunToEnd(context);
+                        context.Response.End();
                         return;
                     }
+                    #endregion
+
+                    #region 5、纯网关检测。
+
+                    //单纯网关，直接返回
+                    if (MsConfig.IsGateway && !MsConfig.IsClient)
+                    {
+                        WebTool.SetRunToEnd(context);
+                        context.Response.StatusCode = 503;
+                        context.Response.Write("503 Service unavailable.");
+                        context.Response.End();
+                        return;
+                    }
+                    #endregion
                 }
-                else
+                #region 6、Mvc模块禁用
+                if (!MvcConfig.IsEnable)
                 {
-                    string mapUrl = RouteEngine.Get(uri.LocalPath);
-                    if (!string.IsNullOrEmpty(mapUrl))
+                    WebTool.SetRunToEnd(context);
+                    context.Response.StatusCode = 503;
+                    context.Response.Write("503 Service unavailable.");
+                    context.Response.End();
+                    return;
+                }
+                #endregion
+            }
+            #endregion
+
+            #region 7、Mvc模块运行
+            if (context.Request.Url.LocalPath == "/")//设置默认首页
+            {
+                string defaultUrl = MvcConfig.DefaultUrl;
+                if (!string.IsNullOrEmpty(defaultUrl))
+                {
+                    context.RewritePath(defaultUrl);
+                    return;
+                }
+            }
+            else
+            {
+                string mapUrl = RouteEngine.Get(uri.LocalPath);
+                if (!string.IsNullOrEmpty(mapUrl))
+                {
+                    context.Items.Add("Uri", uri);
+                    context.RewritePath(mapUrl);
+                    return;
+                }
+            }
+            if (WebTool.IsMvcSuffix(uri))
+            {
+                MethodEntity routeMapInvoke = MethodCollector.GlobalRouteMapInvoke;
+                if (routeMapInvoke != null)
+                {
+                    string url = Convert.ToString(routeMapInvoke.Method.Invoke(null, new object[] { context.Request }));
+                    if (!string.IsNullOrEmpty(url))
                     {
                         context.Items.Add("Uri", uri);
-                        context.RewritePath(mapUrl);
-                        return;
-                    }
-                }
-                if (WebTool.IsMvcSuffix(uri))
-                {
-                    MethodEntity routeMapInvoke = MethodCollector.GlobalRouteMapInvoke;
-                    if (routeMapInvoke != null)
-                    {
-                        string url = Convert.ToString(routeMapInvoke.Method.Invoke(null, new object[] { context.Request }));
-                        if (!string.IsNullOrEmpty(url))
-                        {
-                            context.Items.Add("Uri", uri);
-                            context.RewritePath(url);
-                        }
+                        context.RewritePath(url);
                     }
                 }
             }
@@ -155,7 +171,7 @@ namespace Taurus.Core
         void context_PostMapRequestHandler(object sender, EventArgs e)
         {
             HttpContext cont = ((HttpApplication)sender).Context;
-            if (cont != null && WebTool.IsCallMvc(cont.Request.Url) && !WebTool.IsRunToEnd(cont) && WebTool.IsMvcSuffix(cont.Request.Url))
+            if (cont != null && !WebTool.IsRunToEnd(cont) && WebTool.IsMvcSuffix(cont.Request.Url))// && WebTool.IsCallMvc(cont.Request.Url)
             {
                 cont.Handler = SessionHandler.Instance;//注册Session
             }
@@ -163,7 +179,7 @@ namespace Taurus.Core
         void context_AcquireRequestState(object sender, EventArgs e)
         {
             HttpContext cont = ((HttpApplication)sender).Context;
-            if (cont != null && WebTool.IsCallMvc(cont.Request.Url) && !WebTool.IsRunToEnd(cont) && WebTool.IsMvcSuffix(cont.Request.Url))
+            if (cont != null && !WebTool.IsRunToEnd(cont) && WebTool.IsMvcSuffix(cont.Request.Url))// && WebTool.IsCallMvc(cont.Request.Url)
             {
                 ReplaceOutput(cont);
                 InvokeClass(cont);
@@ -173,9 +189,9 @@ namespace Taurus.Core
         void context_Error(object sender, EventArgs e)
         {
             HttpContext cont = ((HttpApplication)sender).Context;
-            if (cont != null && WebTool.IsCallMvc(cont.Request.Url) && WebTool.IsMvcSuffix(cont.Request.Url))
+            if (cont != null)
             {
-                Log.WriteLogToTxt(cont.Error);
+                Log.WriteLogToTxt(cont.Error, LogType.Taurus);
             }
         }
 

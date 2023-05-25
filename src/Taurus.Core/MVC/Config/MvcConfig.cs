@@ -12,7 +12,21 @@ namespace Taurus.Mvc
     /// </summary>
     public static class MvcConfig
     {
-
+        /// <summary>
+        /// 配置是否启用Mvc功能 
+        /// 如 Taurus.IsEnable ：true
+        /// </summary>
+        public static bool IsEnable
+        {
+            get
+            {
+                return AppConfig.GetAppBool("Taurus.IsEnable", true);
+            }
+            set
+            {
+                AppConfig.SetApp("Taurus.IsEnable", value.ToString());
+            }
+        }
         /// <summary>
         /// 指定控制器(控制器所在的项目名称)。
         /// 如 Taurus.Controllers : "Taurus.Controllers"， 默认值："*"

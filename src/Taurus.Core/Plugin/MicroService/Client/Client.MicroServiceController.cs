@@ -16,9 +16,9 @@ namespace Taurus.Plugin.MicroService
         [MicroService]
         public void Exit()
         {
-            if (MsConfig.IsClient && MsConfig.Client.RemoteExit)
+            if (MsConfig.Client.IsEnable && MsConfig.IsClient && MsConfig.Client.RemoteExit)
             {
-                MsConfig.IsApplicationExit = true;//注销注册中心服务。
+                MsConfig.Client.IsApplicationExit = true;//注销注册中心服务。
                 new Thread(new ThreadStart(AppExit)).Start();
                 Write("Remote Exit Success: wait for the registry to unregister the host (10s).", true);
             }

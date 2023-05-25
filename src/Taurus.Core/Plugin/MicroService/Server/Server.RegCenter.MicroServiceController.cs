@@ -33,12 +33,13 @@ namespace Taurus.Plugin.MicroService
                 case "exit"://client
                     return true;
                 default:
-                    if (!MsConfig.IsServer && !MsConfig.IsClient)
+                    if (!MsConfig.IsRegCenter || !MsConfig.Server.IsEnable)
                     {
-                        Write("Current Is Not Run As MicroService.", false);
+                        Write("Microservice (registry center) unavailable.", false);
+                        return false;
                     }
                     //check ui login
-                    return MsConfig.IsRegCenter;
+                    return true;
             }
         }
 
