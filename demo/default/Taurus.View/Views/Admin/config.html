@@ -103,6 +103,7 @@
                 data.durable = isDurable;
                 $.post("BtnSaveConfig", data, function (result) {
                     cancel(el, (result && result.success) ? value : oldValue);
+                    if (result && !result.success) { alert(result.msg); }
                 });
             }
             function isAllowChange(key) {
