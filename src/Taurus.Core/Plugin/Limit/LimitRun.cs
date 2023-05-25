@@ -1,4 +1,6 @@
-﻿using Taurus.Mvc;
+﻿using System;
+using Taurus.Mvc;
+using static Microsoft.AspNetCore.Hosting.Internal.HostingApplication;
 
 namespace Taurus.Plugin.Limit
 {
@@ -7,6 +9,27 @@ namespace Taurus.Plugin.Limit
     /// </summary>
     internal static class LimitRun
     {
+        /// <summary>
+        /// 该地址是否被忽略
+        /// </summary>
+        /// <returns></returns>
+        public static bool IsIgnoreUrl(Uri uri, Uri referrerUri)
+        {
+            if (LimitConfig.IsIgnoreAdmin && (WebTool.IsCallAdmin(uri) || WebTool.IsCallAdmin(referrerUri)))
+            {
+                return true;
+            }
+            if (LimitConfig.IsIgnoreMicroService && WebTool.IsCallMicroService(uri))
+            {
+                return true;
+            }
+            if (LimitConfig.IsIgnoreDoc && (WebTool.IsCallDoc(uri) || WebTool.IsCallDoc(referrerUri)))
+            {
+                return true;
+            }
+            return false;
+        }
+
         /// <summary>
         /// 限制策略启动检测：IP黑名单检测
         /// </summary>

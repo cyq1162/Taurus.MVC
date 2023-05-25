@@ -35,18 +35,21 @@ V2.3.4(2019-07-31)
   </PropertyGroup>
 
   <ItemGroup>
-    <Compile Remove="MicroService\RPC\RpcClient\Net\**" />
-    <Compile Remove="MicroService\RPC\Task\Net\**" />
-    <EmbeddedResource Remove="MicroService\RPC\RpcClient\Net\**" />
-    <EmbeddedResource Remove="MicroService\RPC\Task\Net\**" />
-    <None Remove="MicroService\RPC\RpcClient\Net\**" />
-    <None Remove="MicroService\RPC\Task\Net\**" />
+    <Compile Remove="Plugin\MicroService\RPC\RpcClient\Net\**" />
+    <Compile Remove="Plugin\MicroService\RPC\Task\Net\**" />
+    <Compile Remove="Plugin\MicroService\RPC\RpcClient\Net\**" />
+    <EmbeddedResource Remove="Plugin\MicroService\RPC\RpcClient\Net\**" />
+    <EmbeddedResource Remove="Plugin\MicroService\RPC\Task\Net\**" />
+    <EmbeddedResource Remove="Plugin\MicroService\RPC\RpcClient\Net\**" />
+    <None Remove="Plugin\MicroService\RPC\RpcClient\Net\**" />
+    <None Remove="Plugin\MicroService\RPC\Task\Net\**" />
+    <None Remove="Plugin\MicroService\RPC\RpcClient\Net\**" />
   </ItemGroup>
 
   <ItemGroup>
-    <Compile Remove="MicroService\RPC\RpcClient\RpcClient.cs" />
-    <Compile Remove="MicroService\RPC\Task\RpcTask.cs" />
-    <Compile Remove="MicroService\RPC\Task\RpcTaskWorker.cs" />
+    <Compile Remove="Plugin\MicroService\RPC\RpcClient\RpcClient.cs" />
+    <Compile Remove="Plugin\MicroService\RPC\Task\RpcTask.cs" />
+    <Compile Remove="Plugin\MicroService\RPC\Task\RpcTaskWorker.cs" />
     <Compile Remove="Properties\AssemblyInfo.cs" />
   </ItemGroup>
 
@@ -57,7 +60,7 @@ V2.3.4(2019-07-31)
   </ItemGroup>
 
   <ItemGroup>
-    <Folder Include="MicroService\RPC\Task\Net\" />
+    <Folder Include="Plugin\MicroService\RPC\Task\Net\" />
     <Folder Include="Properties\" />
     <Folder Include="WebSocket\" />
   </ItemGroup>

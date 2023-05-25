@@ -9,6 +9,7 @@ using System.Reflection;
 using CYQ.Data.Table;
 using System.Data;
 using Taurus.Mvc.Attr;
+using Taurus.Plugin.MicroService;
 
 namespace Taurus.Plugin.Doc
 {
@@ -422,7 +423,7 @@ namespace Taurus.Plugin.Doc
                         string value = Query<string>(attr);
                         if (name == "microservice")
                         {
-                            value = MicroService.MsConfig.Server.RcKey;
+                            value = MsConfig.Server.RcKey;
                         }
 
                         dt.NewRow(true, 0).Set(0, name)

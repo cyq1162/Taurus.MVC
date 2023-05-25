@@ -1,5 +1,5 @@
 ﻿using CYQ.Data;
-using Taurus.MicroService;
+using Taurus.Plugin.MicroService;
 
 namespace Taurus.Plugin.Limit
 {
@@ -8,7 +8,79 @@ namespace Taurus.Plugin.Limit
     /// </summary>
     public static class LimitConfig
     {
-
+        /// <summary>
+        /// 配置是否启用 X-Real-IP 来获取客户端IP
+        /// 如 Limit.IsXRealIP ：false
+        /// </summary>
+        public static bool IsUseXRealIP
+        {
+            get
+            {
+                return AppConfig.GetAppBool("Limit.IsUseXRealIP", !MsConfig.IsServer);
+            }
+            set
+            {
+                AppConfig.SetApp("Limit.IsUseXRealIP", value.ToString());
+            }
+        }
+        /// <summary>
+        /// 配置是否忽略内网IP的请求
+        /// 如 Limit.IsIgnoreLAN ：true， 默认值：true
+        /// </summary>
+        public static bool IsIgnoreLAN
+        {
+            get
+            {
+                return AppConfig.GetAppBool("Limit.IsIgnoreLAN", true);
+            }
+            set
+            {
+                AppConfig.SetApp("Limit.IsIgnoreLAN", value.ToString());
+            }
+        }
+        /// <summary>
+        /// 配置是否忽略管理后台的请求
+        /// 如 Limit.IsIgnoreAdmin ：true， 默认值：true
+        /// </summary>
+        public static bool IsIgnoreAdmin
+        {
+            get
+            {
+                return AppConfig.GetAppBool("Limit.IsIgnoreAdmin", true);
+            }
+            set
+            {
+                AppConfig.SetApp("Limit.IsIgnoreAdmin", value.ToString());
+            }
+        }
+        /// <summary>
+        /// 配置是否忽略微服务的请求
+        /// 如 Limit.IsIgnoreMicroService ：true， 默认值：true
+        public static bool IsIgnoreMicroService
+        {
+            get
+            {
+                return AppConfig.GetAppBool("Limit.IsIgnoreMicroService", true);
+            }
+            set
+            {
+                AppConfig.SetApp("Limit.IsIgnoreMicroService", value.ToString());
+            }
+        }
+        /// <summary>
+        /// 配置是否忽略测试接口的请求
+        /// 如 Limit.IsIgnoreDoc ：true， 默认值：true
+        public static bool IsIgnoreDoc
+        {
+            get
+            {
+                return AppConfig.GetAppBool("Limit.IsIgnoreDoc", true);
+            }
+            set
+            {
+                AppConfig.SetApp("Limit.IsIgnoreDoc", value.ToString());
+            }
+        }
         public static class Ack
         {
             /// <summary>
@@ -105,36 +177,7 @@ namespace Taurus.Plugin.Limit
                     AppConfig.SetApp("Limit.IP.IsSync", value.ToString());
                 }
             }
-            /// <summary>
-            /// 配置是否启用 X-Real-IP 来获取客户端IP
-            /// 如 Limit.IP.IsXRealIP ：false
-            /// </summary>
-            public static bool IsXRealIP
-            {
-                get
-                {
-                    return AppConfig.GetAppBool("Limit.IP.IsXRealIP", !MsConfig.IsServer);
-                }
-                set
-                {
-                    AppConfig.SetApp("Limit.IP.IsXRealIP", value.ToString());
-                }
-            }
-            /// <summary>
-            /// 配置是否忽略内网IP的请求
-            /// 如 Limit.IP.IsIgnoreLAN ：true， 默认值：true
-            /// </summary>
-            public static bool IsIgnoreLAN
-            {
-                get
-                {
-                    return AppConfig.GetAppBool("Limit.IP.IsIgnoreLAN", true);
-                }
-                set
-                {
-                    AppConfig.SetApp("Limit.IP.IsIgnoreLAN", value.ToString());
-                }
-            }
+            
         }
         public static class Rate
         {
@@ -155,17 +198,17 @@ namespace Taurus.Plugin.Limit
             }
             /// <summary>
             /// 配置是否使用 Token 做为限制请求频繁的key
-            /// 如 Limit.Rate.IsUseTokenAsKey ：true， 默认值：false
+            /// 如 Limit.Rate.Key ：IP， 默认值：IP
             /// </summary>
-            public static bool IsUseTokenAsKey
+            public static string Key
             {
                 get
                 {
-                    return AppConfig.GetAppBool("Limit.Rate.IsUseTokenAsKey", false);
+                    return AppConfig.GetApp("Limit.Rate.Key", "IP");
                 }
                 set
                 {
-                    AppConfig.SetApp("Limit.Rate.IsUseTokenAsKey", value.ToString());
+                    AppConfig.SetApp("Limit.Rate.Key", value.ToString());
                 }
             }
             /// <summary>

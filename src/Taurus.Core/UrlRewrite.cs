@@ -3,8 +3,9 @@ using CYQ.Data.Tool;
 using System;
 using System.Threading;
 using System.Web;
-using Taurus.MicroService;
+using Taurus.Plugin.MicroService;
 using Taurus.Mvc;
+using Taurus.Plugin.MicroService;
 using Taurus.Plugin.Limit;
 
 namespace Taurus.Core
@@ -46,7 +47,7 @@ namespace Taurus.Core
             #endregion
 
             #region 2、网关安全限制策略检测 - Admin管理后台和微服务不处理。
-            if (!WebTool.IsCallAdmin(uri) && !WebTool.IsCallAdmin(context.Request.UrlReferrer) && !WebTool.IsCallMicroService(uri))
+            if (!LimitRun.IsIgnoreUrl(uri, context.Request.UrlReferrer))
             {
                 if (!LimitRun.CheckIP())
                 {

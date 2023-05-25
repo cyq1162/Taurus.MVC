@@ -6,7 +6,8 @@ using System.Text;
 using System.IO;
 using Taurus.Plugin.Doc;
 using Taurus.Plugin.Admin;
-using Taurus.MicroService;
+using Taurus.Plugin.MicroService;
+using Taurus.Plugin.MicroService;
 
 namespace Taurus.Mvc
 {

@@ -4,8 +4,8 @@ using System.Collections.Generic;
 using System.IO;
 using System.Net;
 using System.Threading;
-using Taurus.MicroService;
 using Taurus.Mvc;
+using Taurus.Plugin.MicroService;
 using Taurus.Plugin.Admin;
 
 namespace Taurus.Plugin.Limit
@@ -80,7 +80,7 @@ namespace Taurus.Plugin.Limit
             {
                 System.Web.HttpRequest request = System.Web.HttpContext.Current.Request;
                 string ip = null;
-                if (LimitConfig.IP.IsXRealIP)
+                if (LimitConfig.IsUseXRealIP)
                 {
                     ip = request.Headers["X-Real-IP"];
                 }
@@ -88,7 +88,7 @@ namespace Taurus.Plugin.Limit
                 {
                     ip = request.UserHostAddress;
                 }
-                if (LimitConfig.IP.IsIgnoreLAN)
+                if (LimitConfig.IsIgnoreLAN)
                 {
                     if (ip[0] == ':' || ip.StartsWith("192.168.") || ip.StartsWith("10.") || ip.StartsWith("172.") || ip.StartsWith("127."))
                     {

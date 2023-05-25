@@ -118,7 +118,7 @@ CYQ.Data升级到V5.8.4.9
 5、优化：微服务间的Key的网络调用请求头传参数名变更：microservice => mskey。
 6、优化：CheckAck、CheckToken、CheckMicroService、BeginInvode、EndInvode等方法（参数优化）。
 7、新增：IgnoreDefaultControllerAttribute 允许控制器忽略全局DefaultController事件。
-8、新增：提供微服务间的调用方式：Taurus.MicroService.Rpc。
+8、新增：提供微服务间的调用方式：Taurus.Plugin.MicroService.Rpc。
 -----V3.1.1.1：（2022-09-13 - 2022-10-11）---------------------------------------------
 1、优化：新方法的反射获取提前到控制器初始化阶段。
 2、优化：反射程序集（配置*号时，跳过错误的加载项而不抛异常）。
@@ -207,6 +207,8 @@ CYQ.Data升级到V5.8.4.9
 3、优化：对于可修改配置项，优化为修改即生效模式。（2023-05-24）
 4、优化：/Admin/SettingOfAccount 新增管理员账号调整为只读账号。（2023-05-25）
 5、优化：/Admin/Log 新增分类展示，可以按关键词过滤。（2023-05-25）
+6、优化：微服务模块名称空间调整：Taurus.MicroService=》Taurus.Plugin.MicroService（2023-05-25）
+
 
 去掉管理员修改界面
 新增删除日志文件功能。

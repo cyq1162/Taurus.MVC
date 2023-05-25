@@ -3,7 +3,7 @@ using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
 using System;
 using System.Threading.Tasks;
-using Taurus.MicroService;
+using Taurus.Plugin.MicroService;
 using Taurus.Mvc;
 using Taurus.Core;
 using Microsoft.AspNetCore.Hosting.Server.Features;

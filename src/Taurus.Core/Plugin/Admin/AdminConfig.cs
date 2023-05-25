@@ -1,7 +1,7 @@
 ﻿using CYQ.Data;
 using CYQ.Data.Tool;
 using System.Collections.Generic;
-using Taurus.MicroService;
+using Taurus.Plugin.MicroService;
 
 namespace Taurus.Plugin.Admin
 {

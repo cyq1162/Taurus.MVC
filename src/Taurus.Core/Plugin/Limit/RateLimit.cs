@@ -76,13 +76,13 @@ namespace Taurus.Plugin.Limit
         {
             System.Web.HttpRequest request = System.Web.HttpContext.Current.Request;
             string ip = string.Empty;
-            if (LimitConfig.Rate.IsUseTokenAsKey)
+            if (LimitConfig.Rate.Key.ToUpper() != "IP")
             {
-                ip = WebTool.Query<string>("token");
+                ip = WebTool.Query<string>(LimitConfig.Rate.Key);
             }
             if (string.IsNullOrEmpty(ip))
             {
-                if (LimitConfig.IP.IsXRealIP)
+                if (LimitConfig.IsUseXRealIP)
                 {
                     ip = request.Headers["X-Real-IP"];
                 }
@@ -90,7 +90,7 @@ namespace Taurus.Plugin.Limit
                 {
                     ip = request.UserHostAddress;
                 }
-                if (LimitConfig.IP.IsIgnoreLAN)
+                if (LimitConfig.IsIgnoreLAN)
                 {
                     if (ip[0] == ':' || ip.StartsWith("192.168.") || ip.StartsWith("10.") || ip.StartsWith("172.") || ip.StartsWith("127."))
                     {

@@ -9,8 +9,8 @@ using CYQ.Data.Tool;
 using System.Text.RegularExpressions;
 using Taurus.Plugin.Doc;
 using Taurus.Mvc.Attr;
-using Taurus.MicroService;
 using System.Threading;
+using Taurus.Plugin.MicroService;
 
 namespace Taurus.Mvc
 {
@@ -252,7 +252,7 @@ namespace Taurus.Mvc
                     checkMicroService = MethodCollector.GlobalCheckMicroService;
                     if (checkMicroService != null)
                     {
-                        isGoOn = Convert.ToBoolean(checkMicroService.Method.Invoke(null, new object[] { this, Query<string>(MicroService.MsConst.HeaderKey) }));
+                        isGoOn = Convert.ToBoolean(checkMicroService.Method.Invoke(null, new object[] { this, Query<string>(MsConst.HeaderKey) }));
                     }
                 }
                 if (isGoOn && checkMicroService == null)
@@ -260,7 +260,7 @@ namespace Taurus.Mvc
                     checkMicroService = MethodCollector.GetMethod(_ControllerType, ReflectConst.CheckMicroService, false);
                     if (checkMicroService != null)
                     {
-                        isGoOn = Convert.ToBoolean(checkMicroService.Method.Invoke(this, new object[] { Query<string>(MicroService.MsConst.HeaderKey) }));
+                        isGoOn = Convert.ToBoolean(checkMicroService.Method.Invoke(this, new object[] { Query<string>(MsConst.HeaderKey) }));
                     }
                 }
                 if (!isGoOn)
@@ -509,11 +509,11 @@ namespace Taurus.Mvc
         /// <returns></returns>
         public virtual bool CheckMicroService(string msKey)
         {
-            if (MicroService.MsConfig.IsServer)
+            if (MsConfig.IsServer)
             {
-                return MicroService.MsConfig.Server.RcKey == msKey;
+                return MsConfig.Server.RcKey == msKey;
             }
-            return MicroService.MsConfig.Client.RcKey == msKey;
+            return MsConfig.Client.RcKey == msKey;
         }
 
         /// <summary>

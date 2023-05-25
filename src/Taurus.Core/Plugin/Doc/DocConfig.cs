@@ -1,6 +1,6 @@
 ﻿using CYQ.Data;
 using System.Web;
-using Taurus.MicroService;
+using Taurus.Plugin.MicroService;
 
 namespace Taurus.Plugin.Doc
 {

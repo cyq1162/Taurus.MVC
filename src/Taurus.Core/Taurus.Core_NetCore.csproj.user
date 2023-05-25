@@ -2,7 +2,7 @@
 <Project ToolsVersion="Current" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
   <PropertyGroup />
   <ItemGroup>
-    <Compile Update="MicroService\RPC\RpcClient\MyWebClient.cs">
+    <Compile Update="Plugin\MicroService\RPC\RpcClient\MyWebClient.cs">
       <SubType>Component</SubType>
     </Compile>
   </ItemGroup>

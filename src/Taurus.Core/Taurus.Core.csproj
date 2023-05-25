@@ -69,36 +69,6 @@
     <Compile Include="Attribute\RoutePrefixAttribute.cs" />
     <Compile Include="Attribute\TokenAttribute.cs" />
     <Compile Include="Attribute\WebSocketAttribute.cs" />
-    <Compile Include="MicroService\Client\Client.cs" />
-    <Compile Include="MicroService\Client\Client.Gateway.cs" />
-    <Compile Include="MicroService\Client\Client.MicroServiceController.cs" />
-    <Compile Include="MicroService\Client\Client.Run.cs" />
-    <Compile Include="MicroService\HostInfo.cs" />
-    <Compile Include="MicroService\IO.cs" />
-    <Compile Include="MicroService\MsConfig.cs" />
-    <Compile Include="MicroService\MsConst.cs" />
-    <Compile Include="MicroService\RPC\Call\Gateway.cs" />
-    <Compile Include="MicroService\MsLog.cs" />
-    <Compile Include="MicroService\MsRun.cs" />
-    <Compile Include="MicroService\RPC\Rpc.cs" />
-    <Compile Include="MicroService\RPC\RpcClient\MyWebClient.cs">
-      <SubType>Component</SubType>
-    </Compile>
-    <Compile Include="MicroService\RPC\RpcClient\Net\RpcClient.cs">
-      <SubType>Component</SubType>
-    </Compile>
-    <Compile Include="MicroService\RPC\RpcClient\RpcClientPool.cs" />
-    <Compile Include="MicroService\RPC\Task\Net\RpcTask.cs" />
-    <Compile Include="MicroService\RPC\Task\Net\RpcTaskWorker.cs" />
-    <Compile Include="MicroService\RPC\Task\RpcTaskRequest.cs" />
-    <Compile Include="MicroService\RPC\Task\RpcTaskResult.cs" />
-    <Compile Include="MicroService\RPC\Call\Rest.cs" />
-    <Compile Include="MicroService\RPC\Task\RpcTaskState.cs" />
-    <Compile Include="MicroService\Server\Server.cs" />
-    <Compile Include="MicroService\Server\Server.Gateway.cs" />
-    <Compile Include="MicroService\Server\Server.RegCenter.cs" />
-    <Compile Include="MicroService\Server\Server.RegCenter.MicroServiceController.cs" />
-    <Compile Include="MicroService\Server\Server.Run.cs" />
     <Compile Include="MVC\Config\MvcConfig.cs" />
     <Compile Include="MVC\Config\MvcConst.cs" />
     <Compile Include="MVC\Filter\HttpResponseFilter.cs" />
@@ -123,6 +93,36 @@
     <Compile Include="Plugin\Limit\LimitConfig.cs" />
     <Compile Include="Plugin\Limit\LimitRun.cs" />
     <Compile Include="Plugin\Limit\RateLimit.cs" />
+    <Compile Include="Plugin\MicroService\Client\Client.cs" />
+    <Compile Include="Plugin\MicroService\Client\Client.Gateway.cs" />
+    <Compile Include="Plugin\MicroService\Client\Client.MicroServiceController.cs" />
+    <Compile Include="Plugin\MicroService\Client\Client.Run.cs" />
+    <Compile Include="Plugin\MicroService\HostInfo.cs" />
+    <Compile Include="Plugin\MicroService\IO.cs" />
+    <Compile Include="Plugin\MicroService\MSConfig.cs" />
+    <Compile Include="Plugin\MicroService\MSConst.cs" />
+    <Compile Include="Plugin\MicroService\MSLog.cs" />
+    <Compile Include="Plugin\MicroService\MSRun.cs" />
+    <Compile Include="Plugin\MicroService\RPC\Call\Gateway.cs" />
+    <Compile Include="Plugin\MicroService\RPC\Call\Rest.cs" />
+    <Compile Include="Plugin\MicroService\RPC\Rpc.cs" />
+    <Compile Include="Plugin\MicroService\RPC\RpcClient\MyWebClient.cs">
+      <SubType>Component</SubType>
+    </Compile>
+    <Compile Include="Plugin\MicroService\RPC\RpcClient\Net\RpcClient.cs">
+      <SubType>Component</SubType>
+    </Compile>
+    <Compile Include="Plugin\MicroService\RPC\RpcClient\RpcClientPool.cs" />
+    <Compile Include="Plugin\MicroService\RPC\Task\Net\RpcTask.cs" />
+    <Compile Include="Plugin\MicroService\RPC\Task\Net\RpcTaskWorker.cs" />
+    <Compile Include="Plugin\MicroService\RPC\Task\RpcTaskRequest.cs" />
+    <Compile Include="Plugin\MicroService\RPC\Task\RpcTaskResult.cs" />
+    <Compile Include="Plugin\MicroService\RPC\Task\RpcTaskState.cs" />
+    <Compile Include="Plugin\MicroService\Server\Server.cs" />
+    <Compile Include="Plugin\MicroService\Server\Server.Gateway.cs" />
+    <Compile Include="Plugin\MicroService\Server\Server.RegCenter.cs" />
+    <Compile Include="Plugin\MicroService\Server\Server.RegCenter.MicroServiceController.cs" />
+    <Compile Include="Plugin\MicroService\Server\Server.Run.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="Tool\WebTool.cs" />
     <Compile Include="UrlRewrite.cs" />
