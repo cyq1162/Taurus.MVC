@@ -390,21 +390,17 @@ namespace Taurus.Mvc
             }
 
             methodEntity.Method.Invoke(this, paras);
-            if (IsHttpPost && _View != null)
+            if (IsHttpPost && _View != null && !string.IsNullOrEmpty(BtnName))
             {
                 #region Button Invoke
-                string name = GetBtnName();
-                if (!string.IsNullOrEmpty(name))
+                MethodEntity postBtnMethod = MethodCollector.GetMethod(_ControllerType, _BtnName, false);
+                if (postBtnMethod != null)
                 {
-                    MethodEntity postBtnMethod = MethodCollector.GetMethod(_ControllerType, name, false);
-                    if (postBtnMethod != null)
+                    if (!GetInvokeParas(postBtnMethod, out paras))
                     {
-                        if (!GetInvokeParas(postBtnMethod, out paras))
-                        {
-                            return false;
-                        }
-                        postBtnMethod.Method.Invoke(this, paras);
+                        return false;
                     }
+                    postBtnMethod.Method.Invoke(this, paras);
                 }
                 #endregion
             }
@@ -529,6 +525,21 @@ namespace Taurus.Mvc
         {
             return Query<string>(btnName) != null;
         }
+        private string _BtnName = string.Empty;
+        /// <summary>
+        /// 获取当前的点击按钮名称
+        /// </summary>
+        public string BtnName
+        {
+            get
+            {
+                if (string.IsNullOrEmpty(_BtnName))
+                {
+                    _BtnName = GetBtnName();
+                }
+                return _BtnName;
+            }
+        }
         private string GetBtnName()
         {
             var queryString = context.Request.QueryString;
@@ -547,7 +558,7 @@ namespace Taurus.Mvc
                     return name;
                 }
             }
-            return null;
+            return string.Empty;
         }
         private bool GetInvokeParas(MethodEntity methodEntity, out object[] paras)
         {

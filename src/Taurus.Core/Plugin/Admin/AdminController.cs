@@ -52,24 +52,152 @@ namespace Taurus.Plugin.Admin
             }
             switch (nameLower)
             {
-
                 case "login":
                     return true;
                 default:
-                    if (Context.Session["login"] == null)
+                    string loginName = Convert.ToString(Context.Session["login"]);
+                    if (string.IsNullOrEmpty(loginName))
                     {
                         //检测账号密码，跳转登陆页
                         Response.Redirect("login");
                         return false;
                     }
+                    else if (View != null)
+                    {
+                        View.KeyValue.Set("LoginName", loginName);
+                    }
                     break;
             }
+            if (BtnName.StartsWith("btn") || nameLower.StartsWith("btn"))
+            {
+                if (Context.Session["isadmin"] == null)
+                {
+                    if (View != null)
+                    {
+                        //检测账号密码，跳转登陆页
+                        View.Set("msg", "Account is readonly.");
+                    }
+                    else
+                    {
+                        Write("Account is readonly.", false);
+                    }
+                    return false;
+                }
+            }
             return true;
+        }
+
+
+        private string GetMsTypeText()
+        {
+
+            if (MsConfig.IsRegCenterOfMaster)
+            {
+                return "Register Center of Master";
+            }
+            else if (MsConfig.IsRegCenter)
+            {
+                return "Register Center of Slave" + (Server.IsLiveOfMasterRC ? "" : " ( Master connection refused )");
+            }
+            else if (MsConfig.IsGateway)
+            {
+                return "Gateway" + (Server.IsLiveOfMasterRC ? "" : " ( Register center connection refused )"); ;
+            }
+            else if (MsConfig.IsClient)
+            {
+                return "Client of MicroService" + (Client.IsLiveOfMasterRC ? "" : " ( Register center connection refused )");
+            }
+            else
+            {
+                return "None";
+            }
+
+        }
+
+        private string GetRouteModeText()
+        {
+            switch (MvcConfig.RouteMode)
+            {
+                case 1:
+                    return "1 【/controller/method】";
+                case 2:
+                    return "2 【/module/controller/method】";
+            }
+            return "0 【/method】 (code in DefaultController.cs)";
+        }
+
+        private string GetOnlineText(bool isAdminKey)
+        {
+            if (IsAdmin)
+            {
+                return isAdminKey ? " 【online】" : "";
+            }
+            else
+            {
+                return isAdminKey ? "" : " 【online】";
+            }
+        }
+        protected bool IsAdmin
+        {
+            get
+            {
+                return Context.Session["isadmin"] != null;
+            }
         }
     }
 
     /// <summary>
-    /// 首页：
+    /// 登陆退出
+    /// </summary>
+    internal partial class AdminController
+    {
+        public void Logout()
+        {
+            Context.Session["login"] = null;
+            Context.Session["isadmin"] = null;
+            Response.Redirect("login");
+        }
+        public void Login()
+        {
+            if (Context.Session["login"] != null)
+            {
+                Response.Redirect("index");
+            }
+            if (!IsHttpPost)
+            {
+                string[] items = IO.Read(AdminConst.AccountPath).Split(',');
+                string name = items.Length == 2 ? items[0] : AdminConfig.UserName;
+                View.Set("uid", name);
+            }
+        }
+        public void BtnLogin()
+        {
+            string uid = Query<string>("uid");
+            string pwd = Query<string>("pwd");
+            bool isOK = uid == AdminConfig.UserName && pwd == AdminConfig.Password;
+
+            if (!isOK)
+            {
+                string[] items = IO.Read(AdminConst.AccountPath).Split(',');
+                isOK = items.Length == 2 && items[0] == uid && items[1] == pwd;
+            }
+            else
+            {
+                Context.Session["isadmin"] = "1";
+            }
+            if (isOK)
+            {
+                Context.Session["login"] = uid;
+                Response.Redirect("index");
+                return;
+            }
+            View.Set("msg", "user or password is error.");
+        }
+    }
+
+
+    /// <summary>
+    /// 首页：微服务
     /// </summary>
     internal partial class AdminController
     {
@@ -102,43 +230,7 @@ namespace Taurus.Plugin.Admin
             return Client.Gateway.GetHostList(name, withStar);
         }
 
-        private string GetMsType()
-        {
 
-            if (MsConfig.IsRegCenterOfMaster)
-            {
-                return "Register Center of Master";
-            }
-            else if (MsConfig.IsRegCenter)
-            {
-                return "Register Center of Slave" + (Server.IsLiveOfMasterRC ? "" : " ( Master connection refused )");
-            }
-            else if (MsConfig.IsGateway)
-            {
-                return "Gateway" + (Server.IsLiveOfMasterRC ? "" : " ( Register center connection refused )"); ;
-            }
-            else if (MsConfig.IsClient)
-            {
-                return "Client of MicroService" + (Client.IsLiveOfMasterRC ? "" : " ( Register center connection refused )");
-            }
-            else
-            {
-                return "None";
-            }
-
-        }
-
-        private string GetRouteMode()
-        {
-            switch (MvcConfig.RouteMode)
-            {
-                case 1:
-                    return "1 【/controller/method】";
-                case 2:
-                    return "2 【/module/controller/method】";
-            }
-            return "0 【/method】 (code in DefaultController.cs)";
-        }
 
         /// <summary>
         /// 微服务UI首页
@@ -148,7 +240,7 @@ namespace Taurus.Plugin.Admin
             if (View != null)
             {
                 View.KeyValue.Set("Version", MvcConst.Version);
-                View.KeyValue.Set("MsType", GetMsType());
+                View.KeyValue.Set("MsType", GetMsTypeText());
                 //基础信息：
                 if (MsConfig.IsServer)
                 {
@@ -227,7 +319,7 @@ namespace Taurus.Plugin.Admin
                 {
                     dt.Columns.Add("Name");
                     dt.Columns["Name"].Set(name);
-                    if (MsConfig.IsServer)
+                    if (MsConfig.IsServer && IsAdmin)
                     {
                         dt.Columns.Add("RemoteExit");
                         dt.Columns["RemoteExit"].Set("Stop");
@@ -263,7 +355,7 @@ namespace Taurus.Plugin.Admin
             }
             if (dt != null)
             {
-                if (MsConfig.IsServer)
+                if (MsConfig.IsServer && IsAdmin)
                 {
                     dt.Columns.Add("RemoteExit");
                     dt.Columns["RemoteExit"].Set("Stop");
@@ -285,82 +377,76 @@ namespace Taurus.Plugin.Admin
         }
     }
 
+
     /// <summary>
-    /// 登陆退出
-    /// </summary>
-    internal partial class AdminController
-    {
-        public void Logout()
-        {
-            Context.Session["login"] = null;
-            Response.Redirect("login");
-        }
-        public void Login()
-        {
-            if (Context.Session["login"] != null)
-            {
-                Response.Redirect("index");
-            }
-        }
-        public void BtnLogin()
-        {
-            string uid = Query<string>("uid");
-            string pwd = Query<string>("pwd");
-            bool isOK = uid == AdminConfig.UserName && pwd == AdminConfig.Password;
-            if (!isOK)
-            {
-                string[] items = IO.Read(AdminConst.AccountPath).Split(',');
-                isOK = items.Length == 2 && items[0] == uid && items[1] == pwd;
-            }
-            if (isOK)
-            {
-                Context.Session["login"] = "1";
-                Response.Redirect("index");
-                return;
-            }
-            View.Set("msg", "user or password is error.");
-        }
-    }
-    /// <summary>
-    /// 日志、配置信息
+    /// 系统环境信息
     /// </summary>
     internal partial class AdminController
     {
         /// <summary>
-        /// 错误日志
+        /// 操作系统环境信息
         /// </summary>
-        public void Log()
+        public void OSInfo()
         {
-            string logPath = AppConfig.WebRootPath + AppConfig.Log.Path.Trim('/', '\\');
-            if (Directory.Exists(logPath))
-            {
-                string[] files = Directory.GetFiles(logPath, "*.txt", SearchOption.TopDirectoryOnly);
-                MDataTable dt = new MDataTable();
-                dt.Columns.Add("FileName");
-                foreach (string file in files)
-                {
-                    dt.NewRow(true).Set(0, Path.GetFileName(file));
-                }
-                dt.Rows.Sort("FileName desc");
-                dt.Bind(View, "fileList");
+            MDataTable dtTaurus = new MDataTable();
+            dtTaurus.Columns.Add("ConfigKey,ConfigValue,Description");
+            string type = Query<string>("t", "os").ToLower();
 
-            }
-        }
-        public void LogDetail()
-        {
-            string fileName = Query<string>("filename");
-            if (!string.IsNullOrEmpty(fileName))
+            if (type == "os")
             {
-                string logPath = AppConfig.WebRootPath + AppConfig.Log.Path.Trim('/', '\\');
-                string[] files = Directory.GetFiles(logPath, fileName, SearchOption.TopDirectoryOnly);
-                if (files != null && files.Length > 0)
-                {
-                    string logDetail = IOHelper.ReadAllText(files[0]);
-                    View.KeyValue.Set("detail", System.Web.HttpUtility.HtmlEncode(logDetail).Replace("\n", "<br/>"));
-                }
+                dtTaurus.NewRow(true).Sets(0, "Client-IP", Request.UserHostAddress, "Client ip.");
+                dtTaurus.NewRow(true).Sets(0, "Server-IP", MvcConst.HostIP, "Server ip.");
+                dtTaurus.NewRow(true).Sets(0, "Taurus-Version", "V" + MvcConst.Version, "Version of the Taurus.Core.dll.");
+                dtTaurus.NewRow(true).Sets(0, "Orm-Version", "V" + AppConfig.Version, "Version of the CYQ.Data.dll.");
+                dtTaurus.NewRow(true).Sets(0, "AppPath", AppConfig.RunPath, "Web application path of the working directory.");
+                dtTaurus.NewRow(true);
+                dtTaurus.NewRow(true).Sets(0, "Runtime-Version", (AppConfig.IsNetCore ? ".Net Core - " : ".Net Framework - ") + Environment.Version, "Version of the common language runtime.");
+                dtTaurus.NewRow(true).Sets(0, "OS-Version", Environment.OSVersion, "Operating system.");
+                dtTaurus.NewRow(true).Sets(0, "ProcessID", MvcConst.ProcessID, "Process id.");
+                dtTaurus.NewRow(true).Sets(0, "ThreadID", Thread.CurrentThread.ManagedThreadId, "Identifier for the managed thread.");
+                dtTaurus.NewRow(true).Sets(0, "ThreadCount", Process.GetCurrentProcess().Threads.Count, "Number of threads for the process.");
+                long tc = Environment.TickCount > 0 ? (long)Environment.TickCount : ((long)int.MaxValue + (Environment.TickCount & int.MaxValue));
+                TimeSpan ts = TimeSpan.FromMilliseconds(tc);
+                dtTaurus.NewRow(true).Sets(0, "TickCount", (int)ts.TotalSeconds + "s | " + (int)ts.TotalMinutes + "m | " + (int)ts.TotalHours + "h | " + (int)ts.TotalDays + "d", "Time since the system started(max(days)<=49.8)).");
+                dtTaurus.NewRow(true).Sets(0, "ProcessorCount", Environment.ProcessorCount, "Number of processors on the machine.");
+                dtTaurus.NewRow(true).Sets(0, "MachineName", Environment.MachineName, "Name of computer.");
+                dtTaurus.NewRow(true).Sets(0, "UserName", Environment.UserName, "Name of the person who is logged on to Windows.");
+                dtTaurus.NewRow(true).Sets(0, "WorkingSet", Environment.WorkingSet / 1024 + "KB | " + Environment.WorkingSet / 1024 / 1024 + "MB", "Physical memory mapped to the process context.");
+                dtTaurus.NewRow(true).Sets(0, "CurrentDirectory", Environment.CurrentDirectory, "Fully qualified path of the working directory.");
             }
+            else if (type == "ass")
+            {
+                Assembly[] assList = AppDomain.CurrentDomain.GetAssemblies();
+                foreach (Assembly assembly in assList)
+                {
+                    string desc = assembly.FullName;
+                    object[] attrs = assembly.GetCustomAttributes(typeof(AssemblyDescriptionAttribute), false);
+                    if (attrs != null && attrs.Length > 0)
+                    {
+                        desc = ((AssemblyDescriptionAttribute)attrs[0]).Description;
+                    }
+                    else
+                    {
+                        attrs = assembly.GetCustomAttributes(typeof(AssemblyTitleAttribute), false);
+                        if (attrs != null && attrs.Length > 0)
+                        {
+                            desc = ((AssemblyTitleAttribute)attrs[0]).Title;
+                        }
+                    }
+                    AssemblyName assName = assembly.GetName();
+                    dtTaurus.NewRow(true).Sets(0, assName.Name, assName.Version.ToString(), desc);
+                }
+                dtTaurus.Rows.Sort("ConfigKey");
+            }
+            dtTaurus.Bind(View);
         }
 
+    }
+    /// <summary>
+    /// 应用配置信息
+    /// </summary>
+    internal partial class AdminController
+    {
         /// <summary>
         /// AppSetting 基础配置信息
         /// </summary>
@@ -379,7 +465,7 @@ namespace Taurus.Plugin.Admin
                 Sets(dt, "Taurus.DefaultUrl", MvcConfig.DefaultUrl, "Application default url.");
                 Sets(dt, "Taurus.IsAllowCORS", MvcConfig.IsAllowCORS, "Application is allow cross-origin resource sharing.");
 
-                Sets(dt, "Taurus.RouteMode", GetRouteMode(), "Route mode for selected.");
+                Sets(dt, "Taurus.RouteMode", GetRouteModeText(), "Route mode for selected.");
                 Sets(dt, "Taurus.Controllers", MvcConfig.Controllers, "Load controller names.");
                 Sets(dt, "Taurus.Views", MvcConfig.Views, "Mvc view folder name.");
                 Sets(dt, "Taurus.SslPath", MvcConfig.SslPath, "Ssl path for https (*.pfx for ssl , *.txt for pwd).");
@@ -403,14 +489,15 @@ namespace Taurus.Plugin.Admin
                 Sets(dt, "Admin.Path", AdminConfig.Path, "Admin url path.");
                 Sets(dt, "Admin.HtmlFolderName", AdminConfig.HtmlFolderName, "Mvc view folder name for admin.");
                 dt.NewRow(true);
-                Sets(dt, "Admin.UserName", AdminConfig.UserName, "Admin account.");
+                Sets(dt, "Admin.UserName", AdminConfig.UserName + GetOnlineText(true), "Admin account.");
                 Sets(dt, "Admin.Password", string.IsNullOrEmpty(AdminConfig.Password) ? "" : "******", "Admin password.");
 
                 string[] items = IO.Read(AdminConst.AccountPath).Split(',');
                 if (items.Length == 2)
                 {
-                    Sets(dt, "Admin.UserName - Setting ", items[0], "Admin account by setting.");
-                    Sets(dt, "Admin.Password - Setting", "******", "Admin password by setting.");
+                    dt.NewRow(true);
+                    Sets(dt, "Admin.UserName - Setting ", items[0] + GetOnlineText(false), "Readonly account by setting.");
+                    Sets(dt, "Admin.Password - Setting", items[1], "Readonly password by setting.");
                 }
             }
             else if (type == "plugin-doc")
@@ -444,7 +531,7 @@ namespace Taurus.Plugin.Admin
             {
                 #region MicroService
 
-                Sets(dt, "MicroService Type", GetMsType(), "Type of current microservice (Show Only).");
+                Sets(dt, "MicroService Type", GetMsTypeText(), "Type of current microservice (Show Only).");
                 if (MsConfig.IsServer)
                 {
                     Sets(dt, "MicroService.Server.Name", MsConfig.Server.Name, "Server name.");
@@ -607,64 +694,6 @@ namespace Taurus.Plugin.Admin
 
             return conn;
         }
-        /// <summary>
-        /// 操作系统环境信息
-        /// </summary>
-        public void OSInfo()
-        {
-            MDataTable dtTaurus = new MDataTable();
-            dtTaurus.Columns.Add("ConfigKey,ConfigValue,Description");
-            string type = Query<string>("t", "os").ToLower();
-
-            if (type == "os")
-            {
-                dtTaurus.NewRow(true).Sets(0, "Client-IP", Request.UserHostAddress, "Client ip.");
-                dtTaurus.NewRow(true).Sets(0, "Server-IP", MvcConst.HostIP, "Server ip.");
-                dtTaurus.NewRow(true).Sets(0, "Taurus-Version", "V" + MvcConst.Version, "Version of the Taurus.Core.dll.");
-                dtTaurus.NewRow(true).Sets(0, "Orm-Version", "V" + AppConfig.Version, "Version of the CYQ.Data.dll.");
-                dtTaurus.NewRow(true).Sets(0, "AppPath", AppConfig.RunPath, "Web application path of the working directory.");
-                dtTaurus.NewRow(true);
-                dtTaurus.NewRow(true).Sets(0, "Runtime-Version", (AppConfig.IsNetCore ? ".Net Core - " : ".Net Framework - ") + Environment.Version, "Version of the common language runtime.");
-                dtTaurus.NewRow(true).Sets(0, "OS-Version", Environment.OSVersion, "Operating system.");
-                dtTaurus.NewRow(true).Sets(0, "ProcessID", MvcConst.ProcessID, "Process id.");
-                dtTaurus.NewRow(true).Sets(0, "ThreadID", Thread.CurrentThread.ManagedThreadId, "Identifier for the managed thread.");
-                dtTaurus.NewRow(true).Sets(0, "ThreadCount", Process.GetCurrentProcess().Threads.Count, "Number of threads for the process.");
-                long tc = Environment.TickCount > 0 ? (long)Environment.TickCount : ((long)int.MaxValue + (Environment.TickCount & int.MaxValue));
-                TimeSpan ts = TimeSpan.FromMilliseconds(tc);
-                dtTaurus.NewRow(true).Sets(0, "TickCount", (int)ts.TotalSeconds + "s | " + (int)ts.TotalMinutes + "m | " + (int)ts.TotalHours + "h | " + (int)ts.TotalDays + "d", "Time since the system started(max(days)<=49.8)).");
-                dtTaurus.NewRow(true).Sets(0, "ProcessorCount", Environment.ProcessorCount, "Number of processors on the machine.");
-                dtTaurus.NewRow(true).Sets(0, "MachineName", Environment.MachineName, "Name of computer.");
-                dtTaurus.NewRow(true).Sets(0, "UserName", Environment.UserName, "Name of the person who is logged on to Windows.");
-                dtTaurus.NewRow(true).Sets(0, "WorkingSet", Environment.WorkingSet / 1024 + "KB | " + Environment.WorkingSet / 1024 / 1024 + "MB", "Physical memory mapped to the process context.");
-                dtTaurus.NewRow(true).Sets(0, "CurrentDirectory", Environment.CurrentDirectory, "Fully qualified path of the working directory.");
-            }
-            else if (type == "ass")
-            {
-                Assembly[] assList = AppDomain.CurrentDomain.GetAssemblies();
-                foreach (Assembly assembly in assList)
-                {
-                    string desc = assembly.FullName;
-                    object[] attrs = assembly.GetCustomAttributes(typeof(AssemblyDescriptionAttribute), false);
-                    if (attrs != null && attrs.Length > 0)
-                    {
-                        desc = ((AssemblyDescriptionAttribute)attrs[0]).Description;
-                    }
-                    else
-                    {
-                        attrs = assembly.GetCustomAttributes(typeof(AssemblyTitleAttribute), false);
-                        if (attrs != null && attrs.Length > 0)
-                        {
-                            desc = ((AssemblyTitleAttribute)attrs[0]).Title;
-                        }
-                    }
-                    AssemblyName assName = assembly.GetName();
-                    dtTaurus.NewRow(true).Sets(0, assName.Name, assName.Version.ToString(), desc);
-                }
-                dtTaurus.Rows.Sort("ConfigKey");
-            }
-            dtTaurus.Bind(View);
-        }
-
         private void Sets(MDataTable dt, string key, object objValue, string description)
         {
             string value = Convert.ToString(objValue);
@@ -681,7 +710,51 @@ namespace Taurus.Plugin.Admin
     }
 
     /// <summary>
-    /// 设置：账号、IP黑名单、手工添加微服务客户端
+    /// 日志信息
+    /// </summary>
+    internal partial class AdminController
+    {
+        /// <summary>
+        /// 错误日志
+        /// </summary>
+        public void Log()
+        {
+            View.KeyValue.Set("yyyyMM", DateTime.Now.ToString("yyyyMM"));
+            string logPath = AppConfig.WebRootPath + AppConfig.Log.Path.Trim('/', '\\');
+            if (Directory.Exists(logPath))
+            {
+                string key = Query<string>("k", DateTime.Now.ToString("*yyyyMM"));
+                string[] files = Directory.GetFiles(logPath, key + "*.txt", SearchOption.TopDirectoryOnly);
+                MDataTable dt = new MDataTable();
+                dt.Columns.Add("FileName");
+                foreach (string file in files)
+                {
+                    dt.NewRow(true).Set(0, Path.GetFileName(file));
+                }
+                dt.Rows.Sort("FileName desc");
+                dt.Bind(View, "fileList");
+
+            }
+        }
+        public void LogDetail()
+        {
+            string fileName = Query<string>("filename");
+            if (!string.IsNullOrEmpty(fileName))
+            {
+                string logPath = AppConfig.WebRootPath + AppConfig.Log.Path.Trim('/', '\\');
+                string[] files = Directory.GetFiles(logPath, fileName, SearchOption.TopDirectoryOnly);
+                if (files != null && files.Length > 0)
+                {
+                    string logDetail = IOHelper.ReadAllText(files[0]);
+                    View.KeyValue.Set("detail", System.Web.HttpUtility.HtmlEncode(logDetail).Replace("\n", "<br/>"));
+                }
+            }
+        }
+    }
+
+
+    /// <summary>
+    /// 设置 - 按钮事件：账号、IP黑名单、手工添加微服务客户端
     /// </summary>
     internal partial class AdminController
     {
@@ -751,7 +824,9 @@ namespace Taurus.Plugin.Admin
         {
             if (!IsHttpPost)
             {
-                View.KeyValue.Set("UserName", AdminConfig.UserName);
+                string[] items = IO.Read(AdminConst.AccountPath).Split(',');
+                string name = items.Length == 2 ? items[0] : "user";
+                View.KeyValue.Set("UserName", name);
             }
         }
 
