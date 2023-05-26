@@ -87,6 +87,25 @@ namespace Taurus.Plugin.Admin
                         Sets(dt, "Limit.Ack.Key", LimitConfig.Ack.Key, "Ack limit : secret key.");
                         Sets(dt, "Limit.Ack.IsVerifyDecode", LimitConfig.Ack.IsVerifyDecode, "Ack limit : ack must be decode and valid.");
                         Sets(dt, "Limit.Ack.IsVerifyUsed", LimitConfig.Ack.IsVerifyUsed, "Ack limit : ack use once only.");
+                        if (IsAdmin)
+                        {
+                            string tip = @"        
+        public static string CreateAck()<br/>
+        {<br/>
+            //1、key + random string. <br/>
+            string rndKey = LimitConfig.Ack.Key + DateTime.Now.Ticks;<br/>
+            //2、to bytes<br/>
+            byte[] bytes = Encoding.ASCII.GetBytes(rndKey);<br/>
+            //3、reverse<br/>
+            Array.Reverse(bytes);<br/>
+            //4、to Base64(replace = to #)<br/>
+            string base64Key = Convert.ToBase64String(bytes);<br/>
+                   base64Key = base64Key.Replace(""="", ""#"");<br/>
+            //5、return # + any char + Base64<br/>
+            return ""#"" + (char)(DateTime.Now.Second + 65) + base64Key;<br/>
+        }";
+                            Sets(dt, "Limit.Ack CreateAck()", tip, "Ack limit : ack algorithm.");
+                        }
                     }
                 }
                 else if (type == "plugin-admin")

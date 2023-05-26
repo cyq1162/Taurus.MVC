@@ -113,7 +113,7 @@ namespace Taurus.Mvc
                     else
                     {
                         Response.StatusCode = 404;
-                        Write("404 Method name invalid.");
+                        Write("404 Not Found.");
                         WriteExeResult();
                     }
                     return;

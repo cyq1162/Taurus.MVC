@@ -23,7 +23,7 @@ namespace Taurus.Plugin.Limit
             Array.Reverse(bytes);
             //4、字节转Base64
             string base64Key = Convert.ToBase64String(bytes);
-            //5、返回 组合后的内容
+            //5、返回 #+任意字符+Base64(替换符号)
             return "#" + (char)(DateTime.Now.Second + 65) + base64Key.Replace("=", "#");
         }
         /// <summary>

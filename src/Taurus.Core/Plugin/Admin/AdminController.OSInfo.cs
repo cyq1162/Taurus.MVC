@@ -21,7 +21,8 @@ namespace Taurus.Plugin.Admin
             MDataTable dtTaurus = new MDataTable();
             dtTaurus.Columns.Add("ConfigKey,ConfigValue,Description");
             string type = Query<string>("t", "os").ToLower();
-
+            Assembly[] assList = AppDomain.CurrentDomain.GetAssemblies();
+            View.KeyValue.Set("Count", assList.Length.ToString());
             if (type == "os")
             {
                 dtTaurus.NewRow(true).Sets(0, "Client-IP", Request.UserHostAddress, "Client ip.");
@@ -46,7 +47,8 @@ namespace Taurus.Plugin.Admin
             }
             else if (type == "ass")
             {
-                Assembly[] assList = AppDomain.CurrentDomain.GetAssemblies();
+                MDataTable dtSystem=new MDataTable();
+                dtSystem.Columns = dtTaurus.Columns;
                 foreach (Assembly assembly in assList)
                 {
                     string desc = assembly.FullName;
@@ -64,9 +66,19 @@ namespace Taurus.Plugin.Admin
                         }
                     }
                     AssemblyName assName = assembly.GetName();
-                    dtTaurus.NewRow(true).Sets(0, assName.Name, assName.Version.ToString(), desc);
+                    if (assName.Name.StartsWith("Microsoft.") || assName.Name.StartsWith("System."))
+                    {
+                        dtSystem.NewRow(true).Sets(0, assName.Name, assName.Version.ToString(), desc);
+                    }
+                    else
+                    {
+                        dtTaurus.NewRow(true).Sets(0, assName.Name, assName.Version.ToString(), desc);
+                    }
                 }
                 dtTaurus.Rows.Sort("ConfigKey");
+                dtTaurus.NewRow(true);
+                dtSystem.Rows.Sort("ConfigKey");
+                dtTaurus.Merge(dtSystem);
             }
             dtTaurus.Bind(View);
         }
