@@ -62,6 +62,17 @@ namespace Taurus.Plugin.MicroService
                 return IsRegCenter && (string.IsNullOrEmpty(MsConfig.Server.RcUrl) || MsConfig.Server.RcUrl == MvcConfig.RunUrl);
             }
         }
+
+        /// <summary>
+        /// 是否注册中心（主）
+        /// </summary>
+        public static bool IsRegCenterOfSlave
+        {
+            get
+            {
+                return IsRegCenter && (!string.IsNullOrEmpty(MsConfig.Server.RcUrl) && MsConfig.Server.RcUrl != MvcConfig.RunUrl);
+            }
+        }
         #endregion
 
 

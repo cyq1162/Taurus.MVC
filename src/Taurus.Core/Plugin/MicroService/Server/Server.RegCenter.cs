@@ -26,73 +26,15 @@ namespace Taurus.Plugin.MicroService
                     }
                 }
             }
-            private static string _HostListJson = null;
 
-            private static bool _IsReadFromFile = false;
             /// <summary>
             /// 注册中心 - 返回的表数据Json
             /// </summary>
-            internal static string HostListJson
-            {
-                get
-                {
-                    if (_HostListJson == null)
-                    {
-                        _IsReadFromFile = true;
-                        _HostListJson = IO.Read(MsConst.ServerRegCenterJsonPath);
-                    }
-                    return _HostListJson;
-                }
-                set
-                {
-                    _IsReadFromFile = false;
-                    _HostListJson = value;
-
-                    if (string.IsNullOrEmpty(value))
-                    {
-                        IO.Delete(MsConst.ServerRegCenterJsonPath);
-                    }
-                    else
-                    {
-                        IO.Write(MsConst.ServerRegCenterJsonPath, _HostListJson);
-                    }
-                }
-            }
-            private static MDictionary<string, List<HostInfo>> _HostList;
+            internal static string HostListJson { get; set; }
             /// <summary>
             /// 作为注册中心 - 存档的微服务列表
             /// </summary>
-            public static MDictionary<string, List<HostInfo>> HostList
-            {
-                get
-                {
-                    if (_HostList == null)
-                    {
-                        _HostList = JsonHelper.ToEntity<MDictionary<string, List<HostInfo>>>(HostListJson);
-                        #region 从Json文件恢复数据
-                        if (_IsReadFromFile && _HostList != null)
-                        {
-                            //恢复时间，避免被清除。
-                            foreach (var item in _HostList)
-                            {
-                                if (item.Value != null)
-                                {
-                                    foreach (var ci in item.Value)
-                                    {
-                                        ci.RegTime = DateTime.Now;
-                                    }
-                                }
-                            }
-                        }
-                        #endregion
-                    }
-                    return _HostList;
-                }
-                set
-                {
-                    _HostList = value;
-                }
-            }
+            public static MDictionary<string, List<HostInfo>> HostList { get; set; }
 
             /// <summary>
             /// 为Server端添加Host

@@ -121,10 +121,11 @@ namespace Taurus.Plugin.Admin
                     Sets(dt, "MicroService Type", GetMsTypeText(), "Type of current microservice (Show Only).");
                     if (MsConfig.IsServer)
                     {
-                        Sets(dt, "MicroService.Server.IsEnable", MsConfig.Server.IsEnable, "Microservice server (registry center, gateway) plugin.");
+                        Sets(dt, "MicroService.Server.IsEnable", MsConfig.Server.IsEnable, "Microservice server (register center, gateway) plugin.");
                         Sets(dt, "MicroService.Server.Name", MsConfig.Server.Name, "Server name.");
                         Sets(dt, "MicroService.Server.RcKey", MsConfig.Server.RcKey, "Register center secret key.");
                         Sets(dt, "MicroService.Server.RcUrl", MsConfig.Server.RcUrl, "Register center url.");
+                        Sets(dt, "MicroService.Server.RcUrl - 2", Server.Host2, "Register center backup url.");
                         Sets(dt, "MicroService.Server.RcPath", MsConfig.Server.RcPath, "Register center local path.");
                         Sets(dt, "MicroService.Server.GatewayTimeout", MsConfig.Server.GatewayTimeout + " (s)", "Gateway timeout (second) for request forward.");
                         Sets(dt, "MicroService Gateway Proxy LastTime", Rpc.Gateway.LastProxyTime.ToString("yyyy-MM-dd HH:mm:ss"), "The last time the proxy forwarded the request (Show Only).");
@@ -143,6 +144,7 @@ namespace Taurus.Plugin.Admin
                         Sets(dt, "MicroService.Client.RemoteExit", MsConfig.Client.RemoteExit, "Client is allow remote stop by register center.");
                         Sets(dt, "MicroService.Client.RcKey", MsConfig.Client.RcKey, "Register center secret key.");
                         Sets(dt, "MicroService.Client.RcUrl", MsConfig.Client.RcUrl, "Register center url.");
+                        Sets(dt, "MicroService.Client.RcUrl - 2", Client.Host2, "Register center backup url.");
                         Sets(dt, "MicroService.Client.RcPath", MsConfig.Client.RcPath, "Register center local path.");
 
                     }

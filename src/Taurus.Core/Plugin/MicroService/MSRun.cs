@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections.Generic;
 using System.Net;
 using System.Threading;
 using CYQ.Data.Tool;
@@ -45,30 +46,28 @@ namespace Taurus.Plugin.MicroService
                         ServicePointManager.DefaultConnectionLimit = 2048;//对.net framework有效。
                         ThreadPool.SetMinThreads(30, 50);
                     }
-                }
-                if (MsConfig.IsRegCenterOfMaster)
-                {
-                    MsLog.WriteDebugLine("Current MicroService Type ：RegCenter of Master");
-                    Thread thread = new Thread(new ThreadStart(ClearExpireHost));
-                    thread.Start();
-                }
-                if (!string.IsNullOrEmpty(MsConfig.Server.Name) && !string.IsNullOrEmpty(MsConfig.Server.RcUrl) && MsConfig.Server.RcUrl != MvcConfig.RunUrl)
-                {
-                    if (MsConfig.IsRegCenter || MsConfig.IsGateway)
+                    if (MsConfig.IsRegCenterOfMaster)
                     {
-                        if (MsConfig.IsRegCenter)
-                        {
-                            MsLog.WriteDebugLine("Current MicroService Type ：RegCenter of Slave");
-                        }
-                        else
+                        MsLog.WriteDebugLine("Current MicroService Type ：RegCenter of Master");
+                        ThreadBreak.AddGlobalThread(new ParameterizedThreadStart(RunLoopRegCenterOfMaster));
+                    }
+                    else
+                    {
+                        if (MsConfig.IsGateway)
                         {
                             MsLog.WriteDebugLine("Current MicroService Type ：Gateway");
                         }
+                        else
+                        {
+                            MsLog.WriteDebugLine("Current MicroService Type ：RegCenter of Slave");
+                        }
                         MsLog.WriteDebugLine("Current RegisterCenter Url：" + MsConfig.Server.RcUrl);
                         ThreadBreak.AddGlobalThread(new ParameterizedThreadStart(RunLoopOfServer));
+
                     }
                 }
-                if (!string.IsNullOrEmpty(MsConfig.Client.Name) && !string.IsNullOrEmpty(MsConfig.Client.RcUrl) && MsConfig.Client.RcUrl != MvcConfig.RunUrl)
+
+                if (MsConfig.IsClient)
                 {
                     MsLog.WriteDebugLine("Current MicroService Type ：Client of 【" + MsConfig.Client.Name + "】");
 
@@ -82,6 +81,50 @@ namespace Taurus.Plugin.MicroService
                 MsLog.WriteDebugLine("--------------------------------------------------");
             }
         }
+
+        #region 链接预建立检测。
+
+        private static void PreConnection(MDictionary<string, List<HostInfo>> keyValues)
+        {
+            Dictionary<string, byte> keyValuePairs = new Dictionary<string, byte>();
+            foreach (var items in keyValues)
+            {
+                if (items.Key == "RegCenter" || items.Key == "RegCenterOfSlave" || items.Key == "Gateway" || items.Key.Contains("."))
+                {
+                    continue;//不需要对服务端进行预请求，域名也不需要进行。
+                }
+                foreach (var info in items.Value)
+                {
+                    if (!keyValuePairs.ContainsKey(info.Host))
+                    {
+                        keyValuePairs.Add(info.Host, 1);
+                        Rpc.Gateway.PreConnection(info);//对于新加入的请求，发起一次请求建立预先链接。
+                    }
+                }
+            }
+            keyValuePairs.Clear();
+        }
+
+        //private static void WriteToDb(MDictionary<string, List<HostInfo>> hostList)
+        //{
+        //    if (hostList != null && hostList.Count > 0 && !string.IsNullOrEmpty(MsConfig.MsConn))
+        //    {
+        //        if (DBTool.TestConn(MsConfig.MsConn))
+        //        {
+        //            MDataTable table = Server.CreateTable(hostList);
+        //            if (table.Rows.Count > 0)
+        //            {
+        //                table.AcceptChanges(AcceptOp.Auto, System.Data.IsolationLevel.Unspecified, null, "MsName", "Host");
+        //                //bool result = table.AcceptChanges(AcceptOp.Auto, System.Data.IsolationLevel.Unspecified, null, "MsName", "Host");
+        //                //MsLog.WriteDebugLine("AcceptChanges : " + result.ToString());
+        //                // if(!result
+        //            }
+        //            table.Rows.Clear();
+        //        }
+        //    }
+        //}
+
+        #endregion
     }
 
 }

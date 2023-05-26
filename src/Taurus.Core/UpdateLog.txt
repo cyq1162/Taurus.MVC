@@ -208,10 +208,15 @@ CYQ.Data升级到V5.8.4.9
 4、优化：/Admin/SettingOfAccount 新增管理员账号调整为只读账号。（2023-05-25）
 5、优化：/Admin/Log 新增分类展示，可以按关键词过滤。（2023-05-25）
 6、优化：微服务模块名称空间调整：Taurus.MicroService=》Taurus.Plugin.MicroService（2023-05-25）
+7、新增：Taurus.IsEnable、MsConfig.Server.IsEnable、MsConfig.Client.IsEnable，并调整相关逻辑。（2023-05-25）
+8、优化：/Admin/Index 调整并新增分类选项。（2023-05-26）
+9、优化：网关预处理【调整为每次获取新数据都重新检测链接状态】（2023-05-26）
 
 
-去掉管理员修改界面
-新增删除日志文件功能。
+
+主 （挂了） 从（正常）
+
+Web 重启（的问题）
 
 待处理------------------------
 网关：手动添加转发地址（如其它静态站：www.xxx.com）

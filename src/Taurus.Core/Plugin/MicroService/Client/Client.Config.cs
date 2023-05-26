@@ -140,7 +140,7 @@ namespace Taurus.Plugin.MicroService
             {
                 get
                 {
-                    return AppConfig.GetApp("MicroService.Client.RcKey", "Taurus.Plugin.MicroService");
+                    return AppConfig.GetApp("MicroService.Client.RcKey", "Taurus.MicroService");
                 }
                 set
                 {

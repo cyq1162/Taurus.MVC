@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Net;
+using System.Security.Policy;
 using System.Threading;
 using CYQ.Data;
 using CYQ.Data.Tool;
@@ -19,6 +20,8 @@ namespace Taurus.Plugin.MicroService
         /// </summary>
         private static void RunLoopOfClient(object threadID)
         {
+            //初始化文件配置
+            InitClientHostList();
             bool isFirst = true;
             while (true)
             {
@@ -60,6 +63,16 @@ namespace Taurus.Plugin.MicroService
                 }
             }
         }
+        private static void InitClientHostList()
+        {
+            string hostListJson = IO.Read(MsConst.ClientGatewayJsonPath);
+            if (!string.IsNullOrEmpty(hostListJson))
+            {
+                var dic = JsonHelper.ToEntity<MDictionary<string, List<HostInfo>>>(hostListJson);
+                PreConnection(dic);
+                Client.Gateway.HostList = dic;
+            }
+        }
         #region 服务注册
 
         /// <summary>
@@ -83,24 +96,36 @@ namespace Taurus.Plugin.MicroService
                     string result = wc.UploadString(url, data);
                     if (JsonHelper.IsSuccess(result))
                     {
+                        Client.IsLiveOfMasterRC = true;
                         MsLog.WriteDebugLine(DateTime.Now.ToString("HH:mm:ss") + string.Format(" : PID : {0} Reg : {1} Version : {2} => OK", MvcConst.ProcessID, MsConfig.Client.Name, MsConfig.Client.Version));
                     }
                     else
                     {
+                        Client.IsLiveOfMasterRC = false;
+                        if (!string.IsNullOrEmpty(Client.Host2))
+                        {
+                            //主备切换。
+                            string rcUrl = MsConfig.Client.RcUrl + "";
+                            MsConfig.Client.RcUrl = Client.Host2;
+                            Client.Host2 = rcUrl;
+                        }
+                        MsLog.Write(result, url, "POST", MsConfig.Client.Name);
                         MsLog.WriteDebugLine(DateTime.Now.ToString("HH:mm:ss") + string.Format(" : PID : {0} Reg.Fail : {1}: ", MvcConst.ProcessID, result));
                     }
-                    Client.IsLiveOfMasterRC = true;
                     return result;
                 }
             }
             catch (Exception err)
             {
-                Client.IsLiveOfMasterRC = true;
-                MsLog.WriteDebugLine(DateTime.Now.ToString("HH:mm:ss") + string.Format(" : PID : {0} Reg.Error : {1}: ", MvcConst.ProcessID, err.Message));
+                Client.IsLiveOfMasterRC = false;
                 if (!string.IsNullOrEmpty(Client.Host2))
                 {
-                    MsConfig.Client.RcUrl = Client.Host2;//切换到备用库。
+                    //主备切换。
+                    string rcUrl = MsConfig.Client.RcUrl + "";
+                    MsConfig.Client.RcUrl = Client.Host2;
+                    Client.Host2 = rcUrl;
                 }
+                MsLog.WriteDebugLine(DateTime.Now.ToString("HH:mm:ss") + string.Format(" : PID : {0} Reg.Error : {1}: ", MvcConst.ProcessID, err.Message));
                 MsLog.Write(err.Message, url, "POST", MsConfig.Client.Name);
                 return err.Message;
             }
@@ -137,24 +162,20 @@ namespace Taurus.Plugin.MicroService
             string url = MsConfig.Client.RcUrl + MsConfig.Client.RcPath + "/getlist?tick=" + Client.Tick;
             try
             {
+                string result = string.Empty;
                 using (WebClient wc = new WebClient())
                 {
                     wc.Headers.Add(MsConst.HeaderKey, MsConfig.Client.RcKey);
                     wc.Headers.Add("ack", AckLimit.CreateAck());
                     wc.Headers.Add("Referer", MvcConfig.RunUrl);
-                    string result = wc.DownloadString(url);
-                    MsLog.WriteDebugLine(DateTime.Now.ToString("HH:mm:ss") + string.Format(" : PID : {0} GetList : Tick : {1}  => OK", MvcConst.ProcessID, Client.Tick));
-                    return result;
+                    result = wc.DownloadString(url);
                 }
+                MsLog.WriteDebugLine(DateTime.Now.ToString("HH:mm:ss") + string.Format(" : PID : {0} GetList : Tick : {1}  => OK", MvcConst.ProcessID, Client.Tick));
+                return result;
             }
             catch (Exception err)
             {
                 MsLog.WriteDebugLine(DateTime.Now.ToString("HH:mm:ss") + string.Format(" : PID : {0} GetList.Error : {1}", MvcConst.ProcessID, err.Message));
-                if (!string.IsNullOrEmpty(Client.Host2))
-                {
-                    MsConfig.Client.RcUrl = Client.Host2;//切换到备用库。
-                }
-
                 MsLog.Write(err.Message, url, "GET", MsConfig.Client.Name);
                 return err.Message;
             }
@@ -163,23 +184,16 @@ namespace Taurus.Plugin.MicroService
         {
             if (!string.IsNullOrEmpty(result) && JsonHelper.IsSuccess(result))
             {
-                string host2 = JsonHelper.GetValue<string>(result, "host2");
-                string host = JsonHelper.GetValue<string>(result, "host");
-                if (!string.IsNullOrEmpty(host) && host != MsConfig.Client.RcUrl)
-                {
-                    MsConfig.Client.RcUrl = host;//从备份请求切回主程序
-                }
                 long tick = JsonHelper.GetValue<long>(result, "tick");
-
                 if (Client.Tick > tick) { return; }
                 Client.Tick = tick;
-                Client.Host2 = host2;
-
                 string json = JsonHelper.GetValue<string>(result, "msg");
                 if (!string.IsNullOrEmpty(json))
                 {
-                    Client.Gateway.HostList = JsonHelper.ToEntity<MDictionary<string, List<HostInfo>>>(json);
-                    Client.Gateway.HostListJson = json;
+                    var dic = JsonHelper.ToEntity<MDictionary<string, List<HostInfo>>>(json);
+                    PreConnection(dic);
+                    Client.Gateway.HostList = dic;
+                    IO.Write(MsConst.ClientGatewayJsonPath, json);
                 }
             }
         }

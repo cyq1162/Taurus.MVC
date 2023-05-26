@@ -4,6 +4,7 @@ using System.Collections.Generic;
 using Taurus.Mvc;
 using CYQ.Data;
 using System.Threading;
+using CYQ.Data.Tool;
 
 namespace Taurus.Plugin.MicroService
 {
@@ -12,12 +13,13 @@ namespace Taurus.Plugin.MicroService
         /// <summary>
         /// 微服务的核心类：网关代理（请求转发）
         /// </summary>
-        internal static class Gateway
+        internal static partial class Gateway
         {
             /// <summary>
             /// 最后一次网关处理转发的时间
             /// </summary>
             public static DateTime LastProxyTime = DateTime.Now;
+
             #region 网关代理。
             /// <summary>
             /// 网关代理转发方法
@@ -314,46 +316,6 @@ namespace Taurus.Plugin.MicroService
 
             }
 
-
-            private static Dictionary<Uri, bool> preConnectionDic = new Dictionary<Uri, bool>();
-            /// <summary>
-            /// 预先建立链接
-            /// </summary>
-            internal static void PreConnection(Uri uri)
-            {
-                if (!preConnectionDic.ContainsKey(uri))
-                {
-                    preConnectionDic.Add(uri, false);
-                    //启动线程进行检测，避免某些无效请求卡住阻塞太长时间。
-                    Thread thread = new Thread(new ParameterizedThreadStart(PreConnectionOnThread));
-                    thread.IsBackground = true;
-                    thread.Start(uri);
-                }
-            }
-            private static void PreConnectionOnThread(object uriObj)
-            {
-                Uri uri = uriObj as Uri;
-                RpcClient wc = RpcClientPool.Create(uri);
-                if (wc != null)
-                {
-                    try
-                    {
-                        wc.Timeout = 2500;//超时设定。
-                        wc.DownloadData(uri.AbsoluteUri);
-                        preConnectionDic[uri] = true;
-                    }
-                    catch (Exception err)
-                    {
-                        preConnectionDic.Remove(uri);//清空，以便下次仍进行检测。
-                        MsLog.Write(err.Message, "MicroService.Run.PreConnection(" + uri.AbsoluteUri + ")", "GET", MsConfig.Server.Name);
-                    }
-                    finally
-                    {
-                        RpcClientPool.AddToPool(uri, wc);
-                    }
-                }
-            }
-
             //private static bool Proxy(HttpContext context, string host, bool isServerCall)
             //{
             //    return Proxy3(context, host, isServerCall).Result;
@@ -454,5 +416,66 @@ namespace Taurus.Plugin.MicroService
 
         }
 
+        /// <summary>
+        /// 链接预处理
+        /// </summary>
+        internal static partial class Gateway
+        {
+            /// <summary>
+            /// 已检测列表
+            /// </summary>
+            private static MDictionary<Uri, bool> preConnectionDic = new MDictionary<Uri, bool>();
+
+            /// <summary>
+            /// 预先建立链接【每次都会重新检测】
+            /// </summary>
+            internal static void PreConnection(HostInfo info)
+            {
+                Thread thread = new Thread(new ParameterizedThreadStart(PreConnectionOnThread));
+                thread.IsBackground = true;
+                thread.Start(info);
+            }
+            private static void PreConnectionOnThread(object uriObj)
+            {
+                HostInfo info = (HostInfo)uriObj;
+                Uri uri = new Uri(info.Host);
+                RpcClient wc = RpcClientPool.Create(uri);
+                if (wc != null)
+                {
+                    try
+                    {
+                        wc.Timeout = 2500;//超时设定。
+                        wc.DownloadData(uri.AbsoluteUri);
+                        if (!preConnectionDic.ContainsKey(uri))
+                        {
+                            preConnectionDic.Add(uri, true);
+                        }
+                        else
+                        {
+                            preConnectionDic[uri] = true;
+                        }
+                        info.State = 1;
+                    }
+                    catch (Exception err)
+                    {
+                        info.State = -1;
+                        if (preConnectionDic.ContainsKey(uri))
+                        {
+                            preConnectionDic[uri] = false;
+                        }
+                        else
+                        {
+                            preConnectionDic.Add(uri, false);
+                        }
+                        MsLog.Write(err.Message, "MicroService.Run.PreConnection(" + uri.AbsoluteUri + ")", "GET", MsConfig.Server.Name);
+                    }
+                    finally
+                    {
+                        RpcClientPool.AddToPool(uri, wc);
+                    }
+                }
+            }
+
+        }
     }
 }

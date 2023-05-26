@@ -1,18 +1,6 @@
 ﻿using System;
-using CYQ.Data.Tool;
-using CYQ.Data.Table;
-using System.Collections.Generic;
 using Taurus.Mvc;
-using CYQ.Data;
-using System.IO;
 using Taurus.Plugin.MicroService;
-using Taurus.Plugin.Limit;
-using System.Threading;
-using System.Diagnostics;
-using Taurus.Plugin.Doc;
-using System.Configuration;
-using System.Reflection;
-using System.Xml;
 
 namespace Taurus.Plugin.Admin
 {
@@ -101,11 +89,11 @@ namespace Taurus.Plugin.Admin
             }
             else if (MsConfig.IsGateway)
             {
-                return "Gateway" + (MsConfig.Server.IsEnable ? " ( Running )" : " ( Stopped )") + (Server.IsLiveOfMasterRC ? "" : " - ( Register center connection refused )"); ;
+                return "Gateway" + (MsConfig.Server.IsEnable ? " ( Running )" : " ( Stopped )") + (Server.IsLiveOfMasterRC ? "" : " - ( Register center connection refused )");
             }
             else if (MsConfig.IsClient)
             {
-                return "Client of MicroService" + (MsConfig.Server.IsEnable ? " ( Running )" : " ( Stopped )") + (Client.IsLiveOfMasterRC ? "" : " - ( Register center connection refused )");
+                return "Client of MicroService" + (MsConfig.Client.IsEnable ? " ( Running )" : " ( Stopped )") + (Client.IsLiveOfMasterRC ? "" : " - ( Register center connection refused )");
             }
             else
             {

@@ -39,5 +39,10 @@ namespace Taurus.Plugin.MicroService
         /// </summary>
         [JsonIgnore]
         public int CallIndex { get; set; }
+
+        /// <summary>
+        /// Host 检测 状态：1- 失败，0 未检测，1 成功。
+        /// </summary>
+        public int State { get; set; }
     }
 }

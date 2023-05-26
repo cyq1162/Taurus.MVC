@@ -10,53 +10,14 @@ namespace Taurus.Plugin.MicroService
     internal partial class Server
     {
         /// <summary>
-        /// 分离出网关 - 与 注册中心原始存档隔离，避免同一对象在并发下需要锁而降低性能
+        /// 服务端网关 -（从注册中心 与 网关 使用）
         /// </summary>
         public class Gateway
         {
-            private static string _HostListJson = null;
-
-            /// <summary>
-            /// 对于网关或注册中心（从） - 记录并备份返回的注册数据
-            /// </summary>
-            internal static string HostListJson
-            {
-                get
-                {
-                    if (_HostListJson == null)
-                    {
-                        _HostListJson = IO.Read(MsConst.ServerGatewayJsonPath);
-                    }
-                    return _HostListJson;
-                }
-                set
-                {
-                    _HostListJson = value;
-                    if (string.IsNullOrEmpty(value))
-                    {
-                        IO.Delete(MsConst.ServerGatewayJsonPath);
-                    }
-                    else
-                    {
-                        IO.Write(MsConst.ServerGatewayJsonPath, value);
-                    }
-                }
-            }
-            private static MDictionary<string, List<HostInfo>> _HostList;
             /// <summary>
             /// 作为微服务主程序时，存档的微服务列表【和注册中心列表各自独立】
             /// </summary>
-            public static MDictionary<string, List<HostInfo>> HostList
-            {
-                get
-                {
-                    return _HostList;
-                }
-                set
-                {
-                    _HostList = value;
-                }
-            }
+            public static MDictionary<string, List<HostInfo>> HostList { get; set; }
             /// <summary>
             /// 获取模块所在的对应主机网址【若存在多个：每次获取都会循环下一个】。
             /// </summary>

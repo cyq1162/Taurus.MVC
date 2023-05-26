@@ -49,31 +49,40 @@ namespace Taurus.Plugin.MicroService
         {
             get
             {
+                if (MsConfig.IsRegCenterOfSlave)
+                {
+                    return MsConfig.Server.RcUrl;//从注册中心备份也指向主链接
+                }
                 if (_Host2 == null)
                 {
-                    _Host2 = IO.Read(MsConst.ServerHost2Path);//首次读取，以便于恢复。
+                    if (MsConfig.IsGateway)
+                    {
+                        //仅网关读取配置文件。
+                        _Host2 = IO.Read(MsConst.ServerHost2Path);
+                    }
+                    else
+                    {
+                        _Host2 = string.Empty;//注册中心。
+                    }
                 }
                 return _Host2;
             }
             set
             {
-                _Host2 = value;
-                if (MsConfig.Server.Name.ToLower() == MsConst.Gateway)
+                if (!MsConfig.IsRegCenterOfSlave)
                 {
-                    if (!string.IsNullOrEmpty(value))
+                    _Host2 = value;
+                    if (MsConfig.IsGateway)
                     {
-                        IO.Write(MsConst.ServerHost2Path, value);
-                    }
-                    else
-                    {
-                        IO.Delete(MsConst.ServerHost2Path);
+                        if (value != _RcUrl)
+                        {
+                            //仅网关写入配置文件【不存和初始配置一致的链接】
+                            IO.Write(MsConst.ServerHost2Path, value);
+                        }
                     }
                 }
             }
         }
-        /// <summary>
-        /// 备份链接最新注册时间
-        /// </summary>
-        internal static DateTime Host2LastRegTime = DateTime.MinValue;
+        private static string _RcUrl = MsConfig.Server.RcUrl;
     }
 }

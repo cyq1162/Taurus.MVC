@@ -70,10 +70,11 @@ namespace Taurus.Plugin.Admin
         {
             MDataTable dtServer = new MDataTable();
             dtServer.Columns.Add("Name,Count");
-            MDataTable dtDomain = dtServer.Clone();
-            MDataTable dtClient = dtServer.Clone();
-
+            MDataTable dtClientDomain = dtServer.Clone();
+            MDataTable dtClientModule = dtServer.Clone();
+            MDataTable dtClientHost = dtServer.Clone();
             var hostList = HostList;//先获取引用【避免执行过程，因线程更换了引用的对象】
+            var hostDic = new Dictionary<string, int>();
             foreach (var item in hostList)
             {
                 if (item.Key == "RegCenter" || item.Key == "RegCenterOfSlave" || item.Key == "Gateway")
@@ -82,24 +83,59 @@ namespace Taurus.Plugin.Admin
                 }
                 else if (item.Key.Contains("."))
                 {
-                    dtDomain.NewRow(true).Sets(0, item.Key, item.Value.Count);
+                    dtClientDomain.NewRow(true).Sets(0, item.Key, item.Value.Count);
                 }
                 else
                 {
-                    dtClient.NewRow(true).Sets(0, item.Key, item.Value.Count);
+                    foreach (var info in item.Value)
+                    {
+                        if (!hostDic.ContainsKey(info.Host))
+                        {
+                            hostDic.Add(info.Host, info.State);
+                        }
+                        else
+                        {
+                            if (info.State != 0)
+                            {
+                                hostDic[info.Host] = info.State;
+                            }
+                        }
+                    }
+                    dtClientModule.NewRow(true).Sets(0, item.Key, item.Value.Count);
                 }
-
             }
+            #region 处理主机绑定
+            if (hostDic.Count > 0)
+            {
+                int ok = 0, fail = 0;
+                foreach (var item in hostDic)
+                {
+                    switch (item.Value)
+                    {
+                        case -1:
+                            fail++;
+                            break;
+                        case 1:
+                            ok++;
+                            break;
+                    }
+                }
+                dtClientHost.NewRow(true).Sets(0, "Connected", ok);
+                dtClientHost.NewRow(true).Sets(0, "Connection-Failed", fail);
+                dtClientHost.Bind(View, "clientHostView");
+            }
+
+            #endregion
             dtServer.Bind(View, "serverNamesView");
-            dtDomain.Bind(View, "domainNamesView");
-            dtClient.Bind(View, "clientNamesView");
+            dtClientDomain.Bind(View, "clientDomainView");
+            dtClientModule.Bind(View, "clientModuleView");
 
         }
         private void BindDefaultView()
         {
-            string host = Query<string>("h");
+            int type = Query<int>("t", 1);
             string name = Query<string>("n", "RegCenter");
-            if (!string.IsNullOrEmpty(host) || (name != "RegCenter" && name != "RegCenterOfSlave" && name != "Gateway"))
+            if (type == 2 || (name != "RegCenter" && name != "RegCenterOfSlave" && name != "Gateway"))
             {
                 var hostList = HostList;
                 if (hostList.ContainsKey("Gateway"))
@@ -111,31 +147,27 @@ namespace Taurus.Plugin.Admin
                     View.KeyValue.Set("GatewayUrl", hostList["RegCenter"][0].Host);
                 }
             }
-            if (!string.IsNullOrEmpty(host))
+            switch (type)
             {
-                BindViewByHost(host);
+                case 1:
+                    BindViewByName(name); break;
+                case 2:
+                    BindViewByHost(name);
+                    break;
+                case 3:
+                    BindViewByConnection(name); break;
             }
-            else
-            {
-                BindViewByName(name);
-            }
-
         }
         private void BindViewByName(string name)
         {
             List<HostInfo> list = GetHostList(name, false);
             if (list.Count > 0)
             {
-                MDataTable dt = MDataTable.CreateFrom(list);
+                MDataTable dt = MDataTable.CreateFrom(list, BreakOp.None);
                 if (dt != null)
                 {
                     dt.Columns.Add("Name");
                     dt.Columns["Name"].Set(name);
-                    if (MsConfig.IsServer && IsAdmin)
-                    {
-                        dt.Columns.Add("RemoteExit");
-                        dt.Columns["RemoteExit"].Set("Stop");
-                    }
                     View.OnForeach += View_OnForeach;
                     dt.Bind(View);
                 }
@@ -167,7 +199,49 @@ namespace Taurus.Plugin.Admin
             }
             if (dt != null)
             {
-                if (MsConfig.IsServer && IsAdmin)
+                View.OnForeach += View_OnForeach;
+                dt.Bind(View);
+            }
+
+        }
+
+        private void BindViewByConnection(string name)
+        {
+            int state = 0;
+            switch (name)
+            {
+                case "Connection-Failed":
+                    state = -1; break;
+                default:
+                    state = 1; break;
+            }
+            var hostList = HostList;//先获取引用【避免执行过程，因线程更换了引用的对象】
+            var hostDic = new Dictionary<string, int>();
+            List<HostInfo> list = new List<HostInfo>();
+            foreach (var item in hostList)
+            {
+                if (item.Key == "RegCenter" || item.Key == "RegCenterOfSlave" || item.Key == "Gateway" || item.Key.Contains("."))
+                {
+                    continue;
+                }
+                foreach (var info in item.Value)
+                {
+                    if (info.State == state)
+                    {
+                        if (!hostDic.ContainsKey(info.Host))
+                        {
+                            hostDic.Add(info.Host, info.State);
+                            list.Add(info);
+                        }
+                    }
+                }
+            }
+            MDataTable dt = MDataTable.CreateFrom(list, BreakOp.None);
+            if (dt != null)
+            {
+                dt.Columns.Add("Name");
+                dt.Columns["Name"].Set(name);
+                if (state == 1 && MsConfig.IsServer && IsAdmin)
                 {
                     dt.Columns.Add("RemoteExit");
                     dt.Columns["RemoteExit"].Set("Stop");
@@ -175,7 +249,6 @@ namespace Taurus.Plugin.Admin
                 View.OnForeach += View_OnForeach;
                 dt.Bind(View);
             }
-
         }
         private string View_OnForeach(string text, MDictionary<string, string> values, int rowIndex)
         {
@@ -186,6 +259,8 @@ namespace Taurus.Plugin.Admin
                 values["RegTime"] = time;
             }
             values["IsVirtual"] = values["IsVirtual"] == "True" ? "√" : "false";
+            string state = values["State"];
+            values["State"] = state == "1" ? "√" : (state == "0" ? "not detected." : "detection failed.");
             return text;
         }
     }

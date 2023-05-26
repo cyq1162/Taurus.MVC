@@ -1,10 +1,6 @@
 ﻿using CYQ.Data;
-using CYQ.Data.Table;
 using System;
 using System.Net;
-using System.Net.Mime;
-using System.Threading;
-using System.Web.UI;
 
 namespace Taurus.Plugin.MicroService
 {

@@ -36,15 +36,15 @@ namespace Taurus.Plugin.MicroService
             set
             {
                 _Host2 = value;
-                if (!string.IsNullOrEmpty(value))
+                if (value != _RcUrl)
                 {
+                    //【不存和初始配置一致的链接】
                     IO.Write(MsConst.ClientHost2Path, value);
                 }
-                else
-                {
-                    IO.Delete(MsConst.ClientHost2Path);
-                }
+
+
             }
         }
+        private static string _RcUrl = MsConfig.Client.RcUrl;
     }
 }

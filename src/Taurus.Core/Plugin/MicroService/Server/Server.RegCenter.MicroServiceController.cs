@@ -74,7 +74,7 @@ namespace Taurus.Plugin.MicroService
             #region 注册中心【从】检测到【主】恢复后，推送host，让后续的请求转回【主】
             if (Server.IsLiveOfMasterRC)// && !MsConfig.IsRegCenterOfMaster
             {
-                Write(JsonHelper.OutResult(true, "", "tick", Server.Tick, "host", MsConfig.Server.RcUrl));
+                Write(JsonHelper.OutResult(true, "", "tick", Server.Tick, "host", MsConfig.Server.RcUrl, "host2", MvcConfig.RunUrl));
                 return;
             }
             #endregion
@@ -213,10 +213,6 @@ namespace Taurus.Plugin.MicroService
             {
                 Server.Tick = DateTime.Now.Ticks;
             }
-            if (Server.Host2LastRegTime < DateTime.Now.AddSeconds(-15))//超过15秒，备份链接无效化。
-            {
-                Server.Host2 = String.Empty;
-            }
             string result = JsonHelper.OutResult(sb.Length == 0, sb.ToString(), "tick", Server.Tick, "host2", Server.Host2);
             Write(result);
         }
@@ -230,12 +226,7 @@ namespace Taurus.Plugin.MicroService
         [MicroService]
         public void GetList(long tick, bool isGateway)
         {
-            WriteLine(Environment.NewLine + "--------------------------------------");
-            WriteLine(DateTime.Now.ToString("HH:mm:ss") + " : GetList : From :" + Request.UrlReferrer);
-            if (Server.Host2LastRegTime < DateTime.Now.AddSeconds(-15))//超过15秒，备份链接无效化。
-            {
-                Server.Host2 = String.Empty;
-            }
+            string host2 = Server.IsLiveOfMasterRC ? MvcConfig.RunUrl : Server.Host2;
             string host = Server.IsLiveOfMasterRC ? MsConfig.Server.RcUrl : "";//注册中心【从】检测到【主】恢复后，推送host，让后续的请求转回【主】
             if (host == MvcConfig.RunUrl)//主机即是自己。
             {
@@ -247,14 +238,17 @@ namespace Taurus.Plugin.MicroService
             }
             if (Server.RegCenter.HostList.Count == 0 || tick == Server.Tick)
             {
-                string result = JsonHelper.OutResult(true, "", "tick", Server.Tick, "host2", Server.Host2, "host", host, "iptick", IPLimit.LastUpdateTime.Ticks);
+                string result = JsonHelper.OutResult(true, "", "tick", Server.Tick, "host2", host2, "host", host, "iptick", IPLimit.LastUpdateTime.Ticks);
                 Write(result);
             }
             else
             {
-                string result = JsonHelper.OutResult(true, Server.RegCenter.HostListJson, "tick", Server.Tick, "host2", Server.Host2, "host", host, "iptick", IPLimit.LastUpdateTime.Ticks);
+                string result = JsonHelper.OutResult(true, Server.RegCenter.HostListJson, "tick", Server.Tick, "host2", host2, "host", host, "iptick", IPLimit.LastUpdateTime.Ticks);
                 Write(result);
             }
+
+            WriteLine(Environment.NewLine + "--------------------------------------");
+            WriteLine(DateTime.Now.ToString("HH:mm:ss") + " : GetList : From :" + Request.UrlReferrer);
         }
         /// <summary>
         /// 注册中心 - 获取IP黑名单列表。
@@ -263,10 +257,11 @@ namespace Taurus.Plugin.MicroService
         [MicroService]
         public void GetIPList()
         {
-            WriteLine(Environment.NewLine + "--------------------------------------");
-            WriteLine(DateTime.Now.ToString("HH:mm:ss") + " : GetIPList From :" + Request.UrlReferrer);
             string ipList = IO.Read(AdminConst.IPBlacknamePath);
             Write(JsonHelper.OutResult(true, ipList));
+
+            WriteLine(Environment.NewLine + "--------------------------------------");
+            WriteLine(DateTime.Now.ToString("HH:mm:ss") + " : GetIPList From :" + Request.UrlReferrer);
         }
         /// <summary>
         /// 注册中心 - 设置【从】的备用地址。
@@ -277,13 +272,13 @@ namespace Taurus.Plugin.MicroService
         [Require("host")]
         public void Reg2(string host)
         {
-            WriteLine(Environment.NewLine + "--------------------------------------");
-            WriteLine(DateTime.Now.ToString("HH:mm:ss") + " : Reg Host2 From :" + host);
             Server.RegCenter.AddHost("RegCenterOfSlave", host);
             Server.Host2 = host;
-            Server.Host2LastRegTime = DateTime.Now;
             string result = JsonHelper.OutResult(true, "", "tick", Server.Tick, "iptick", IPLimit.LastUpdateTime.Ticks);
             Write(result);
+
+            WriteLine(Environment.NewLine + "--------------------------------------");
+            WriteLine(DateTime.Now.ToString("HH:mm:ss") + " : Reg Host2 From :" + host);
         }
 
         /// <summary>
@@ -296,8 +291,6 @@ namespace Taurus.Plugin.MicroService
         [Require("json")]
         public void SyncList(string json, long tick)
         {
-            WriteLine(Environment.NewLine + "--------------------------------------");
-            WriteLine(DateTime.Now.ToString("HH:mm:ss") + " : Server.API.Call.SyncList : Tick :" + tick);
             if (tick > Server.Tick)
             {
                 Server.Tick = tick;
@@ -305,6 +298,9 @@ namespace Taurus.Plugin.MicroService
                 Server.RegCenter.HostList = JsonHelper.ToEntity<MDictionary<string, List<HostInfo>>>(json);
             }
             Write("", true);
+
+            WriteLine(Environment.NewLine + "--------------------------------------");
+            WriteLine(DateTime.Now.ToString("HH:mm:ss") + " : Server.API.Call.SyncList : Tick :" + tick);
         }
 
     }

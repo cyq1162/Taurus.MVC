@@ -1,7 +1,5 @@
 ﻿using CYQ.Data.Tool;
-using System;
 using System.Collections.Generic;
-using System.Text;
 
 namespace Taurus.Plugin.MicroService
 {
@@ -15,35 +13,6 @@ namespace Taurus.Plugin.MicroService
         /// </summary>
         public class Gateway
         {
-            private static string _HostListJson = null;
-
-            /// <summary>
-            /// 返回的注册数据
-            /// </summary>
-            internal static string HostListJson
-            {
-                get
-                {
-                    if (_HostListJson == null)
-                    {
-                        _HostListJson = IO.Read(MsConst.ClientGatewayJsonPath);
-                    }
-                    return _HostListJson;
-                }
-                set
-                {
-                    _HostListJson = value;
-                    if (string.IsNullOrEmpty(value))
-                    {
-                        IO.Delete(MsConst.ClientGatewayJsonPath);
-                    }
-                    else
-                    {
-                        IO.Write(MsConst.ClientGatewayJsonPath, value);
-                    }
-
-                }
-            }
             private static MDictionary<string, List<HostInfo>> _HostList;
             /// <summary>
             /// 从微服务主程序端获取的微服务列表【用于微服务间内部调用运转】
