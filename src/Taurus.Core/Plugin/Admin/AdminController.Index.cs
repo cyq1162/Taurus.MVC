@@ -241,7 +241,7 @@ namespace Taurus.Plugin.Admin
             {
                 dt.Columns.Add("Name");
                 dt.Columns["Name"].Set(name);
-                if (state == 1 && MsConfig.IsServer && IsAdmin)
+                if (state == 1 && MsConfig.IsRegCenterOfMaster && IsAdmin)
                 {
                     dt.Columns.Add("RemoteExit");
                     dt.Columns["RemoteExit"].Set("Stop");

@@ -46,8 +46,15 @@ namespace Taurus.Plugin.Admin
                     string isAdmin = Convert.ToString(Context.Session["isadmin"]);
                     if (string.IsNullOrEmpty(loginName) || string.IsNullOrEmpty(isAdmin))
                     {
-                        //检测账号密码，跳转登陆页
-                        Response.Redirect("login");
+                        if (nameLower == "btnsaveconfig")
+                        {
+                            Write("Login account has expired.", false);
+                        }
+                        else
+                        {
+                            //检测账号密码，跳转登陆页
+                            Response.Redirect("login");
+                        }
                         return false;
                     }
                     else if (View != null)
