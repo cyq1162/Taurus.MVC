@@ -4,7 +4,6 @@ using System.Net;
 using System.Threading;
 using CYQ.Data;
 using CYQ.Data.Tool;
-using Newtonsoft.Json.Linq;
 using Taurus.Mvc;
 using Taurus.Plugin.Limit;
 
