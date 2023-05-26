@@ -20,19 +20,25 @@
         <hr />
         <div style="float:left"><b>Server ：</b></div>
         <div id="serverNamesView" style="float:left" clearflag="1">
-            <a href="index?n=${Name}">${Name}（${Count}）</a>&nbsp;|&nbsp;
+            <a href="index?t=1&n=${Name}">${Name}（${Count}）</a>&nbsp;|&nbsp;
         </div>
         <div style="clear:both; height:5px;">
         </div>
-         <div style="float:left"><b>Domain ：</b></div>
-        <div id="domainNamesView" style="float:left" clearflag="1">
-            <a href="index?n=${Name}">${Name}（${Count}）</a>&nbsp;|&nbsp;
+        <div style="float:left"><b>Client - Register - Host ：</b></div>
+        <div id="clientHostView" style="float:left" clearflag="1">
+            <a href="index?t=3&n=${Name}">${Name}（${Count}）</a>&nbsp;|&nbsp;
         </div>
         <div style="clear:both;height:5px;">
         </div>
-        <div style="float:left"><b>Client ：</b></div>
-        <div id="clientNamesView" style="float:left" clearflag="1">
-            <a href="index?n=${Name}">${Name}（${Count}）</a>&nbsp;|&nbsp;
+        <div style="float:left"><b>Client - Register - Domain ：</b></div>
+        <div id="clientDomainView" style="float:left" clearflag="1">
+            <a href="index?t=1&n=${Name}">${Name}（${Count}）</a>&nbsp;|&nbsp;
+        </div>
+        <div style="clear:both;height:5px;">
+        </div>
+        <div style="float:left"><b>Client - Register - Module ：</b></div>
+        <div id="clientModuleView" clearflag="1">
+            <a href="index?t=1&n=${Name}">${Name}（${Count}）</a>&nbsp;|&nbsp;
         </div>
         <div style="clear:both;">
         </div>
@@ -41,6 +47,7 @@
             <tr>
                 <td>Register Name</td>
                 <td>Host</td>
+                <td>State</td>
                 <td>IsVirtual</td>
                 <td>Version</td>
                 <td>LastActiveTime</td>
@@ -49,7 +56,8 @@
             <tbody id="defaultView" clearflag="1">
                 <tr>
                     <td><a target="_blank" href="${Host}/doc?g=${GatewayUrl}" title="doc">${Name}</a></td>
-                    <td><a href="index?h=${Host}">${Host}</a></td>
+                    <td><a href="index?t=2&n=${Host}">${Host}</a></td>
+                    <td>${State}</td>
                     <td>${IsVirtual}</td>
                     <td>${Version}</td>
                     <td>${RegTime}</td>
@@ -58,8 +66,7 @@
             </tbody>
         </table>
         <script>
-            function stop(host,el)
-            {
+            function stop(host, el) {
                 if (confirm("Stop Service Confirm ?")) {
                     el.onclick = undefined;
                     el.style = "text-decoration: none; cursor: default; opacity: 0.2";

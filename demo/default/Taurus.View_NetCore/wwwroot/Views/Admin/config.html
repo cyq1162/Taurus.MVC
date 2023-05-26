@@ -24,26 +24,29 @@
         <hr />
         <div style="float:left"><b>Taurus （Framework）：</b></div>
         <div style="float:left">
-            <a href="config?t=Mvc">Mvc</a>&nbsp;|&nbsp;
-            <a href="config?t=Microservice">MicroService</a>&nbsp;|&nbsp;
-            Plugin（
+            <a href="config?t=Mvc">MVC</a>&nbsp;|&nbsp;
+            Plugin【
+            <a href="config?t=Plugin-Microservice">MicroService</a>&nbsp;|&nbsp;
             <a href="config?t=Plugin-Admin">Admin</a>&nbsp;|&nbsp;
             <a href="config?t=Plugin-Doc">Doc</a>&nbsp;|&nbsp;
-            <a href="config?t=Plugin-Limit">Limit</a>
-            ）
+            <a href="config?t=Plugin-Limit">Limit</a>（
+            <a href="config?t=Plugin-Limit-Rate">Rate</a>&nbsp;|&nbsp;
+            <a href="config?t=Plugin-Limit-IP">IP-Black</a>&nbsp;|&nbsp;
+            <a href="config?t=Plugin-Limit-Ack">Ack</a>&nbsp;）】
 
         </div>
         <div style="clear:both; height:5px;">
         </div>
         <div style="float:left"><b>CYQ.Data （ ORM ）：</b></div>
         <div style="float:left">
-            <a href="config?t=CYQ.Data">Summary</a>（&nbsp;<a href="config?t=Log">Log</a>&nbsp;|&nbsp;
-            <a href="config?t=Conn&t1=20&t2=60&t3=20">Conn</a>&nbsp;|&nbsp;
-            <a href="config?t=DataBase">DataBase</a>&nbsp;|&nbsp;
-            <a href="config?t=AutoCache">AutoCache</a>&nbsp;|&nbsp;
-            <a href="config?t=Redis">Redis</a>&nbsp;|&nbsp;
-            <a href="config?t=MemCache">MemCache</a>&nbsp;|&nbsp;
-            <a href="config?t=Debug">Debug</a>&nbsp;）
+            <a href="config?t=CYQ.Data">Summary</a>【
+            <a href="config?t=CYQ.Data-Conn&t1=20&t2=60&t3=20">Conn</a>&nbsp;|&nbsp;
+            <a href="config?t=CYQ.Data-Log">Log</a>&nbsp;|&nbsp;
+            <a href="config?t=CYQ.Data-DataBase">DataBase</a>&nbsp;|&nbsp;
+            <a href="config?t=CYQ.Data-AutoCache">AutoCache</a>&nbsp;|&nbsp;
+            <a href="config?t=CYQ.Data-Redis">Redis</a>&nbsp;|&nbsp;
+            <a href="config?t=CYQ.Data-MemCache">MemCache</a>&nbsp;|&nbsp;
+            <a href="config?t=CYQ.Data-Debug">Debug</a>&nbsp;】
         </div>
         <div style="clear:both;">
         </div>
@@ -73,7 +76,7 @@
                 $el.attr("state", "1");
                 var value = $el.html();
                 var items = value.split(' ');
-                var html = "<input type=\"text\" value='" + items[0] + "'' />";
+                var html = "<input type=\"text\" value='" + (items[0] == '√' ? 'true' : items[0]) + "'' />";
                 html += "&nbsp;&nbsp;<input type=\"checkbox\" value=\"1\" />&nbsp;<span title='save to config file.'>durable</span><br /><br />";
                 html += "<input class=\"btn-primary\" type=\"button\" value=\"Save\" onclick=\"save(this,'" + key + "','" + value + "')\"/>";
                 html += "&nbsp;&nbsp;<input class=\"btn-default\" type=\"button\" value=\"Cancel\" onclick=\"cancel(this,'" + value + "')\" />";
