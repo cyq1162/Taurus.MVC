@@ -260,7 +260,7 @@ namespace Taurus.Plugin.Admin
             }
             values["IsVirtual"] = values["IsVirtual"] == "True" ? "√" : "false";
             string state = values["State"];
-            values["State"] = state == "1" ? "√" : (state == "0" ? "not detected." : "detection failed.");
+            values["State"] = state == "1" ? "√" : (state == "0" ? "- - -" : "detection failed.");
             return text;
         }
     }

@@ -30,8 +30,8 @@ namespace Taurus.Plugin.Admin
             {
                 #region Mvc
                 Sets(dt, "Taurus.IsEnable", MvcConfig.IsEnable, "Taurus mvc  is enable.");
-                Sets(dt, "Taurus.IsPrintRequestLog", MvcConfig.IsPrintRequestLog, "Print mvc suffix request logs for debug.");
-                Sets(dt, "Taurus.IsPrintRequestSql", MvcConfig.IsPrintRequestSql, "Print mvc suffix request sqls for debug.");
+                Sets(dt, "Taurus.IsPrintRequestLog", MvcConfig.IsPrintRequestLog, "Print mvc suffix request logs to 【Debug_RequestLog*.txt】 for debug.");
+                Sets(dt, "Taurus.IsPrintRequestSql", MvcConfig.IsPrintRequestSql, "Print mvc suffix request sqls to 【Debug_RequestSql*.txt】 for debug.");
                 Sets(dt, "Taurus.RunUrl", MvcConfig.RunUrl, "Application run url.");
                 Sets(dt, "Taurus.DefaultUrl", MvcConfig.DefaultUrl, "Application default url.");
                 Sets(dt, "Taurus.IsAllowCORS", MvcConfig.IsAllowCORS, "Application is allow cross-origin resource sharing.");
@@ -272,7 +272,7 @@ namespace Taurus.Plugin.Admin
                 {
                     Sets(dt, "DB.CommandTimeout", AppConfig.DB.CommandTimeout + " (s)", "Timeout for database command.");
                     Sets(dt, "DB.SchemaMapPath", AppConfig.DB.SchemaMapPath, "Database metadata cache path.");
-                    Sets(dt, "DB.PrintSql", AppConfig.DB.PrintSql + " (ms)", "Write sql to log file when sql exe time > value(value must>=0).");
+                    Sets(dt, "DB.PrintSql", AppConfig.DB.PrintSql + " (ms)", "Write sql to  to 【Debug_PrintSql*.txt】 when sql exe time > value(value must>=0).");
                     dt.NewRow(true);
                     Sets(dt, "DB.HiddenFields", AppConfig.DB.HiddenFields, "Hide fields that are not returned when querying.");
                     Sets(dt, "DB.DeleteField", AppConfig.DB.DeleteField, "Soft-deletion field name (if a table has this specified field name, MAction's delete operation will be changed to an update operation).");
@@ -316,7 +316,7 @@ namespace Taurus.Plugin.Admin
             string value = Convert.ToString(objValue);
             if (objValue is Boolean)
             {
-                value = value == "True" ? "√" : "false";
+                value = value == "True" ? "√" : "×";
             }
             if (AdminConfig.IsContainsDurableKey(key))
             {
