@@ -24,7 +24,7 @@
         <hr />
         <div style="float:left"><b>Taurus （Framework）：</b></div>
         <div style="float:left">
-            <a href="config?t=Mvc">MVC</a>&nbsp;|&nbsp;
+            <a href="config?t=Mvc&t1=28&t2=28&t3=44">MVC</a>&nbsp;|&nbsp;
             Plugin【
             <a href="config?t=Plugin-Microservice">MicroService</a>&nbsp;|&nbsp;
             <a href="config?t=Plugin-Admin">Admin</a>&nbsp;|&nbsp;
@@ -76,7 +76,7 @@
                 $el.attr("state", "1");
                 var value = $el.html();
                 var items = value.split(' ');
-                var html = "<input type=\"text\" value='" + (items[0] == '√' ? 'true' : items[0]) + "'' />";
+                var html = "<input type=\"text\" value='" + (items[0] == '√' ? 'true' : (items[0] == '×' ? 'false' : items[0])) + "'' />";
                 html += "&nbsp;&nbsp;<input type=\"checkbox\" value=\"1\" />&nbsp;<span title='save to config file.'>durable</span><br /><br />";
                 html += "<input class=\"btn-primary\" type=\"button\" value=\"Save\" onclick=\"save(this,'" + key + "','" + value + "')\"/>";
                 html += "&nbsp;&nbsp;<input class=\"btn-default\" type=\"button\" value=\"Cancel\" onclick=\"cancel(this,'" + value + "')\" />";
