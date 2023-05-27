@@ -84,8 +84,7 @@ namespace Taurus.Mvc
                     }
                     catch (Exception err)
                     {
-                        Log.WriteLogToTxt(dll);
-                        Log.WriteLogToTxt(err);
+                        Log.WriteLogToTxt(err, LogType.Taurus);
                         if (!_IsSearchAll)
                         {
                             throw err;

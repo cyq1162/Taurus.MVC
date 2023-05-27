@@ -254,7 +254,7 @@ namespace Taurus.Plugin.MicroService
             }
             catch (Exception err)
             {
-                CYQ.Data.Log.Write(err);
+                CYQ.Data.Log.Write(err, LogType.Taurus);
                 throw;
             }
         }

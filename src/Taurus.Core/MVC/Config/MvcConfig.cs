@@ -28,6 +28,36 @@ namespace Taurus.Mvc
             }
         }
         /// <summary>
+        /// 配置是否打印请求日志【用于调试打印请求日志】 
+        /// 如 Taurus.IsPrintRequestLog ：false（默认值）
+        /// </summary>
+        public static bool IsPrintRequestLog
+        {
+            get
+            {
+                return AppConfig.GetAppBool("Taurus.IsPrintRequestLog", false);
+            }
+            set
+            {
+                AppConfig.SetApp("Taurus.IsPrintRequestLog", value.ToString());
+            }
+        }
+        /// <summary>
+        /// 配置是否打印请求执行的Sql语句【用于调试打印请求执行的Sql语句】 
+        /// 如 Taurus.IsPrintRequestSql ：false（默认值）
+        /// </summary>
+        public static bool IsPrintRequestSql
+        {
+            get
+            {
+                return AppConfig.GetAppBool("Taurus.IsPrintRequestSql", false);
+            }
+            set
+            {
+                AppConfig.SetApp("Taurus.IsPrintRequestSql", value.ToString());
+            }
+        }
+        /// <summary>
         /// 指定控制器(控制器所在的项目名称)。
         /// 如 Taurus.Controllers : "Taurus.Controllers"， 默认值："*"
         /// </summary>

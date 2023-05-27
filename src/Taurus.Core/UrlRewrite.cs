@@ -5,7 +5,6 @@ using System.Threading;
 using System.Web;
 using Taurus.Plugin.MicroService;
 using Taurus.Mvc;
-using Taurus.Plugin.MicroService;
 using Taurus.Plugin.Limit;
 
 namespace Taurus.Core
@@ -42,6 +41,12 @@ namespace Taurus.Core
             HttpApplication app = (HttpApplication)sender;
             HttpContext context = app.Context;
             Uri uri = context.Request.Url;
+
+            
+            //#region 0、接口调用次数统计
+            //MetricRun.Start(uri);
+            //#endregion
+
             #region 1、微服务检测与启动
             MsRun.Start(uri);//微服务检测、启动。
             #endregion
@@ -60,6 +65,12 @@ namespace Taurus.Core
                 }
                 if (WebTool.IsMvcSuffix(uri.LocalPath))
                 {
+                    #region 打印请求日志
+                    if (MvcConfig.IsPrintRequestLog)
+                    {
+                        WebTool.PrintRequestLog(context.Request, null);
+                    }
+                    #endregion
                     if (!LimitRun.CheckRate())
                     {
                         WebTool.SetRunToEnd(context);
@@ -92,7 +103,7 @@ namespace Taurus.Core
             }
             #endregion
 
-            #region 4、网关代理请求检测与转发 - 5、纯网关检测 - 6、Mvc模块禁用
+            #region 4、网关代理请求检测与转发 - 5、纯网关检测 - 6、Mvc模块禁用检测
             if (!WebTool.IsSysInternalUrl(uri, context.Request.UrlReferrer))
             {
                 if (MsConfig.Server.IsEnable)
@@ -119,7 +130,7 @@ namespace Taurus.Core
                     }
                     #endregion
                 }
-                #region 6、Mvc模块禁用
+                #region 6、Mvc模块禁用检测
                 if (!MvcConfig.IsEnable)
                 {
                     WebTool.SetRunToEnd(context);
@@ -191,7 +202,7 @@ namespace Taurus.Core
             HttpContext cont = ((HttpApplication)sender).Context;
             if (cont != null)
             {
-                Log.WriteLogToTxt(cont.Error, LogType.Taurus);
+                WebTool.PrintRequestLog(cont.Request, cont.Error);
             }
         }
 

@@ -6,6 +6,7 @@ using CYQ.Data.Tool;
 using Taurus.Plugin.MicroService;
 using Taurus.Plugin.Admin;
 using Taurus.Plugin.Doc;
+using System.Text;
 
 namespace Taurus.Mvc
 {
@@ -293,6 +294,37 @@ namespace Taurus.Mvc
 
             }
             return (T)result;
+        }
+    }
+
+    public static partial class WebTool
+    {
+        public static void PrintRequestLog(HttpRequest request, Exception err)
+        {
+            StringBuilder sb = new StringBuilder();
+            if (err != null)
+            {
+                sb.AppendLine(Log.GetExceptionMessage(err));
+            }
+            var headers = request.Headers;
+            if (headers.Count > 0)
+            {
+                sb.AppendLine("\n-----------Headers-----------");
+                foreach (string key in headers.AllKeys)
+                {
+                    sb.AppendLine(key + " : " + headers[key]);
+                }
+            }
+            var form = request.Form;
+            if (form.Count > 0)
+            {
+                sb.AppendLine("-----------Forms-----------");
+                foreach (string key in form.AllKeys)
+                {
+                    sb.AppendLine(key + " : " + form[key]);
+                }
+            }
+            Log.Write(sb.ToString(), err != null ? LogType.Taurus : LogType.Debug+ "_PrintRequestLog");
         }
     }
 }

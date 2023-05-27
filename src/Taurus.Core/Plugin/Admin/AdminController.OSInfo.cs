@@ -13,16 +13,42 @@ namespace Taurus.Plugin.Admin
     /// </summary>
     internal partial class AdminController
     {
+        private void InitCount()
+        {
+            Assembly[] assList = AppDomain.CurrentDomain.GetAssemblies();
+            int taurusCount = 0, microsoftCount = 0, systemCount = 0;
+            foreach (Assembly assembly in assList)
+            {
+                AssemblyName assName = assembly.GetName();
+                if (assName.Name.StartsWith("Microsoft."))
+                {
+                    microsoftCount++;
+                }
+                else if (assName.Name.StartsWith("System.") || assName.Name.StartsWith("netstandard") || assName.Name.StartsWith("mscorlib") || assName.Name.StartsWith("Anonymously"))
+                {
+                    systemCount++;
+                }
+                else
+                {
+                    taurusCount++;
+                }
+            }
+            View.KeyValue.Set("Count", assList.Length.ToString());
+            View.KeyValue.Set("Count-Taurus", taurusCount.ToString());
+            View.KeyValue.Set("Count-Microsoft", microsoftCount.ToString());
+            View.KeyValue.Set("Count-System", systemCount.ToString());
+        }
+
         /// <summary>
         /// 操作系统环境信息
         /// </summary>
         public void OSInfo()
         {
+            InitCount();
             MDataTable dtTaurus = new MDataTable();
             dtTaurus.Columns.Add("ConfigKey,ConfigValue,Description");
             string type = Query<string>("t", "os").ToLower();
-            Assembly[] assList = AppDomain.CurrentDomain.GetAssemblies();
-            View.KeyValue.Set("Count", assList.Length.ToString());
+
             if (type == "os")
             {
                 dtTaurus.NewRow(true).Sets(0, "Client-IP", Request.UserHostAddress, "Client ip.");
@@ -45,43 +71,83 @@ namespace Taurus.Plugin.Admin
                 dtTaurus.NewRow(true).Sets(0, "WorkingSet", Environment.WorkingSet / 1024 + "KB | " + Environment.WorkingSet / 1024 / 1024 + "MB", "Physical memory mapped to the process context.");
                 dtTaurus.NewRow(true).Sets(0, "CurrentDirectory", Environment.CurrentDirectory, "Fully qualified path of the working directory.");
             }
-            else if (type == "ass")
+            else if (type.StartsWith("ass"))
             {
-                MDataTable dtSystem=new MDataTable();
+                int t = 0;
+                switch (type)
+                {
+                    case "ass-taurus":
+                        t = 1; break;
+                    case "ass-microsoft":
+                        t = 2; break;
+                    case "ass-system":
+                        t = 3; break;
+                }
+                MDataTable dtSystem = new MDataTable();
                 dtSystem.Columns = dtTaurus.Columns;
+                MDataTable dtMicrosoft = new MDataTable();
+                dtMicrosoft.Columns = dtTaurus.Columns;
+                Assembly[] assList = AppDomain.CurrentDomain.GetAssemblies();
                 foreach (Assembly assembly in assList)
                 {
-                    string desc = assembly.FullName;
-                    object[] attrs = assembly.GetCustomAttributes(typeof(AssemblyDescriptionAttribute), false);
-                    if (attrs != null && attrs.Length > 0)
+                    string desc = GetDescription(assembly);
+                    AssemblyName assName = assembly.GetName();
+                    if (assName.Name.StartsWith("Microsoft."))
                     {
-                        desc = ((AssemblyDescriptionAttribute)attrs[0]).Description;
-                    }
-                    else
-                    {
-                        attrs = assembly.GetCustomAttributes(typeof(AssemblyTitleAttribute), false);
-                        if (attrs != null && attrs.Length > 0)
+                        if (t == 0 || t == 2)
                         {
-                            desc = ((AssemblyTitleAttribute)attrs[0]).Title;
+                            dtMicrosoft.NewRow(true).Sets(0, assName.Name, assName.Version.ToString(), desc);
                         }
                     }
-                    AssemblyName assName = assembly.GetName();
-                    if (assName.Name.StartsWith("Microsoft.") || assName.Name.StartsWith("System."))
+                    else if (assName.Name.StartsWith("System.") || assName.Name.StartsWith("netstandard") || assName.Name.StartsWith("mscorlib") || assName.Name.StartsWith("Anonymously"))
                     {
-                        dtSystem.NewRow(true).Sets(0, assName.Name, assName.Version.ToString(), desc);
+                        if (t == 0 || t == 3)
+                        {
+                            dtSystem.NewRow(true).Sets(0, assName.Name, assName.Version.ToString(), desc);
+                        }
                     }
                     else
                     {
-                        dtTaurus.NewRow(true).Sets(0, assName.Name, assName.Version.ToString(), desc);
+                        if (t == 0 || t == 1)
+                        {
+                            dtTaurus.NewRow(true).Sets(0, assName.Name, assName.Version.ToString(), desc);
+                        }
                     }
                 }
                 dtTaurus.Rows.Sort("ConfigKey");
-                dtTaurus.NewRow(true);
-                dtSystem.Rows.Sort("ConfigKey");
-                dtTaurus.Merge(dtSystem);
+                if(dtMicrosoft.Rows.Count > 0)
+                {
+                    dtMicrosoft.Rows.Sort("ConfigKey");
+                    dtTaurus.Merge(dtMicrosoft);
+                }
+                if (dtSystem.Rows.Count > 0)
+                {
+                    dtSystem.Rows.Sort("ConfigKey");
+                    dtTaurus.Merge(dtSystem);
+                }
+               
             }
             dtTaurus.Bind(View);
         }
 
+
+        private string GetDescription(Assembly assembly)
+        {
+            string desc = assembly.FullName;
+            object[] attrs = assembly.GetCustomAttributes(typeof(AssemblyDescriptionAttribute), false);
+            if (attrs != null && attrs.Length > 0)
+            {
+                desc = ((AssemblyDescriptionAttribute)attrs[0]).Description;
+            }
+            else
+            {
+                attrs = assembly.GetCustomAttributes(typeof(AssemblyTitleAttribute), false);
+                if (attrs != null && attrs.Length > 0)
+                {
+                    desc = ((AssemblyTitleAttribute)attrs[0]).Title;
+                }
+            }
+            return desc;
+        }
     }
 }

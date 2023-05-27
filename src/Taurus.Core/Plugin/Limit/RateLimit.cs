@@ -64,7 +64,7 @@ namespace Taurus.Plugin.Limit
                 }
                 catch (Exception err)
                 {
-                    Log.WriteLogToTxt(err);
+                    Log.WriteLogToTxt(err, LogType.Taurus);
                 }
             }
         }

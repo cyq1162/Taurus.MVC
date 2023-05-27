@@ -35,7 +35,7 @@ namespace Taurus.Plugin.MicroService
                 default:
                     if (!MsConfig.IsRegCenter || !MsConfig.Server.IsEnable)
                     {
-                        Write("Microservice (registry center) unavailable.", false);
+                        Write("Microservice (register center) unavailable.", false);
                         return false;
                     }
                     //check ui login

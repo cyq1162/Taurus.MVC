@@ -99,6 +99,11 @@ namespace Taurus.Mvc
             this.context = context;
             try
             {
+                if (MvcConfig.IsPrintRequestSql)
+                {
+                    AppDebug.Start();
+                }
+
                 InitNameFromUrl();
                 MethodEntity methodEntity = MethodCollector.GetMethod(_ControllerType, MethodName);
                 if (methodEntity == null)
@@ -141,37 +146,20 @@ namespace Taurus.Mvc
             }
             catch (Exception err)
             {
-                StringBuilder sb = new StringBuilder();
-                string errMsg = Log.GetExceptionMessage(err);
-                sb.AppendLine(errMsg);
-                if (err.StackTrace != null)
+                context.Response.Write(err.Message);
+                WebTool.PrintRequestLog(Request, err);
+            }
+            finally
+            {
+                if (MvcConfig.IsPrintRequestSql)
                 {
-                    sb.AppendLine(err.StackTrace);
-                }
-                var headers = Request.Headers;
-                if (headers.Count > 0)
-                {
-                    sb.AppendLine("\n-----------Headers-----------");
-                    foreach (string key in headers.AllKeys)
+                    string info = AppDebug.Info;
+                    if(!string.IsNullOrEmpty(info))
                     {
-                        sb.AppendLine(key + " : " + headers[key]);
+                        Log.WriteLogToTxt(AppDebug.Info, LogType.Debug+ "_PrintRequestSql");
                     }
+                    AppDebug.Stop();
                 }
-                var form = Request.Form;
-                if (form.Count > 0)
-                {
-                    sb.AppendLine("-----------Forms-----------");
-                    foreach (string key in form.AllKeys)
-                    {
-                        sb.AppendLine(key + " : " + form[key]);
-                    }
-                }
-                WriteLog("【Taurus.Core.Controller】：" + sb.ToString());
-                if (View == null)
-                {
-                    errMsg = JsonHelper.OutResult(false, errMsg);
-                }
-                context.Response.Write(errMsg);
             }
 
         }
@@ -440,15 +428,6 @@ namespace Taurus.Mvc
             }
         }
         #endregion
-
-
-        /// <summary>
-        /// Write log to txt
-        /// </summary>
-        protected void WriteLog(string msg)
-        {
-            Log.Write(msg, LogType.Taurus);
-        }
         public virtual bool BeforeInvoke()
         {
             return true;
@@ -621,7 +600,7 @@ namespace Taurus.Mvc
                             typeName = Nullable.GetUnderlyingType(t).Name;
                         }
                         string outMsg = string.Format("[{0} {1} = {2}]  [Error : {3}]", typeName, pi.Name, value, err.Message);
-                        WriteLog(outMsg);
+                        Log.Write(outMsg, LogType.Taurus);
                         Write(outMsg, false);
                         return false;
                     }
@@ -1072,8 +1051,8 @@ namespace Taurus.Mvc
             {
                 if (IsHttpPost)
                 {
-                    var form = context.Request.Form;
-                    var files = context.Request.Files;
+                    var form = Request.Form;
+                    var files = Request.Files;
                     if (form.Count > 0)
                     {
                         if (form.Count == 1 && form.Keys[0] == null)
@@ -1084,17 +1063,17 @@ namespace Taurus.Mvc
                     }
                     else if (files == null || files.Count == 0)//请求头忘了带Http Type
                     {
-                        Stream stream = Context.Request.InputStream;
+                        Stream stream = Request.InputStream;
                         if (stream != null && stream.CanRead)
                         {
-                            long len = (long)Context.Request.ContentLength;
+                            long len = (long)Request.ContentLength;
                             if (len > 0)
                             {
                                 Byte[] bytes = new Byte[len];
                                 // ////NetCore 3.0 会抛异常，可配置可以同步请求读取流数据
                                 //services.Configure<KestrelServerOptions>(x => x.AllowSynchronousIO = true)
                                 //    .Configure<IISServerOptions>(x => x.AllowSynchronousIO = true);
-                                stream.Position = 0;// 需要启用：context.Request.EnableBuffering();
+                                stream.Position = 0;// 需要启用：context.Request.EnableBuffering();开启用，不需要启用AllowSynchronousIO = true
                                 stream.Read(bytes, 0, bytes.Length);
                                 if (stream.Position < len)
                                 {
@@ -1113,7 +1092,7 @@ namespace Taurus.Mvc
                                     }
                                 }
                                 stream.Position = 0;//重置，允许重复使用。
-                                string data = System.Text.Encoding.UTF8.GetString(bytes);
+                                string data = Encoding.UTF8.GetString(bytes);
                                 if (data.IndexOf("%") > -1)
                                 {
                                     data = HttpUtility.UrlDecode(data);
@@ -1125,7 +1104,7 @@ namespace Taurus.Mvc
                 }
                 else if (IsHttpGet)
                 {
-                    string para = Context.Request.Url.Query.TrimStart('?');
+                    string para = Request.Url.Query.TrimStart('?');
                     if (!string.IsNullOrEmpty(para))
                     {
                         if (para.IndexOf("%") > -1)
