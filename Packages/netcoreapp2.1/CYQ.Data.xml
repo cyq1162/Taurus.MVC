@@ -217,7 +217,7 @@
         <member name="P:CYQ.Data.AppConfig.DB.SchemaMapPath">
             <summary>
             MAction 可将表架构映射到外部指定相对路径[外部存储,可避开数据库读取]
-            配置项：DB.SchemaMapPath ： App_Data/schema
+            配置项：DB.SchemaMapPath ： /App_Data/schema
             </summary>
         </member>
         <member name="P:CYQ.Data.AppConfig.DB.DeleteField">
@@ -250,10 +250,10 @@
             配置项：DB.MasterSlaveTime ： 10
             </summary>
         </member>
-        <member name="P:CYQ.Data.AppConfig.DB.SqlFilter">
+        <member name="P:CYQ.Data.AppConfig.DB.PrintSql">
             <summary>
             毫秒数（记录数据库执行时时长(ms)的SQL语句写入日志，对应配置项Log.Path的配置路径）
-            配置项：DB.SqlFilter ： -1
+            配置项：DB.PrintSql ： -1
             </summary>
         </member>
         <member name="P:CYQ.Data.AppConfig.DB.EntitySuffix">
@@ -373,8 +373,8 @@
         </member>
         <member name="P:CYQ.Data.AppConfig.Log.Path">
             <summary>
-            文本日志的配置相对路径（Web 默认为：App_Data/log"）
-            配置项：Log.Path ：App_Data/log
+            文本日志的配置相对路径（Web 默认为：/App_Data/log"）
+            配置项：Log.Path ：/App_Data/log
             </summary>
         </member>
         <member name="P:CYQ.Data.AppConfig.Log.TableName">
@@ -429,7 +429,7 @@
         <member name="T:CYQ.Data.AppDebug">
              <summary>
              this class can intercept sql
-            <para> 应用程序调试类,能截到应用程序所有执行的SQL</para>
+            <para> 应用程序调试类,能截到应用程序执行的SQL</para>
              </summary>
         </member>
         <member name="P:CYQ.Data.AppDebug.IsRecording">
@@ -438,7 +438,7 @@
             <para>正在记录中</para>
             </summary>
         </member>
-        <member name="F:CYQ.Data.AppDebug.IsContainSysSql">
+        <member name="P:CYQ.Data.AppDebug.IsContainSysSql">
             <summary>
             输出信息时是否包含框架内部Sql（默认否，屏蔽框架内部产生的Sql）。
             </summary>
@@ -2750,9 +2750,15 @@
         </member>
         <member name="M:CYQ.Data.Orm.DBFast.BeginTransation(System.String)">
             <summary>
-            开启事务 (Web 状态下以（Session+线程ID）为单位，其它状态下仅以线程ID为单位)
-            如果已存在事务（则返回false）
+            开启事务：如果已存在事务（则返回false）
             </summary>
+        </member>
+        <member name="M:CYQ.Data.Orm.DBFast.BeginTransation(System.String,System.Data.IsolationLevel)">
+            <summary>
+            开启事务：如果已存在事务（则返回false）
+            </summary>
+            <param name="conn">链接配置项名称或链接字符串</param>
+            <param name="level">事务等级</param>
         </member>
         <member name="M:CYQ.Data.Orm.DBFast.EndTransation(System.String)">
             <summary>
@@ -2842,12 +2848,12 @@
         </member>
         <member name="T:CYQ.Data.Orm.OrmBase">
             <summary>
-            ORM扩展基类
+            ORM 基类【内置RealProxy，能拦截属性赋值变化，实现按需要插入或更新，NetCore下该属性无效】
             </summary>
         </member>
         <member name="P:CYQ.Data.Orm.OrmBase.BaseInfo">
             <summary>
-            获取 基类 ORM 的相关信息
+            获取 - 基类 ORM 的相关信息【Orm内部属性】
             </summary>
         </member>
         <member name="M:CYQ.Data.Orm.OrmBase.#ctor">
@@ -2904,18 +2910,31 @@
             </summary>
             <param name="option">插入选项</param>
         </member>
+        <member name="M:CYQ.Data.Orm.OrmBase.Insert(CYQ.Data.InsertOp,System.Boolean)">
+            <summary>
+             插入数据
+            </summary>
+            <param name="insertID">插入主键</param>
+        </member>
         <member name="M:CYQ.Data.Orm.OrmBase.Insert(System.Boolean)">
             <summary>
              插入数据
             </summary>
-            <param name="autoSetValue">自动从控制获取值</param>
+            <param name="autoSetValue">是否自动获取值[自动从控件获取值,需要先调用this.UI.SetAutoPrefix或this.UI.SetAutoParentControl方法设置控件前缀]</param>
         </member>
         <member name="M:CYQ.Data.Orm.OrmBase.Insert(System.Boolean,CYQ.Data.InsertOp)">
             <summary>
              插入数据
             </summary>
-            <param name="autoSetValue">自动从控制获取值</param>
+            <param name="autoSetValue">是否自动获取值[自动从控件获取值,需要先调用this.UI.SetAutoPrefix或this.UI.SetAutoParentControl方法设置控件前缀]</param>
+        </member>
+        <member name="M:CYQ.Data.Orm.OrmBase.Insert(System.Boolean,CYQ.Data.InsertOp,System.Boolean)">
+            <summary>
+             插入数据
+            </summary>
+            <param name="autoSetValue">是否自动获取值[自动从控件获取值,需要先调用this.UI.SetAutoPrefix或this.UI.SetAutoParentControl方法设置控件前缀]</param>
             <param name="option">插入选项</param>
+            <param name="insertID">自定义插入主键</param>
         </member>
         <member name="M:CYQ.Data.Orm.OrmBase.Update">
             <summary>
@@ -3053,14 +3072,9 @@
             </summary>
             <param name="updateExpression">例如a字段值自加1："a=a+1"</param>
         </member>
-        <member name="P:CYQ.Data.Orm.OrmBase.AllowInsertID">
-            <summary>
-            是否允许插入自增id
-            </summary>
-        </member>
         <member name="P:CYQ.Data.Orm.OrmBase.UI">
             <summary>
-            UI操作
+            UI 操作【WebForm、Winform、WPF等自动取值或赋值】【Orm内部属性】
             </summary>
         </member>
         <member name="T:CYQ.Data.Orm.OrmBaseInfo">
@@ -3120,17 +3134,17 @@
         </member>
         <member name="T:CYQ.Data.Orm.SimpleOrmBase`1">
             <summary>
-            简单ORM基类（纯数据交互功能）
+            简单ORM基类（无属性拦截，实体全量更新或插入）
             </summary>
         </member>
         <member name="T:CYQ.Data.Orm.SimpleOrmBase">
             <summary>
-            简单ORM基类（纯数据交互功能）
+            简单ORM基类（无属性拦截，实体全量更新或插入）
             </summary>
         </member>
         <member name="P:CYQ.Data.Orm.SimpleOrmBase.BaseInfo">
             <summary>
-            获取 基类 ORM 的相关信息
+            获取 - 基类 ORM 的相关信息【Orm内部属性】
             </summary>
         </member>
         <member name="P:CYQ.Data.Orm.SimpleOrmBase.IsWriteLogOnError">
@@ -3202,11 +3216,23 @@
             </summary>
             <param name="insertID">插入主键</param>
         </member>
+        <member name="M:CYQ.Data.Orm.SimpleOrmBase.Insert(System.Boolean)">
+            <summary>
+             插入数据
+            </summary>
+            <param name="autoSetValue">是否自动获取值[自动从控件获取值,需要先调用this.UI.SetAutoPrefix或this.UI.SetAutoParentControl方法设置控件前缀]</param>
+        </member>
+        <member name="M:CYQ.Data.Orm.SimpleOrmBase.Insert(System.Boolean,CYQ.Data.InsertOp)">
+            <summary>
+             插入数据
+            </summary>
+            <param name="autoSetValue">是否自动获取值[自动从控件获取值,需要先调用this.UI.SetAutoPrefix或this.UI.SetAutoParentControl方法设置控件前缀]</param>
+        </member>
         <member name="M:CYQ.Data.Orm.SimpleOrmBase.Insert(System.Boolean,CYQ.Data.InsertOp,System.Boolean)">
             <summary>
              插入数据
             </summary>
-            <param name="autoSetValue">自动从控制获取值</param>
+            <param name="autoSetValue">是否自动获取值[自动从控件获取值,需要先调用this.UI.SetAutoPrefix或this.UI.SetAutoParentControl方法设置控件前缀]</param>
             <param name="option">插入选项</param>
             <param name="insertID">插入主键</param>
         </member>
@@ -3228,7 +3254,7 @@
              更新数据(受影响行数>0才为true)
             </summary>
             <param name="where">where条件,可直接传id的值如:[88],或传完整where条件如:[id=88 and name='路过秋天']</param>
-            <param name="autoSetValue">是否自动获取值[自动从控件获取值,需要先调用SetAutoPrefix或SetAutoParentControl方法设置控件前缀]</param>
+            <param name="autoSetValue">是否自动获取值[自动从控件获取值,需要先调用this.UI.SetAutoPrefix或this.UI.SetAutoParentControl方法设置控件前缀]</param>
         </member>
         <member name="M:CYQ.Data.Orm.SimpleOrmBase.Delete">
             <summary>
@@ -3324,6 +3350,11 @@
         <member name="M:CYQ.Data.Orm.SimpleOrmBase.Clear">
             <summary>
             清空所有值
+            </summary>
+        </member>
+        <member name="P:CYQ.Data.Orm.SimpleOrmBase.UI">
+            <summary>
+            UI操作
             </summary>
         </member>
         <member name="M:CYQ.Data.Orm.SimpleOrmBase.Dispose">
@@ -6434,7 +6465,7 @@
         </member>
         <member name="M:CYQ.Data.Tool.StaticTool.GetTransationKey(System.String)">
             <summary>
-            用于标识（以用户为单位）的 全局事务 的唯一标识
+            用于标识（以线程为单位）的 全局事务 的唯一标识
             </summary>
         </member>
         <member name="T:CYQ.Data.Tool.SysType">
