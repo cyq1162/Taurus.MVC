@@ -65,9 +65,10 @@
                 </tr>
             </tbody>
         </table>
+        <![CDATA[
         <script>
             function stop(host, el) {
-                if (confirm("Stop Service Confirm ?")) {
+                if (confirm("Stop [" + host + "] Service Confirm ?")) {
                     el.onclick = undefined;
                     el.style = "text-decoration: none; cursor: default; opacity: 0.2";
                     $.ajax({
@@ -77,11 +78,15 @@
                             if (result) {
                                 alert(result.msg);
                             }
+                        },
+                        error: function (result) {
+                            alert("stop fail.");
                         }
                     });
                 }
             }
         </script>
+        ]]>
     </div>
 </body>
 </html>

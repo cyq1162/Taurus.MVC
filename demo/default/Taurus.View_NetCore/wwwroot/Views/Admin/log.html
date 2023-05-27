@@ -18,12 +18,13 @@
             <a href="log?k=Taurus_${yyyyMM}">Taurus（MVC）</a>&nbsp;|&nbsp;
             <a href="log?k=MicroService_${yyyyMM}">MicroService</a>&nbsp;|&nbsp;
             <a href="log?k=Info_${yyyyMM}">Info</a>&nbsp;|&nbsp;
-            <a href="log?k=Debug_${yyyyMM}">Debug</a>&nbsp;|&nbsp;
+            <a href="log?k=Debug_${yyyyMM}">Debug</a>（
+            <a href="log?k=Debug_PrintRequestLog_${yyyyMM}">PrintRequestLog</a>&nbsp;|&nbsp;
+            <a href="log?k=Debug_PrintRequestSql_${yyyyMM}">PrintRequestSql</a>&nbsp;）|
             <a href="log?k=Error_${yyyyMM}">Error</a>&nbsp;|&nbsp;
             <a href="log?k=Warn_${yyyyMM}">Warn</a>&nbsp;|&nbsp;
             <a href="log?k=Cache_${yyyyMM}">Cache</a>&nbsp;|&nbsp;
             <a href="log?k=DataBase_${yyyyMM}">DataBase</a>&nbsp;】
-
         </div>
         <div style="clear:both;">
         </div>
@@ -31,12 +32,12 @@
         <table width="100%" height="auto">
             <tr>
                 <td width="300px" align="left" valign="top" style="padding:10px;">
-                    <div id="fileList" style="width:100%;height:880px;overflow:auto">
+                    <div id="fileList" style="width:100%;height:790px;overflow:auto">
                         <a href="logdetail?filename=${filename}" target="detail">${filename}</a><br />
                     </div>
                 </td>
                 <td align="left" valign="top" style="overflow: hidden">
-                    <iframe name="detail" src="about:blank" frameborder="0" width="100%" height="880px" scrolling="auto"></iframe>
+                    <iframe name="detail" src="about:blank" frameborder="0" width="100%" height="790px" scrolling="auto"></iframe>
                 </td>
             </tr>
         </table>
