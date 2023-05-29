@@ -34,17 +34,6 @@ namespace Taurus.Mvc
             }
             return false;
         }
-        internal static void SetRunToEnd(HttpContext context)
-        {
-            if (context != null && !context.Items.Contains("IsRunToEnd"))
-            {
-                //context.Response.Charset = "utf-8";
-                //context.Response.ContentType = "application/json";
-                context.Items.Add("IsRunToEnd", 1);
-            }
-
-        }
-
         /// <summary>
         /// 是否系统内部Url（不转发）
         /// </summary>

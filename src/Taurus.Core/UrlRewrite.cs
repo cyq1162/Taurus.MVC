@@ -56,7 +56,6 @@ namespace Taurus.Core
             {
                 if (!LimitRun.CheckIP())
                 {
-                    WebTool.SetRunToEnd(context);
                     //网关请求限制，直接返回
                     context.Response.StatusCode = 403;
                     context.Response.Write("403.6 - Forbidden: IP address rejected.");
@@ -73,7 +72,6 @@ namespace Taurus.Core
                     #endregion
                     if (!LimitRun.CheckRate())
                     {
-                        WebTool.SetRunToEnd(context);
                         //网关请求限制，直接返回
                         context.Response.StatusCode = 403;
                         context.Response.Write("403.502 - Forbidden: Too many requests from the same client IP; Dynamic IP Restriction limit reached.");
@@ -82,7 +80,6 @@ namespace Taurus.Core
                     }
                     if (!LimitRun.CheckAck())
                     {
-                        WebTool.SetRunToEnd(context);
                         //网关请求限制，直接返回
                         context.Response.StatusCode = 412;
                         context.Response.Write("412 Precondition failed, ack is invalid.");
@@ -97,7 +94,6 @@ namespace Taurus.Core
 
             if (!CheckCORS(context))
             {
-                WebTool.SetRunToEnd(context);
                 context.Response.End();
                 return;
             }
@@ -111,7 +107,6 @@ namespace Taurus.Core
                     #region 4、网关代理请求检测与转发
                     if (Rpc.Gateway.Proxy(context, true))
                     {
-                        WebTool.SetRunToEnd(context);
                         context.Response.End();
                         return;
                     }
@@ -122,7 +117,6 @@ namespace Taurus.Core
                     //单纯网关，直接返回
                     if (MsConfig.IsGateway && !MsConfig.IsClient)
                     {
-                        WebTool.SetRunToEnd(context);
                         context.Response.StatusCode = 503;
                         context.Response.Write("503 Service unavailable.");
                         context.Response.End();
@@ -133,7 +127,6 @@ namespace Taurus.Core
                 #region 6、Mvc模块禁用检测
                 if (!MvcConfig.IsEnable)
                 {
-                    WebTool.SetRunToEnd(context);
                     context.Response.StatusCode = 503;
                     context.Response.Write("503 Service unavailable.");
                     context.Response.End();

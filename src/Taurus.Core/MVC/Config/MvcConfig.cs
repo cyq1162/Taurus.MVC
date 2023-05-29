@@ -4,6 +4,8 @@ using System.Collections.Generic;
 using System.IO;
 using System.Security.Cryptography.X509Certificates;
 using System;
+using System.Net.Sockets;
+using System.Net;
 
 namespace Taurus.Mvc
 {
@@ -206,6 +208,31 @@ namespace Taurus.Mvc
                 return _SslCertificate;
             }
         }
+
+        /// <summary>
+        /// 应用配置：当前Web 监听主机【Kestrel启动运行需要】
+        /// </summary>
+        public static string Host
+        {
+            get
+            {
+                string host = AppConfig.GetApp("Taurus.Host", "");
+                if (host.Contains(":0"))//常规部署随机端口
+                {
+                    TcpListener tl = new TcpListener(IPAddress.Any, 0);
+                    tl.Start();
+                    int port = ((IPEndPoint)tl.LocalEndpoint).Port;//获取随机可用端口
+                    tl.Stop();
+                    host = host.Replace(":0", ":" + port);
+                    AppConfig.SetApp("Taurus.Host", host);
+                }
+                return host.TrimEnd('/');
+            }
+            set
+            {
+                AppConfig.SetApp("Taurus.Host", value);
+            }
+        }
         /// <summary>
         /// 应用配置：当前Web Application运行Url【Kestrel启动运行需要】
         /// </summary>
@@ -213,12 +240,38 @@ namespace Taurus.Mvc
         {
             get
             {
-                return AppConfig.GetApp("Taurus.RunUrl", "").TrimEnd('/');
+                string url = AppConfig.GetApp("Taurus.RunUrl", "");
+                if (string.IsNullOrEmpty(url))
+                {
+                    url = InitRunUrl();
+                    if(!string.IsNullOrEmpty(url))
+                    {
+                        AppConfig.SetApp("Taurus.RunUrl", url);
+                    }
+                }
+                return url.TrimEnd('/');
             }
             set
             {
                 AppConfig.SetApp("Taurus.RunUrl", value);
             }
+        }
+
+        private static string InitRunUrl()
+        {
+            // Docker部署：设置映射后的地址
+            string dockerUrl = Environment.GetEnvironmentVariable("RunUrl");//跨服务器配置完整路径：http://ip:port
+            if (!string.IsNullOrEmpty(dockerUrl))
+            {
+                return dockerUrl;
+            }
+            string host = Host;
+            if (!string.IsNullOrEmpty(host))
+            {
+                string ip = MvcConst.HostIP;
+                return host.Replace("localhost", ip).Replace("*", ip);//设置启动路径
+            }
+            return host;
         }
     }
 }

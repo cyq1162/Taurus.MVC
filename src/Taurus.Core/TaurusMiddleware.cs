@@ -9,8 +9,11 @@ using Taurus.Core;
 using Microsoft.AspNetCore.Hosting.Server.Features;
 using System.Configuration;
 using System.Threading;
-using CYQ.Data.Tool;
 using System.Diagnostics;
+using Microsoft.Extensions.DependencyInjection;
+using Microsoft.AspNetCore.Http.Features;
+using Microsoft.AspNetCore.Server.Kestrel.Core;
+using System.Net;
 
 namespace Microsoft.AspNetCore.Http
 {
@@ -61,12 +64,68 @@ namespace Microsoft.AspNetCore.Http
             }
             catch (Exception ex)
             {
-                CYQ.Data.Log.WriteLogToTxt(ex,LogType.Taurus);
+                CYQ.Data.Log.WriteLogToTxt(ex, LogType.Taurus);
             }
         }
     }
     public static class TaurusExtensions
     {
+        /// <summary>
+        /// 默认配置：HttpContext、FormOptions、KestrelServerOptions。
+        /// </summary>
+        /// <param name="services"></param>
+        public static void AddTaurusMvc(this IServiceCollection services)
+        {
+            services.AddHttpContext();
+            //开放表单不限制长度。
+            services.Configure<FormOptions>(options => options.MultipartBodyLengthLimit = long.MaxValue);
+            services.Configure<KestrelServerOptions>((x) =>
+            {
+                if (MvcConfig.SslCertificate.Count > 0)
+                {
+                    //重新绑定监听端口。
+                    #region 处理443 端口使用
+                    x.Listen(IPAddress.Any, 443, op =>
+                    {
+                        op.UseHttps(opx =>
+                        {
+                            var certificates = MvcConfig.SslCertificate;
+                            opx.ServerCertificateSelector = (connectionContext, name) =>
+                               name != null && certificates.TryGetValue(name, out var cert) ? cert : null;
+                        });
+                    });
+                    #endregion
+
+                    #region 处理常规端口绑定配置
+                    string host = MvcConfig.Host;
+                    string url = !string.IsNullOrEmpty(host) ? host : MvcConfig.RunUrl;
+                    if (!string.IsNullOrEmpty(url) && !url.StartsWith("https"))
+                    {
+                        string[] items = url.Split(":");
+                        if (items.Length == 2)
+                        {
+                            x.Listen(IPAddress.Any, 80);
+                        }
+                        else if (items.Length == 3)
+                        {
+                            x.Listen(IPAddress.Any, int.Parse(items[2]));
+                        }
+                    }
+                    #endregion
+                }
+                x.AllowSynchronousIO = true;
+                x.Limits.MaxRequestBufferSize = null;
+                x.Limits.MaxRequestBodySize = null;
+                //为整个应用设置并发打开的最大 TCP 连接数,默认情况下，最大连接数不受限制 (NULL)
+               // x.Limits.MaxConcurrentConnections = 100000;
+                //对于已从 HTTP 或 HTTPS 升级到另一个协议（例如，Websocket 请求）的连接，有一个单独的限制。 连接升级后，不会计入 MaxConcurrentConnections 限制
+                // x.Limits.MaxConcurrentUpgradedConnections = 100000;
+                //获取或设置保持活动状态超时。 默认值为 2 分钟。
+                // x.Limits.KeepAliveTimeout = TimeSpan.FromMinutes(100);
+                //x.Limits.RequestHeadersTimeout = TimeSpan.FromMinutes(1);
+            });
+        }
+
         /// <summary>
         /// 使用Taurus.MVC中件间功能：Net Core 3.1 把IHostingEnvironment 拆分成了：IWebHostEnvironment和IHostEnvironment 
         /// 所以增加重载方法适应。
@@ -99,6 +158,8 @@ namespace Microsoft.AspNetCore.Http
 
         public static IApplicationBuilder UseTaurusMvc(this IApplicationBuilder builder)
         {
+            builder.UseHttpContext();
+
             Thread thread = new Thread(new ParameterizedThreadStart(StartMicroService));
             thread.Start(builder);
             //执行一次，用于注册事件

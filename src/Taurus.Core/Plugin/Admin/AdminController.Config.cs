@@ -32,6 +32,7 @@ namespace Taurus.Plugin.Admin
                 Sets(dt, "Taurus.IsEnable", MvcConfig.IsEnable, "Taurus mvc  is enable.");
                 Sets(dt, "Taurus.IsPrintRequestLog", MvcConfig.IsPrintRequestLog, "Print mvc suffix request logs to 【Debug_RequestLog*.txt】 for debug.");
                 Sets(dt, "Taurus.IsPrintRequestSql", MvcConfig.IsPrintRequestSql, "Print mvc suffix request sqls to 【Debug_RequestSql*.txt】 for debug.");
+                Sets(dt, "Taurus.Host", MvcConfig.Host, "Application listen url.");
                 Sets(dt, "Taurus.RunUrl", MvcConfig.RunUrl, "Application run url.");
                 Sets(dt, "Taurus.DefaultUrl", MvcConfig.DefaultUrl, "Application default url.");
                 Sets(dt, "Taurus.IsAllowCORS", MvcConfig.IsAllowCORS, "Application is allow cross-origin resource sharing.");

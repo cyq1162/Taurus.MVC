@@ -118,8 +118,9 @@ namespace Taurus.Mvc
                     else
                     {
                         Response.StatusCode = 404;
-                        Write("404 Not Found.");
-                        WriteExeResult();
+                        Response.Write("404 Not Found.");
+                        context.Response.End();
+                        //WriteExeResult();
                     }
                     return;
 
@@ -154,9 +155,9 @@ namespace Taurus.Mvc
                 if (MvcConfig.IsPrintRequestSql)
                 {
                     string info = AppDebug.Info;
-                    if(!string.IsNullOrEmpty(info))
+                    if (!string.IsNullOrEmpty(info))
                     {
-                        Log.WriteLogToTxt(AppDebug.Info, LogType.Debug+ "_PrintRequestSql");
+                        Log.WriteLogToTxt(AppDebug.Info, LogType.Debug + "_PrintRequestSql");
                     }
                     AppDebug.Stop();
                 }
@@ -424,7 +425,7 @@ namespace Taurus.Mvc
                     }
                 }
                 context.Response.Write(outResult);
-                apiResult = null;
+                apiResult.Length = 0;
             }
         }
         #endregion
