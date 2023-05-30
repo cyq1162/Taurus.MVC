@@ -5,8 +5,10 @@
     <link itemref="common.btcss" />
     <link itemref="common.btcss_extend" />
     <style type="text/css">
-        a { cursor:pointer;
+        a {
+            cursor: pointer;
         }
+
         .table-bordered td {
             text-align: left;
         }
@@ -26,19 +28,19 @@
         </div>
         <div style="float:left"><b>Client - Register - Host ：</b></div>
         <div id="clientHostView" style="float:left" clearflag="1">
-            <a href="index?t=3&n=${Name}">${Name}（${Count}）</a>&nbsp;|&nbsp;
+            <a href="index?t=2&n=${Name}">${Name}（${Count}）</a>&nbsp;|&nbsp;
         </div>
         <div style="clear:both;height:5px;">
         </div>
         <div style="float:left"><b>Client - Register - Domain ：</b></div>
         <div id="clientDomainView" style="float:left" clearflag="1">
-            <a href="index?t=1&n=${Name}">${Name}（${Count}）</a>&nbsp;|&nbsp;
+            <a href="index?t=3&n=${Name}">${Name}（${Count}）</a>&nbsp;|&nbsp;
         </div>
         <div style="clear:both;height:5px;">
         </div>
         <div style="float:left"><b>Client - Register - Module ：</b></div>
         <div id="clientModuleView" clearflag="1" style="text-align:left">
-            <a href="index?t=1&n=${Name}">${Name}（${Count}）</a>&nbsp;|&nbsp;
+            <a href="index?t=4&n=${Name}">${Name}（${Count}）</a>&nbsp;|&nbsp;
         </div>
         <div style="clear:both;">
         </div>
@@ -46,7 +48,9 @@
         <table class="table table-striped">
             <tr>
                 <td>Display Name</td>
+                <td>PID</td>
                 <td>Host</td>
+                <td>HostIP</td>
                 <td>State</td>
                 <td>IsVirtual</td>
                 <td>Version</td>
@@ -55,8 +59,10 @@
             </tr>
             <tbody id="defaultView" clearflag="1">
                 <tr>
-                    <td><a target="_blank" href="${Host}/doc?g=${GatewayUrl}" title="doc">${Name}</a></td>
-                    <td><a href="index?t=2&n=${Host}">${Host}</a></td>
+                    <td><a target="_blank" href="index?t=${t:1}&to=1&hostIP=${HostIP}&host=${Host}" title="go to doc">${Name}</a></td>
+                    <td>${PID}</td>
+                    <td><a href="index?t=5&n=${Host}">${Host}</a></td>
+                    <td><a href="index?t=${t:1}&to=2&hostIP=${HostIP}&host=${Host}" target="_blank" title="go to admin">${HostIP}</a></td>
                     <td>${State}</td>
                     <td>${IsVirtual}</td>
                     <td>${Version}</td>
@@ -73,7 +79,7 @@
                     el.style = "text-decoration: none; cursor: default; opacity: 0.2";
                     $.ajax({
                         type: "GET",
-                        url: host + "${RcPath}/exit?mskey=${RcKey}",
+                        url: "stopclient?host=" + host,
                         success: function (result) {
                             if (result) {
                                 alert(result.msg);
