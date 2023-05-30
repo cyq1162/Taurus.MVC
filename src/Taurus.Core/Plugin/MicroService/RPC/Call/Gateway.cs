@@ -437,28 +437,38 @@ namespace Taurus.Plugin.MicroService
             }
             private static void PreConnectionOnThread(object uriObj)
             {
+
                 HostInfo info = (HostInfo)uriObj;
-                Uri uri = new Uri(info.Host);
-                RpcClient wc = RpcClientPool.Create(uri);
-                if (wc != null)
+                Uri uri = null;
+                RpcClient wc = null;
+                try
                 {
-                    try
+                    uri = new Uri(info.Host);
+                    if (uri == null) { return; }
+                    wc = RpcClientPool.Create(uri);
+                    if (wc == null) { return; }
+                    wc.Timeout = 2500;//超时设定。
+                    wc.DownloadData(uri.AbsoluteUri);
+                    if (!preConnectionDic.ContainsKey(uri))
                     {
-                        wc.Timeout = 2500;//超时设定。
-                        wc.DownloadData(uri.AbsoluteUri);
-                        if (!preConnectionDic.ContainsKey(uri))
-                        {
-                            preConnectionDic.Add(uri, true);
-                        }
-                        else
-                        {
-                            preConnectionDic[uri] = true;
-                        }
-                        info.State = 1;
+                        preConnectionDic.Add(uri, true);
                     }
-                    catch (Exception err)
+                    else
                     {
-                        info.State = -1;
+                        preConnectionDic[uri] = true;
+                    }
+                    info.State = 1;
+
+                }
+                catch (Exception err)
+                {
+                    info.State = -1;
+                    if (uri == null)
+                    {
+                        MsLog.Write(err.Message, "MicroService.Run.PreConnection(" + info.Host + ")", "GET", MsConfig.Server.Name);
+                    }
+                    else
+                    {
                         if (preConnectionDic.ContainsKey(uri))
                         {
                             preConnectionDic[uri] = false;
@@ -469,13 +479,17 @@ namespace Taurus.Plugin.MicroService
                         }
                         MsLog.Write(err.Message, "MicroService.Run.PreConnection(" + uri.AbsoluteUri + ")", "GET", MsConfig.Server.Name);
                     }
-                    finally
+                   
+                }
+                finally
+                {
+                    if (uri != null && wc != null)
                     {
                         RpcClientPool.AddToPool(uri, wc);
                     }
                 }
             }
-
         }
+
     }
 }

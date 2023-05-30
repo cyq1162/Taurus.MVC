@@ -4,7 +4,6 @@ using CYQ.Data.Table;
 using System.Collections.Generic;
 using Taurus.Mvc;
 using Taurus.Plugin.MicroService;
-
 namespace Taurus.Plugin.Admin
 {
 
@@ -49,16 +48,16 @@ namespace Taurus.Plugin.Admin
         /// </summary>
         public void Index()
         {
+            if (IsGotoAdmin())
+            {
+                return;
+            }
             if (View != null)
             {
                 View.KeyValue.Set("Version", MvcConst.Version);
                 View.KeyValue.Set("MsType", GetMsTypeText());
-                //基础信息：
-                if (MsConfig.IsServer)
-                {
-                    View.KeyValue.Set("RcKey", MsConfig.Server.RcKey);
-                    View.KeyValue.Set("RcPath", MsConfig.Server.RcPath);
-                }
+                View.KeyValue.Set("Target", (Query<int>("t") == 3 && MsConfig.IsServer) ? "_blank" : "_self");
+
                 if (HostList != null && HostList.Count > 0)
                 {
                     BindNamesView();
@@ -66,6 +65,53 @@ namespace Taurus.Plugin.Admin
                 }
             }
         }
+
+        private bool IsGotoAdmin()
+        {
+
+            if (!MsConfig.IsServer || !IsAdmin)
+            {
+                return false;
+            }
+            int to = Query<int>("to");
+            if (to == 1 || to == 2)
+            {
+                //绑定域名 进行跳转
+                string hostIP = Query<string>("hostIP");
+                string host = Query<string>("host");
+                if (!string.IsNullOrEmpty(hostIP) && !string.IsNullOrEmpty(host))
+                {
+                    string[] items = host.Split(':');
+                    if (items.Length == 3)
+                    {
+                        string url = items[0] + "://" + hostIP + ":" + items[2];
+                        switch (to)
+                        {
+                            case 1://to doc
+                                string gatewayUrl = string.Empty;
+                                var hostList = HostList;
+                                if (hostList.ContainsKey("Gateway"))
+                                {
+                                    gatewayUrl = hostList["Gateway"][0].Host;
+                                }
+                                else if (hostList.ContainsKey("RegCenter"))
+                                {
+                                    gatewayUrl = hostList["RegCenter"][0].Host;
+                                }
+                                url = url + "/doc?g=" + gatewayUrl;
+                                break;
+                            case 2://to admin
+                                url = url + AdminConfig.Path + "/login";
+                                break;
+                        }
+                        Response.Redirect(url);
+                        return true;
+                    }
+                }
+            }
+            return false;
+        }
+
         private void BindNamesView()
         {
             MDataTable dtServer = new MDataTable();
@@ -135,28 +181,17 @@ namespace Taurus.Plugin.Admin
         {
             int type = Query<int>("t", 1);
             string name = Query<string>("n", "RegCenter");
-            if (type == 2 || (name != "RegCenter" && name != "RegCenterOfSlave" && name != "Gateway"))
-            {
-                var hostList = HostList;
-                if (hostList.ContainsKey("Gateway"))
-                {
-                    View.KeyValue.Set("GatewayUrl", hostList["Gateway"][0].Host);
-                }
-                else if (hostList.ContainsKey("RegCenter"))
-                {
-                    View.KeyValue.Set("GatewayUrl", hostList["RegCenter"][0].Host);
-                }
-            }
             switch (type)
             {
-                case 1:
-                    BindViewByName(name); break;
                 case 2:
-                    BindViewByHost(name);
-                    break;
-                case 3:
                     BindViewByConnection(name); break;
+                case 5:
+                    BindViewByHost(name); break;
+                default:
+                    BindViewByName(name); break;
             }
+
+
         }
         private void BindViewByName(string name)
         {
@@ -166,6 +201,7 @@ namespace Taurus.Plugin.Admin
                 MDataTable dt = MDataTable.CreateFrom(list, BreakOp.None);
                 if (dt != null)
                 {
+                    dt.Rows.Sort("Host");
                     dt.Columns.Add("Name");
                     dt.Columns["Name"].Set(name);
                     View.OnForeach += View_OnForeach;
@@ -239,6 +275,7 @@ namespace Taurus.Plugin.Admin
             MDataTable dt = MDataTable.CreateFrom(list, BreakOp.None);
             if (dt != null)
             {
+                dt.Rows.Sort("Host");
                 dt.Columns.Add("Name");
                 dt.Columns["Name"].Set(name);
                 if (state == 1 && MsConfig.IsRegCenterOfMaster && IsAdmin)

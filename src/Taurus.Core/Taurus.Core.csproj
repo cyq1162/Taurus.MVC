@@ -69,6 +69,7 @@
     <Compile Include="Attribute\RoutePrefixAttribute.cs" />
     <Compile Include="Attribute\TokenAttribute.cs" />
     <Compile Include="Attribute\WebSocketAttribute.cs" />
+    <Compile Include="MVC\Config\KestrelConfig.cs" />
     <Compile Include="MVC\Config\MvcConfig.cs" />
     <Compile Include="MVC\Config\MvcConst.cs" />
     <Compile Include="MVC\Filter\HttpResponseFilter.cs" />
@@ -85,6 +86,10 @@
     <Compile Include="Plugin\Admin\AdminConfig.cs" />
     <Compile Include="Plugin\Admin\AdminConst.cs" />
     <Compile Include="Plugin\Admin\AdminController.Config.cs" />
+    <Compile Include="Plugin\Admin\AdminController.Config.Cyq.cs" />
+    <Compile Include="Plugin\Admin\AdminController.Config.Kestrel.cs" />
+    <Compile Include="Plugin\Admin\AdminController.Config.Mvc.cs" />
+    <Compile Include="Plugin\Admin\AdminController.Config.Plugin.cs" />
     <Compile Include="Plugin\Admin\AdminController.cs" />
     <Compile Include="Plugin\Admin\AdminController.Index.cs" />
     <Compile Include="Plugin\Admin\AdminController.Log.cs" />

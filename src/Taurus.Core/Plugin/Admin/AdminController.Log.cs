@@ -49,6 +49,21 @@ namespace Taurus.Plugin.Admin
                 }
             }
         }
+        public void LogDelete()
+        {
+            string fileName = Query<string>("filename");
+            if (!string.IsNullOrEmpty(fileName))
+            {
+                string logPath = AppConfig.WebRootPath + AppConfig.Log.Path.Trim('/', '\\') + "/" + fileName;
+                if (File.Exists(logPath))
+                {
+                    IOHelper.Delete(logPath);
+                    Write("Delete success.", true);
+                    return;
+                }
+            }
+            Write("Delete fail.", false);
+        }
     }
 
 }

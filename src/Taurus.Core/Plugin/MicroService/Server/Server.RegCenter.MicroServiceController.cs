@@ -62,10 +62,11 @@ namespace Taurus.Plugin.MicroService
         /// <param name="version">服务的版本号【用于版本升级】</param>
         /// <param name="isVirtual">是否虚拟名称【名称路径不转发】</param>
         /// <param name="domain">绑定的域名</param>
+        /// <param name="pid">进程ID</param>
         [HttpPost]
         [MicroService]
         [Require("name,host")]
-        public void Reg(string name, string host, string domain, int version, bool isVirtual)
+        public void Reg(string name, string host, string domain, int version, bool isVirtual, int pid)
         {
             WriteLine(Environment.NewLine);
             WriteLine("--------------------------------------");
@@ -78,6 +79,7 @@ namespace Taurus.Plugin.MicroService
                 return;
             }
             #endregion
+            string hostIP = Request.UserHostAddress;
             var kvTable = Server.RegCenter.HostList;
 
             StringBuilder sb = new StringBuilder();
@@ -127,6 +129,8 @@ namespace Taurus.Plugin.MicroService
                     Server.IsChange = true;
                     List<HostInfo> list = new List<HostInfo>();
                     HostInfo info = new HostInfo();
+                    info.PID = pid;
+                    info.HostIP = hostIP;
                     info.Host = host;
                     info.RegTime = DateTime.Now;
                     info.Version = ver;
@@ -161,6 +165,8 @@ namespace Taurus.Plugin.MicroService
                         {
                             hasHost = true;
                             info.RegTime = DateTime.Now;//更新时间。
+                            info.PID = pid;
+                            info.HostIP = hostIP;
                         }
                         if (info.Version < ver)
                         {
@@ -199,6 +205,8 @@ namespace Taurus.Plugin.MicroService
                     {
                         Server.IsChange = true;
                         HostInfo info = new HostInfo();
+                        info.PID = pid;
+                        info.HostIP = hostIP;
                         info.Host = host;
                         info.RegTime = DateTime.Now;
                         info.Version = ver;
@@ -222,9 +230,10 @@ namespace Taurus.Plugin.MicroService
         /// </summary>
         /// <param name="tick">最后获取的时间Tick，首次请求可传0</param>
         /// <param name="isGateway">是否网关请求</param>
+        /// <param name="pid">进程ID</param>
         [HttpGet]
         [MicroService]
-        public void GetList(long tick, bool isGateway)
+        public void GetList(long tick, bool isGateway, int pid)
         {
             string host2 = Server.IsLiveOfMasterRC ? MvcConfig.RunUrl : Server.Host2;
             string host = Server.IsLiveOfMasterRC ? MsConfig.Server.RcUrl : "";//注册中心【从】检测到【主】恢复后，推送host，让后续的请求转回【主】
@@ -234,7 +243,7 @@ namespace Taurus.Plugin.MicroService
             }
             if (isGateway && Request.UrlReferrer != null)
             {
-                Server.RegCenter.AddHost("Gateway", Request.UrlReferrer.OriginalString);
+                Server.RegCenter.AddHost("Gateway", Request.UrlReferrer.OriginalString, pid, Request.UserHostAddress);
             }
             if (Server.RegCenter.HostList.Count == 0 || tick == Server.Tick)
             {
@@ -267,12 +276,13 @@ namespace Taurus.Plugin.MicroService
         /// 注册中心 - 设置【从】的备用地址。
         /// </summary>
         /// <param name="host">地址</param>
+        /// <param name="pid">进程ID</param>
         [HttpPost]
         [MicroService]
         [Require("host")]
-        public void Reg2(string host)
+        public void Reg2(string host, int pid)
         {
-            Server.RegCenter.AddHost("RegCenterOfSlave", host);
+            Server.RegCenter.AddHost("RegCenterOfSlave", host, pid, Request.UserHostAddress);
             Server.Host2 = host;
             string result = JsonHelper.OutResult(true, "", "tick", Server.Tick, "iptick", IPLimit.LastUpdateTime.Ticks);
             Write(result);

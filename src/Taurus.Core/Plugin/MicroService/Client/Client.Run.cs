@@ -91,7 +91,7 @@ namespace Taurus.Plugin.MicroService
                     wc.Headers.Add("Referer", MvcConfig.RunUrl);
                     wc.Headers.Add("Content-Type", "application/x-www-form-urlencoded");
                     //Content - Type: multipart / form - data; boundary = ----WebKitFormBoundaryxSUOuGdhfM6ceac8
-                    string data = "name={0}&host={1}&version={2}&isVirtual={3}&domain={4}";
+                    string data = "name={0}&host={1}&version={2}&isVirtual={3}&domain={4}&pid=" + MvcConst.ProcessID;
                     data = string.Format(data, MsConfig.Client.Name, MvcConfig.RunUrl, MsConfig.Client.Version, MsConfig.Client.IsVirtual ? 1 : 0, MsConfig.Client.Domain);
                     string result = wc.UploadString(url, data);
                     if (JsonHelper.IsSuccess(result))

@@ -12,7 +12,7 @@ namespace Taurus.Mvc
     /// <summary>
     /// Taurus.Mvc Config
     /// </summary>
-    public static class MvcConfig
+    public static partial class MvcConfig
     {
         /// <summary>
         /// 配置是否启用Mvc功能 
@@ -178,11 +178,11 @@ namespace Taurus.Mvc
                 AppConfig.SetApp("Taurus.SslPath", value);
             }
         }
-        public static Dictionary<string, X509Certificate2> _SslCertificate = new Dictionary<string, X509Certificate2>(StringComparer.OrdinalIgnoreCase);
+        public static MDictionary<string, X509Certificate2> _SslCertificate = new MDictionary<string, X509Certificate2>(StringComparer.OrdinalIgnoreCase);
         /// <summary>
         /// 获取应用证书【证书路径由SslPath配置】（只读）
         /// </summary>
-        public static Dictionary<string, X509Certificate2> SslCertificate
+        public static MDictionary<string, X509Certificate2> SslCertificate
         {
             get
             {
@@ -208,31 +208,7 @@ namespace Taurus.Mvc
                 return _SslCertificate;
             }
         }
-
-        /// <summary>
-        /// 应用配置：当前Web 监听主机【Kestrel启动运行需要】
-        /// </summary>
-        public static string Host
-        {
-            get
-            {
-                string host = AppConfig.GetApp("Taurus.Host", "");
-                if (host.Contains(":0"))//常规部署随机端口
-                {
-                    TcpListener tl = new TcpListener(IPAddress.Any, 0);
-                    tl.Start();
-                    int port = ((IPEndPoint)tl.LocalEndpoint).Port;//获取随机可用端口
-                    tl.Stop();
-                    host = host.Replace(":0", ":" + port);
-                    AppConfig.SetApp("Taurus.Host", host);
-                }
-                return host.TrimEnd('/');
-            }
-            set
-            {
-                AppConfig.SetApp("Taurus.Host", value);
-            }
-        }
+        
         /// <summary>
         /// 应用配置：当前Web Application运行Url【Kestrel启动运行需要】
         /// </summary>
@@ -244,7 +220,7 @@ namespace Taurus.Mvc
                 if (string.IsNullOrEmpty(url))
                 {
                     url = InitRunUrl();
-                    if(!string.IsNullOrEmpty(url))
+                    if (!string.IsNullOrEmpty(url))
                     {
                         AppConfig.SetApp("Taurus.RunUrl", url);
                     }
@@ -265,7 +241,7 @@ namespace Taurus.Mvc
             {
                 return dockerUrl;
             }
-            string host = Host;
+            string host = Kestrel.Urls;
             if (!string.IsNullOrEmpty(host))
             {
                 string ip = MvcConst.HostIP;

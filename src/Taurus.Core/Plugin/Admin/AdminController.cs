@@ -24,11 +24,14 @@ namespace Taurus.Plugin.Admin
         public override bool BeforeInvoke()
         {
             string nameLower = MethodName.ToLower();
+            //1、界面对象检测
             switch (nameLower)
             {
                 //无界面
                 case "logout":
                 case "btnsaveconfig":
+                case "logdelete":
+                case "stopclient":
                     break;
                 default:
                     if (View == null)
@@ -37,6 +40,7 @@ namespace Taurus.Plugin.Admin
                     }
                     break;
             }
+            //2、登陆过期检测
             switch (nameLower)
             {
                 case "login":
@@ -46,14 +50,18 @@ namespace Taurus.Plugin.Admin
                     string isAdmin = Convert.ToString(Context.Session["isadmin"]);
                     if (string.IsNullOrEmpty(loginName) || string.IsNullOrEmpty(isAdmin))
                     {
-                        if (nameLower == "btnsaveconfig")
+                        switch (nameLower)
                         {
-                            Write("Login account has expired.", false);
-                        }
-                        else
-                        {
-                            //检测账号密码，跳转登陆页
-                            Response.Redirect("login");
+                            case "btnsaveconfig":
+                            case "logdelete":
+                            case "stopclient":
+                                Write("Login account has expired.", false);
+                                break;
+                            default:
+                                //检测账号密码，跳转登陆页
+                                Response.Redirect("login");
+                                break;
+
                         }
                         return false;
                     }
@@ -63,7 +71,8 @@ namespace Taurus.Plugin.Admin
                     }
                     break;
             }
-            if (BtnName.StartsWith("btn") || nameLower.StartsWith("btn"))
+            //3、只读权限检测
+            if (BtnName.StartsWith("btn") || nameLower == "btnsaveconfig" || nameLower == "logdelete" || nameLower == "stopclient")
             {
                 if (Convert.ToString(Context.Session["isadmin"]) != "1")
                 {

@@ -16,6 +16,15 @@ namespace Taurus.Plugin.MicroService
         /// 主机地址：http://localhost:8080
         /// </summary>
         public string Host { get; set; }
+
+        /// <summary>
+        /// 主机IP
+        /// </summary>
+        public string HostIP { get; set; }
+        /// <summary>
+        /// 主机进程ID
+        /// </summary>
+        public int PID { get; set; }
         /// <summary>
         /// 版本号：用于版本升级。
         /// </summary>

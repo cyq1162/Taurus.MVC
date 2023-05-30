@@ -41,7 +41,7 @@ namespace Taurus.Plugin.MicroService
                         var regCenterList = Server.RegCenter.HostList;
                         if (regCenterList != null)
                         {
-                            Server.RegCenter.AddHost("RegCenter", MvcConfig.RunUrl);
+                            Server.RegCenter.AddHost("RegCenter", MvcConfig.RunUrl, MvcConst.ProcessID, MvcConst.HostIP);
                             Server.RegCenter.LoadHostByAdmin();//加载所有手工添加主机信息
                             List<string> keys = regCenterList.GetKeys();
                             var kvForRegCenter = new MDictionary<string, List<HostInfo>>(StringComparer.OrdinalIgnoreCase);
@@ -209,8 +209,8 @@ namespace Taurus.Plugin.MicroService
                     wc.Headers.Add("ack", AckLimit.CreateAck());
                     wc.Headers.Add("Referer", MvcConfig.RunUrl);
                     wc.Headers.Add("Content-Type", "application/x-www-form-urlencoded");
-                    string data = "host={0}&tick=" + Server.Tick;
-                    result = wc.UploadString(url, string.Format(data, MvcConfig.RunUrl));
+                    string data = string.Format("host={0}&tick={1}&pid={2}", MvcConfig.RunUrl, Server.Tick, MvcConst.ProcessID);
+                    result = wc.UploadString(url, data);
                 }
                 if (JsonHelper.IsSuccess(result))
                 {
@@ -330,7 +330,7 @@ namespace Taurus.Plugin.MicroService
             string url = MsConfig.Server.RcUrl + MsConfig.Server.RcPath + "/getlist?tick=" + Server.Tick;
             if (MsConfig.IsGateway)
             {
-                url += "&isGateway=1";
+                url += "&isGateway=1&pid=" + MvcConst.ProcessID;
             }
             try
             {

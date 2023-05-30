@@ -39,7 +39,7 @@ namespace Taurus.Plugin.MicroService
             /// <summary>
             /// 为Server端添加Host
             /// </summary>
-            public static void AddHost(string name, string host)
+            public static void AddHost(string name, string host, int pid, string hostIP)
             {
                 if (string.IsNullOrEmpty(host)) { return; }
                 string[] items = name.Split('|');//允许模块域名带优先级版本号，和是否虚拟属性
@@ -61,6 +61,8 @@ namespace Taurus.Plugin.MicroService
                     Server.IsChange = true;
                     List<HostInfo> list = new List<HostInfo>();
                     HostInfo info = new HostInfo();
+                    info.PID = pid;
+                    info.HostIP = hostIP;
                     info.Host = host;
                     info.RegTime = DateTime.Now;
                     info.Version = ver;
@@ -78,12 +80,16 @@ namespace Taurus.Plugin.MicroService
                         {
                             hostInfo.Version = ver;
                             hostInfo.IsVirtual = vir;
+                            hostInfo.HostIP = hostIP;
+                            hostInfo.PID = pid;
                             hostInfo.RegTime = DateTime.Now;//更新时间。
                             return;
                         }
                     }
                     Server.IsChange = true;
                     HostInfo info = new HostInfo();
+                    info.PID = pid;
+                    info.HostIP = hostIP;
                     info.Host = host;
                     info.Version = ver;
                     info.IsVirtual = vir;
@@ -146,7 +152,7 @@ namespace Taurus.Plugin.MicroService
                     string[] hosts = item.Value.Split(',');
                     foreach (string host in hosts)
                     {
-                        AddHost(item.Key, host);
+                        AddHost(item.Key, host, 0, "");
                     }
                 }
             }

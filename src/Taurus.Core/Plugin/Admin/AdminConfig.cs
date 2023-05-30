@@ -35,6 +35,10 @@ namespace Taurus.Plugin.Admin
             }
         }
         /// <summary>
+        /// 由静态构造函数初始化。
+        /// </summary>
+        internal static void Init() { }
+        /// <summary>
         /// 添加持久化配置
         /// </summary>
         internal static void AddDurableConfig(string key, string value)
