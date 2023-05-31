@@ -55,7 +55,7 @@
                 <td>IsVirtual</td>
                 <td>Version</td>
                 <td>LastActiveTime</td>
-                <td>Remote Exit</td>
+                <td>Remote【Client】</td>
             </tr>
             <tbody id="defaultView" clearflag="1">
                 <tr>
@@ -63,30 +63,72 @@
                     <td>${PID}</td>
                     <td><a href="index?t=5&n=${Host}">${Host}</a></td>
                     <td><a href="index?t=${t:1}&to=2&hostIP=${HostIP}&host=${Host}" target="_blank" title="go to admin">${HostIP}</a></td>
-                    <td>${State}</td>
+                    <td><div ondblclick="checkUrl('${Host}',this)" title="double click to check host state again.">${State}</div></td>
                     <td>${IsVirtual}</td>
                     <td>${Version}</td>
                     <td>${RegTime}</td>
-                    <td><a onclick="stop('${Host}',this);" title="stop application"><%# ('${Name}'=='RegCenter' || '${Name}'=='Gateway')?'':'${RemoteExit}'%></a></td>
+                    <td>
+                        <div clearflag="${RemoteExit:1}">
+                            <a onclick="stop('${Host}',this);" title="stop client microservice.">Stop</a>&nbsp;|&nbsp;
+                            <a onclick="exit('${Host}',this);" title="exit client application.">Exit</a>
+                        </div>
+                    </td>
                 </tr>
             </tbody>
         </table>
         <![CDATA[
         <script>
             function stop(host, el) {
-                if (confirm("Stop [" + host + "] Service Confirm ?")) {
+                if (confirm("Stop [" + host + "] MicroService Confirm ?")) {
                     el.onclick = undefined;
                     el.style = "text-decoration: none; cursor: default; opacity: 0.2";
                     $.ajax({
                         type: "GET",
-                        url: "stopclient?host=" + host,
+                        url: "StopClientMicroService?host=" + host,
                         success: function (result) {
-                            if (result) {
+                            if (result && result.msg) {
                                 alert(result.msg);
                             }
                         },
                         error: function (result) {
                             alert("stop fail.");
+                        }
+                    });
+                }
+            }
+            function exit(host, el) {
+                if (confirm("Exit [" + host + "] Application Confirm ?")) {
+                    el.onclick = undefined;
+                    el.style = "text-decoration: none; cursor: default; opacity: 0.2";
+                    $.ajax({
+                        type: "GET",
+                        url: "ExitClientAppliction?host=" + host,
+                        success: function (result) {
+                            if (result && result.msg) {
+                                alert(result.msg);
+                            }
+                        },
+                        error: function (result) {
+                            alert("exit fail.");
+                        }
+                    });
+                }
+            }
+            function checkUrl(host, el) {
+                var text = $(el).html();
+                if (text == "- - -") { return; }
+                if (confirm("Check [" + host + "] State Again Confirm ?")) {
+                    var state = text == "√" ? "1" : "-1";
+                    $.ajax({
+                        type: "GET",
+                        url: "checkurl?host=" + host + "&state=" + state,
+                        success: function (result) {
+                            if (result && result.msg) {
+                                alert(result.msg);
+                            }
+                        },
+                        error: function (result) {
+                            alert("checkurl fail.");
                         }
                     });
                 }
