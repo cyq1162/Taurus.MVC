@@ -68,7 +68,6 @@ namespace Taurus.Plugin.Admin
 
         private bool IsGotoAdmin()
         {
-
             if (!MsConfig.IsServer || !IsAdmin)
             {
                 return false;
@@ -81,10 +80,18 @@ namespace Taurus.Plugin.Admin
                 string host = Query<string>("host");
                 if (!string.IsNullOrEmpty(hostIP) && !string.IsNullOrEmpty(host))
                 {
+                    string url = string.Empty;
                     string[] items = host.Split(':');
-                    if (items.Length == 3)
+                    if (items.Length == 2)
                     {
-                        string url = items[0] + "://" + hostIP + ":" + items[2];
+                        url = host;
+                    }
+                    else if (items.Length == 3)
+                    {
+                        url = items[0] + "://" + hostIP + ":" + items[2];
+                    }
+                    if (!string.IsNullOrEmpty(url))
+                    {
                         switch (to)
                         {
                             case 1://to doc

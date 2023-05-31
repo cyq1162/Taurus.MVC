@@ -52,14 +52,18 @@ namespace Taurus.Plugin.Doc
                 string[] dllNames = ("Taurus.Core," + ControllerCollector.DllNames).Split(',');
                 foreach (string dll in dllNames)
                 {
-                    string xmlPath = string.Empty; ;
-                    if (dll.Contains(":") && dll.Contains(".dll"))
+                    string xmlPath = string.Empty;
+                    if (dll.Contains(".dll"))
                     {
                         xmlPath = dll.Replace(".dll", ".xml");
                     }
                     else
                     {
-                        xmlPath = AppConfig.AssemblyPath + dll.Replace(".dll", "") + ".xml";
+                        xmlPath = dll + ".xml";
+                    }
+                    if (xmlPath[0] != '/' && !xmlPath.Contains(":")) //非 linux 或 window 完整路径
+                    {
+                        xmlPath = AppConfig.AssemblyPath + xmlPath;
                     }
                     if (File.Exists(xmlPath))
                     {
@@ -140,15 +144,17 @@ namespace Taurus.Plugin.Doc
                     //{
                     //    continue;
                     //}
-                    string desc = GetDescription(GetXml(), item.Value.FullName, "T:").Trim();
+                    var xmlList = GetXml();
+                    string desc = GetDescription(xmlList, item.Value.FullName, "T:").Trim();
                     if (!string.IsNullOrEmpty(desc))
                     {
                         ControllerTable.NewRow(true)
-                           .Set(0, item.Value.FullName)
-                           .Set(1, desc)
-                           .Set(2, item.Value.GetCustomAttributes(typeof(TokenAttribute), false).Length)
-                           .Set(3, item.Value);
+                          .Set(0, item.Value.FullName)
+                          .Set(1, desc)
+                          .Set(2, item.Value.GetCustomAttributes(typeof(TokenAttribute), false).Length)
+                          .Set(3, item.Value);
                     }
+                   
                 }
             }
         }
@@ -292,30 +298,6 @@ namespace Taurus.Plugin.Doc
         private void BindController()
         {
             ControllerTable.Bind(View);
-            //#region MicroService 由注册中心提供链接，此处不再提供链接。
-            //MDataTable table = null;
-            //if (MicroService.MsConfig.IsServer)
-            //{
-            //    table = new MDataTable();
-            //    table.Columns.Add("name,host");
-            //    var hostList = MicroService.Server.Gateway.HostList;
-            //    foreach (var item in hostList)
-            //    {
-            //        if (item.Value.Count > 0)
-            //        {
-            //            table.NewRow(true).Sets(0, item.Key, item.Value[0].Host);
-            //        }
-            //    }
-            //}
-            //if (table != null && table.Rows.Count > 0)
-            //{
-            //    table.Bind(View, "MicroServiceView");
-            //}
-            //else
-            //{
-            //    View.Remove("Node_MicroService");
-            //}
-            //#endregion
         }
         private void BindAction()
         {
