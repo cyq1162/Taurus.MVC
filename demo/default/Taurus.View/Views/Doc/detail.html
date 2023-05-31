@@ -17,30 +17,30 @@
                     <div class="default_contents">
                         <div class="user_article">
                             <h1 class="title_txt">
-                                <a href="#">${n}、${d:这家伙很懒，没有写说明。}</a>
+                                <a href="#">${n}、${d:No Description.}</a>
                             </h1>
                             <div class="blogstory">
                                 <div id="labBody">
-                                    <p>请求方式：${p}</p>
-                                    <p>请求主机：${host}</p>
-                                    <p>请求地址：<input id="url" type="text" value="${g}${u}" style="width:90%" /></p>
-                                    <p>重点参数说明：</p>
+                                    <p>Http Method：${p}</p>
+                                    <p>Http Host：${host}</p>
+                                    <p>Http Url：<input id="url" type="text" value="${g}${u}" style="width:90%" /></p>
+                                    <p>Parameters：</p>
                                     <form name="f1" enctype="application/x-www-form-urlencoded">
                                         <table class="dataintable">
                                             <tr>
-                                                <th>参数</th>
-                                                <th>描述</th>
-                                                <th>必填</th>
-                                                <th>类型</th>
-                                                <th>示例值</th>
+                                                <th>para</th>
+                                                <th>description</th>
+                                                <th>require</th>
+                                                <th>type</th>
+                                                <th>value</th>
                                             </tr>
 
                                             <tbody id="ParaView" clearflag="1">
                                                 <tr>
                                                     <td width="100px">${0}</td>
                                                     <td>${1}</td>
-                                                    <td width="30px"><%# ${required}?'是':'否'%></td>
-                                                    <td width="60px"><%# '${type}'=='file'?'文件':('${type}'=='header'?'请求头':'${type}')%></td>
+                                                    <td width="60px">${required}</td>
+                                                    <td width="60px">${type}</td>
                                                     <td>
                                                         <![CDATA[
                                                         <input name="${0}" type="<%# '${type}'=='file'?'file':'text'%>" value="${4}" style="width:90%" rtype="${type}"  multiple="multiple" <%# ${required}?"required='required'":"false"%> />
@@ -53,24 +53,24 @@
                                         </table>
                                     </form>
 
-                                    <p>示例结果：</p>
+                                    <p>Return Text：</p>
 
                                     <div class="sign">
                                         <div class="code">
-                                            <div>${returns:无}</div>
+                                            <div>${returns:No Description.}</div>
                                         </div>
                                     </div>
                                     <hr />
-                                    <input id="run" type="button" value="运行请求" onclick="run()" /> | <select id="httpType"><option>GET</option><option>POST</option><option>HEAD</option><option>PUT</option><option>DELETE</option></select> | <select id="dataType"><option>json</option><option>xml</option><option>html</option><option>text</option></select>
+                                    <input id="run" type="button" value="Run Request" onclick="run()" /> | <select id="httpType"><option>GET</option><option>POST</option><option>HEAD</option><option>PUT</option><option>DELETE</option></select> | <select id="dataType"><option>json</option><option>xml</option><option>html</option><option>text</option></select>
                                     <hr />
                                     <div style="display:none;background-color:darkseagreen" id="runResult">
-                                        <p style="text-indent:10px"> 运行结果：</p>
+                                        <p style="text-indent:10px"> Run Response Text：</p>
                                         <div class="sign">
                                             <div class="code">
                                                 <div id="resultContent"></div>
                                             </div>
                                         </div>
-                                        <p style="text-indent:10px"> 运行结果请求头：</p>
+                                        <p style="text-indent:10px"> Run Response Header：</p>
 
                                         <div class="sign">
                                             <div class="code">
@@ -81,40 +81,6 @@
                                 </div>
   
                             </div>
-                        </div>
- 
-                        <div class="commentnew" id="Node_PostComment">
-                                <dl>
-                                    <dt>
-                                        <ul>
-                                            <li class="left" key="postcomment">高级接口测试</li>
-                                        </ul>
-                                    </dt>
-                                    <dd>
-                                        <ul>
-                                            <li>
-                                                推荐使用： <a href="https://www.telerik.com/download/fiddler" target="_blank" title="download">fiddler</a> 工具，打开时右侧的Composer菜单中即可测试：<a href="https://www.cnblogs.com/cyq1162/p/10574607.html" target="_blank">教程地址</a>。
-                                            </li>
-                                        </ul>
-                                        <!-- <ul>
-                                             <li>
-                                                 <label key="nickname">
-                                                     昵称</label>:<input keyvalue="anonymous" name="txtNickName" id="txtNickName" type="text"
-                                                         maxlength="20" value="" />
-                                                 </li>
-                                         </ul>
-                                         <ul>
-                                             <li class="right">
-                                                 <textarea id="txtBody" name="txtBody" cols="55" rows="8">  </textarea>
-                                             </li>
-                                         </ul>
-                                         <ul>
-                                             <li class="right">
-                                                 <input keyvalue="submit" name="Submit" type="submit" value="提交" class="submitbtn" />
-                                                 <span id="postMessage"></span></li>
-                                         </ul>-->
-                                    </dd>
-                                </dl>
                         </div>
                     </div>
 
