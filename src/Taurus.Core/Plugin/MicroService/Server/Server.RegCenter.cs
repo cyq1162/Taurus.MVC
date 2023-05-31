@@ -31,10 +31,16 @@ namespace Taurus.Plugin.MicroService
             /// 注册中心 - 返回的表数据Json
             /// </summary>
             internal static string HostListJson { get; set; }
+
+            private static MDictionary<string, List<HostInfo>> _HostList = new MDictionary<string, List<HostInfo>>(StringComparer.OrdinalIgnoreCase);
             /// <summary>
             /// 作为注册中心 - 存档的微服务列表
             /// </summary>
-            public static MDictionary<string, List<HostInfo>> HostList { get; set; }
+            public static MDictionary<string, List<HostInfo>> HostList
+            {
+                get { return _HostList; }
+                set { _HostList = value; }
+            }
 
             /// <summary>
             /// 为Server端添加Host

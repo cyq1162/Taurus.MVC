@@ -165,51 +165,6 @@ namespace Taurus.Mvc
         }
 
         /// <summary>
-        /// 应用配置：Https 证书 存放路径【客户端默认开启、服务端默认关闭】
-        /// </summary>
-        public static string SslPath
-        {
-            get
-            {
-                return AppConfig.GetApp("Taurus.SslPath", "/App_Data/ssl");
-            }
-            set
-            {
-                AppConfig.SetApp("Taurus.SslPath", value);
-            }
-        }
-        public static MDictionary<string, X509Certificate2> _SslCertificate = new MDictionary<string, X509Certificate2>(StringComparer.OrdinalIgnoreCase);
-        /// <summary>
-        /// 获取应用证书【证书路径由SslPath配置】（只读）
-        /// </summary>
-        public static MDictionary<string, X509Certificate2> SslCertificate
-        {
-            get
-            {
-                string sslFolder = AppConfig.WebRootPath + SslPath.TrimStart('/', '\\');
-                if (Directory.Exists(sslFolder))
-                {
-                    string[] files = Directory.GetFiles(sslFolder, "*.pfx", SearchOption.TopDirectoryOnly);
-                    foreach (string file in files)
-                    {
-                        string pwdPath = file.Replace(".pfx", ".txt");
-                        if (File.Exists(pwdPath))
-                        {
-                            string pwd = IOHelper.ReadAllText(pwdPath);
-                            string domain = Path.GetFileName(pwdPath).Replace(".txt", "");
-                            if (!_SslCertificate.ContainsKey(domain))
-                            {
-                                _SslCertificate.Add(domain, new X509Certificate2(file, pwd));//实例化比较耗时，避开重复实例化，兼顾缓存更新。
-                            }
-                        }
-                    }
-                }
-
-                return _SslCertificate;
-            }
-        }
-        
-        /// <summary>
         /// 应用配置：当前Web Application运行Url【Kestrel启动运行需要】
         /// </summary>
         public static string RunUrl

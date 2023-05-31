@@ -30,6 +30,7 @@ namespace Taurus.Plugin.MicroService
         {
             switch (MethodName)
             {
+                case "stop"://client
                 case "exit"://client
                     return true;
                 default:
@@ -245,7 +246,7 @@ namespace Taurus.Plugin.MicroService
             {
                 Server.RegCenter.AddHost("Gateway", Request.UrlReferrer.OriginalString, pid, Request.UserHostAddress);
             }
-            if (Server.RegCenter.HostList.Count == 0 || tick == Server.Tick)
+            if (tick == Server.Tick || Server.RegCenter.HostList == null)
             {
                 string result = JsonHelper.OutResult(true, "", "tick", Server.Tick, "host2", host2, "host", host, "iptick", IPLimit.LastUpdateTime.Ticks);
                 Write(result);

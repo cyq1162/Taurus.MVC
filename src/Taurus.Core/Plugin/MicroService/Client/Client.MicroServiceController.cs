@@ -11,7 +11,23 @@ namespace Taurus.Plugin.MicroService
     internal partial class MicroServiceController : Controller
     {
         /// <summary>
-        /// 应用程序退出
+        /// 停止微服务
+        /// </summary>
+        [MicroService]
+        public void Stop()
+        {
+            if (MsConfig.IsClient && MsConfig.Client.RemoteExit)
+            {
+                MsConfig.Client.IsEnable = false;
+                Write("Remote stop success: microservice has stopped.", true);
+            }
+            else
+            {
+                Write("Remote stop fail : microservice remote exit is disabled.", false);
+            }
+        }
+        /// <summary>
+        /// 终止微服务程序，并退出应用程序
         /// </summary>
         [MicroService]
         public void Exit()
@@ -20,11 +36,11 @@ namespace Taurus.Plugin.MicroService
             {
                 MsConfig.Client.IsApplicationExit = true;//注销注册中心服务。
                 new Thread(new ThreadStart(AppExit)).Start();
-                Write("Remote Exit Success: wait for the register center to unregister the host (15s).", true);
+                Write("Remote exit success: wait for the register center to unregister the host (15s).", true);
             }
             else
             {
-                Write("MicroService remote exit is disabled.", false);
+                Write("Remote exit fail : microservice remote exit is disabled.", false);
             }
         }
 

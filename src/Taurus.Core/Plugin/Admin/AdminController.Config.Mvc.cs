@@ -32,17 +32,6 @@ namespace Taurus.Plugin.Admin
             Sets(dt, "Taurus.RouteMode", GetRouteModeText(), "Route mode 【0、1、2】 for selected.");
             Sets(dt, "Taurus.Controllers", MvcConfig.Controllers, "Load controller dll names.");
             Sets(dt, "Taurus.Views", MvcConfig.Views, "Mvc view folder name.");
-            Sets(dt, "Taurus.SslPath", MvcConfig.SslPath, "Ssl path for https (*.pfx for ssl , *.txt for pwd).");
-            Sets(dt, "----------SslCertificate - Count", MvcConfig.SslCertificate.Count, "Num of ssl for https (Show Only).");
-            if (MvcConfig.SslCertificate.Count > 0)
-            {
-                int i = 1;
-                foreach (string name in MvcConfig.SslCertificate.Keys)
-                {
-                    Sets(dt, "----------SslCertificate - " + i, name, "Domain ssl for https (Show Only).");
-                    i++;
-                }
-            }
             Sets(dt, "Taurus.Suffix", MvcConfig.Suffix, "Deal with mvc suffix.");
             Sets(dt, "Taurus.SubAppName", MvcConfig.SubAppName, "Name of deploy as sub application.");
             #endregion

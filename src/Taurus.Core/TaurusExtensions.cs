@@ -28,7 +28,7 @@ namespace Microsoft.AspNetCore.Http
             services.Configure<FormOptions>(options => options.MultipartBodyLengthLimit = MvcConfig.Kestrel.Limits.MaxRequestBodySize);
             services.Configure<KestrelServerOptions>((x) =>
             {
-                if (MvcConfig.SslCertificate.Count > 0)
+                if (MvcConfig.Kestrel.SslCertificate.Count > 0)
                 {
                     //重新绑定监听端口。
                     #region 处理443 端口使用
@@ -36,7 +36,7 @@ namespace Microsoft.AspNetCore.Http
                     {
                         op.UseHttps(opx =>
                         {
-                            var certificates = MvcConfig.SslCertificate;
+                            var certificates = MvcConfig.Kestrel.SslCertificate;
                             opx.ServerCertificateSelector = (connectionContext, name) =>
                                name != null && certificates.TryGetValue(name, out var cert) ? cert : certificates[0];
                         });

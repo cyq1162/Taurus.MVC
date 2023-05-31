@@ -75,7 +75,8 @@ namespace Taurus.Plugin.MicroService
 
                 int count = infoList.Count;
                 int max = 3;//最多循环3个节点，避免长时间循环卡机。
-                bool isRegCenter = MsConfig.IsRegCenterOfMaster;
+                bool isRegCenterOfMaster = MsConfig.IsRegCenterOfMaster;
+                string runUrl = MvcConfig.RunUrl;
                 HostInfo firstInfo = infoList[0];
                 if (firstInfo.CallIndex >= count)
                 {
@@ -86,18 +87,14 @@ namespace Taurus.Plugin.MicroService
                     int callIndex = firstInfo.CallIndex + i;
                     if (callIndex >= count)
                     {
-                        callIndex = callIndex - count;
+                        callIndex = callIndex - count;//溢出后重置循环
                     }
-                    //if (callIndex < 0 || callIndex >= infoList.Count)
-                    //{
-
-                    //}
                     HostInfo info = infoList[callIndex];//并发下有异步抛出
-                    if (!isServerCall && info.Host == MvcConfig.RunUrl)
+                    if (!isServerCall && info.Host == runUrl)
                     {
                         continue;
                     }
-                    if (info.Version < 0 || info.CallTime > DateTime.Now || (isRegCenter && info.RegTime < DateTime.Now.AddSeconds(-10)))//正常5-10秒注册1次。
+                    if (info.Version < 0 || info.CallTime > DateTime.Now || (isRegCenterOfMaster && info.RegTime < DateTime.Now.AddSeconds(-10)))//正常5-10秒注册1次。
                     {
                         continue;//已经断开服务的。
                     }
@@ -180,10 +177,6 @@ namespace Taurus.Plugin.MicroService
                 try
                 {
                     wc.Headers.Add(MsConst.HeaderKey, (isServerCall ? MsConfig.Server.RcKey : MsConfig.Client.RcKey));
-                    //if (!string.IsNullOrEmpty(MsConfig.App.RunUrl))
-                    //{
-                    //    wc.Headers.Add("Referer", MsConfig.App.RunUrl);//当前运行地址。
-                    //}
                     foreach (string key in request.Headers.Keys)
                     {
                         if (key.StartsWith(":"))//chrome 新出来的 :method等
@@ -241,7 +234,6 @@ namespace Taurus.Plugin.MicroService
                     }
                     try
                     {
-                        //context.Response.AppendHeader("Content-Length", bytes.Length.ToString());
                         foreach (string key in wc.ResponseHeaders.Keys)
                         {
                             //chrome 新出来的 :method等
@@ -259,10 +251,6 @@ namespace Taurus.Plugin.MicroService
                                     value = value.Replace("domain=" + uri.Host, "domain=" + request.Url.Host);
                                 }
                             }
-                            //if (key == "Content-Type" && !value.Contains("html") && value.Split(';').Length == 1) // 不返回可能造成html显示成字符串内容。
-                            //{
-                            //    continue;
-                            //}
                             context.Response.AppendHeader(key, value);
                         }
 
@@ -278,26 +266,6 @@ namespace Taurus.Plugin.MicroService
                     RpcClientPool.RemoveFromPool(uri);
                     MsLog.Write(err.Message, url, request.HttpMethod, isServerCall ? MsConfig.Server.Name : MsConfig.Client.Name);
                     return false;
-                    //RpcClient 内部已重写处理，已无需要在外部进行判断。
-                    //string msg = err.Message;/
-                    //bool isHasStatusCode = msg.Contains("(1") || msg.Contains("(2") || msg.Contains("(3") || msg.Contains("(4") || msg.Contains("(5") || msg.Contains("(6");
-                    //if (!isHasStatusCode || msg.Contains("Connection refused") || msg.Contains("Could not find file") || msg.Contains("无法连接到远程服务器") || msg.Contains("未能解析此远程名称") || msg.Contains("不知道这样的主机"))//!err.Message.Contains("(40")400 系列，机器是通的， 404) Not Found
-                    //{
-                    //    RpcClientPool.RemoveFromPool(uri);
-                    //    MsLog.Write(msg, url, request.HttpMethod, isServerCall ? MsConfig.Server.Name : MsConfig.Client.Name);
-                    //    return false;
-                    //}
-                    //else
-                    //{
-                    //    //解析状态码
-                    //    int i = msg.IndexOf('(');
-                    //    int end = msg.IndexOf(')', i);
-                    //    if (end > i)
-                    //    {
-                    //        string code = msg.Substring(i + 1, end - i - 1);
-                    //        context.Response.StatusCode = int.Parse(code);
-                    //    }
-                    //}
                 }
                 finally
                 {
@@ -315,103 +283,6 @@ namespace Taurus.Plugin.MicroService
                 return true;
 
             }
-
-            //private static bool Proxy(HttpContext context, string host, bool isServerCall)
-            //{
-            //    return Proxy3(context, host, isServerCall).Result;
-            //}
-            //private static async System.Threading.Tasks.Task<bool> Proxy3(HttpContext context, string host, bool isServerCall)
-            //{
-            //    HttpRequest request = context.Request;
-            //    string url = String.Empty;
-            //    try
-            //    {
-            //        byte[] bytes = null;
-
-            //        url = host + request.RawUrl;//.Substring(module.Length + 1);
-            //        HttpMessageHandler handler = null;
-            //        using (HttpClient wc = new HttpClient())
-            //        {
-            //            wc.DefaultRequestHeaders.Add(Const.HeaderKey, (isServerCall ? MSConfig.ServerKey : MSConfig.ClientKey));
-            //            wc.DefaultRequestHeaders.Add("X-Real-IP", request.UserHostAddress);
-            //            if (!string.IsNullOrEmpty(MSConfig.AppRunUrl))
-            //            {
-            //                wc.DefaultRequestHeaders.Add("Referer", MSConfig.AppRunUrl);//当前运行地址。
-            //            }
-            //            foreach (string key in request.Headers.Keys)
-            //            {
-            //                switch (key)
-            //                {
-            //                    case "Connection"://引发异常 链接已关闭
-            //                    case "Accept-Encoding"://引发乱码
-            //                    case "Accept"://引发下载类型错乱
-            //                    case "Referer":
-            //                        break;
-            //                    default:
-            //                        wc.DefaultRequestHeaders.Add(key, request.Headers[key]);
-            //                        break;
-            //                }
-
-            //            }
-            //            HttpResponseMessage mes;
-            //            if (request.HttpMethod == "GET")
-            //            {
-            //                mes = await wc.GetAsync(url);
-            //            }
-            //            else
-            //            {
-            //                byte[] data = null;
-            //                if (request.ContentLength > 0)
-            //                {
-            //                    //Synchronous operations are disallowed. Call ReadAsync or set AllowSynchronousIO to true instead.”
-            //                    data = new byte[(int)request.ContentLength];
-            //                    request.InputStream.Read(data, 0, data.Length);
-            //                }
-            //                StreamContent content = new StreamContent(request.InputStream, (int)(request.ContentLength ?? 0));
-            //                mes = await wc.PostAsync(url, content);
-            //            }
-            //            System.Threading.Tasks.Task<byte[]> bytes1 = mes.Content.ReadAsByteArrayAsync();
-            //            bytes1.Wait();
-            //            bytes = bytes1.Result;
-            //            try
-            //            {
-            //                //context.Response.AppendHeader("Content-Length", bytes.Length.ToString());
-            //                foreach (var key in mes.Headers)
-            //                {
-            //                    switch (key.Key)
-            //                    {
-            //                        case "Transfer-Encoding"://输出这个会造成时不时的503
-            //                            continue;
-            //                    }
-            //                    string value = string.Empty;
-            //                    foreach (var v in key.Value)
-            //                    {
-            //                        value = v;
-            //                        break;
-            //                    }
-            //                    if (key.Key == "Content-Type" && value.Split(';').Length == 1)
-            //                    {
-            //                        continue;
-            //                    }
-            //                    context.Response.AppendHeader(key.Key, value);
-            //                }
-
-            //            }
-            //            catch
-            //            {
-
-            //            }
-            //        }
-            //        context.Response.BinaryWrite(bytes);
-            //        return true;
-            //    }
-            //    catch (Exception err)
-            //    {
-            //        LogWrite(err.Message, url, request.HttpMethod, isServerCall ? MSConfig.ServerName : MSConfig.ClientName);
-            //        return false;
-            //    }
-            //}
-
             #endregion
 
         }
@@ -479,7 +350,7 @@ namespace Taurus.Plugin.MicroService
                         }
                         MsLog.Write(err.Message, "MicroService.Run.PreConnection(" + uri.AbsoluteUri + ")", "GET", MsConfig.Server.Name);
                     }
-                   
+
                 }
                 finally
                 {
