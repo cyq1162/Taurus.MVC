@@ -90,12 +90,11 @@ namespace Microsoft.AspNetCore.Http
                 x.Limits.MaxRequestHeaderCount = MvcConfig.Kestrel.Limits.MaxRequestHeaderCount;
                 x.Limits.MaxRequestHeadersTotalSize = MvcConfig.Kestrel.Limits.MaxRequestHeadersTotalSize;
 
-                x.Limits.MaxConcurrentConnections = 10;
                 //为整个应用设置并发打开的最大 TCP 连接数,默认情况下，最大连接数不受限制 (NULL)
-                //if (MvcConfig.Kestrel.Limits.MaxConcurrentConnections != long.MaxValue)
-                //{
-                //    x.Limits.MaxConcurrentConnections = MvcConfig.Kestrel.Limits.MaxConcurrentConnections;
-                //}
+                if (MvcConfig.Kestrel.Limits.MaxConcurrentConnections != long.MaxValue)
+                {
+                    x.Limits.MaxConcurrentConnections = MvcConfig.Kestrel.Limits.MaxConcurrentConnections;
+                }
                 //对于已从 HTTP 或 HTTPS 升级到另一个协议（例如，Websocket 请求）的连接，有一个单独的限制。 连接升级后，不会计入 MaxConcurrentConnections 限制
                 if (MvcConfig.Kestrel.Limits.MaxConcurrentUpgradedConnections != long.MaxValue)
                 {

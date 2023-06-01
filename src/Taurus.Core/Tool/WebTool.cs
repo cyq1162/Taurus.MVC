@@ -288,13 +288,16 @@ namespace Taurus.Mvc
 
     public static partial class WebTool
     {
+        private static int flag = 0;
         public static void PrintRequestLog(HttpRequest request, Exception err)
         {
+            flag++;
             StringBuilder sb = new StringBuilder();
             if (err != null)
             {
                 sb.AppendLine(Log.GetExceptionMessage(err));
             }
+            sb.Append(flag.ToString());
             var headers = request.Headers;
             if (headers.Count > 0)
             {
