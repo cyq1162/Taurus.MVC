@@ -56,13 +56,15 @@ namespace Taurus.Plugin.MicroService
                         if (MsConfig.IsGateway)
                         {
                             MsLog.WriteDebugLine("Current MicroService Type ：Gateway");
+                            ThreadBreak.AddGlobalThread(new ParameterizedThreadStart(RunLoopOfGateway));
                         }
                         else
                         {
                             MsLog.WriteDebugLine("Current MicroService Type ：RegCenter of Slave");
+                            ThreadBreak.AddGlobalThread(new ParameterizedThreadStart(RunLoopRegCenterOfSlave));
                         }
                         MsLog.WriteDebugLine("Current RegisterCenter Url：" + MsConfig.Server.RcUrl);
-                        ThreadBreak.AddGlobalThread(new ParameterizedThreadStart(RunLoopOfServer));
+                        
 
                     }
                 }

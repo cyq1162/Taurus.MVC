@@ -6,6 +6,7 @@ using CYQ.Data.Tool;
 using System.IO;
 using System.Security.Cryptography.X509Certificates;
 using System;
+using System.Collections.Generic;
 
 namespace Taurus.Mvc
 {
@@ -36,7 +37,7 @@ namespace Taurus.Mvc
                 }
             }
             /// <summary>
-            /// 应用配置：当前Web监听主机【Kestrel启动运行时绑定】
+            /// 应用配置：当前Web监听Http主机【Kestrel启动运行时绑定】
             /// </summary>
             public static string Urls
             {
@@ -75,19 +76,39 @@ namespace Taurus.Mvc
                 }
             }
             /// <summary>
+            /// 应用配置：Https 默认监听端口号。
+            /// </summary>
+            public static int SslPort
+            {
+                get
+                {
+                    int port = AppConfig.GetAppInt("Kestrel.SslPort", 443);
+                    if (port <= 0 || port >= 65535)
+                    {
+                        return 443;
+                    }
+                    return port;
+                }
+                set
+                {
+                    AppConfig.SetApp("Kestrel.SslPort", value.ToString());
+                }
+            }
+            /// <summary>
             /// 应用配置：Https 证书 存放路径【客户端默认开启、服务端默认关闭】
             /// </summary>
             public static string SslPath
             {
                 get
                 {
-                    return AppConfig.GetApp("Taurus.SslPath", "/App_Data/ssl");
+                    return AppConfig.GetApp("Kestrel.SslPath", "/App_Data/ssl");
                 }
                 set
                 {
-                    AppConfig.SetApp("Taurus.SslPath", value);
+                    AppConfig.SetApp("Kestrel.SslPath", value);
                 }
             }
+            //引用不能丢。
             public static MDictionary<string, X509Certificate2> _SslCertificate = new MDictionary<string, X509Certificate2>(StringComparer.OrdinalIgnoreCase);
             /// <summary>
             /// 获取应用证书【证书路径由SslPath配置】（只读）
@@ -100,6 +121,7 @@ namespace Taurus.Mvc
                     if (Directory.Exists(sslFolder))
                     {
                         string[] files = Directory.GetFiles(sslFolder, "*.pfx", SearchOption.TopDirectoryOnly);
+                        List<string> keys = _SslCertificate.GetKeys();
                         foreach (string file in files)
                         {
                             string pwdPath = file.Replace(".pfx", ".txt");
@@ -107,12 +129,18 @@ namespace Taurus.Mvc
                             {
                                 string pwd = IOHelper.ReadAllText(pwdPath);
                                 string domain = Path.GetFileName(pwdPath).Replace(".txt", "");
+                                keys.Remove(domain);
                                 if (!_SslCertificate.ContainsKey(domain))
                                 {
                                     _SslCertificate.Add(domain, new X509Certificate2(file, pwd));//实例化比较耗时，避开重复实例化，兼顾缓存更新。
                                 }
                             }
                         }
+                        foreach (var key in keys)
+                        {
+                            _SslCertificate.Remove(key);
+                        }
+
                     }
 
                     return _SslCertificate;

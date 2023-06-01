@@ -135,7 +135,9 @@
     <Compile Include="Plugin\MicroService\Server\Server.Gateway.cs" />
     <Compile Include="Plugin\MicroService\Server\Server.RegCenter.cs" />
     <Compile Include="Plugin\MicroService\Server\Server.RegCenter.MicroServiceController.cs" />
-    <Compile Include="Plugin\MicroService\Server\Server.Run.cs" />
+    <Compile Include="Plugin\MicroService\Server\Server.Run.Gateway.cs" />
+    <Compile Include="Plugin\MicroService\Server\Server.Run.RegCenter.cs" />
+    <Compile Include="Plugin\MicroService\Server\Server.Run.RegCenterOfSlave.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="Tool\WebTool.cs" />
     <Compile Include="UrlRewrite.cs" />

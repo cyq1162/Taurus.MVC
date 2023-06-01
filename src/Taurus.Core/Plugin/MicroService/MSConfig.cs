@@ -64,7 +64,7 @@ namespace Taurus.Plugin.MicroService
         }
 
         /// <summary>
-        /// 是否注册中心（主）
+        /// 是否注册中心（从）
         /// </summary>
         public static bool IsRegCenterOfSlave
         {

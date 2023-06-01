@@ -12,6 +12,7 @@ using Microsoft.Extensions.DependencyInjection;
 using Microsoft.AspNetCore.Http.Features;
 using Microsoft.AspNetCore.Server.Kestrel.Core;
 using System.Net;
+using Microsoft.Extensions.Options;
 
 namespace Microsoft.AspNetCore.Http
 {
@@ -31,8 +32,8 @@ namespace Microsoft.AspNetCore.Http
                 if (MvcConfig.Kestrel.SslCertificate.Count > 0)
                 {
                     //重新绑定监听端口。
-                    #region 处理443 端口使用
-                    x.Listen(IPAddress.Any, 443, op =>
+                    #region 处理 Https 端口监听
+                    x.Listen(IPAddress.Any, MvcConfig.Kestrel.SslPort, op =>
                     {
                         op.UseHttps(opx =>
                         {
@@ -89,12 +90,12 @@ namespace Microsoft.AspNetCore.Http
                 x.Limits.MaxRequestHeaderCount = MvcConfig.Kestrel.Limits.MaxRequestHeaderCount;
                 x.Limits.MaxRequestHeadersTotalSize = MvcConfig.Kestrel.Limits.MaxRequestHeadersTotalSize;
 
-
+                x.Limits.MaxConcurrentConnections = 10;
                 //为整个应用设置并发打开的最大 TCP 连接数,默认情况下，最大连接数不受限制 (NULL)
-                if (MvcConfig.Kestrel.Limits.MaxConcurrentConnections != long.MaxValue)
-                {
-                    x.Limits.MaxConcurrentConnections = MvcConfig.Kestrel.Limits.MaxConcurrentConnections;
-                }
+                //if (MvcConfig.Kestrel.Limits.MaxConcurrentConnections != long.MaxValue)
+                //{
+                //    x.Limits.MaxConcurrentConnections = MvcConfig.Kestrel.Limits.MaxConcurrentConnections;
+                //}
                 //对于已从 HTTP 或 HTTPS 升级到另一个协议（例如，Websocket 请求）的连接，有一个单独的限制。 连接升级后，不会计入 MaxConcurrentConnections 限制
                 if (MvcConfig.Kestrel.Limits.MaxConcurrentUpgradedConnections != long.MaxValue)
                 {
@@ -147,6 +148,8 @@ namespace Microsoft.AspNetCore.Http
         */
         public static IApplicationBuilder UseTaurusMvc(this IApplicationBuilder builder)
         {
+            //var aaa = builder.ApplicationServices.GetService<IOptions<KestrelServerOptions>>();
+            //aaa.Value.Limits.MaxConcurrentConnections = 1;
             builder.UseHttpContext();
 
             Thread thread = new Thread(new ParameterizedThreadStart(StartMicroService));
