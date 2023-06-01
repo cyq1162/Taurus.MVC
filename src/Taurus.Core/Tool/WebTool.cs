@@ -313,7 +313,7 @@ namespace Taurus.Mvc
                     sb.AppendLine(key + " : " + form[key]);
                 }
             }
-            Log.Write(sb.ToString(), err != null ? LogType.Taurus : LogType.Debug+ "_PrintRequestLog");
+            Log.WriteLogToTxt(sb.ToString(), err != null ? LogType.Taurus : LogType.Debug+ "_PrintRequestLog");
         }
     }
 }

@@ -92,6 +92,7 @@
     <Compile Include="Plugin\Admin\AdminController.Config.Plugin.cs" />
     <Compile Include="Plugin\Admin\AdminController.cs" />
     <Compile Include="Plugin\Admin\AdminController.Index.cs" />
+    <Compile Include="Plugin\Admin\AdminController.Index.Event.cs" />
     <Compile Include="Plugin\Admin\AdminController.Log.cs" />
     <Compile Include="Plugin\Admin\AdminController.Login.cs" />
     <Compile Include="Plugin\Admin\AdminController.OSInfo.cs" />

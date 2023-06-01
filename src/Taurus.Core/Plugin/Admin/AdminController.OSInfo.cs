@@ -20,11 +20,11 @@ namespace Taurus.Plugin.Admin
             foreach (Assembly assembly in assList)
             {
                 AssemblyName assName = assembly.GetName();
-                if (assName.Name.StartsWith("Microsoft."))
+                if (assName.Name.StartsWith("Microsoft"))
                 {
                     microsoftCount++;
                 }
-                else if (assName.Name.StartsWith("System.") || assName.Name.StartsWith("netstandard") || assName.Name.StartsWith("mscorlib") || assName.Name.StartsWith("Anonymously"))
+                else if (assName.Name.StartsWith("System") || assName.Name.StartsWith("netstandard") || assName.Name.StartsWith("mscorlib") || assName.Name.StartsWith("Anonymously"))
                 {
                     systemCount++;
                 }
@@ -92,14 +92,14 @@ namespace Taurus.Plugin.Admin
                 {
                     string desc = GetDescription(assembly);
                     AssemblyName assName = assembly.GetName();
-                    if (assName.Name.StartsWith("Microsoft."))
+                    if (assName.Name.StartsWith("Microsoft"))
                     {
                         if (t == 0 || t == 2)
                         {
                             dtMicrosoft.NewRow(true).Sets(0, assName.Name, assName.Version.ToString(), desc);
                         }
                     }
-                    else if (assName.Name.StartsWith("System.") || assName.Name.StartsWith("netstandard") || assName.Name.StartsWith("mscorlib") || assName.Name.StartsWith("Anonymously"))
+                    else if (assName.Name.StartsWith("System") || assName.Name.StartsWith("netstandard") || assName.Name.StartsWith("mscorlib") || assName.Name.StartsWith("Anonymously"))
                     {
                         if (t == 0 || t == 3)
                         {
