@@ -53,7 +53,7 @@ namespace Taurus.Plugin.Admin
             if (type == "os")
             {
                 dtTaurus.NewRow(true).Sets(0, "Client-IP-Public", Request.UserHostAddress, "Client public ip.");
-                IPAddress[] ips = Dns.GetHostAddresses(Request.Url.Authority);
+                IPAddress[] ips = Dns.GetHostAddresses(Request.Url.Host);
                 if(ips != null && ips.Length > 0)
                 {
                     dtTaurus.NewRow(true).Sets(0, "Server-IP-Public", ips[0].ToString(), "Server public ip.");
