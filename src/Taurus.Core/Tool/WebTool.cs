@@ -288,20 +288,22 @@ namespace Taurus.Mvc
 
     public static partial class WebTool
     {
-        private static int flag = 0;
-        public static void PrintRequestLog(HttpRequest request, Exception err)
+        private static long flag = 0;
+        internal static void PrintRequestLog(HttpContext context, Exception err)
         {
-            flag++;
+            HttpRequest request = context.Request;
             StringBuilder sb = new StringBuilder();
+            flag++;
+            sb.AppendLine(flag.ToString() + " : ");
             if (err != null)
             {
                 sb.AppendLine(Log.GetExceptionMessage(err));
+                sb.AppendLine("");
             }
-            sb.Append(flag.ToString());
             var headers = request.Headers;
             if (headers.Count > 0)
             {
-                sb.AppendLine("\n-----------Headers-----------");
+                sb.AppendLine("-----------Headers-----------");
                 foreach (string key in headers.AllKeys)
                 {
                     sb.AppendLine(key + " : " + headers[key]);
@@ -316,7 +318,7 @@ namespace Taurus.Mvc
                     sb.AppendLine(key + " : " + form[key]);
                 }
             }
-            Log.WriteLogToTxt(sb.ToString(), err != null ? LogType.Taurus : LogType.Debug+ "_PrintRequestLog");
+            Log.WriteLogToTxt(sb.ToString(), err != null ? LogType.Taurus : LogType.Debug + "_PrintRequestLog");
         }
     }
 }

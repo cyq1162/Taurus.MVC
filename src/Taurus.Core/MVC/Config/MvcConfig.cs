@@ -1,166 +1,160 @@
 ﻿using CYQ.Data;
-using CYQ.Data.Tool;
-using System.Collections.Generic;
-using System.IO;
-using System.Security.Cryptography.X509Certificates;
 using System;
-using System.Net.Sockets;
-using System.Net;
 
 namespace Taurus.Mvc
 {
     /// <summary>
-    /// Taurus.Mvc Config
+    /// Taurus - Mvc Config
     /// </summary>
     public static partial class MvcConfig
     {
         /// <summary>
         /// 配置是否启用Mvc功能 
-        /// 如 Taurus.IsEnable ：true
+        /// 如 Mvc.IsEnable ：true
         /// </summary>
         public static bool IsEnable
         {
             get
             {
-                return AppConfig.GetAppBool("Taurus.IsEnable", true);
+                return AppConfig.GetAppBool("Mvc.IsEnable", true);
             }
             set
             {
-                AppConfig.SetApp("Taurus.IsEnable", value.ToString());
+                AppConfig.SetApp("Mvc.IsEnable", value.ToString());
+            }
+        }
+        /// <summary>
+        /// 配置是否 Mvc 允许 通过IP访问
+        /// 如 Mvc.IsAllowIPHost ：true， 默认值：true
+        /// </summary>
+        public static bool IsAllowIPHost
+        {
+            get
+            {
+                return AppConfig.GetAppBool("Mvc.IsAllowIPHost", true);
+            }
+            set
+            {
+                AppConfig.SetApp("Mvc.IsAllowIPHost", value.ToString());
             }
         }
         /// <summary>
         /// 配置是否打印请求日志【用于调试打印请求日志】 
-        /// 如 Taurus.IsPrintRequestLog ：false（默认值）
+        /// 如 Mvc.IsPrintRequestLog ：false（默认值）
         /// </summary>
         public static bool IsPrintRequestLog
         {
             get
             {
-                return AppConfig.GetAppBool("Taurus.IsPrintRequestLog", false);
+                return AppConfig.GetAppBool("Mvc.IsPrintRequestLog", false);
             }
             set
             {
-                AppConfig.SetApp("Taurus.IsPrintRequestLog", value.ToString());
+                AppConfig.SetApp("Mvc.IsPrintRequestLog", value.ToString());
             }
         }
         /// <summary>
         /// 配置是否打印请求执行的Sql语句【用于调试打印请求执行的Sql语句】 
-        /// 如 Taurus.IsPrintRequestSql ：false（默认值）
+        /// 如 Mvc.IsPrintRequestSql ：false（默认值）
         /// </summary>
         public static bool IsPrintRequestSql
         {
             get
             {
-                return AppConfig.GetAppBool("Taurus.IsPrintRequestSql", false);
+                return AppConfig.GetAppBool("Mvc.IsPrintRequestSql", false);
             }
             set
             {
-                AppConfig.SetApp("Taurus.IsPrintRequestSql", value.ToString());
+                AppConfig.SetApp("Mvc.IsPrintRequestSql", value.ToString());
             }
         }
         /// <summary>
         /// 指定控制器(控制器所在的项目名称)。
-        /// 如 Taurus.Controllers : "Taurus.Controllers"， 默认值："*"
+        /// 如 Mvc.Controllers : "Taurus.Controllers"， 默认值："*"
         /// </summary>
         public static string Controllers
         {
             get
             {
-                return AppConfig.GetApp("Taurus.Controllers", "*");
+                return AppConfig.GetApp("Mvc.Controllers", "*");
             }
             set
             {
-                AppConfig.SetApp("Taurus.Controllers", value);
+                AppConfig.SetApp("Mvc.Controllers", value);
             }
         }
         /// <summary>
         /// 配置请求路径的默认后缀。
-        /// 如 Taurus.Suffix : ".html"，默认值：空
+        /// 如 Mvc.Suffix : ".html"，默认值：空
         /// </summary>
         public static string Suffix
         {
             get
             {
-                return AppConfig.GetApp("Taurus.Suffix", "");
+                return AppConfig.GetApp("Mvc.Suffix", "");
             }
             set
             {
-                AppConfig.SetApp("Taurus.Suffix", value);
+                AppConfig.SetApp("Mvc.Suffix", value);
             }
         }
         /// <summary>
         /// 配置路由模式。
-        /// 如 Taurus.RouteMode : 1，默认值1。
+        /// 如 Mvc.RouteMode : 1，默认值1。
         /// 值为0：匹配{Action}/{Para}
         /// 值为1：匹配{Controller}/{Action}/{Para}
         /// 值为2：匹配{Module}/{Controller}/{Action}/{Para}
         /// </summary>
         public static int RouteMode
         {
-            get { return AppConfig.GetAppInt("Taurus.RouteMode", 1); }
-            set { AppConfig.SetApp("Taurus.RouteMode", value.ToString()); }
+            get { return AppConfig.GetAppInt("Mvc.RouteMode", 1); }
+            set { AppConfig.SetApp("Mvc.RouteMode", value.ToString()); }
         }
 
         /// <summary>
         /// 配置页面起始访问路径。
-        /// 如 Taurus.DefaultUrl ： "home/index"
+        /// 如 Mvc.DefaultUrl ： "home/index"
         /// </summary>
         public static string DefaultUrl
         {
             get
             {
-                return AppConfig.GetApp("Taurus.DefaultUrl", "");
+                return AppConfig.GetApp("Mvc.DefaultUrl", "");
             }
             set
             {
-                AppConfig.SetApp("Taurus.DefaultUrl", value);
+                AppConfig.SetApp("Mvc.DefaultUrl", value);
             }
         }
 
         /// <summary>
-        /// 配置是否允许JS跨域请求。
-        /// 如 Taurus.IsAllowCORS ： false，默认值：true
-        /// </summary>
-        public static bool IsAllowCORS
-        {
-            get
-            {
-                return AppConfig.GetAppBool("Taurus.IsAllowCORS", true);
-            }
-            set
-            {
-                AppConfig.SetApp("Taurus.IsAllowCORS", value.ToString());
-            }
-        }
-        /// <summary>
         /// 配置Mvc的Views目录文件夹。
-        /// 如 Taurus.Views ： "Views"， 默认值：Views（默认文件夹名称）
+        /// 如 Mvc.Views ： "Views"， 默认值：Views（默认文件夹名称）
         /// </summary>
         public static string Views
         {
             get
             {
-                return AppConfig.GetApp("Taurus.Views", "Views");
+                return AppConfig.GetApp("Mvc.Views", "Views");
             }
             set
             {
-                AppConfig.SetApp("Taurus.Views", value);
+                AppConfig.SetApp("Mvc.Views", value);
             }
         }
         /// <summary>
         /// 配置部署成子应用程序的名称。
-        /// 如 Taurus.SubAppName ： "UI"
+        /// 如 Mvc.SubAppName ： "UI"
         /// </summary>
         public static string SubAppName
         {
             get
             {
-                return AppConfig.GetApp("Taurus.SubAppName", "");
+                return AppConfig.GetApp("Mvc.SubAppName", "");
             }
             set
             {
-                AppConfig.SetApp("Taurus.SubAppName", value);
+                AppConfig.SetApp("Mvc.SubAppName", value);
             }
         }
 
@@ -171,20 +165,20 @@ namespace Taurus.Mvc
         {
             get
             {
-                string url = AppConfig.GetApp("Taurus.RunUrl", "");
+                string url = AppConfig.GetApp("Mvc.RunUrl", "");
                 if (string.IsNullOrEmpty(url))
                 {
                     url = InitRunUrl();
                     if (!string.IsNullOrEmpty(url))
                     {
-                        AppConfig.SetApp("Taurus.RunUrl", url);
+                        AppConfig.SetApp("Mvc.RunUrl", url);
                     }
                 }
                 return url.TrimEnd('/');
             }
             set
             {
-                AppConfig.SetApp("Taurus.RunUrl", value);
+                AppConfig.SetApp("Mvc.RunUrl", value);
             }
         }
 

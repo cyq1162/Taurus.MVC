@@ -148,7 +148,7 @@ namespace Taurus.Mvc
             catch (Exception err)
             {
                 context.Response.Write(err.Message);
-                WebTool.PrintRequestLog(Request, err);
+                WebTool.PrintRequestLog(context, err);
             }
             finally
             {

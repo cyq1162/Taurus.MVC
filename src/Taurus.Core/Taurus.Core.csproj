@@ -97,6 +97,8 @@
     <Compile Include="Plugin\Admin\AdminController.Login.cs" />
     <Compile Include="Plugin\Admin\AdminController.OSInfo.cs" />
     <Compile Include="Plugin\Admin\AdminController.Setting.cs" />
+    <Compile Include="Plugin\CORS\CORSConfig.cs" />
+    <Compile Include="Plugin\CORS\CORSRun.cs" />
     <Compile Include="Plugin\Doc\DocConfig.cs" />
     <Compile Include="Plugin\Doc\DocController.cs" />
     <Compile Include="Plugin\Doc\HttpPostedFileExtend.cs" />

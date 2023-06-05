@@ -1,11 +1,8 @@
 ﻿using CYQ.Data.Tool;
 using CYQ.Data.Table;
 using System.Collections.Generic;
-using Taurus.Mvc;
-using CYQ.Data;
 using Taurus.Plugin.MicroService;
 using Taurus.Plugin.Limit;
-using Taurus.Plugin.Doc;
 using System.Xml;
 
 namespace Taurus.Plugin.Admin
@@ -145,6 +142,16 @@ namespace Taurus.Plugin.Admin
             }
 
         }
+
+        /// <summary>
+        /// 删除管理员2账号
+        /// </summary>
+        public void btnDeleteAccount()
+        {
+            IO.Delete(AdminConst.AccountPath);
+            View.Set("msg", "Delete success.");
+        }
+
         /// <summary>
         /// 添加注册主机
         /// </summary>

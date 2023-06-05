@@ -107,14 +107,14 @@ namespace Taurus.Plugin.MicroService
 
             #region Admin管理后台：手工添加Host
 
-            private static Dictionary<string, string> hostListByAdmin = new Dictionary<string, string>();
+            private static MDictionary<string, string> hostListByAdmin = new MDictionary<string, string>(StringComparer.OrdinalIgnoreCase);
             /// <summary>
             /// Admin管理后台：手工添加Host
             /// </summary>
             /// <param name="hostList">手工添加HostList</param>
             internal static void AddHostByAdmin(string hostList)
             {
-                Dictionary<string, string> hostDic = new Dictionary<string, string>();
+                MDictionary<string, string> hostDic = new MDictionary<string, string>(StringComparer.OrdinalIgnoreCase);
                 if (!string.IsNullOrEmpty(hostList))
                 {
                     string[] rows = hostList.Split('\n');
@@ -153,12 +153,17 @@ namespace Taurus.Plugin.MicroService
             internal static void LoadHostByAdmin()
             {
                 var hostList = hostListByAdmin;//获取引用
-                foreach (var item in hostList)
+                List<string> list = hostList.GetKeys();
+                foreach (string key in list)
                 {
-                    string[] hosts = item.Value.Split(',');
-                    foreach (string host in hosts)
+                    if (hostList.ContainsKey(key))
                     {
-                        AddHost(item.Key, host, 0, "");
+                        var value = hostList[key];
+                        string[] hosts = value.Split(',');
+                        foreach (string host in hosts)
+                        {
+                            AddHost(key, host, 0, "");
+                        }
                     }
                 }
             }

@@ -7,7 +7,7 @@ using Taurus.Plugin.MicroService;
 using Taurus.Plugin.Limit;
 using Taurus.Plugin.Doc;
 using System.Configuration;
-
+using Taurus.Plugin.CORS;
 
 namespace Taurus.Plugin.Admin
 {
@@ -99,6 +99,14 @@ namespace Taurus.Plugin.Admin
                 Sets(dt, "Doc.HtmlFolderName", DocConfig.HtmlFolderName, "Mvc view folder name for doc.");
                 Sets(dt, "Doc.DefaultImg", DocConfig.DefaultImg, "Default images path for doc auto test,as :/App_Data/xxx.jpg");
                 Sets(dt, "Doc.DefaultParas", DocConfig.DefaultParas, "global para for doc auto test,as :ack,token");
+            }
+            else if (type == "plugin-cors")
+            {
+                Sets(dt, "CORS.IsEnable", CORSConfig.IsEnable, "Application is allow cross-origin resource sharing.");
+                Sets(dt, "CORS.Method", CORSConfig.Method, "CORS Header：Access-Control-Allow-Method.");
+                Sets(dt, "CORS.Origin", CORSConfig.Origin, "CORS Header：Access-Control-Allow-Origin.");
+                Sets(dt, "CORS.Credentials", CORSConfig.Credentials, "CORS Header：Access-Control-Allow-Credentials.");
+                Sets(dt, "CORS.MaxAge", CORSConfig.MaxAge + " (s)", "CORS Header：Access-Control-Max-Age.");
             }
             else if (type == "plugin-microservice")
             {

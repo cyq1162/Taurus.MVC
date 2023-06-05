@@ -45,26 +45,29 @@ namespace Taurus.Plugin.MicroService
                 var kvForGateway = new MDictionary<string, List<HostInfo>>(StringComparer.OrdinalIgnoreCase);
                 foreach (string key in keys)
                 {
-                    var items = regCenterList[key];
-                    List<HostInfo> regList = new List<HostInfo>();
-                    List<HostInfo> gatewayList = new List<HostInfo>();
-                    for (int i = 0; i < items.Count; i++)
+                    if (regCenterList.ContainsKey(key))
                     {
-                        var info = items[i];
-                        if (info.RegTime < DateTime.Now.AddSeconds(-11) || info.Version < 0)
+                        var items = regCenterList[key];
+                        List<HostInfo> regList = new List<HostInfo>();
+                        List<HostInfo> gatewayList = new List<HostInfo>();
+                        for (int i = 0; i < items.Count; i++)
                         {
-                            Server.IsChange = true;
+                            var info = items[i];
+                            if (info.RegTime < DateTime.Now.AddSeconds(-11) || info.Version < 0)
+                            {
+                                Server.IsChange = true;
+                            }
+                            else
+                            {
+                                regList.Add(info);
+                                gatewayList.Add(info);
+                            }
                         }
-                        else
+                        if (regList.Count > 0)
                         {
-                            regList.Add(info);
-                            gatewayList.Add(info);
+                            kvForRegCenter.Add(key, regList);
+                            kvForGateway.Add(key, gatewayList);
                         }
-                    }
-                    if (regList.Count > 0)
-                    {
-                        kvForRegCenter.Add(key, regList);
-                        kvForGateway.Add(key, gatewayList);
                     }
                 }
 
@@ -102,7 +105,7 @@ namespace Taurus.Plugin.MicroService
             catch (Exception err)
             {
                 MsLog.WriteDebugLine(err.Message);
-                MsLog.Write(err.Message, "MicroService.Run.ClearExpireHost()", "", MsConfig.Server.Name);
+                MsLog.Write(err.Message, "MicroService.Run.CheckAndClearExpireHost()", "", MsConfig.Server.Name);
             }
         }
 

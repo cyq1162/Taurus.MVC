@@ -6,6 +6,7 @@ using System.Web;
 using Taurus.Plugin.MicroService;
 using Taurus.Mvc;
 using Taurus.Plugin.Limit;
+using Taurus.Plugin.CORS;
 
 namespace Taurus.Core
 {
@@ -41,8 +42,6 @@ namespace Taurus.Core
             HttpApplication app = (HttpApplication)sender;
             HttpContext context = app.Context;
             Uri uri = context.Request.Url;
-
-            
             //#region 0、接口调用次数统计
             //MetricRun.Start(uri);
             //#endregion
@@ -64,10 +63,23 @@ namespace Taurus.Core
                 }
                 if (WebTool.IsMvcSuffix(uri.LocalPath))
                 {
-                    #region 打印请求日志
+                    #region 打印请求日志、检测Mvc是否禁用IP访问
                     if (MvcConfig.IsPrintRequestLog)
                     {
-                        WebTool.PrintRequestLog(context.Request, null);
+                        WebTool.PrintRequestLog(context, null);
+                    }
+                    if (!MvcConfig.IsAllowIPHost)
+                    {
+                        string[] items = uri.Authority.Split('.');
+                        int ip;
+                        if (items.Length != 4 || int.TryParse(items[3], out ip))
+                        {
+                            context.Response.StatusCode = 503;
+                            context.Response.Write("503 Service unavailable.");
+                            context.Response.End();
+                            return;
+                        }
+
                     }
                     #endregion
                     if (!LimitRun.CheckRate())
@@ -91,11 +103,13 @@ namespace Taurus.Core
             #endregion
 
             #region 3、跨域检测【在网关转发之前】
-
-            if (!CheckCORS(context))
+            if (CORSConfig.IsEnable)
             {
-                context.Response.End();
-                return;
+                if (!CORSRun.Check(context))
+                {
+                    context.Response.End();
+                    return;
+                }
             }
             #endregion
 
@@ -195,42 +209,9 @@ namespace Taurus.Core
             HttpContext cont = ((HttpApplication)sender).Context;
             if (cont != null)
             {
-                WebTool.PrintRequestLog(cont.Request, cont.Error);
+                WebTool.PrintRequestLog(cont, cont.Error);
             }
         }
-
-        #region 检测CORS跨域请求
-        private bool CheckCORS(HttpContext context)
-        {
-            if (MvcConfig.IsAllowCORS)
-            {
-                if (context.Request.HttpMethod == "OPTIONS")
-                {
-                    context.Response.StatusCode = 204;
-                    context.Response.AppendHeader("Access-Control-Allow-Method", "GET,POST,PUT,DELETE");
-                    context.Response.AppendHeader("Access-Control-Allow-Origin", "*");
-                    if (context.Request.Headers["Access-Control-Allow-Headers"] != null)
-                    {
-                        context.Response.AppendHeader("Access-Control-Allow-Headers", context.Request.Headers["Access-Control-Allow-Headers"]);
-                    }
-                    else if (context.Request.Headers["Access-Control-Request-Headers"] != null)
-                    {
-                        context.Response.AppendHeader("Access-Control-Allow-Headers", context.Request.Headers["Access-Control-Request-Headers"]);
-                    }
-                    context.Response.End();
-                    return false;
-                }
-                else if (context.Request.UrlReferrer == null || context.Request.Url.Authority != context.Request.UrlReferrer.Authority)
-                {
-                    //跨域访问
-                    context.Response.AppendHeader("Access-Control-Allow-Origin", "*");
-                    context.Response.AppendHeader("Access-Control-Allow-Credentials", "true");
-                }
-            }
-            return true;
-        }
-
-        #endregion
 
 
         #region 替换输出，仅对子目录部署时有效

@@ -15,7 +15,7 @@ namespace Taurus.Plugin.MicroService
             SysLogs sysLogs = new SysLogs();
             sysLogs.LogType = "MicroService";
             sysLogs.Message = msg;
-            sysLogs.PageUrl = url;
+            sysLogs.RequestUrl = url;
             sysLogs.HttpMethod = httpMethod;
             sysLogs.ClientIP = sysLogs.Host;
             sysLogs.Host = MvcConfig.RunUrl;

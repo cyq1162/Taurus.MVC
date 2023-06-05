@@ -7,7 +7,7 @@ using Taurus.Plugin.MicroService;
 using Taurus.Plugin.Limit;
 using Taurus.Plugin.Doc;
 using System.Configuration;
-
+using System.IO;
 
 namespace Taurus.Plugin.Admin
 {
@@ -22,18 +22,40 @@ namespace Taurus.Plugin.Admin
             MDataTable dt = new MDataTable();
             dt.Columns.Add("ConfigKey,ConfigValue,Description");
             #region Mvc
-            Sets(dt, "Taurus.IsEnable", MvcConfig.IsEnable, "Taurus mvc  is enable.");
-            Sets(dt, "Taurus.IsPrintRequestLog", MvcConfig.IsPrintRequestLog, "Print mvc suffix request logs to 【Debug_RequestLog*.txt】 for debug.");
-            Sets(dt, "Taurus.IsPrintRequestSql", MvcConfig.IsPrintRequestSql, "Print mvc suffix request sqls to 【Debug_RequestSql*.txt】 for debug.");
-            Sets(dt, "Taurus.RunUrl", MvcConfig.RunUrl, "Application run url （http request url）.");
-            Sets(dt, "Taurus.DefaultUrl", MvcConfig.DefaultUrl, "Application default url （url local path）.");
-            Sets(dt, "Taurus.IsAllowCORS", MvcConfig.IsAllowCORS, "Application is allow cross-origin resource sharing.");
-
-            Sets(dt, "Taurus.RouteMode", GetRouteModeText(), "Route mode 【0、1、2】 for selected.");
-            Sets(dt, "Taurus.Controllers", MvcConfig.Controllers, "Load controller dll names.");
-            Sets(dt, "Taurus.Views", MvcConfig.Views, "Mvc view folder name.");
-            Sets(dt, "Taurus.Suffix", MvcConfig.Suffix, "Deal with mvc suffix.");
-            Sets(dt, "Taurus.SubAppName", MvcConfig.SubAppName, "Name of deploy as sub application.");
+            if (type == "mvc")
+            {
+                Sets(dt, "Mvc.IsEnable", MvcConfig.IsEnable, "Taurus mvc  is enable.");
+                Sets(dt, "Mvc.IsAllowIPHost", MvcConfig.IsAllowIPHost, "Taurus mvc  is allow ip host request.");
+                Sets(dt, "Mvc.IsPrintRequestLog", MvcConfig.IsPrintRequestLog, "Print mvc suffix request logs to 【Debug_RequestLog*.txt】 for debug.");
+                Sets(dt, "Mvc.IsPrintRequestSql", MvcConfig.IsPrintRequestSql, "Print mvc suffix request sqls to 【Debug_RequestSql*.txt】 for debug.");
+                Sets(dt, "Mvc.RunUrl", MvcConfig.RunUrl, "Application run url （http request url）.");
+                Sets(dt, "Mvc.DefaultUrl", MvcConfig.DefaultUrl, "Application default url （url local path）.");
+                Sets(dt, "Mvc.Suffix", MvcConfig.Suffix, "Deal with mvc suffix.");
+                Sets(dt, "Mvc.SubAppName", MvcConfig.SubAppName, "Name of deploy as sub application.");
+                Sets(dt, "Mvc.RouteMode", GetRouteModeText(), "Route mode 【0、1、2】 for selected.");
+            }
+            else if (type == "mvc-controller")
+            {
+                Sets(dt, "Mvc.Controllers", MvcConfig.Controllers, "Load controller dll names.");
+                var controllerAssemblys = ControllerCollector.GetAssemblys();
+                Sets(dt, "----------Mvc.Controllers - Count", controllerAssemblys.Count, "Num of controller dll for mvc (Show Only).");
+                for (int i = 0; i < controllerAssemblys.Count; i++)
+                {
+                    var assembly = controllerAssemblys[i].GetName();
+                    Sets(dt, "----------Mvc.Controllers - " + (i + 1), assembly.Name + ".dll", assembly.Version.ToString());
+                }
+            }
+            else if (type == "mvc-view")
+            {
+                Sets(dt, "Mvc.Views", MvcConfig.Views, "Mvc view folder name.");
+                var viewFolders = Directory.GetDirectories(ViewEngine.ViewsPath);
+                Sets(dt, "----------Mvc.Views - Count", viewFolders.Length, "Num of view folder for mvc (Show Only).");
+                for (int i = 0; i < viewFolders.Length; i++)
+                {
+                    var folder = Path.GetFileNameWithoutExtension(viewFolders[i]);
+                    Sets(dt, "----------Mvc.Views - " + (i + 1), folder, "/" + MvcConfig.Views + "/" + folder);
+                }
+            }
             #endregion
             dt.Bind(View);
         }

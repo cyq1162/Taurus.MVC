@@ -33,11 +33,11 @@ namespace Taurus.Mvc
                     if (string.IsNullOrEmpty(_DllNames) || _DllNames == "*")
                     {
                         _DllNames = string.Empty;
-                        string[] files = Directory.GetFiles(AppConfig.AssemblyPath, "*Controllers.dll", SearchOption.AllDirectories);
+                        string[] files = Directory.GetFiles(AppConfig.AssemblyPath, "*Controllers.dll", SearchOption.TopDirectoryOnly);
                         if (files == null || files.Length == 0)
                         {
                             _IsSearchAll = true;
-                            files = Directory.GetFiles(AppConfig.AssemblyPath, "*.dll", SearchOption.AllDirectories);//没有配置，搜索所有的dll。
+                            files = Directory.GetFiles(AppConfig.AssemblyPath, "*.dll", SearchOption.TopDirectoryOnly);//没有配置，搜索所有的dll。
                         }
                         if (files != null)
                         {
@@ -122,8 +122,10 @@ namespace Taurus.Mvc
                         List<Assembly> assList = GetAssemblys();
                         if (assList != null && assList.Count > 0)
                         {
-                            foreach (Assembly ass in assList)
+                            for (int i = 0; i < assList.Count; i++)
                             {
+                                Assembly ass = assList[i];
+                                bool isControllerAssembly = false;
                                 Type[] typeList = ass.GetExportedTypes();
                                 foreach (Type type in typeList)
                                 {
@@ -137,6 +139,7 @@ namespace Taurus.Mvc
                                          ))
                                          ))
                                     {
+                                        isControllerAssembly = true;
                                         string lv1Name = GetLevelName(type.FullName, 1);
                                         string lv2Name = GetLevelName(type.FullName, 2);
                                         if (!_Lv1Controllers.ContainsKey(lv1Name))
@@ -158,6 +161,11 @@ namespace Taurus.Mvc
                                         MethodCollector.InitMethodInfo(type);
                                     }
 
+                                }
+                                if (!isControllerAssembly)
+                                {
+                                    assList.RemoveAt(i);
+                                    i--;
                                 }
                             }
                         }

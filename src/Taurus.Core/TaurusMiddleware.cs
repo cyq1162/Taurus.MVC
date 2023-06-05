@@ -41,7 +41,14 @@ namespace Microsoft.AspNetCore.Http
                     System.Web.HttpApplication.Instance.ExecuteEventHandler();
                     if (System.Web.HttpContext.Current.Response.HasStarted)  // || Body是只写流  (context.Response.Body != null && context.Response.Body.CanRead
                     {
-                        await context.Response.WriteAsync("");
+                        if (context.Response.StatusCode == 204)
+                        {
+                            await context.Response.Body.FlushAsync();
+                        }
+                        else
+                        {
+                            await context.Response.WriteAsync("");
+                        }
                     }
                     //处理信息
                     else

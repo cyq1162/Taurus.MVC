@@ -220,17 +220,22 @@ namespace Taurus.Plugin.MicroService
                     {
                         wc.Headers.Set("X-Real-Port", realPort);
                     }
-                    if (request.HttpMethod == "GET")
+                    wc.Headers.Add("X-Request-ID", context.GetTraceID());
+                    switch (request.HttpMethod)
                     {
-                        bytes = wc.DownloadData(url);
-                    }
-                    else
-                    {
-                        if (data == null)
-                        {
-                            data = new byte[0];
-                        }
-                        bytes = wc.UploadData(url, request.HttpMethod, data);
+                        case "GET":
+                            bytes = wc.DownloadData(url);
+                            break;
+                        case "HEAD":
+                            wc.Head(url);
+                            break;
+                        default:
+                            if (data == null)
+                            {
+                                data = new byte[0];
+                            }
+                            bytes = wc.UploadData(url, request.HttpMethod, data);
+                            break;
                     }
                     try
                     {

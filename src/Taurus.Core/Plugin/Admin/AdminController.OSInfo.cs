@@ -5,6 +5,7 @@ using CYQ.Data;
 using System.Threading;
 using System.Diagnostics;
 using System.Reflection;
+using System.Net;
 
 namespace Taurus.Plugin.Admin
 {
@@ -51,12 +52,13 @@ namespace Taurus.Plugin.Admin
 
             if (type == "os")
             {
-                dtTaurus.NewRow(true).Sets(0, "Client-IP", Request.UserHostAddress, "Client ip.");
-                dtTaurus.NewRow(true).Sets(0, "Server-IP", MvcConst.HostIP, "Server ip.");
-                dtTaurus.NewRow(true).Sets(0, "Taurus-Version", "V" + MvcConst.Version, "Version of the Taurus.Core.dll.");
-                dtTaurus.NewRow(true).Sets(0, "Orm-Version", "V" + AppConfig.Version, "Version of the CYQ.Data.dll.");
-                dtTaurus.NewRow(true).Sets(0, "AppPath", AppConfig.RunPath, "Web application path of the working directory.");
-                dtTaurus.NewRow(true);
+                dtTaurus.NewRow(true).Sets(0, "Client-IP-Public", Request.UserHostAddress, "Client public ip.");
+                IPAddress[] ips = Dns.GetHostAddresses(Request.Url.Authority);
+                if(ips != null && ips.Length > 0)
+                {
+                    dtTaurus.NewRow(true).Sets(0, "Server-IP-Public", ips[0].ToString(), "Server public ip.");
+                }
+                dtTaurus.NewRow(true).Sets(0, "Server-IP-Internal", MvcConst.HostIP, "Server internal ip.");
                 dtTaurus.NewRow(true).Sets(0, "Runtime-Version", (AppConfig.IsNetCore ? ".Net Core - " : ".Net Framework - ") + Environment.Version, "Version of the common language runtime.");
                 dtTaurus.NewRow(true).Sets(0, "OS-Version", Environment.OSVersion, "Operating system.");
                 dtTaurus.NewRow(true).Sets(0, "ProcessID", MvcConst.ProcessID, "Process id.");
@@ -69,7 +71,7 @@ namespace Taurus.Plugin.Admin
                 dtTaurus.NewRow(true).Sets(0, "MachineName", Environment.MachineName, "Name of computer.");
                 dtTaurus.NewRow(true).Sets(0, "UserName", Environment.UserName, "Name of the person who is logged on to Windows.");
                 dtTaurus.NewRow(true).Sets(0, "WorkingSet", Environment.WorkingSet / 1024 + "KB | " + Environment.WorkingSet / 1024 / 1024 + "MB", "Physical memory mapped to the process context.");
-                dtTaurus.NewRow(true).Sets(0, "CurrentDirectory", Environment.CurrentDirectory, "Fully qualified path of the working directory.");
+                dtTaurus.NewRow(true).Sets(0, "CurrentDirectory", AppConfig.RunPath, "Web application path of the working directory.");
             }
             else if (type.StartsWith("ass"))
             {
@@ -115,7 +117,7 @@ namespace Taurus.Plugin.Admin
                     }
                 }
                 dtTaurus.Rows.Sort("ConfigKey");
-                if(dtMicrosoft.Rows.Count > 0)
+                if (dtMicrosoft.Rows.Count > 0)
                 {
                     dtMicrosoft.Rows.Sort("ConfigKey");
                     dtTaurus.Merge(dtMicrosoft);
@@ -125,7 +127,7 @@ namespace Taurus.Plugin.Admin
                     dtSystem.Rows.Sort("ConfigKey");
                     dtTaurus.Merge(dtSystem);
                 }
-               
+
             }
             dtTaurus.Bind(View);
         }
