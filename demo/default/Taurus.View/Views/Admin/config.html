@@ -33,9 +33,12 @@
         </div>
         <div style="float:left"><b>Taurus （Framework）：</b></div>
         <div style="float:left">
-            <a href="config?t=Mvc&t1=28&t2=28&t3=44">MVC</a>&nbsp;|&nbsp;
+            <a href="config?t=Mvc&t1=28&t2=28&t3=44">MVC</a>（
+            <a href="config?t=Mvc-Controller&t1=28&t2=28&t3=44">Controller</a>&nbsp;|&nbsp;
+            <a href="config?t=Mvc-View&t1=28&t2=28&t3=44">View</a>&nbsp;）|&nbsp;
             Plugin【
             <a href="config?t=Plugin-Microservice">MicroService</a>&nbsp;|&nbsp;
+            <a href="config?t=Plugin-CORS&t1=28&t2=28&t3=44">CORS</a>&nbsp;|&nbsp;
             <a href="config?t=Plugin-Admin">Admin</a>&nbsp;|&nbsp;
             <a href="config?t=Plugin-Doc">Doc</a>&nbsp;|&nbsp;
             <a href="config?t=Plugin-Limit">Limit</a>（
@@ -118,12 +121,10 @@
                 });
             }
             function isAllowChange(key) {
-                if (key.indexOf(' ') > -1 || key.endsWith("Conn")) { return false; }
+                if (key.indexOf(' ') > -1 || key.endsWith("Conn") || key.startsWith("Conn")) { return false; }
                 switch (key) {
-                    case "Taurus.RunUrl":
-                    case "Taurus.Controllers":
-                    case "Taurus.Views":
-                    case "Taurus.SslPath":
+                    case "Mvc.Controllers":
+                    case "Mvc.Views":
                     case "MicroService.Server.Name":
                         return false;
                 }
