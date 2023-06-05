@@ -2414,6 +2414,11 @@
             <para>使用此项：插入数据后,会根据返回id进行查询后填充数据行。</para>
             </summary>
         </member>
+        <member name="M:System.Web.HttpContexExtend.GetTraceID(System.Web.HttpContext)">
+            <summary>
+            获得分布式追踪ID
+            </summary>
+        </member>
         <member name="T:System.Threading.ReaderWriterLockSlim">
             <summary>
             仅 2.0 或 3.0 下编绎使用，其它环境编绎可以移除。
@@ -2792,6 +2797,11 @@
             日志类型
             </summary>
         </member>
+        <member name="P:CYQ.Data.SysLogs.TraceID">
+            <summary>
+            分布式追踪ID
+            </summary>
+        </member>
         <member name="P:CYQ.Data.SysLogs.HostName">
             <summary>
             请求的主机名称(系统默认读取主机名)
@@ -2812,7 +2822,7 @@
             客户端请求IP
             </summary>
         </member>
-        <member name="P:CYQ.Data.SysLogs.PageUrl">
+        <member name="P:CYQ.Data.SysLogs.RequestUrl">
             <summary>
             请求的地址
             </summary>

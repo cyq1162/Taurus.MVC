@@ -2641,6 +2641,11 @@
             日志类型
             </summary>
         </member>
+        <member name="P:CYQ.Data.SysLogs.TraceID">
+            <summary>
+            分布式追踪ID
+            </summary>
+        </member>
         <member name="P:CYQ.Data.SysLogs.HostName">
             <summary>
             请求的主机名称(系统默认读取主机名)
@@ -2661,7 +2666,7 @@
             客户端请求IP
             </summary>
         </member>
-        <member name="P:CYQ.Data.SysLogs.PageUrl">
+        <member name="P:CYQ.Data.SysLogs.RequestUrl">
             <summary>
             请求的地址
             </summary>
@@ -7585,6 +7590,12 @@
             <summary>
             使用的上下文，可能是旧的。
             </summary>
+        </member>
+        <member name="M:System.Web.HttpContext.GetTraceID">
+            <summary>
+            获取分布式追踪ID。
+            </summary>
+            <returns></returns>
         </member>
         <member name="M:System.Web.HttpCookie.op_Implicit(Microsoft.AspNetCore.Http.CookieOptions)~System.Web.HttpCookie">
             <summary>
