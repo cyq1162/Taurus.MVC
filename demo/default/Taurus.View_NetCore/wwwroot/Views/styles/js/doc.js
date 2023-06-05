@@ -46,10 +46,10 @@ function run() {
 
     });
 
-    ajax(httpType,dataType, url, data, header, formData);
+    ajax(httpType, dataType, url, data, header, formData);
     //ajax("HEAD", url, data, header);
 }
-function ajax(type,dataType, url, data, header, formData) {
+function ajax(type, dataType, url, data, header, formData) {
 
     var opt = {
         type: type,
@@ -65,10 +65,10 @@ function ajax(type,dataType, url, data, header, formData) {
         success: function (result, status, xhr) {
             $("#run").attr('disabled', false);
             $("#runResult").show();
-            $("#resultHeader").html(formatHeader(xhr.getAllResponseHeaders()));
+            $("#resultHeader").html(formatHeader(xhr.getAllResponseHeaders(), xhr.status + " " + status));
+            if (!result) { return; }
             var msg = result.toString().replace(/</g, '&lt;').replace(/>/g, '&gt;');
-            switch (dataType)
-            {
+            switch (dataType) {
                 case "json":
                     msg = JSON.stringify(result);
                     break;
@@ -79,15 +79,13 @@ function ajax(type,dataType, url, data, header, formData) {
                     msg = result.toString();
                     break;
             }
-            if (dataType == "xml")
-            {
-               
-            }
-            else if (dataType == "text")
-            {
+            if (dataType == "xml") {
 
             }
-                msg=msg.replace(/</g, '&lt;').replace(/>/g, '&gt;');
+            else if (dataType == "text") {
+
+            }
+            msg = msg.replace(/</g, '&lt;').replace(/>/g, '&gt;');
             $("#resultContent").html(msg);
             if (isRunAll()) {
                 parent.setValue(location.href, result.success == undefined ? true : result.success, msg);
@@ -97,7 +95,7 @@ function ajax(type,dataType, url, data, header, formData) {
             $("#run").attr('disabled', false);
             if (result) {
                 $("#runResult").show();
-                $("#resultHeader").html(formatHeader(result.getAllResponseHeaders()));
+                $("#resultHeader").html(formatHeader(result.getAllResponseHeaders(), result.status));
                 var msg = result.responseText.replace(/</g, '&lt;').replace(/>/g, '&gt;')
                 $("#resultContent").html(msg);
                 if (isRunAll()) {
@@ -114,7 +112,8 @@ function ajax(type,dataType, url, data, header, formData) {
     $.ajax(opt);
 
 }
-function formatHeader(header) {
+function formatHeader(header, status) {
+    header = "Status: " + status + "\r\n" + header;
     var array = new Array(header.length);
     for (var i = 0; i < header.length; i++) {
         if (header.charCodeAt(i) == 10) {
@@ -189,6 +188,6 @@ function restore() {
         );
     }
 }
-setTimeout(function () { restore();}, 100);
+setTimeout(function () { restore(); }, 100);
 
 
