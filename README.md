@@ -1,13 +1,15 @@
 # Taurus.MVC
-Taurus.mvc is a high-performance mvc and webapi framework for asp.net or asp.net core（适合场景：对性能和并发有较高要求的电商、站点、WebAPI等系统，支持.Net Core，自带微服务）,created by Aster（路过秋天）<hr />
+Taurus.mvc is a high-performance mvc and webapi framework for asp.net or asp.net core（适合场景：对性能和并发有较高要求的电商、站点、WebAPI等系统，支持.Net Framework 2.0+，.Net Core 2.1+，天然支持分布式，内置微服务【注册中心、网关、客户端】三合一,created by Aster（路过秋天）<hr />
 
-Java 版本开源：https://github.com/cyq1162/Taurus.MVC-java<br /><hr />
+本框架有 Java 开源版本：https://github.com/cyq1162/Taurus.MVC-java<br /><hr />
 教程或示例<hr />
 Taurus.MVC 大杂汇 ：https://www.cnblogs.com/cyq1162/category/863014.html<br />
 Taurus.MVC WebAPI 入门系列教程 ：https://www.cnblogs.com/cyq1162/category/2205667.html <br />
 Taurus.MVC 微服务 入门系列教程  ：https://www.cnblogs.com/cyq1162/category/2205668.html <br />
 Taurus.MVC Web 应用程序  Demo  ：https://github.com/cyq1162/Taurus.MVC.Demo <br />
 
+温馨提示：以下介绍内容，比较原始，为早期初创框架时的内容，可能不适用当前版本：
+Friendly reminder: The following introduction is relatively primitive and is from the early stage of the framework's creation. Therefore, it may not be applicable to the current version.
 <hr />
 <h1><span style="vertical-align: inherit;"><span style="vertical-align: inherit;">Why create Taurus.MVC:</span></span></h1>
 <p><span style="vertical-align: inherit;"><span style="vertical-align: inherit;">I remember when I was fooled by the last company to take charge of the company's e-commerce platform, the situation is this:</span></span></p>
