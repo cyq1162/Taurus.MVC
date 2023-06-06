@@ -1,20 +1,10 @@
-using CYQ.Data;
+using Taurus.Mvc;
 
-try
-{
-    var builder = WebApplication.CreateBuilder(args);
-    string host = AppConfig.GetApp("Host");
+var builder = WebApplication.CreateBuilder(args);
+builder.WebHost.UseUrls(MvcConfig.Kestrel.Urls);
+builder.Services.AddTaurusMvc();
 
-    builder.WebHost.UseUrls(host);
-    builder.Services.AddHttpContext();
-
-    var app = builder.Build();
-    app.UseHttpContext();
-    app.UseTaurusMvc(app.Environment);
-    app.Run();
-}
-catch (Exception err)
-{
-    Console.WriteLine(err.Message);
-
-}
+var app = builder.Build();
+app.UseTaurusMvc();
+app.UseStaticFiles();
+app.Run();

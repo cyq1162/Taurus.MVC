@@ -1,10 +1,7 @@
-﻿using CYQ.Data.Tool;
-using System;
-using System.Collections.Generic;
-using System.Text;
-using Taurus.Mvc;
+﻿using Taurus.Mvc;
 using Taurus.Mvc.Attr;
-using Taurus.MicroService;
+using Taurus.Plugin.MicroService;
+
 namespace Taurus.Controllers
 {
     /// <summary>
@@ -22,7 +19,7 @@ namespace Taurus.Controllers
             {
                 Write("From : " + Request.UrlReferrer.ToString() + "<br/>");
             }
-            Write("MicroService : " + MSConfig.AppRunUrl + Request.Url.LocalPath + " : Hello ： " + MSConfig.ServerName);
+            Write("MicroService : " + MvcConfig.RunUrl + Request.Url.LocalPath + " : Hello ： " + MsConfig.Server.Name);
         }
     }
 }
