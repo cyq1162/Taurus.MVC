@@ -233,13 +233,13 @@ namespace Taurus.Plugin.Limit
             }
             /// <summary>
             /// 配置时间段内允许的最大请求数
-            /// 如 Limit.Rate.Limit ：50
+            /// 如 Limit.Rate.Limit ：500
             /// </summary>
             public static int Limit
             {
                 get
                 {
-                    int limit = AppConfig.GetAppInt("Limit.Rate.Limit", 50);
+                    int limit = AppConfig.GetAppInt("Limit.Rate.Limit", 500);
                     if (limit <= 0)
                     {
                         return 1;

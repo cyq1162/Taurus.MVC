@@ -44,14 +44,14 @@ namespace Taurus.Plugin.MicroService
                 }
                 wc.Headers.Add(MsConst.HeaderKey, (MsConfig.IsClient ? MsConfig.Client.RcKey : MsConfig.Server.RcKey));
                 //wc.Headers.Add("X-Real-IP", MvcConst.HostIP);
-                if (HttpContext.Current != null && HttpContext.Current.Request != null)
-                {
-                    wc.Headers.Add("Referer", HttpContext.Current.Request.Url.AbsoluteUri);//当前运行地址。
-                }
-                else if (!string.IsNullOrEmpty(MvcConfig.RunUrl))
-                {
-                    wc.Headers.Add("Referer", MvcConfig.RunUrl);//当前运行地址。
-                }
+                //if (HttpContext.Current != null && HttpContext.Current.Request != null)
+                //{
+                //    wc.Headers.Add("Referer", HttpContext.Current.Request.Url.AbsoluteUri);//当前运行地址。
+                //}
+                //else if (!string.IsNullOrEmpty(MvcConfig.RunUrl))
+                //{
+                //    wc.Headers.Add("Referer", MvcConfig.RunUrl);//当前运行地址。
+                //}
                 if (task.Request.Header != null && task.Request.Header.Count > 0)
                 {
                     foreach (var item in task.Request.Header)

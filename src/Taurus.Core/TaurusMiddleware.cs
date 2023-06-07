@@ -2,6 +2,7 @@
 using System;
 using System.Threading.Tasks;
 using Taurus.Mvc;
+using Taurus.Plugin.MicroService;
 
 namespace Microsoft.AspNetCore.Http
 {
@@ -23,7 +24,17 @@ namespace Microsoft.AspNetCore.Http
             {
                 if (!context.Response.HasStarted)
                 {
-                    context.Response.Headers.Add("Server", "Taurus/" + MvcConst.Version);
+                    int pid = MvcConst.ProcessID;
+                    string[] items = MvcConst.HostIP.Split('.');
+                    string num = items[items.Length - 1];
+                    if (MsConfig.IsServer)
+                    {
+                        context.Response.Headers.Add(MsConfig.Server.Name.ToLower() + "-" + num, "Taurus/" + MvcConst.Version + "-" + pid);
+                    }
+                    else
+                    {
+                        context.Response.Headers.Add("client-" + num, "Taurus/" + MvcConst.Version + "-" + pid);
+                    }
                 }
                 if (context.Request.Path.Value.IndexOf("/App_Data/", StringComparison.OrdinalIgnoreCase) > -1)//兼容受保护的目录
                 {
@@ -63,5 +74,5 @@ namespace Microsoft.AspNetCore.Http
             }
         }
     }
-   
+
 }

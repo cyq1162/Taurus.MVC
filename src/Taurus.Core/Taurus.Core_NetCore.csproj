@@ -38,12 +38,15 @@ V2.3.4(2019-07-31)
     <Compile Remove="Plugin\MicroService\RPC\RpcClient\Net\**" />
     <Compile Remove="Plugin\MicroService\RPC\Task\Net\**" />
     <Compile Remove="Plugin\MicroService\RPC\RpcClient\Net\**" />
+    <Compile Remove="WebSocket\**" />
     <EmbeddedResource Remove="Plugin\MicroService\RPC\RpcClient\Net\**" />
     <EmbeddedResource Remove="Plugin\MicroService\RPC\Task\Net\**" />
     <EmbeddedResource Remove="Plugin\MicroService\RPC\RpcClient\Net\**" />
+    <EmbeddedResource Remove="WebSocket\**" />
     <None Remove="Plugin\MicroService\RPC\RpcClient\Net\**" />
     <None Remove="Plugin\MicroService\RPC\Task\Net\**" />
     <None Remove="Plugin\MicroService\RPC\RpcClient\Net\**" />
+    <None Remove="WebSocket\**" />
   </ItemGroup>
 
   <ItemGroup>
@@ -62,7 +65,6 @@ V2.3.4(2019-07-31)
   <ItemGroup>
     <Folder Include="Plugin\MicroService\RPC\Task\Net\" />
     <Folder Include="Properties\" />
-    <Folder Include="WebSocket\" />
   </ItemGroup>
 
   <ItemGroup>
