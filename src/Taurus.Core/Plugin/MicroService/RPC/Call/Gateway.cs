@@ -15,6 +15,20 @@ namespace Taurus.Plugin.MicroService
         /// </summary>
         internal static partial class Gateway
         {
+            #region 共用方法
+
+            private static string GetModuleName(Uri uri)
+            {
+                string url = uri.LocalPath == "/" ? MvcConfig.DefaultUrl : uri.LocalPath;
+                string[] items = url.TrimStart('/').Split('/');
+                string module = items[0];
+                if (items.Length == 1 && (string.IsNullOrEmpty(module) || module.Contains(".")))
+                {
+                    module = "/";
+                }
+                return module;
+            }
+            #endregion
             /// <summary>
             /// 最后一次网关处理转发的时间
             /// </summary>
@@ -24,51 +38,17 @@ namespace Taurus.Plugin.MicroService
             /// <summary>
             /// 网关代理转发方法
             /// </summary>
-            public static bool Proxy(HttpContext context, bool isServerCall)
+            public static bool Proxy(HttpContext context)
             {
-                if ((isServerCall && !MsConfig.IsServer) || (!isServerCall && !MsConfig.IsClient))
+                if (!MsConfig.IsServer)
                 {
                     return false;
                 }
 
                 Uri uri = context.Request.Url;
-                List<HostInfo> domainList = isServerCall ? Server.Gateway.GetHostList(uri.Host) : Client.Gateway.GetHostList(uri.Host);
-                if (domainList == null || domainList.Count == 0)
-                {
-                    return false;
-                }
-
-                string url = uri.LocalPath == "/" ? MvcConfig.DefaultUrl : uri.LocalPath;
-                string[] items = url.TrimStart('/').Split('/');
-                string module = items[0];
-                if (items.Length == 1 && (string.IsNullOrEmpty(module) || module.Contains(".")))
-                {
-                    module = "/";
-                }
-
-                List<HostInfo> moduleList = isServerCall ? Server.Gateway.GetHostList(module) : Client.Gateway.GetHostList(module);
-                if (moduleList == null || moduleList.Count == 0)
-                {
-                    return false;
-                }
-                List<HostInfo> infoList = new List<HostInfo>();
-                //存在域名，也存在模块，过滤出满足：域名+模块
-                foreach (var domainItem in domainList)//过滤掉不在域名下的主机
-                {
-                    foreach (var moduleItem in moduleList)
-                    {
-                        if (domainItem.Host == moduleItem.Host)
-                        {
-                            if (uri.AbsoluteUri.StartsWith(domainItem.Host))
-                            {
-                                return false;//请求自身，直接返回，避免死循环。
-                            }
-                            infoList.Add(moduleItem);// 用模块，模块里有包含IsVirtual属性，而域名则没有。
-                            break;
-                        }
-                    }
-                }
-                if (infoList.Count == 0)
+                string module = GetModuleName(uri);
+                List<HostInfo> infoList = Server.Gateway.GetHostListWithCache(uri, uri.Host, module);
+                if (infoList == null || infoList.Count == 0)
                 {
                     return false;
                 }
@@ -90,17 +70,13 @@ namespace Taurus.Plugin.MicroService
                         callIndex = callIndex - count;//溢出后重置循环
                     }
                     HostInfo info = infoList[callIndex];//并发下有异步抛出
-                    if (!isServerCall && info.Host == runUrl)
-                    {
-                        continue;
-                    }
                     if (info.Version < 0 || info.CallTime > DateTime.Now || (isRegCenterOfMaster && info.RegTime < DateTime.Now.AddSeconds(-10)))//正常5-10秒注册1次。
                     {
                         continue;//已经断开服务的。
                     }
-                    if (Proxy(context, info.Host, module, info.IsVirtual, isServerCall))
+                    firstInfo.CallIndex = callIndex + 1;//指向下一个。
+                    if (Proxy(context, info.Host, module, info.IsVirtual))
                     {
-                        firstInfo.CallIndex = callIndex + 1;//指向下一个。
                         return true;
                     }
                     else
@@ -123,19 +99,16 @@ namespace Taurus.Plugin.MicroService
 
             }
 
-            public static bool Proxy(HttpContext context, string host, string module, bool isVirtual, bool isServerCall)
+            public static bool Proxy(HttpContext context, string httpHost, string module, bool isVirtual)
             {
-                Uri uri = new Uri(host);
+                Uri uri = new Uri(httpHost);
                 if (!preConnectionDic.ContainsKey(uri) || !preConnectionDic[uri])
                 {
                     return false;
                 }
 
                 HttpRequest request = context.Request;
-                //if (request.Url.Authority == uri.Authority)
-                //{
-                //    return false;//请求自身，直接返回，避免死循环。
-                //}
+
 
                 LastProxyTime = DateTime.Now;
                 byte[] bytes = null, data = null;
@@ -144,7 +117,7 @@ namespace Taurus.Plugin.MicroService
                 {
                     rawUrl = rawUrl.Substring(module.Length + 1);
                 }
-                string url = host.TrimEnd('/') + rawUrl;
+                string url = httpHost.TrimEnd('/') + rawUrl;
                 if (request.HttpMethod != "GET" && request.ContentLength > 0)
                 {
                     //Synchronous operations are disallowed. Call ReadAsync or set AllowSynchronousIO to true instead.”
@@ -176,7 +149,7 @@ namespace Taurus.Plugin.MicroService
                 if (wc == null) { return false; }
                 try
                 {
-                    wc.Headers.Add(MsConst.HeaderKey, (isServerCall ? MsConfig.Server.RcKey : MsConfig.Client.RcKey));
+                    wc.Headers.Add(MsConst.HeaderKey, MsConfig.Server.RcKey);
                     foreach (string key in request.Headers.Keys)
                     {
                         if (key.StartsWith(":"))//chrome 新出来的 :method等
@@ -269,7 +242,7 @@ namespace Taurus.Plugin.MicroService
                 catch (Exception err)
                 {
                     RpcClientPool.RemoveFromPool(uri);
-                    MsLog.Write(err.Message, url, request.HttpMethod, isServerCall ? MsConfig.Server.Name : MsConfig.Client.Name);
+                    MsLog.Write(err.Message, url, request.HttpMethod, MsConfig.Server.Name);
                     return false;
                 }
                 finally

@@ -56,6 +56,7 @@ namespace Taurus.Plugin.Limit
         /// <summary>
         /// 配置是否忽略微服务的请求
         /// 如 Limit.IsIgnoreMicroService ：true， 默认值：true
+        /// </summary>
         public static bool IsIgnoreMicroService
         {
             get
@@ -70,6 +71,7 @@ namespace Taurus.Plugin.Limit
         /// <summary>
         /// 配置是否忽略测试接口的请求
         /// 如 Limit.IsIgnoreDoc ：true， 默认值：true
+        /// </summary>
         public static bool IsIgnoreDoc
         {
             get

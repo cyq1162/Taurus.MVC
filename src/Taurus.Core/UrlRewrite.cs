@@ -119,7 +119,7 @@ namespace Taurus.Core
                 if (MsConfig.Server.IsEnable)
                 {
                     #region 4、网关代理请求检测与转发
-                    if (Rpc.Gateway.Proxy(context, true))
+                    if (Rpc.Gateway.Proxy(context))
                     {
                         context.Response.End();
                         return;
