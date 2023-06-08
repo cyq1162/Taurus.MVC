@@ -16,7 +16,7 @@ namespace Taurus.Plugin.MicroService
         [MicroService]
         public void Stop()
         {
-            if (MsConfig.IsClient && MsConfig.Client.RemoteExit)
+            if (MsConfig.IsClient && MsConfig.Client.IsAllowRemoteExit)
             {
                 MsConfig.Client.IsEnable = false;
                 Write("Remote stop success: microservice has stopped.", true);
@@ -32,9 +32,9 @@ namespace Taurus.Plugin.MicroService
         [MicroService]
         public void Exit()
         {
-            if (MsConfig.Client.IsEnable && MsConfig.IsClient && MsConfig.Client.RemoteExit)
+            if (MsConfig.Client.IsEnable && MsConfig.IsClient && MsConfig.Client.IsAllowRemoteExit)
             {
-                MsConfig.Client.IsApplicationExit = true;//注销注册中心服务。
+                MsConfig.Client.IsExitApplication = true;//注销注册中心服务。
                 new Thread(new ThreadStart(AppExit)).Start();
                 Write("Remote exit success: wait for the register center to unregister the host (15s).", true);
             }

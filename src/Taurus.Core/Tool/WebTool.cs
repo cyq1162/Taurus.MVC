@@ -288,13 +288,10 @@ namespace Taurus.Mvc
 
     public static partial class WebTool
     {
-        private static long flag = 0;
         internal static void PrintRequestLog(HttpContext context, Exception err)
         {
             HttpRequest request = context.Request;
             StringBuilder sb = new StringBuilder();
-            flag++;
-            sb.AppendLine(flag.ToString() + " : ");
             if (err != null)
             {
                 sb.AppendLine(Log.GetExceptionMessage(err));
@@ -306,7 +303,10 @@ namespace Taurus.Mvc
                 sb.AppendLine("-----------Headers-----------");
                 foreach (string key in headers.AllKeys)
                 {
-                    sb.AppendLine(key + " : " + headers[key]);
+                    if (key[0] != ':')
+                    {
+                        sb.AppendLine(key + " : " + headers[key]);
+                    }
                 }
             }
             var form = request.Form;

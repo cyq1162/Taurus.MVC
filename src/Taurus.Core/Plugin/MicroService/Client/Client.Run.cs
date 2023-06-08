@@ -27,7 +27,7 @@ namespace Taurus.Plugin.MicroService
             {
                 try
                 {
-                    if (MsConfig.Client.IsApplicationExit)
+                    if (MsConfig.Client.IsExitApplication)
                     {
                         break;//停止注册，即注销。
                     }
@@ -109,7 +109,7 @@ namespace Taurus.Plugin.MicroService
                             MsConfig.Client.RcUrl = Client.Host2;
                             Client.Host2 = rcUrl;
                         }
-                        MsLog.Write(result, url, "POST", MsConfig.Client.Name);
+                        MsLog.Write(result, url, "POST");
                         MsLog.WriteDebugLine(DateTime.Now.ToString("HH:mm:ss") + string.Format(" : PID : {0} Reg.Fail : {1}: ", MvcConst.ProcessID, result));
                     }
                     return result;
@@ -126,7 +126,7 @@ namespace Taurus.Plugin.MicroService
                     Client.Host2 = rcUrl;
                 }
                 MsLog.WriteDebugLine(DateTime.Now.ToString("HH:mm:ss") + string.Format(" : PID : {0} Reg.Error : {1}: ", MvcConst.ProcessID, err.Message));
-                MsLog.Write(err.Message, url, "POST", MsConfig.Client.Name);
+                MsLog.Write(err.Message, url, "POST");
                 return err.Message;
             }
         }
@@ -176,7 +176,7 @@ namespace Taurus.Plugin.MicroService
             catch (Exception err)
             {
                 MsLog.WriteDebugLine(DateTime.Now.ToString("HH:mm:ss") + string.Format(" : PID : {0} GetList.Error : {1}", MvcConst.ProcessID, err.Message));
-                MsLog.Write(err.Message, url, "GET", MsConfig.Client.Name);
+                MsLog.Write(err.Message, url, "GET");
                 return err.Message;
             }
         }

@@ -7,6 +7,7 @@ using System.Threading;
 using Taurus.Mvc;
 using Taurus.Plugin.MicroService;
 using Taurus.Plugin.Admin;
+using CYQ.Data;
 
 namespace Taurus.Plugin.Limit
 {
@@ -172,7 +173,7 @@ namespace Taurus.Plugin.Limit
             }
             catch (Exception err)
             {
-                MsLog.Write(err.Message, url, "GET", MsConfig.Server.Name);
+                MsLog.Write(err.Message, url, "GET");
             }
         }
 

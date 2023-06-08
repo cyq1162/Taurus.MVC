@@ -121,7 +121,7 @@ namespace Taurus.Plugin.MicroService
                 else
                 {
                     Server.IsLiveOfMasterRC = false;
-                    MsLog.Write(result, url, "POST", MsConfig.Server.Name);
+                    MsLog.Write(result, url, "POST");
                 }
                 Server.Host2 = MsConfig.Server.RcUrl;
                 MsLog.WriteDebugLine(DateTime.Now.ToString("HH:mm:ss") + string.Format(" : PID : {0} Reg2 : {1}: ", MvcConst.ProcessID, result));
@@ -131,7 +131,7 @@ namespace Taurus.Plugin.MicroService
             {
                 MsLog.WriteDebugLine(DateTime.Now.ToString("HH:mm:ss") + string.Format(" : PID : {0} Reg2.Error : {1}: ", MvcConst.ProcessID, err.Message));
                 Server.IsLiveOfMasterRC = false;
-                MsLog.Write(err.Message, url, "POST", MsConfig.Server.Name);
+                MsLog.Write(err.Message, url, "POST");
                 return err.Message;
             }
         }
@@ -182,7 +182,7 @@ namespace Taurus.Plugin.MicroService
             catch (Exception err)
             {
                 MsLog.WriteDebugLine(DateTime.Now.ToString("HH:mm:ss") + string.Format(" : PID : {0} SyncHostList.Error : {1}", MvcConst.ProcessID, err.Message));
-                MsLog.Write(err.Message, url, "POST", MsConfig.Server.Name);
+                MsLog.Write(err.Message, url, "POST");
             }
         }
         #endregion
@@ -236,7 +236,7 @@ namespace Taurus.Plugin.MicroService
             catch (Exception err)
             {
                 MsLog.WriteDebugLine(DateTime.Now.ToString("HH:mm:ss") + string.Format(" : PID : {0} GetList.Error : {1}", MvcConst.ProcessID, err.Message));
-                MsLog.Write(err.Message, url, "GET", MsConfig.Server.Name);
+                MsLog.Write(err.Message, url, "GET");
                 return err.Message;
             }
         }

@@ -132,10 +132,10 @@ namespace Taurus.Plugin.Admin
                         dt.NewRow(true);
                     }
                     Sets(dt, "MicroService.Client.IsEnable", MsConfig.Client.IsEnable, "Microservice client plugin.");
+                    Sets(dt, "MicroService.Client.IsAllowRemoteExit", MsConfig.Client.IsAllowRemoteExit, "Client is allow remote stop by register center.");
                     Sets(dt, "MicroService.Client.Name", MsConfig.Client.Name, "Client module name.");
                     Sets(dt, "MicroService.Client.Domain", MsConfig.Client.Domain, "Client bind domain.");
                     Sets(dt, "MicroService.Client.Version", MsConfig.Client.Version, "Client web version.");
-                    Sets(dt, "MicroService.Client.RemoteExit", MsConfig.Client.RemoteExit, "Client is allow remote stop by register center.");
                     Sets(dt, "MicroService.Client.RcKey", MsConfig.Client.RcKey, "Register center secret key.");
                     Sets(dt, "MicroService.Client.RcUrl", MsConfig.Client.RcUrl, "Register center url.");
                     Sets(dt, "MicroService.Client.RcUrl - 2", Client.Host2, "Register center backup url.");

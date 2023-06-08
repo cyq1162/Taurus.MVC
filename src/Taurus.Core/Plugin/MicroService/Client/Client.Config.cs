@@ -14,7 +14,7 @@ namespace Taurus.Plugin.MicroService
             /// <summary>
             /// 是否退出应用程序
             /// </summary>
-            internal static bool IsApplicationExit = false;
+            internal static bool IsExitApplication = false;
             /// <summary>
             /// 配置是否启用微服务客户端功能 
             /// 如 MicroService.Client.IsEnable ：true
@@ -91,15 +91,15 @@ namespace Taurus.Plugin.MicroService
             /// <summary>
             /// 应用配置：开启应用程序远程退出功能【是否允许注册中心控制客户端退出】
             /// </summary>
-            public static bool RemoteExit
+            public static bool IsAllowRemoteExit
             {
                 get
                 {
-                    return AppConfig.GetAppBool("MicroService.Client.RemoteExit", IsClient);
+                    return AppConfig.GetAppBool("MicroService.Client.IsAllowRemoteExit", IsClient);
                 }
                 set
                 {
-                    AppConfig.SetApp("MicroService.Client.RemoteExit", value.ToString());
+                    AppConfig.SetApp("MicroService.Client.IsAllowRemoteExit", value.ToString());
                 }
             }
             /// <summary>

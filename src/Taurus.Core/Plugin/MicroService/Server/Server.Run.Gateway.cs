@@ -102,7 +102,7 @@ namespace Taurus.Plugin.MicroService
                     MsConfig.Server.RcUrl = Server.Host2;
                     Server.Host2 = rcUrl;
                 }
-                MsLog.Write(result, url, "POST", MsConfig.Server.Name);
+                MsLog.Write(result, url, "POST");
             }
         }
 
@@ -127,7 +127,7 @@ namespace Taurus.Plugin.MicroService
             catch (Exception err)
             {
                 MsLog.WriteDebugLine(DateTime.Now.ToString("HH:mm:ss") + string.Format(" : PID : {0} GetList.Error : {1}", MvcConst.ProcessID, err.Message));
-                MsLog.Write(err.Message, url, "GET", MsConfig.Server.Name);
+                MsLog.Write(err.Message, url, "GET");
                 return err.Message;
             }
 

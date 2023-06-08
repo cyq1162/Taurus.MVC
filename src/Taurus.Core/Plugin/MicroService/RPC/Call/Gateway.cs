@@ -242,7 +242,7 @@ namespace Taurus.Plugin.MicroService
                 catch (Exception err)
                 {
                     RpcClientPool.RemoveFromPool(uri);
-                    MsLog.Write(err.Message, url, request.HttpMethod, MsConfig.Server.Name);
+                    MsLog.Write(err.Message, url, request.HttpMethod);
                     return false;
                 }
                 finally
@@ -312,11 +312,7 @@ namespace Taurus.Plugin.MicroService
                 catch (Exception err)
                 {
                     info.State = -1;
-                    if (uri == null)
-                    {
-                        MsLog.Write(err.Message, "MicroService.Run.PreConnection(" + info.Host + ")", "GET", MsConfig.Server.Name);
-                    }
-                    else
+                    if(uri!= null)
                     {
                         if (preConnectionDic.ContainsKey(uri))
                         {
@@ -326,8 +322,16 @@ namespace Taurus.Plugin.MicroService
                         {
                             preConnectionDic.Add(uri, false);
                         }
-                        MsLog.Write(err.Message, "MicroService.Run.PreConnection(" + uri.AbsoluteUri + ")", "GET", MsConfig.Server.Name);
                     }
+                    //if (uri == null) // 记录错误没有意义。
+                    //{
+                    //    MsLog.Write(err.Message, "MicroService.Run.PreConnection(" + info.Host + ")", "GET", MsConfig.Server.Name);
+                    //}
+                    //else
+                    //{
+                        
+                    //    MsLog.Write(err.Message, "MicroService.Run.PreConnection(" + uri.AbsoluteUri + ")", "GET", MsConfig.Server.Name);
+                    //}
 
                 }
                 finally

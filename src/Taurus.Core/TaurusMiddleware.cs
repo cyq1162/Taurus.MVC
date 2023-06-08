@@ -22,6 +22,12 @@ namespace Microsoft.AspNetCore.Http
         {
             try
             {
+                if (!context.Request.Host.HasValue)
+                {
+                    context.Response.StatusCode = 400;
+                    await context.Response.WriteAsync("400 Invalid hostname.");
+                    return;
+                }
                 if (!context.Response.HasStarted)
                 {
                     int pid = MvcConst.ProcessID;

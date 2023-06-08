@@ -105,7 +105,7 @@ namespace Taurus.Plugin.MicroService
             catch (Exception err)
             {
                 MsLog.WriteDebugLine(err.Message);
-                MsLog.Write(err.Message, "MicroService.Run.CheckAndClearExpireHost()", "", MsConfig.Server.Name);
+                MsLog.Write(err.Message, "MicroService.Run.CheckAndClearExpireHost()", "");
             }
         }
 
