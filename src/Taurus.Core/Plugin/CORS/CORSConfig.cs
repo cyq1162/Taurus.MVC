@@ -1,4 +1,5 @@
 ﻿using CYQ.Data;
+using Taurus.Plugin.MicroService;
 
 namespace Taurus.Plugin.CORS
 {
@@ -15,7 +16,7 @@ namespace Taurus.Plugin.CORS
         {
             get
             {
-                return AppConfig.GetAppBool("CORS.IsEnable", true);
+                return AppConfig.GetAppBool("CORS.IsEnable", !MsConfig.IsClient);
             }
             set
             {
@@ -23,18 +24,18 @@ namespace Taurus.Plugin.CORS
             }
         }
         /// <summary>
-        /// 配置CORS 请求头：Access-Control-Allow-Method
+        /// 配置CORS 请求头：Access-Control-Allow-Methods
         /// 如 CORS.Method ： "GET,POST,PUT,DELETE"
         /// </summary>
-        public static string Method
+        public static string Methods
         {
             get
             {
-                return AppConfig.GetApp("CORS.Method", "GET,POST,HEAD,PUT,DELETE");
+                return AppConfig.GetApp("CORS.Methods", "GET,POST,HEAD,PUT,DELETE");
             }
             set
             {
-                AppConfig.SetApp("CORS.Method", value);
+                AppConfig.SetApp("CORS.Methods", value);
             }
         }
         /// <summary>
@@ -52,6 +53,24 @@ namespace Taurus.Plugin.CORS
                 AppConfig.SetApp("CORS.Origin", value);
             }
         }
+
+        /// <summary>
+        /// 配置CORS 请求头：Access-Control-Expose-Headers
+        /// 如 CORS.Expose ： "*"
+        /// </summary>
+        public static string Expose
+        {
+            get
+            {
+                return AppConfig.GetApp("CORS.Expose", "*");
+            }
+            set
+            {
+                AppConfig.SetApp("CORS.Expose", value);
+            }
+        }
+
+        
         /// <summary>
         /// 配置CORS 请求头：Access-Control-Allow-Credentials
         /// 如 CORS.Credentials ：false
@@ -82,6 +101,7 @@ namespace Taurus.Plugin.CORS
                 AppConfig.SetApp("CORS.MaxAge", value.ToString());
             }
         }
+
 
     }
 }

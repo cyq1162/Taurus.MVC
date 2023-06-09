@@ -103,8 +103,9 @@ namespace Taurus.Plugin.Admin
             else if (type == "plugin-cors")
             {
                 Sets(dt, "CORS.IsEnable", CORSConfig.IsEnable, "Application is allow cross-origin resource sharing.");
-                Sets(dt, "CORS.Method", CORSConfig.Method, "CORS Header：Access-Control-Allow-Method.");
+                Sets(dt, "CORS.Methods", CORSConfig.Methods, "CORS Header：Access-Control-Allow-Methods.");
                 Sets(dt, "CORS.Origin", CORSConfig.Origin, "CORS Header：Access-Control-Allow-Origin.");
+                Sets(dt, "CORS.Expose", CORSConfig.Expose, "CORS Header：Access-Control-Expose-Headers.");
                 Sets(dt, "CORS.Credentials", CORSConfig.Credentials, "CORS Header：Access-Control-Allow-Credentials.");
                 Sets(dt, "CORS.MaxAge", CORSConfig.MaxAge + " (s)", "CORS Header：Access-Control-Max-Age.");
             }

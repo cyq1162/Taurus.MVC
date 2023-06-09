@@ -103,13 +103,10 @@ namespace Taurus.Core
             #endregion
 
             #region 3、跨域检测【在网关转发之前】
-            if (CORSConfig.IsEnable)
+            if (!CORSRun.Check(context))
             {
-                if (!CORSRun.Check(context))
-                {
-                    context.Response.End();
-                    return;
-                }
+                context.Response.End();
+                return;
             }
             #endregion
 

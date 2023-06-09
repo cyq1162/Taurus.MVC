@@ -15,36 +15,72 @@ namespace Taurus.Plugin.CORS
         /// <returns></returns>
         public static bool Check(HttpContext context)
         {
-            if (context.Request.HttpMethod == "OPTIONS")
+            var req=context.Request;
+            var res=context.Response;
+            if (req.HttpMethod == "OPTIONS")
             {
-                context.Response.StatusCode = 204;
-                context.Response.AppendHeader("Access-Control-Allow-Method", CORSConfig.Method);
-                context.Response.AppendHeader("Access-Control-Allow-Origin", CORSConfig.Origin);
-                if (CORSConfig.MaxAge > 0)
+                res.StatusCode = 204;
+                if (CORSConfig.IsEnable)
                 {
-                    context.Response.AppendHeader("Access-Control-Max-Age", CORSConfig.MaxAge.ToString());
+                    res.AppendHeader("Access-Control-Allow-Methods", CORSConfig.Methods);
+                    string origin = CORSConfig.Origin;
+                    if(origin == "*")
+                    {
+                        origin = req.Headers["Origin"];
+                    }
+                    res.AppendHeader("Access-Control-Allow-Origin", origin);
+                    if (!string.IsNullOrEmpty(CORSConfig.Expose))
+                    {
+                        res.AppendHeader("Access-Control-Expose-Headers", CORSConfig.Expose);
+                    }
+                    if (CORSConfig.MaxAge > 0)
+                    {
+                        res.AppendHeader("Access-Control-Max-Age", CORSConfig.MaxAge.ToString());
+                    }
+                    if (CORSConfig.Credentials)
+                    {
+                        res.AppendHeader("Access-Control-Allow-Credentials", "true");
+                    }
+                    if (req.Headers["Access-Control-Allow-Headers"] != null)
+                    {
+                        res.AppendHeader("Access-Control-Allow-Headers", req.Headers["Access-Control-Allow-Headers"]);
+                    }
+                    else if (req.Headers["Access-Control-Request-Headers"] != null)
+                    {
+                        res.AppendHeader("Access-Control-Allow-Headers", req.Headers["Access-Control-Request-Headers"]);
+                    }
                 }
-                if (CORSConfig.Credentials)
-                {
-                    context.Response.AppendHeader("Access-Control-Allow-Credentials", "true");
-                }
-                if (context.Request.Headers["Access-Control-Allow-Headers"] != null)
-                {
-                    context.Response.AppendHeader("Access-Control-Allow-Headers", context.Request.Headers["Access-Control-Allow-Headers"]);
-                }
-                else if (context.Request.Headers["Access-Control-Request-Headers"] != null)
-                {
-                    context.Response.AppendHeader("Access-Control-Allow-Headers", context.Request.Headers["Access-Control-Request-Headers"]);
-                }
-                context.Response.End();
+                res.End();
                 return false;
             }
-            else if (context.Request.UrlReferrer != null && context.Request.Url.Authority != context.Request.UrlReferrer.Authority)
+            if (CORSConfig.IsEnable)
             {
-                //跨域访问
-                context.Response.AppendHeader("Access-Control-Allow-Origin", CORSConfig.Origin);
+                if (req.UrlReferrer != null && req.Url.Authority != req.UrlReferrer.Authority)
+                {
+                    string origin = req.Headers["Origin"];
+                    if (!string.IsNullOrEmpty(origin))
+                    {
+                        //res.AppendHeader("Access-Control-Allow-Method", CORSConfig.Method);
+                        if (CORSConfig.Origin != "*")
+                        {
+                            origin = CORSConfig.Origin;
+                        }
+                        //跨域访问
+                        res.AppendHeader("Access-Control-Allow-Origin", origin);//必须
+                        if (!string.IsNullOrEmpty(CORSConfig.Expose))
+                        {
+                            res.AppendHeader("Access-Control-Expose-Headers", CORSConfig.Expose);//必须
+                        }
+                        if (CORSConfig.Credentials)
+                        {
+                            if (req.Cookies.Count > 0)
+                            {
+                                res.AppendHeader("Access-Control-Allow-Credentials", "true");//必须
+                            }
+                        }
+                    }
+                }
             }
-
             return true;
         }
 

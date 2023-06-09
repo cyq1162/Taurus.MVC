@@ -28,7 +28,7 @@ namespace Microsoft.AspNetCore.Http
                     await context.Response.WriteAsync("400 Invalid hostname.");
                     return;
                 }
-                if (!context.Response.HasStarted)
+                if (!context.Response.HasStarted)// && context.Request.Method != "OPTIONS"
                 {
                     int pid = MvcConst.ProcessID;
                     string[] items = MvcConst.HostIP.Split('.');
