@@ -11,8 +11,10 @@ function run() {
     }
     var httpType = $("#httpType").val();
     var dataType = $("#dataType").val();
+    var crossCookie = $("#crossCookie").val();
     record("httpType", httpType);
     record("dataType", dataType);
+    record("crossCookie", crossCookie);
     var data = {};
     var formData;//文件上传
     //收集参数
@@ -46,10 +48,10 @@ function run() {
 
     });
 
-    ajax(httpType, dataType, url, data, header, formData);
+    ajax(httpType, dataType, url, data, header, formData, crossCookie == "CrossCookie");
     //ajax("HEAD", url, data, header);
 }
-function ajax(type, dataType, url, data, header, formData) {
+function ajax(type, dataType, url, data, header, formData, crossWithCookie) {
 
     var opt = {
         type: type,
@@ -108,6 +110,10 @@ function ajax(type, dataType, url, data, header, formData) {
         opt.contentType = false;
         opt.processData = false;
         opt.type = "POST";
+    }
+    if (crossWithCookie) {
+        // 允许请求携带cookie
+        opt.xhrFields = { withCredentials: true };
     }
     $.ajax(opt);
 
@@ -173,9 +179,11 @@ function restore() {
         var key = location.search.split("&runall=1")[0];
         var httpType = localStorage.getItem(key + "httpType");
         var dataType = localStorage.getItem(key + "dataType");
+        var crossCookie = localStorage.getItem(key + "crossCookie");
         if (httpType && dataType) {
             $("#httpType").val(httpType);
             $("#dataType").val(dataType);
+            $("#crossCookie").val(crossCookie);
         }
         $("form").find("[name]:input").each(function () {
             var name = $(this).attr('name');
