@@ -85,7 +85,7 @@ namespace Taurus.Plugin.MicroService
             {
                 rpcResult.IsSuccess = false;
                 rpcResult.Error = err;
-                MsLog.Write(err.Message, task.Request.Url, task.Request.Method, "Rpc.RpcTaskWorker.ExeTask()");
+                MsLog.Write(err.Message, task.Request.Url, task.Request.Method);
             }
             finally
             {

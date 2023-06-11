@@ -2,7 +2,6 @@
 using System;
 using System.Collections.Generic;
 using Taurus.Mvc;
-using static Microsoft.AspNetCore.Hosting.Internal.HostingApplication;
 
 namespace Taurus.Plugin.MicroService
 {
