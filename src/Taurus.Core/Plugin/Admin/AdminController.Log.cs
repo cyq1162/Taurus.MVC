@@ -45,7 +45,9 @@ namespace Taurus.Plugin.Admin
                 if (files != null && files.Length > 0)
                 {
                     string logDetail = IOHelper.ReadAllText(files[0]);
-                    View.KeyValue.Set("detail", System.Web.HttpUtility.HtmlEncode(logDetail).Replace("\n", "<br/>"));
+                    logDetail = System.Web.HttpUtility.HtmlEncode(logDetail);
+                    logDetail = logDetail.Replace("\n", "<br/>").Replace("&lt;hr /&gt;", "<hr />");
+                    View.KeyValue.Set("detail", logDetail);
                 }
             }
         }
