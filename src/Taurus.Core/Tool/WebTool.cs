@@ -309,14 +309,21 @@ namespace Taurus.Mvc
                     }
                 }
             }
-            var form = request.Form;
-            if (form.Count > 0)
+            if (request.HttpMethod == "POST")
             {
-                sb.AppendLine("-----------Forms-----------");
-                foreach (string key in form.AllKeys)
+                var form = request.Form;
+                if (form.Count > 0)
                 {
-                    sb.AppendLine(key + " : " + form[key]);
+                    sb.AppendLine("-----------Forms-----------");
+                    foreach (string key in form.AllKeys)
+                    {
+                        sb.AppendLine(key + " : " + form[key]);
+                    }
                 }
+                //else
+                //{
+                //    sb.Append(request.)
+                //}
             }
             Log.WriteLogToTxt(sb.ToString(), err != null ? LogType.Taurus : LogType.Debug + "_PrintRequestLog");
         }

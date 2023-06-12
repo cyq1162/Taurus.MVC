@@ -101,7 +101,7 @@ namespace Taurus.Core
                     {
                         string[] items = uri.Authority.Split('.');
                         int ip;
-                        if (items.Length != 4 || int.TryParse(items[3], out ip))
+                        if (items.Length == 4 && int.TryParse(items[3], out ip))
                         {
                             context.Response.StatusCode = 503;
                             context.Response.Write("503 Service unavailable.");
