@@ -28,51 +28,37 @@ namespace Microsoft.AspNetCore.Http
                     await context.Response.WriteAsync("400 Invalid hostname.");
                     return;
                 }
-                if (!context.Response.HasStarted)// && context.Request.Method != "OPTIONS"
-                {
-                    int pid = MvcConst.ProcessID;
-                    string[] items = MvcConst.HostIP.Split('.');
-                    string num = items[items.Length - 1];
-                    if (MsConfig.IsServer)
-                    {
-                        context.Response.Headers.Add(MsConfig.Server.Name.ToLower() + "-" + num, "Taurus/" + MvcConst.Version + "-" + pid);
-                    }
-                    else
-                    {
-                        context.Response.Headers.Add("client-" + num, "Taurus/" + MvcConst.Version + "-" + pid);
-                    }
-                }
                 if (context.Request.Path.Value.IndexOf("/App_Data/", StringComparison.OrdinalIgnoreCase) > -1)//兼容受保护的目录
                 {
                     context.Response.StatusCode = 403;
                     await context.Response.WriteAsync("403 Forbidden");
+                    return;
                 }
-                else
+
+                if (context.Request.Method != "GET" && context.Request.ContentLength.HasValue && context.Request.ContentLength.Value > 0)
                 {
-                    if (context.Request.Method != "GET" && context.Request.ContentLength.HasValue && context.Request.ContentLength.Value > 0)
+                    // 使用处：对应Rpc.Gateway.cs 代码：Proxy 方法 149行上下。
+                    //Controller.cs GetJson 方法 1098行上下
+                    context.Request.EnableBuffering();
+                }
+                System.Web.HttpApplication.Instance.ExecuteEventHandler();
+                if (System.Web.HttpContext.Current.Response.HasStarted)  // || Body是只写流  (context.Response.Body != null && context.Response.Body.CanRead
+                {
+                    if (context.Response.StatusCode == 204)
                     {
-                        // 使用处：对应Rpc.Gateway.cs 代码：Proxy 方法 149行上下。
-                        //Controller.cs GetJson 方法 1098行上下
-                        context.Request.EnableBuffering();
+                        await context.Response.Body.FlushAsync();
                     }
-                    System.Web.HttpApplication.Instance.ExecuteEventHandler();
-                    if (System.Web.HttpContext.Current.Response.HasStarted)  // || Body是只写流  (context.Response.Body != null && context.Response.Body.CanRead
-                    {
-                        if (context.Response.StatusCode == 204)
-                        {
-                            await context.Response.Body.FlushAsync();
-                        }
-                        else
-                        {
-                            await context.Response.WriteAsync("");
-                        }
-                    }
-                    //处理信息
                     else
                     {
-                        await next(context);
+                        await context.Response.WriteAsync("");
                     }
                 }
+                //处理信息
+                else
+                {
+                    await next(context);
+                }
+
             }
             catch (Exception ex)
             {

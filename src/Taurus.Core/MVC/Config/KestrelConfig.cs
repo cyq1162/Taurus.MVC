@@ -38,6 +38,7 @@ namespace Taurus.Mvc
             }
             /// <summary>
             /// 应用配置：当前Web监听Http主机【Kestrel启动运行时绑定】
+            /// Kestrel.Urls:http://*:80
             /// </summary>
             public static string Urls
             {
@@ -63,6 +64,7 @@ namespace Taurus.Mvc
 
             /// <summary>
             /// 应用配置：是否允许同步IO读取请求的流数据。
+            /// Kestrel.AllowSynchronousIO:true
             /// </summary>
             public static bool AllowSynchronousIO
             {
@@ -76,7 +78,23 @@ namespace Taurus.Mvc
                 }
             }
             /// <summary>
+            /// 应用配置：是否添加Kestrel主机头信息
+            /// Kestrel.AddServerHeader:false
+            /// </summary>
+            public static bool AddServerHeader
+            {
+                get
+                {
+                    return AppConfig.GetAppBool("Kestrel.AddServerHeader", false);
+                }
+                set
+                {
+                    AppConfig.SetApp("Kestrel.AddServerHeader", value.ToString());
+                }
+            }
+            /// <summary>
             /// 应用配置：Https 默认监听端口号。
+            /// Kestrel.SslPort:443
             /// </summary>
             public static int SslPort
             {
@@ -96,6 +114,7 @@ namespace Taurus.Mvc
             }
             /// <summary>
             /// 应用配置：Https 证书 存放路径【客户端默认开启、服务端默认关闭】
+            /// Kestrel.SslPath:/App_Data/ssl
             /// </summary>
             public static string SslPath
             {

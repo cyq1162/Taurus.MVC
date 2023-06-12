@@ -151,13 +151,13 @@ namespace Taurus.Plugin.Limit
         {
             /// <summary>
             /// 配置是否启用 IP Limit 安全限制
-            /// 如 Limit.IP.IsEnable ：true， 默认值：true
+            /// 如 Limit.IP.IsEnable ：true， 默认值：false
             /// </summary>
             public static bool IsEnable
             {
                 get
                 {
-                    return AppConfig.GetAppBool("Limit.IP.IsEnable", true);
+                    return AppConfig.GetAppBool("Limit.IP.IsEnable", false);
                 }
                 set
                 {
@@ -191,7 +191,7 @@ namespace Taurus.Plugin.Limit
             {
                 get
                 {
-                    return AppConfig.GetAppBool("Limit.Rate.IsEnable", true);
+                    return AppConfig.GetAppBool("Limit.Rate.IsEnable", false);
                 }
                 set
                 {

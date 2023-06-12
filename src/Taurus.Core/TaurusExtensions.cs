@@ -65,7 +65,7 @@ namespace Microsoft.AspNetCore.Http
                     }
                     #endregion
                 }
-                x.AddServerHeader = false;
+                x.AddServerHeader = MvcConfig.Kestrel.AddServerHeader;
                 x.AllowSynchronousIO = MvcConfig.Kestrel.AllowSynchronousIO;
 
                 #region Limits 配置设置

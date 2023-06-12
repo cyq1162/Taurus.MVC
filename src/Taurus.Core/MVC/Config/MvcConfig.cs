@@ -39,6 +39,22 @@ namespace Taurus.Mvc
             }
         }
         /// <summary>
+        /// 配置是否 Mvc 添加Taurus主机头
+        /// 如 Mvc.IsAddTaurusHeader ：true， 默认值：true
+        /// </summary>
+        public static bool IsAddTaurusHeader
+        {
+            get
+            {
+                return AppConfig.GetAppBool("Mvc.IsAddTaurusHeader", true);
+            }
+            set
+            {
+                AppConfig.SetApp("Mvc.IsAddTaurusHeader", value.ToString());
+            }
+        }
+
+        /// <summary>
         /// 配置是否打印请求日志【用于调试打印请求日志】 
         /// 如 Mvc.IsPrintRequestLog ：false（默认值）
         /// </summary>

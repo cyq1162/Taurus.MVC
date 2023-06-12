@@ -26,6 +26,7 @@ namespace Taurus.Plugin.Admin
             {
                 Sets(dt, "Mvc.IsEnable", MvcConfig.IsEnable, "Taurus mvc  is enable.");
                 Sets(dt, "Mvc.IsAllowIPHost", MvcConfig.IsAllowIPHost, "Taurus mvc  is allow ip host request.");
+                Sets(dt, "Mvc.IsAddTaurusHeader", MvcConfig.IsAddTaurusHeader, "Taurus mvc is add 【taurus-IPNum-PID:version】 header.");
                 Sets(dt, "Mvc.IsPrintRequestLog", MvcConfig.IsPrintRequestLog, "Print mvc suffix request logs to 【Debug_RequestLog*.txt】 for debug.");
                 Sets(dt, "Mvc.IsPrintRequestSql", MvcConfig.IsPrintRequestSql, "Print mvc suffix request sqls to 【Debug_RequestSql*.txt】 for debug.");
                 Sets(dt, "Mvc.RunUrl", MvcConfig.RunUrl, "Application run url （http request url）.");

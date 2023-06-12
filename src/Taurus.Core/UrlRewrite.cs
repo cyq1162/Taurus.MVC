@@ -22,10 +22,29 @@ namespace Taurus.Core
         public void Init(HttpApplication context)
         {
             context.BeginRequest += context_BeginRequest;
-            context.PostMapRequestHandler += context_PostMapRequestHandler;
             context.AcquireRequestState += context_AcquireRequestState;
             context.Error += context_Error;
-            context.Disposed += context_Disposed;
+            if (!AppConfig.IsNetCore)
+            {
+                context.PostMapRequestHandler += context_PostMapRequestHandler;
+#if DEBUG
+
+                context.Disposed += context_Disposed;
+#else
+                context.PreSendRequestContent += context_PreSendRequestContent;
+#endif
+            }
+        }
+
+        void context_PreSendRequestContent(object sender, EventArgs e)
+        {
+            HttpContext cont = ((HttpApplication)sender).Context;
+            if (cont != null && cont.Request.Url.Host != "localhost")
+            {
+                cont.Response.Headers.Remove("Server");
+                cont.Response.Headers.Remove("X-AspNet-Version");
+                cont.Response.Headers.Remove("X-Powered-By");
+            }
         }
 
         void context_Disposed(object sender, EventArgs e)
@@ -42,6 +61,16 @@ namespace Taurus.Core
             HttpApplication app = (HttpApplication)sender;
             HttpContext context = app.Context;
             Uri uri = context.Request.Url;
+
+            #region 请求头设置
+            if (MvcConfig.IsAddTaurusHeader)
+            {
+                int pid = MvcConst.ProcessID;
+                string[] items = MvcConst.HostIP.Split('.');
+                string ipNum = items[items.Length - 1];
+                context.Response.AppendHeader("Taurus" + "-" + ipNum + "-" + pid, MvcConst.Version);
+            }
+            #endregion
             //#region 0、接口调用次数统计
             //MetricRun.Start(uri);
             //#endregion

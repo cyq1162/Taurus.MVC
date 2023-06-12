@@ -28,6 +28,7 @@ namespace Taurus.Plugin.Admin
                     Sets(dt, "Kestrel - AllowedHosts", MvcConfig.Kestrel.AllowedHosts, "Kestrel allowed hosts.");
                     Sets(dt, "Kestrel.Urls", MvcConfig.Kestrel.Urls, "Kestrel listen host.");
                     Sets(dt, "Kestrel.AllowSynchronousIO", MvcConfig.Kestrel.AllowSynchronousIO, "Kestrel allow synchronous IO.");
+                    Sets(dt, "Kestrel.AddServerHeader", MvcConfig.Kestrel.AddServerHeader, "Kestrel is add 【server:kestrel】 header.");
                     Sets(dt, "Kestrel.SslPort", MvcConfig.Kestrel.SslPort, "Ssl port for https.");
                     Sets(dt, "Kestrel.SslPath", MvcConfig.Kestrel.SslPath, "Ssl path for https (*.pfx for ssl , *.txt for pwd).");
                     var cers = MvcConfig.Kestrel.SslCertificate;
