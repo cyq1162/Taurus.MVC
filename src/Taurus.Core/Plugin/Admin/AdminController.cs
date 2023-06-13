@@ -51,7 +51,7 @@ namespace Taurus.Plugin.Admin
                 case "login":
                     return true;
                 default:
-                    string loginName = GetLoginValue("islogin");
+                    string loginName = GetLoginValue("uid");
                     string isAdmin = GetLoginValue("isadmin");
                     if (string.IsNullOrEmpty(loginName) || string.IsNullOrEmpty(isAdmin))
                     {
@@ -145,7 +145,7 @@ namespace Taurus.Plugin.Admin
         {
             get
             {
-                return !string.IsNullOrEmpty(GetLoginValue("isadmin"));
+                return GetLoginValue("isadmin") == "1";
             }
         }
     }

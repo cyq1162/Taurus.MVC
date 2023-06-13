@@ -16,13 +16,13 @@ namespace Taurus.Plugin.Admin
         /// </summary>
         private void SetLoginValue(string key, string value)
         {
-            key = "taurus.plugin." + key;
             if (Context.Session != null)
             {
-                Context.Session[key] = null;
+                Context.Session[key] = value;
             }
             else
             {
+                key = "taurus.plugin." + key;
                 //使用Cookie，会共享端口，Cookie不提供端口隔离。
                 HttpCookie cookie = new HttpCookie(key, EncryptHelper.Encrypt(value, MvcConst.HostIP));
                 cookie.HttpOnly = true;
@@ -42,31 +42,32 @@ namespace Taurus.Plugin.Admin
         /// </summary>
         private string GetLoginValue(string key)
         {
-            key = "taurus.plugin." + key;
             if (Context.Session != null)
             {
-                Convert.ToString(Context.Session[key]);
+               return Convert.ToString(Context.Session[key]);
             }
             else
             {
+                key = "taurus.plugin." + key;
                 HttpCookie cookie = Context.Request.Cookies[key];
                 if (cookie != null)
                 {
                     return EncryptHelper.Decrypt(cookie.Value, MvcConst.HostIP);
                 }
+                return string.Empty;
             }
-            return string.Empty;
+           
         }
 
         public void Logout()
         {
-            SetLoginValue("islogin", null);
+            SetLoginValue("uid", null);
             SetLoginValue("isadmin", null);
             Response.Redirect("login");
         }
         public void Login()
         {
-            if (!string.IsNullOrEmpty(GetLoginValue("islogin")) && !string.IsNullOrEmpty(GetLoginValue("isadmin")))
+            if (!string.IsNullOrEmpty(GetLoginValue("uid")) && !string.IsNullOrEmpty(GetLoginValue("isadmin")))
             {
                 Response.Redirect("index");
             }
@@ -98,7 +99,7 @@ namespace Taurus.Plugin.Admin
             }
             if (isOK)
             {
-                SetLoginValue("islogin", uid);
+                SetLoginValue("uid", uid);
                 Response.Redirect("index");
                 return;
             }
