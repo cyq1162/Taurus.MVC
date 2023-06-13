@@ -66,6 +66,7 @@
     <Compile Include="Pager.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="TestModule.cs" />
+    <Compile Include="Test\EvalController.cs" />
     <Compile Include="Test\MSController.cs" />
     <Compile Include="Test\RpcController.cs" />
   </ItemGroup>

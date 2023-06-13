@@ -1,9 +1,5 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Text;
-using Taurus.Mvc;
-using CYQ.Data;
-using Taurus.MicroService;
+﻿using Taurus.Mvc;
+using Taurus.Plugin.MicroService;
 
 namespace Taurus.Controllers
 {

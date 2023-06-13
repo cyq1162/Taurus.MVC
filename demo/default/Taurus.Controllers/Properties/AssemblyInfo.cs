@@ -6,7 +6,7 @@ using System.Runtime.InteropServices;
 // 控制。更改这些属性值可修改
 // 与程序集关联的信息。
 [assembly: AssemblyTitle("Taurus.Controllers")]
-[assembly: AssemblyDescription("Taurus开发框架控制层 (http://taurus.cyqdata.com)")]
+[assembly: AssemblyDescription("Taurus.mvc 示例控制器")]
 [assembly: AssemblyConfiguration("")]
 [assembly: AssemblyCompany("路过秋天 （2020-07-31）")]
 [assembly: AssemblyProduct("Taurus.Controllers")]

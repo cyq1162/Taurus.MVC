@@ -5,6 +5,7 @@ using System.Collections.Generic;
 using System.Text;
 using Taurus.Mvc;
 using Taurus.Mvc.Attr;
+using System.Text.RegularExpressions;
 
 namespace Taurus.Controllers
 {
@@ -28,6 +29,8 @@ namespace Taurus.Controllers
         [Require("file")]
         public void FileTest(AB ab, HttpPostedFile file)
         {
+           //System.Web.HttpContext.Current.Application.
+            //HttpPostedFile file2 = Taurus.Plugin.Doc.HttpPostedFileExtend.Create("css/doc.css");
             string tip = "tip ab=null;";
             if (ab != null)
             {
@@ -42,12 +45,12 @@ namespace Taurus.Controllers
         }
         /// <summary>
         /// 输出Hello (text/html)
+        /// <param name="msg">msg</param>
         /// </summary>
-        public void Hello()
+        public void Hello(string msg)
         {
-            
-            string json=GetJson();
-            Write("APIController : Hello : "+ json);
+            string json = GetJson();
+            Write("APIController : Hello : " + json);
         }
         /// <summary>
         /// 输出Hello (application/xml)

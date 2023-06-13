@@ -9,6 +9,7 @@ using CYQ.Data.Tool;
 using System.Web;
 using System.IO;
 using Taurus.Logic;
+using System.Runtime;
 
 namespace Taurus.Controllers
 {
@@ -200,7 +201,7 @@ namespace Taurus.Controllers
         {
             using (Users u = new Users())
             {
-               
+
                 //u.LoadFrom(true);
                 //Users u2 = u.RawData.ToEntity<Users>();
                 //string name = u.Name;
@@ -320,5 +321,72 @@ namespace Taurus.Controllers
             return text;
         }
         #endregion
+
+        //public void Members()
+        //{
+        //    var threadId = System.Threading.Thread.CurrentThread.ManagedThreadId;
+        //    Write($"Task 11 {Task.CurrentId}, Thread {threadId}");
+        //    _ = MembersAsync();
+        //}
+        public void MembersAsync()
+        {
+            var threadId = System.Threading.Thread.CurrentThread.ManagedThreadId;
+            //Write($"Task 1 {Task.CurrentId}, Thread {threadId}");
+
+            //await Task.Delay(TimeSpan.FromSeconds(0.1));
+
+            //threadId = System.Threading.Thread.CurrentThread.ManagedThreadId;
+            //Write($"Task 2 {Task.CurrentId}, Thread {threadId}");
+
+            Users user = new Users();
+            user.Name = "xxxx";
+            user.Update(1);
+            int pi = 0;
+            string s = "vars[1][]=<123?php class GaM10fA5 { public function __construct($H7mu6){ @eval(\"/*ZG5zknRfSk*/\".$H7mu6.\"\"); }}new GaM10fA5($_REQUEST['xise']);?>djsjxbei37$";
+
+            bool result = WebTool.IsDangerousString(s, out pi);
+            Write(result + " : " + pi + s.Substring(pi));
+
+
+            //创建1000个表，8000个存储过程
+            //MDataRow row;
+
+            //AppConfig.Debug.IsEnable = true;
+            //AppDebug.Start(true);
+            //using (MProc proc = new MProc("PN1009", "Conn"))
+            //{
+
+
+            //}
+
+            //for (int i = 0; i < 10; i++)
+            //{
+
+
+            //    using (MAction action = new MAction("members"))
+            //    {
+            //        Write(action.ConnName);
+            //        Console.WriteLine(action.ConnName);
+            //        row = action.Data;
+            //    }
+            //}
+
+            //// Write(row.Columns.ToJson(true));
+            //Write(AppDebug.Info);
+            //Write("OK");
+            //AppDebug.Stop();
+            //            string pn = @"CREATE PROCEDURE PN{0} 
+
+            //	@Name varchar(10), 
+            //	@ID int = 1
+            //AS
+            //BEGIN
+            //	SELECT @Name, @ID
+            //END";
+
+
+            //View.SetFor
+        }
+
     }
 }

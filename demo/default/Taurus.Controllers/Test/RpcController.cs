@@ -1,10 +1,9 @@
 ﻿using System;
 using System.Collections.Generic;
-using Taurus.Mvc;
-using Taurus.MicroService;
 using System.Text;
 using CYQ.Data;
 using CYQ.Data.Tool;
+using Taurus.Plugin.MicroService;
 
 namespace Taurus.Controllers.Test
 {
@@ -14,7 +13,6 @@ namespace Taurus.Controllers.Test
         static int i = 0;
         public void CallGet()
         {
-
             i++;
             RpcTask task = Rpc.StartGetAsync("ms", "/ms/hello?msg=" + DateTime.Now.Ticks);
             System.Diagnostics.Debug.WriteLine("-----------------------------" + i);

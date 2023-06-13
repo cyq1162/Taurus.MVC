@@ -2,6 +2,7 @@
 using System;
 using Taurus.Mvc;
 using Taurus.Mvc.Attr;
+using Taurus.Plugin.MicroService;
 
 namespace Taurus.Controllers.Test
 {
@@ -62,7 +63,7 @@ namespace Taurus.Controllers.Test
                 Write("UrlReferrer : " + Request.UrlReferrer.ToString() + "\r\n<br/>");
             }
             Write("UserHostAddress : " + Request.UserHostAddress.ToString() + "\r\n<br/>");
-            Write("App Run Url : " + MvcConfig.RunUrl + Request.Url.LocalPath + " : " + Request.HttpMethod + " : " +( msg ?? "Hello" + MicroService.MsConfig.Server.Name) + " : " + DateTime.Now.Ticks);
+            Write("App Run Url : " + MvcConfig.RunUrl + Request.Url.LocalPath + " : " + Request.HttpMethod + " : " +( msg ?? "Hello" + MsConfig.Server.Name) + " : " + DateTime.Now.Ticks);
         }
 
         public void Cookie(string msg)

@@ -5,6 +5,7 @@ using Taurus.Mvc;
 using CYQ.Data;
 using System.Web;
 using Taurus.Plugin.Limit;
+using Taurus.Plugin.MicroService;
 
 namespace Taurus.Controllers
 {
@@ -48,7 +49,7 @@ namespace Taurus.Controllers
         /// </summary>
         public static bool CheckMicroService(Controller controller, string serverKey)
         {
-            return MicroService.MsConfig.Server.RcKey == serverKey;
+            return MsConfig.Server.RcKey == serverKey;
         }
 
         /// <summary>
