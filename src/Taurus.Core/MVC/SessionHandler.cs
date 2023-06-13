@@ -14,7 +14,7 @@ namespace Taurus.Mvc
         {
             get
             {
-                return false;
+                return true;
             }
         }
 

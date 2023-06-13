@@ -51,8 +51,8 @@ namespace Taurus.Plugin.Admin
                 case "login":
                     return true;
                 default:
-                    string loginName = Convert.ToString(Context.Session["login"]);
-                    string isAdmin = Convert.ToString(Context.Session["isadmin"]);
+                    string loginName = GetLoginValue("islogin");
+                    string isAdmin = GetLoginValue("isadmin");
                     if (string.IsNullOrEmpty(loginName) || string.IsNullOrEmpty(isAdmin))
                     {
                         if (isNoViewEvent)
@@ -74,7 +74,7 @@ namespace Taurus.Plugin.Admin
             //3、只读权限检测
             if (BtnName.StartsWith("btn") || isNoViewEvent)
             {
-                if (Convert.ToString(Context.Session["isadmin"]) != "1")
+                if (GetLoginValue("isadmin") != "1")
                 {
                     if (View != null)
                     {
@@ -145,7 +145,7 @@ namespace Taurus.Plugin.Admin
         {
             get
             {
-                return Context.Session["isadmin"] != null;
+                return !string.IsNullOrEmpty(GetLoginValue("isadmin"));
             }
         }
     }
