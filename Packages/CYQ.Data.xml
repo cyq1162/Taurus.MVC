@@ -5019,6 +5019,154 @@
             <param name="value"></param>
             <returns></returns>
         </member>
+        <member name="T:CYQ.Data.Tool.IOHelper">
+            <summary>
+            文件读取类（能自动识别文件编码）
+            </summary>
+        </member>
+        <member name="M:CYQ.Data.Tool.IOHelper.ReadAllText(System.String)">
+            <summary>
+            读取文件内容，并自动识别编码
+            </summary>
+            <param name="fileName">完整路径</param>
+            <returns></returns>
+        </member>
+        <member name="M:CYQ.Data.Tool.IOHelper.ReadAllText(System.String,System.Int32)">
+            <param name="cacheMinutes">缓存分钟数（为0则不缓存）</param>
+            <returns></returns>
+        </member>
+        <member name="M:CYQ.Data.Tool.IOHelper.ReadAllText(System.String,System.Int32,System.Text.Encoding)">
+            <summary>
+            读取文件内容
+            </summary>
+            <param name="encoding">指定编码时（会跳过编码自动检测）</param>
+            <returns></returns>
+        </member>
+        <member name="M:CYQ.Data.Tool.IOHelper.ReadAllLines(System.String)">
+            <summary>
+            读取文件内容，并自动识别编码
+            </summary>
+        </member>
+        <member name="M:CYQ.Data.Tool.IOHelper.ReadAllBytes(System.String)">
+            <summary>
+            读取IO数据【带Mutex锁】
+            </summary>
+            <returns></returns>
+        </member>
+        <member name="M:CYQ.Data.Tool.IOHelper.Write(System.String,System.String)">
+            <summary>
+            往文件里写入数据(文件存在则复盖，不存在则创建)
+            </summary>
+            <param name="fileName"></param>
+            <param name="text"></param>
+            <returns></returns>
+        </member>
+        <member name="M:CYQ.Data.Tool.IOHelper.Append(System.String,System.String)">
+            <summary>
+            往文件里追加数据(文件存在则追加，不存在则更新)，并自动识别文件编码
+            </summary>
+            <param name="fileName"></param>
+            <param name="text"></param>
+            <returns></returns>
+        </member>
+        <member name="M:CYQ.Data.Tool.IOHelper.Delete(System.String)">
+            <summary>
+            删除文件
+            </summary>
+        </member>
+        <member name="M:CYQ.Data.Tool.IOHelper.DetectEncode(System.String)">
+            <summary>
+            检测并返回文件编码。
+            </summary>
+            <param name="fileName">文件路径。</param>
+            <returns></returns>
+        </member>
+        <member name="M:CYQ.Data.Tool.IOHelper.DetectEncode(System.Byte[])">
+            <summary>
+            检测并返回文件编码。
+            </summary>
+            <param name="bytes">检测字节</param>
+            <returns></returns>
+        </member>
+        <member name="F:CYQ.Data.Tool.IOWatch.watchPathList">
+            <summary>
+            监控中的列表。
+            </summary>
+        </member>
+        <member name="T:CYQ.Data.Tool.TextEncodingDetect">
+            <summary>
+            字节文本编码检测
+            </summary>
+        </member>
+        <member name="F:CYQ.Data.Tool.TextEncodingDetect.IsChinese">
+            <summary>
+            是否中文
+            </summary>
+        </member>
+        <member name="F:CYQ.Data.Tool.TextEncodingDetect.hasBom">
+            <summary>
+            是否拥有Bom头
+            </summary>
+        </member>
+        <member name="M:CYQ.Data.Tool.TextEncodingDetect.GetEncoding(System.Byte[])">
+            <summary>
+            获取文件编码
+            </summary>
+            <returns></returns>
+        </member>
+        <member name="M:CYQ.Data.Tool.TextEncodingDetect.DetectWithoutBom(System.Byte[],System.Int32)">
+            <summary>
+                Automatically detects the Encoding type of a given byte buffer.
+            </summary>
+            <param name="buffer">The byte buffer.</param>
+            <param name="size">The size of the byte buffer.</param>
+            <returns>The Encoding type or Encoding.None if unknown.</returns>
+        </member>
+        <member name="M:CYQ.Data.Tool.TextEncodingDetect.CheckByNewLineChar(System.Byte[],System.Int32)">
+            <summary>
+                Checks if a buffer contains text that looks like utf16 by scanning for
+                newline chars that would be present even in non-english text.
+                以检测换行符标识来判断。
+            </summary>
+            <param name="buffer">The byte buffer.</param>
+            <param name="size">The size of the byte buffer.</param>
+            <returns>Encoding.none, Encoding.Utf16LeNoBom or Encoding.Utf16BeNoBom.</returns>
+        </member>
+        <member name="M:CYQ.Data.Tool.TextEncodingDetect.ContainsZero(System.Byte[],System.Int32)">
+            <summary>
+            Checks if a buffer contains any nulls. Used to check for binary vs text data.
+            </summary>
+            <param name="buffer">The byte buffer.</param>
+            <param name="size">The size of the byte buffer.</param>
+        </member>
+        <member name="M:CYQ.Data.Tool.TextEncodingDetect.CheckByZeroNumPercent(System.Byte[],System.Int32)">
+            <summary>
+                Checks if a buffer contains text that looks like utf16. This is done based
+                on the use of nulls which in ASCII/script like text can be useful to identify.
+                按照一定的空0数的概率来预测。
+            </summary>
+            <param name="buffer">The byte buffer.</param>
+            <param name="size">The size of the byte buffer.</param>
+            <returns>Encoding.none, Encoding.Utf16LeNoBom or Encoding.Utf16BeNoBom.</returns>
+        </member>
+        <member name="M:CYQ.Data.Tool.TextEncodingDetect.CheckUtf8(System.Byte[],System.Int32)">
+            <summary>
+                Checks if a buffer contains valid utf8.
+                以UTF8 的字节范围来检测。
+            </summary>
+            <param name="buffer">The byte buffer.</param>
+            <param name="size">The size of the byte buffer.</param>
+            <returns>
+                Encoding type of Encoding.None (invalid UTF8), Encoding.Utf8NoBom (valid utf8 multibyte strings) or
+                Encoding.ASCII (data in 0.127 range).
+            </returns>
+            <returns>2</returns>
+        </member>
+        <member name="M:CYQ.Data.Tool.TextEncodingDetect.CheckChinese(System.Byte[],System.Int32)">
+            <summary>
+            是否中文编码（GB2312、GBK、Big5）
+            </summary>
+        </member>
         <member name="T:CYQ.Data.Tool.JsonIgnoreAttribute">
             <summary>
             Json 转换忽略的字段
@@ -5788,149 +5936,6 @@
             SQL操作符号
             </summary>
         </member>
-        <member name="T:CYQ.Data.Tool.IOHelper">
-            <summary>
-            文件读取类（能自动识别文件编码）
-            </summary>
-        </member>
-        <member name="M:CYQ.Data.Tool.IOHelper.ReadAllText(System.String)">
-            <summary>
-            读取文件内容，并自动识别编码
-            </summary>
-            <param name="fileName">完整路径</param>
-            <returns></returns>
-        </member>
-        <member name="M:CYQ.Data.Tool.IOHelper.ReadAllText(System.String,System.Int32)">
-            <param name="cacheMinutes">缓存分钟数（为0则不缓存）</param>
-            <returns></returns>
-        </member>
-        <member name="M:CYQ.Data.Tool.IOHelper.ReadAllText(System.String,System.Int32,System.Text.Encoding)">
-            <summary>
-            读取文件内容
-            </summary>
-            <param name="encoding">指定编码时（会跳过编码自动检测）</param>
-            <returns></returns>
-        </member>
-        <member name="M:CYQ.Data.Tool.IOHelper.ReadAllLines(System.String)">
-            <summary>
-            读取文件内容，并自动识别编码
-            </summary>
-        </member>
-        <member name="M:CYQ.Data.Tool.IOHelper.Write(System.String,System.String)">
-            <summary>
-            往文件里写入数据(文件存在则复盖，不存在则更新)
-            </summary>
-            <param name="fileName"></param>
-            <param name="text"></param>
-            <returns></returns>
-        </member>
-        <member name="M:CYQ.Data.Tool.IOHelper.Append(System.String,System.String)">
-            <summary>
-            往文件里追加数据(文件存在则追加，不存在则更新)，并自动识别文件编码
-            </summary>
-            <param name="fileName"></param>
-            <param name="text"></param>
-            <returns></returns>
-        </member>
-        <member name="M:CYQ.Data.Tool.IOHelper.Delete(System.String)">
-            <summary>
-            删除文件
-            </summary>
-        </member>
-        <member name="M:CYQ.Data.Tool.IOHelper.DetectEncode(System.String)">
-            <summary>
-            检测并返回文件编码。
-            </summary>
-            <param name="fileName">文件路径。</param>
-            <returns></returns>
-        </member>
-        <member name="M:CYQ.Data.Tool.IOHelper.DetectEncode(System.Byte[])">
-            <summary>
-            检测并返回文件编码。
-            </summary>
-            <param name="bytes">检测字节</param>
-            <returns></returns>
-        </member>
-        <member name="T:CYQ.Data.Tool.TextEncodingDetect">
-            <summary>
-            字节文本编码检测
-            </summary>
-        </member>
-        <member name="F:CYQ.Data.Tool.TextEncodingDetect.IsChinese">
-            <summary>
-            是否中文
-            </summary>
-        </member>
-        <member name="F:CYQ.Data.Tool.TextEncodingDetect.hasBom">
-            <summary>
-            是否拥有Bom头
-            </summary>
-        </member>
-        <member name="M:CYQ.Data.Tool.TextEncodingDetect.GetEncoding(System.Byte[])">
-            <summary>
-            获取文件编码
-            </summary>
-            <param name="buffer"></param>
-            <returns></returns>
-        </member>
-        <member name="M:CYQ.Data.Tool.TextEncodingDetect.DetectWithoutBom(System.Byte[],System.Int32)">
-            <summary>
-                Automatically detects the Encoding type of a given byte buffer.
-            </summary>
-            <param name="buffer">The byte buffer.</param>
-            <param name="size">The size of the byte buffer.</param>
-            <returns>The Encoding type or Encoding.None if unknown.</returns>
-        </member>
-        <member name="M:CYQ.Data.Tool.TextEncodingDetect.CheckByNewLineChar(System.Byte[],System.Int32)">
-            <summary>
-                Checks if a buffer contains text that looks like utf16 by scanning for
-                newline chars that would be present even in non-english text.
-                以检测换行符标识来判断。
-            </summary>
-            <param name="buffer">The byte buffer.</param>
-            <param name="size">The size of the byte buffer.</param>
-            <returns>Encoding.none, Encoding.Utf16LeNoBom or Encoding.Utf16BeNoBom.</returns>
-        </member>
-        <member name="M:CYQ.Data.Tool.TextEncodingDetect.ContainsZero(System.Byte[],System.Int32)">
-            <summary>
-            Checks if a buffer contains any nulls. Used to check for binary vs text data.
-            </summary>
-            <param name="buffer">The byte buffer.</param>
-            <param name="size">The size of the byte buffer.</param>
-        </member>
-        <member name="M:CYQ.Data.Tool.TextEncodingDetect.CheckByZeroNumPercent(System.Byte[],System.Int32)">
-            <summary>
-                Checks if a buffer contains text that looks like utf16. This is done based
-                on the use of nulls which in ASCII/script like text can be useful to identify.
-                按照一定的空0数的概率来预测。
-            </summary>
-            <param name="buffer">The byte buffer.</param>
-            <param name="size">The size of the byte buffer.</param>
-            <returns>Encoding.none, Encoding.Utf16LeNoBom or Encoding.Utf16BeNoBom.</returns>
-        </member>
-        <member name="M:CYQ.Data.Tool.TextEncodingDetect.CheckUtf8(System.Byte[],System.Int32)">
-            <summary>
-                Checks if a buffer contains valid utf8.
-                以UTF8 的字节范围来检测。
-            </summary>
-            <param name="buffer">The byte buffer.</param>
-            <param name="size">The size of the byte buffer.</param>
-            <returns>
-                Encoding type of Encoding.None (invalid UTF8), Encoding.Utf8NoBom (valid utf8 multibyte strings) or
-                Encoding.ASCII (data in 0.127 range).
-            </returns>
-            <returns>2</returns>
-        </member>
-        <member name="M:CYQ.Data.Tool.TextEncodingDetect.CheckChinese(System.Byte[],System.Int32)">
-            <summary>
-            是否中文编码（GB2312、GBK、Big5）
-            </summary>
-        </member>
-        <member name="F:CYQ.Data.Tool.IOWatch.watchPathList">
-            <summary>
-            监控中的列表。
-            </summary>
-        </member>
         <member name="T:CYQ.Data.Tool.EscapeOp">
             <summary>
             Escape json char options
@@ -5957,7 +5962,12 @@
             系统内部使用： ascii小于32（包括\n \t \r）、"(双引号)，\(转义符号) 进行编码（规则为：@#{0}#@ {0}为asciii值，系统转的时候会自动解码）
             </summary>
         </member>
-        <!-- 对于成员“T:CYQ.Data.Tool.JsonHelper”忽略有格式错误的 XML 注释 -->
+        <member name="T:CYQ.Data.Tool.JsonHelper">
+            <summary>
+            Json class for you easy to operate json
+            <para>功能全面的json帮助类</para>
+            </summary>
+        </member>
         <member name="M:CYQ.Data.Tool.JsonHelper.#ctor(System.Boolean)">
             <param name="addHead">with easyui header ?<para>是否带输出头</para></param>
         </member>
