@@ -20,7 +20,7 @@ namespace Taurus.Controllers
         public override void Default()
         {
             Response.StatusCode = 404;
-            Write("DefaultController : Hello world");
+            Write("404 - DefaultController : Default()");
         }
         /// <summary>
         /// 用于所有的请求合法性验证，配合[Ack]属性
