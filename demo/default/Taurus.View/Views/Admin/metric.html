@@ -23,15 +23,14 @@
                 <div style="float:left">
                     <a href="metric?d=${yesterday}">Yesterday</a>&nbsp;|&nbsp;
                     <a href="metric?d=${today}">Today</a>&nbsp;|&nbsp;
-                    Total（${total:0}）
                 </div>
                 <div style="clear:both; height:5px;">
                 </div>
                 <hr />
                 <table class="table table-striped">
                     <tr>
-                        <td width="${t1:250}px" align="left"><a href="metric?d=${d}&s=LocalPath&desc=0">Local Path</a></td>
-                        <td align="center"><a href="metric?d=${d}&s=h24&desc=1">Day</a></td>
+                        <td width="${t1:250}px" align="left"><a href="metric?d=${d}&s=LocalPath&desc=0">Local Path</a>（${KeyCount:0}）</td>
+                        <td align="center"><a href="metric?d=${d}&s=h24&desc=1">Day</a>（${total:0}）</td>
                         <td>【0】</td>
                         <td>【1】</td>
                         <td>【2】</td>
