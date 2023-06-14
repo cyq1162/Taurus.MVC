@@ -18,7 +18,6 @@
     <!-- 最新的 Bootstrap 核心 JavaScript 文件 -->
     <script src="/Views/styles/js/bootstrap.min.js"></script>
     <script src="/Views/styles/js/master.js"></script>
-    <script itemref="script2"></script>
     <style itemref="style"></style>
     <style type="text/css">
         /* header styles-------------------------------------------------- */
@@ -63,43 +62,40 @@
     </style>
 </head>
 <body>
-        <nav class="navbar navbar-inverse navbar-fixed-top" id="header">
-            <div class="container">
-                <div class="navbar-header">
-                    <button type="button" class="navbar-toggle collapsed" data-toggle="collapse" data-target="#navbar" aria-expanded="false" aria-controls="navbar">
-                        <span class="sr-only">Toggle navigation</span>
-                        <span class="icon-bar"></span>
-                        <span class="icon-bar"></span>
-                        <span class="icon-bar"></span>
-                    </button>
-                    <a class="navbar-brand" href="#">Taurus Admin</a>
-                </div>
-                <div id="navbar" class="collapse navbar-collapse">
-                    <ul class="nav navbar-nav">
-                        <li><a href="index">MS - Host</a></li>
-                        <li><a href="osinfo">OS - Environment</a></li>
-                        <li><a href="config">App - Config</a></li>
-                        <li><a href="log">App - Log</a></li>
-                        <li><a href="menu">Ext - Menu</a></li>
-                        <li><a href="setting">Setting</a></li>
-                        <li><a href="logout">Logout - ${LoginName}</a></li>
-                    </ul>
-                </div>
-                <!--/.nav-collapse -->
+    <nav class="navbar navbar-inverse navbar-fixed-top" id="header">
+        <div class="container">
+            <div class="navbar-header">
+                <button type="button" class="navbar-toggle collapsed" data-toggle="collapse" data-target="#navbar" aria-expanded="false" aria-controls="navbar">
+                    <span class="sr-only">Toggle navigation</span>
+                    <span class="icon-bar"></span>
+                    <span class="icon-bar"></span>
+                    <span class="icon-bar"></span>
+                </button>
+                <a class="navbar-brand" href="#">Taurus Admin</a>
             </div>
-        </nav>
-        <div class="container" >
-            <div class="starter-template" >
-                <div itemref="container">
-
-                </div>
+            <div id="navbar" class="collapse navbar-collapse">
+                <ul class="nav navbar-nav">
+                    <li><a href="index">MS - Host</a></li>
+                    <li><a href="osinfo">OS - Environment</a></li>
+                    <li><a href="metric">API - Metric</a></li>
+                    <li><a href="config">App - Config</a></li>
+                    <li><a href="log">App - Log</a></li>
+                    <li><a href="menu">Ext - Menu</a></li>
+                    <li><a href="setting">Setting</a></li>
+                    <li><a href="logout">Logout - ${LoginName}</a></li>
+                </ul>
             </div>
+            <!--/.nav-collapse -->
         </div>
-        <footer class="footer" id="footer">
-            <div class="container">
-                <p class="text-muted">Author : <a target="_blank" href="https://cyq1162.cnblogs.com">路过秋天</a> Copyright © 2016-2096 Powered by <a target="_blank" href="https://github.com/cyq1162/Taurus.MVC">Taurus</a> All Rights Reserved.</p>
-            </div>
-        </footer>
+    </nav>
+    <div itemref="container">
+
+    </div>
+    <footer class="footer" id="footer">
+        <div class="container">
+            <p class="text-muted">Author : <a target="_blank" href="https://cyq1162.cnblogs.com">路过秋天</a> Copyright © 2016-2096 Powered by <a target="_blank" href="https://github.com/cyq1162/Taurus.MVC">Taurus</a> All Rights Reserved.</p>
+        </div>
+    </footer>
 
 </body>
 </html>

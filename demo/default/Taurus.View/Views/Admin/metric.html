@@ -1,0 +1,95 @@
+﻿<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head itemref="common.head">
+    <title>Application Metric Info</title>
+    <link itemref="common.btcss" />
+    <link itemref="common.btcss_extend" />
+    <style type="text/css">
+        a {
+            cursor: pointer;
+        }
+
+        table td {
+            word-break: break-all;
+            word-wrap: break-word;
+        }
+    </style>
+</head>
+<body itemref="common.body">
+    <div id="container" class="container" style="width:100%">
+        <div class="starter-template">
+            <div>
+                <div style="float:left"><b>Metric ：</b></div>
+                <div style="float:left">
+                    <a href="metric?d=${yesterday}">Yesterday</a>&nbsp;|&nbsp;
+                    <a href="metric?d=${today}">Today</a>&nbsp;|&nbsp;
+                    Total（${total:0}）
+                </div>
+                <div style="clear:both; height:5px;">
+                </div>
+                <hr />
+                <table class="table table-striped">
+                    <tr>
+                        <td width="${t1:250}px" align="left"><a href="metric?d=${d}&s=LocalPath&desc=0">Local Path</a></td>
+                        <td align="center"><a href="metric?d=${d}&s=h24&desc=1">Day</a></td>
+                        <td>【0】</td>
+                        <td>【1】</td>
+                        <td>【2】</td>
+                        <td>【3】</td>
+                        <td>【4】</td>
+                        <td>【5】</td>
+                        <td>【6】</td>
+                        <td>【7】</td>
+                        <td>【8】</td>
+                        <td>【9】</td>
+                        <td>【10】</td>
+                        <td>【11】</td>
+                        <td>【12】</td>
+                        <td>【13】</td>
+                        <td>【14】</td>
+                        <td>【15】</td>
+                        <td>【16】</td>
+                        <td>【17】</td>
+                        <td>【18】</td>
+                        <td>【19】</td>
+                        <td>【20】</td>
+                        <td>【21】</td>
+                        <td>【22】</td>
+                        <td>【23】</td>
+                    </tr>
+                    <tbody id="defaultView" clearflag="1">
+                        <tr>
+                            <td width="${t1:250}px" align="left">${LocalPath}</td>
+                            <td align="center">${h24}</td>
+                            <td>${h0}</td>
+                            <td>${h1}</td>
+                            <td>${h2}</td>
+                            <td>${h3}</td>
+                            <td>${h4}</td>
+                            <td>${h5}</td>
+                            <td>${h6}</td>
+                            <td>${h7}</td>
+                            <td>${h8}</td>
+                            <td>${h9}</td>
+                            <td>${h10}</td>
+                            <td>${h11}</td>
+                            <td>${h12}</td>
+                            <td>${h13}</td>
+                            <td>${h14}</td>
+                            <td>${h15}</td>
+                            <td>${h16}</td>
+                            <td>${h17}</td>
+                            <td>${h18}</td>
+                            <td>${h19}</td>
+                            <td>${h20}</td>
+                            <td>${h21}</td>
+                            <td>${h22}</td>
+                            <td>${h23}</td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+</body>
+</html>

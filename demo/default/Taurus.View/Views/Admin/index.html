@@ -15,126 +15,130 @@
     </style>
 </head>
 <body itemref="common.body">
-    <div id="container">
-        <div>
-            MicroService Type ：<b>${MsType}</b>
-        </div>
-        <hr />
-        <div style="float:left"><b>Server ：</b></div>
-        <div id="serverNamesView" style="float:left" clearflag="1">
-            <a href="index?t=1&n=${Name}">${Name}（${Count}）</a>&nbsp;|&nbsp;
-        </div>
-        <div style="clear:both; height:5px;">
-        </div>
-        <div style="float:left"><b>Client - Register - Host ：</b></div>
-        <div id="clientHostView" style="float:left" clearflag="1">
-            <a href="index?t=2&n=${Name}">${Name}（${Count}）</a>&nbsp;|&nbsp;
-        </div>
-        <div style="clear:both;height:5px;">
-        </div>
-        <div style="float:left"><b>Client - Register - Domain ：</b></div>
-        <div id="clientDomainView" style="float:left" clearflag="1">
-            <a href="index?t=3&n=${Name}">${Name}（${Count}）</a>&nbsp;|&nbsp;
-        </div>
-        <div style="clear:both;height:5px;">
-        </div>
-        <div style="float:left"><b>Client - Register - Module ：</b></div>
-        <div id="clientModuleView" clearflag="1" style="text-align:left">
-            <a href="index?t=4&n=${Name}">${Name}（${Count}）</a>&nbsp;|&nbsp;
-        </div>
-        <div style="clear:both;">
-        </div>
-        <hr />
-        <table class="table table-striped">
-            <tr>
-                <td>Display Name</td>
-                <td>PID</td>
-                <td>Host</td>
-                <td>HostIP</td>
-                <td>State</td>
-                <td>IsVirtual</td>
-                <td>Version</td>
-                <td>LastActiveTime</td>
-                <td>Remote【Client】</td>
-            </tr>
-            <tbody id="defaultView" clearflag="1">
-                <tr>
-                    <td><a target="_blank" href="index?t=${t:1}&to=1&hostIP=${HostIP}&host=${Host}" title="go to doc">${Name}</a></td>
-                    <td>${PID}</td>
-                    <td><a href="index?t=5&n=${Host}">${Host}</a></td>
-                    <td><a href="index?t=${t:1}&to=2&hostIP=${HostIP}&host=${Host}" target="_blank" title="go to admin">${HostIP}</a></td>
-                    <td><div ondblclick="checkUrl('${Host}',this)" title="double click to check host state again.">${State}</div></td>
-                    <td>${IsVirtual}</td>
-                    <td>${Version}</td>
-                    <td>${RegTime}</td>
-                    <td>
-                        <div clearflag="${RemoteExit:1}">
-                            <a onclick="stop('${Host}',this);" title="stop client microservice.">Stop</a>&nbsp;|&nbsp;
-                            <a onclick="exit('${Host}',this);" title="exit client application.">Exit</a>
-                        </div>
-                    </td>
-                </tr>
-            </tbody>
-        </table>
-        <![CDATA[
-        <script>
-            function stop(host, el) {
-                if (confirm("Stop [" + host + "] MicroService Confirm ?")) {
-                    el.onclick = undefined;
-                    el.style = "text-decoration: none; cursor: default; opacity: 0.2";
-                    $.ajax({
-                        type: "GET",
-                        url: "StopClientMicroService?host=" + host,
-                        success: function (result) {
-                            if (result && result.msg) {
-                                alert(result.msg);
-                            }
-                        },
-                        error: function (result) {
-                            alert("stop fail.");
+    <div id="container" class="container">
+        <div class="starter-template">
+            <div>
+                <div>
+                    MicroService Type ：<b>${MsType}</b>
+                </div>
+                <hr />
+                <div style="float:left"><b>Server ：</b></div>
+                <div id="serverNamesView" style="float:left" clearflag="1">
+                    <a href="index?t=1&n=${Name}">${Name}（${Count}）</a>&nbsp;|&nbsp;
+                </div>
+                <div style="clear:both; height:5px;">
+                </div>
+                <div style="float:left"><b>Client - Register - Host ：</b></div>
+                <div id="clientHostView" style="float:left" clearflag="1">
+                    <a href="index?t=2&n=${Name}">${Name}（${Count}）</a>&nbsp;|&nbsp;
+                </div>
+                <div style="clear:both;height:5px;">
+                </div>
+                <div style="float:left"><b>Client - Register - Domain ：</b></div>
+                <div id="clientDomainView" style="float:left" clearflag="1">
+                    <a href="index?t=3&n=${Name}">${Name}（${Count}）</a>&nbsp;|&nbsp;
+                </div>
+                <div style="clear:both;height:5px;">
+                </div>
+                <div style="float:left"><b>Client - Register - Module ：</b></div>
+                <div id="clientModuleView" clearflag="1" style="text-align:left">
+                    <a href="index?t=4&n=${Name}">${Name}（${Count}）</a>&nbsp;|&nbsp;
+                </div>
+                <div style="clear:both;">
+                </div>
+                <hr />
+                <table class="table table-striped">
+                    <tr>
+                        <td>Display Name</td>
+                        <td>PID</td>
+                        <td>Host</td>
+                        <td>HostIP</td>
+                        <td>State</td>
+                        <td>IsVirtual</td>
+                        <td>Version</td>
+                        <td>LastActiveTime</td>
+                        <td>Remote【Client】</td>
+                    </tr>
+                    <tbody id="defaultView" clearflag="1">
+                        <tr>
+                            <td><a target="_blank" href="index?t=${t:1}&to=1&hostIP=${HostIP}&host=${Host}" title="go to doc">${Name}</a></td>
+                            <td>${PID}</td>
+                            <td><a href="index?t=5&n=${Host}">${Host}</a></td>
+                            <td><a href="index?t=${t:1}&to=2&hostIP=${HostIP}&host=${Host}" target="_blank" title="go to admin">${HostIP}</a></td>
+                            <td><div ondblclick="checkUrl('${Host}',this)" title="double click to check host state again.">${State}</div></td>
+                            <td>${IsVirtual}</td>
+                            <td>${Version}</td>
+                            <td>${RegTime}</td>
+                            <td>
+                                <div clearflag="${RemoteExit:1}">
+                                    <a onclick="stop('${Host}',this);" title="stop client microservice.">Stop</a>&nbsp;|&nbsp;
+                                    <a onclick="exit('${Host}',this);" title="exit client application.">Exit</a>
+                                </div>
+                            </td>
+                        </tr>
+                    </tbody>
+                </table>
+                <![CDATA[
+                <script>
+                    function stop(host, el) {
+                        if (confirm("Stop [" + host + "] MicroService Confirm ?")) {
+                            el.onclick = undefined;
+                            el.style = "text-decoration: none; cursor: default; opacity: 0.2";
+                            $.ajax({
+                                type: "GET",
+                                url: "StopClientMicroService?host=" + host,
+                                success: function (result) {
+                                    if (result && result.msg) {
+                                        alert(result.msg);
+                                    }
+                                },
+                                error: function (result) {
+                                    alert("stop fail.");
+                                }
+                            });
                         }
-                    });
-                }
-            }
-            function exit(host, el) {
-                if (confirm("Exit [" + host + "] Application Confirm ?")) {
-                    el.onclick = undefined;
-                    el.style = "text-decoration: none; cursor: default; opacity: 0.2";
-                    $.ajax({
-                        type: "GET",
-                        url: "ExitClientAppliction?host=" + host,
-                        success: function (result) {
-                            if (result && result.msg) {
-                                alert(result.msg);
-                            }
-                        },
-                        error: function (result) {
-                            alert("exit fail.");
+                    }
+                    function exit(host, el) {
+                        if (confirm("Exit [" + host + "] Application Confirm ?")) {
+                            el.onclick = undefined;
+                            el.style = "text-decoration: none; cursor: default; opacity: 0.2";
+                            $.ajax({
+                                type: "GET",
+                                url: "ExitClientAppliction?host=" + host,
+                                success: function (result) {
+                                    if (result && result.msg) {
+                                        alert(result.msg);
+                                    }
+                                },
+                                error: function (result) {
+                                    alert("exit fail.");
+                                }
+                            });
                         }
-                    });
-                }
-            }
-            function checkUrl(host, el) {
-                var text = $(el).html();
-                if (text == "- - -") { return; }
-                if (confirm("Check [" + host + "] State Again Confirm ?")) {
-                    var state = text == "√" ? "1" : "-1";
-                    $.ajax({
-                        type: "GET",
-                        url: "checkurl?host=" + host + "&state=" + state,
-                        success: function (result) {
-                            if (result && result.msg) {
-                                alert(result.msg);
-                            }
-                        },
-                        error: function (result) {
-                            alert("checkurl fail.");
+                    }
+                    function checkUrl(host, el) {
+                        var text = $(el).html();
+                        if (text == "- - -") { return; }
+                        if (confirm("Check [" + host + "] State Again Confirm ?")) {
+                            var state = text == "√" ? "1" : "-1";
+                            $.ajax({
+                                type: "GET",
+                                url: "checkurl?host=" + host + "&state=" + state,
+                                success: function (result) {
+                                    if (result && result.msg) {
+                                        alert(result.msg);
+                                    }
+                                },
+                                error: function (result) {
+                                    alert("checkurl fail.");
+                                }
+                            });
                         }
-                    });
-                }
-            }
-        </script>
-        ]]>
+                    }
+                </script>
+                ]]>
+            </div>
+        </div>
     </div>
 </body>
 </html>
