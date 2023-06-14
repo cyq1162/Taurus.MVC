@@ -1036,92 +1036,14 @@ namespace Taurus.Mvc
         public T GetEntity<T>() where T : class
         {
             return JsonHelper.ToEntity<T>(GetJson());
-            //object obj = Activator.CreateInstance(typeof(T));
-            //MDataRow row = MDataRow.CreateFrom(obj);
-            //row.LoadFrom();
-            //return row.ToEntity<T>();
         }
-        private string _Json = null;
         /// <summary>
         /// 获取Get或Post的数据并转换为Json格式。
         /// </summary>
         /// <returns></returns>
         public string GetJson()
         {
-            if (_Json == null)
-            {
-                if (IsHttpPost)
-                {
-                    var form = Request.Form;
-                    var files = Request.Files;
-                    if (form.Count > 0)
-                    {
-                        if (form.Count == 1 && form.Keys[0] == null)
-                        {
-                            return JsonHelper.ToJson(form[0]);
-                        }
-                        _Json = JsonHelper.ToJson(form);
-                    }
-                    else if (files == null || files.Count == 0)//请求头忘了带Http Type
-                    {
-                        Stream stream = Request.InputStream;
-                        if (stream != null && stream.CanRead)
-                        {
-                            long len = (long)Request.ContentLength;
-                            if (len > 0)
-                            {
-                                Byte[] bytes = new Byte[len];
-                                // ////NetCore 3.0 会抛异常，可配置可以同步请求读取流数据
-                                //services.Configure<KestrelServerOptions>(x => x.AllowSynchronousIO = true)
-                                //    .Configure<IISServerOptions>(x => x.AllowSynchronousIO = true);
-                                stream.Position = 0;// 需要启用：context.Request.EnableBuffering();开启用，不需要启用AllowSynchronousIO = true
-                                stream.Read(bytes, 0, bytes.Length);
-                                if (stream.Position < len)
-                                {
-                                    //Linux CentOS-8 大文件下读不全，会延时，导致：Unexpected end of Stream, the content may have already been read by another component.
-                                    int max = 0;
-                                    int timeout = MsConfig.Server.GatewayTimeout * 1000;
-                                    while (stream.Position < len)
-                                    {
-                                        max++;
-                                        if (max > timeout)//60秒超时
-                                        {
-                                            break;
-                                        }
-                                        Thread.Sleep(1);
-                                        stream.Read(bytes, (int)stream.Position, (int)(len - stream.Position));
-                                    }
-                                }
-                                stream.Position = 0;//重置，允许重复使用。
-                                string data = Encoding.UTF8.GetString(bytes);
-                                if (data.IndexOf("%") > -1)
-                                {
-                                    data = HttpUtility.UrlDecode(data);
-                                }
-                                _Json = JsonHelper.ToJson(data);
-                            }
-                        }
-                    }
-                }
-                else if (IsHttpGet)
-                {
-                    string para = Request.Url.Query.TrimStart('?');
-                    if (!string.IsNullOrEmpty(para))
-                    {
-                        if (para.IndexOf("%") > -1)
-                        {
-                            para = HttpUtility.UrlDecode(para);
-                        }
-                        _Json = JsonHelper.ToJson(para);
-                    }
-
-                }
-                if (string.IsNullOrEmpty(_Json))
-                {
-                    _Json = "{}";
-                }
-            }
-            return _Json;
+            return WebTool.GetJson(context);
         }
     }
 }
