@@ -72,7 +72,7 @@ namespace Taurus.Plugin.Admin
             //5、return # + any char + Base64<br/>
             return ""#"" + (char)(DateTime.Now.Second + 65) + base64Key;<br/>
         }";
-                        Sets(dt, "Limit.Ack CreateAck()", tip, "Ack limit : ack algorithm.");
+                        Sets(dt, "Limit.Ack CreateAck()", tip, "Ack limit : Ack algorithm.");
                     }
                 }
             }
