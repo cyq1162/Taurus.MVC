@@ -48,6 +48,7 @@ namespace Taurus.Plugin.Admin
                     row.Set(i + 1, value[i]);
                 }
             }
+            View.KeyValue.Set("KeyCount", list.Count.ToString());
             View.KeyValue.Set("Total", total.ToString());
             string sort = Query<string>("s", "LocalPath");
             bool isDesc = Query<bool>("desc");
