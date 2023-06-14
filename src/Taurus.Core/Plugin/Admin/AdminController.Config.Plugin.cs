@@ -25,11 +25,11 @@ namespace Taurus.Plugin.Admin
             {
                 if (type == "plugin-limit")
                 {
-                    Sets(dt, "Limit.IsIgnoreLAN", LimitConfig.IsIgnoreLAN, "limit : is ignore LAN (Local Area Network) IP address.");
-                    Sets(dt, "Limit.IsIgnoreAdmin", LimitConfig.IsIgnoreAdmin, "limit : is ignore /admin path.");
-                    Sets(dt, "Limit.IsIgnoreDoc", LimitConfig.IsIgnoreDoc, "limit : is ignore /doc path.");
-                    Sets(dt, "Limit.IsIgnoreMicroService", LimitConfig.IsIgnoreMicroService, "limit : is ignore /microservice path.");
-                    Sets(dt, "Limit.IsUseXRealIP", LimitConfig.IsUseXRealIP, "limit : is use X-Real-IP to obtain the client IP address.");
+                    Sets(dt, "Limit.IsIgnoreLAN", LimitConfig.IsIgnoreLAN, "limit : Ignore LAN (Local Area Network) IP address.");
+                    Sets(dt, "Limit.IsIgnoreAdmin", LimitConfig.IsIgnoreAdmin, "limit : Ignore /admin path.");
+                    Sets(dt, "Limit.IsIgnoreDoc", LimitConfig.IsIgnoreDoc, "limit : Ignore /doc path.");
+                    Sets(dt, "Limit.IsIgnoreMicroService", LimitConfig.IsIgnoreMicroService, "limit : Ignore /microservice path.");
+                    Sets(dt, "Limit.IsUseXRealIP", LimitConfig.IsUseXRealIP, "limit : Use X-Real-IP to obtain the client IP address.");
                     dt.NewRow(true);
                     Sets(dt, "Limit.IP.IsEnable", LimitConfig.IP.IsEnable, "IP limit : IP blackname plugin.");
                     Sets(dt, "Limit.Rate.IsEnable", LimitConfig.Rate.IsEnable, "Rate limit : API request rate limiting plugin.");
@@ -38,23 +38,23 @@ namespace Taurus.Plugin.Admin
                 else if (type == "plugin-limit-ip")
                 {
                     Sets(dt, "Limit.IP.IsEnable", LimitConfig.IP.IsEnable, "IP limit : IP blackname plugin.");
-                    Sets(dt, "Limit.IP.IsSync", LimitConfig.IP.IsSync, "IP limit : is sync ip blackname list from register center.");
+                    Sets(dt, "Limit.IP.IsSync", LimitConfig.IP.IsSync, "IP limit : Sync ip blackname list from register center.");
                 }
                 else if (type == "plugin-limit-rate")
                 {
                     Sets(dt, "Limit.Rate.IsEnable", LimitConfig.Rate.IsEnable, "Rate limit : API request rate limiting plugin.");
                     Sets(dt, "Limit.Rate.MaxConcurrentConnections", LimitConfig.Rate.MaxConcurrentConnections, "Rate limit : Maximum number of open connections..");
-                    Sets(dt, "Limit.Rate.Period", LimitConfig.Rate.Period + " (s)", "Rate limit : interval period (second).");
-                    Sets(dt, "Limit.Rate.Limit", LimitConfig.Rate.Limit, "Rate limit : maximum number of requests within an interval time.");
-                    Sets(dt, "Limit.Rate.Key", LimitConfig.Rate.Key, "Rate limit : can customize a key to replace IP.");
+                    Sets(dt, "Limit.Rate.Period", LimitConfig.Rate.Period + " (s)", "Rate limit : Interval period (second).");
+                    Sets(dt, "Limit.Rate.Limit", LimitConfig.Rate.Limit, "Rate limit : Maximum number of requests within an interval time.");
+                    Sets(dt, "Limit.Rate.Key", LimitConfig.Rate.Key, "Rate limit : Customize a key to replace IP.");
 
                 }
                 else if (type == "plugin-limit-ack")
                 {
                     Sets(dt, "Limit.Ack.IsEnable", LimitConfig.Ack.IsEnable, "Ack limit : ACK security code verification plugin.");
-                    Sets(dt, "Limit.Ack.Key", LimitConfig.Ack.Key, "Ack limit : secret key.");
-                    Sets(dt, "Limit.Ack.IsVerifyDecode", LimitConfig.Ack.IsVerifyDecode, "Ack limit : ack must be decode and valid.");
-                    Sets(dt, "Limit.Ack.IsVerifyUsed", LimitConfig.Ack.IsVerifyUsed, "Ack limit : ack use once only.");
+                    Sets(dt, "Limit.Ack.Key", LimitConfig.Ack.Key, "Ack limit : Secret key.");
+                    Sets(dt, "Limit.Ack.IsVerifyDecode", LimitConfig.Ack.IsVerifyDecode, "Ack limit : Ack must be decode and valid.");
+                    Sets(dt, "Limit.Ack.IsVerifyUsed", LimitConfig.Ack.IsVerifyUsed, "Ack limit : Ack use once only.");
                     if (IsAdmin)
                     {
                         string tip = @"        
@@ -78,7 +78,7 @@ namespace Taurus.Plugin.Admin
             }
             else if (type == "plugin-admin")
             {
-                Sets(dt, "Admin.IsEnable", AdminConfig.IsEnable, "Admin plugin : backend visual management plugin.");
+                Sets(dt, "Admin.IsEnable", AdminConfig.IsEnable, "Admin plugin : Backend visual management plugin.");
                 Sets(dt, "Admin.Path", AdminConfig.Path, "Admin url path.");
                 Sets(dt, "Admin.HtmlFolderName", AdminConfig.HtmlFolderName, "Mvc view folder name for admin.");
                 dt.NewRow(true);
