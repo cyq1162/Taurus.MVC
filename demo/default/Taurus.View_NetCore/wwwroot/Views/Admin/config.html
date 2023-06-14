@@ -1,7 +1,7 @@
 ﻿<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
 <html xmlns="http://www.w3.org/1999/xhtml">
 <head itemref="common.head">
-    <title>Application Config Info.</title>
+    <title>Application Config Info</title>
     <link itemref="common.btcss" />
     <link itemref="common.btcss_extend" />
     <style type="text/css">
@@ -17,67 +17,73 @@
     </style>
 </head>
 <body itemref="common.body">
-    <div id="container">
-        <div id="kestrelNode">
-            <div style="float:left"><b>Kestrel （Web Host）：</b></div>
-            <div style="float:left">
-                <a href="config?t=Kestrel">Kestrel</a>&nbsp;|&nbsp;
-                Limit【
-                <a href="config?t=Kestrel-Connection&t1=35">Connection</a>&nbsp;|&nbsp;
-                <a href="config?t=Kestrel-Request">Request</a>&nbsp;|&nbsp;
-                <a href="config?t=Kestrel-Response">Response</a>&nbsp;|&nbsp;
-                <a href="config?t=Kestrel-Timeout">Timeout</a>&nbsp;】
+    <div id="container" class="container">
+        <div class="starter-template">
+            <div>
+                <div id="kestrelNode">
+                    <div style="float:left"><b>Kestrel （Web Host）：</b></div>
+                    <div style="float:left">
+                        <a href="config?t=Kestrel">Kestrel</a>&nbsp;|&nbsp;
+                        Limit【
+                        <a href="config?t=Kestrel-Connection&t1=35">Connection</a>&nbsp;|&nbsp;
+                        <a href="config?t=Kestrel-Request">Request</a>&nbsp;|&nbsp;
+                        <a href="config?t=Kestrel-Response">Response</a>&nbsp;|&nbsp;
+                        <a href="config?t=Kestrel-Timeout">Timeout</a>&nbsp;】
+                    </div>
+                    <div style="clear:both; height:5px;">
+                    </div>
+                </div>
+                <div style="float:left"><b>Taurus （Framework）：</b></div>
+                <div style="float:left">
+                    <a href="config?t=Mvc&t1=28&t2=28&t3=44">MVC</a>（
+                    <a href="config?t=Mvc-Controller&t1=28&t2=28&t3=44">Controller</a>&nbsp;|&nbsp;
+                    <a href="config?t=Mvc-View&t1=28&t2=28&t3=44">View</a>&nbsp;）|&nbsp;
+                    Plugin【
+                    <a href="config?t=Plugin-Microservice">MicroService</a>&nbsp;|&nbsp;
+                    <a href="config?t=Plugin-CORS&t1=28&t2=28&t3=44">CORS</a>&nbsp;|&nbsp;
+                    <a href="config?t=Plugin-Admin">Admin</a>&nbsp;|&nbsp;
+                    <a href="config?t=Plugin-Doc">Doc</a>&nbsp;|&nbsp;
+                    <a href="config?t=Plugin-Metric">Metric</a>&nbsp;|&nbsp;
+                    <a href="config?t=Plugin-Limit">Limit</a>（
+                    <a href="config?t=Plugin-Limit-Rate">Rate</a>&nbsp;|&nbsp;
+                    <a href="config?t=Plugin-Limit-IP">IP-Black</a>&nbsp;|&nbsp;
+                    <a href="config?t=Plugin-Limit-Ack&t2=40">Ack</a>&nbsp;）】
+                </div>
+                <div style="clear:both; height:5px;">
+                </div>
+                <div style="float:left"><b>CYQ.Data （ ORM ）：</b></div>
+                <div style="float:left">
+                    <a href="config?t=CYQ.Data">Summary</a>【
+                    <a href="config?t=CYQ.Data-Conn&t1=20&t2=60&t3=20">Conn</a>&nbsp;|&nbsp;
+                    <a href="config?t=CYQ.Data-Log">Log</a>&nbsp;|&nbsp;
+                    <a href="config?t=CYQ.Data-DataBase">DataBase</a>&nbsp;|&nbsp;
+                    <a href="config?t=CYQ.Data-AutoCache">AutoCache</a>&nbsp;|&nbsp;
+                    <a href="config?t=CYQ.Data-Redis">Redis</a>&nbsp;|&nbsp;
+                    <a href="config?t=CYQ.Data-MemCache">MemCache</a>&nbsp;|&nbsp;
+                    <a href="config?t=CYQ.Data-Debug">Debug</a>&nbsp;】
+                </div>
+                <div style="clear:both;">
+                </div>
+                <hr />
+                <table class="table table-striped">
+                    <tr>
+                        <td width="${t1:28}%">Config Key</td>
+                        <td width="${t2:28}%">Config Value</td>
+                        <td width="${t3:44}%">Description</td>
+                    </tr>
+                </table>
+                <table class="table table-striped">
+                    <tbody id="defaultView" clearflag="1">
+                        <tr>
+                            <td width="${t1:28}%">${ConfigKey}</td>
+                            <td width="${t2:28}%" ondblclick="changeState(this,'${ConfigKey}')">${ConfigValue}</td>
+                            <td width="${t3:44}%">${Description}</td>
+                        </tr>
+                    </tbody>
+                </table>
+
             </div>
-            <div style="clear:both; height:5px;">
-            </div>
         </div>
-        <div style="float:left"><b>Taurus （Framework）：</b></div>
-        <div style="float:left">
-            <a href="config?t=Mvc&t1=28&t2=28&t3=44">MVC</a>（
-            <a href="config?t=Mvc-Controller&t1=28&t2=28&t3=44">Controller</a>&nbsp;|&nbsp;
-            <a href="config?t=Mvc-View&t1=28&t2=28&t3=44">View</a>&nbsp;）|&nbsp;
-            Plugin【
-            <a href="config?t=Plugin-Microservice">MicroService</a>&nbsp;|&nbsp;
-            <a href="config?t=Plugin-CORS&t1=28&t2=28&t3=44">CORS</a>&nbsp;|&nbsp;
-            <a href="config?t=Plugin-Admin">Admin</a>&nbsp;|&nbsp;
-            <a href="config?t=Plugin-Doc">Doc</a>&nbsp;|&nbsp;
-            <a href="config?t=Plugin-Limit">Limit</a>（
-            <a href="config?t=Plugin-Limit-Rate">Rate</a>&nbsp;|&nbsp;
-            <a href="config?t=Plugin-Limit-IP">IP-Black</a>&nbsp;|&nbsp;
-            <a href="config?t=Plugin-Limit-Ack&t2=40">Ack</a>&nbsp;）】
-        </div>
-        <div style="clear:both; height:5px;">
-        </div>
-        <div style="float:left"><b>CYQ.Data （ ORM ）：</b></div>
-        <div style="float:left">
-            <a href="config?t=CYQ.Data">Summary</a>【
-            <a href="config?t=CYQ.Data-Conn&t1=20&t2=60&t3=20">Conn</a>&nbsp;|&nbsp;
-            <a href="config?t=CYQ.Data-Log">Log</a>&nbsp;|&nbsp;
-            <a href="config?t=CYQ.Data-DataBase">DataBase</a>&nbsp;|&nbsp;
-            <a href="config?t=CYQ.Data-AutoCache">AutoCache</a>&nbsp;|&nbsp;
-            <a href="config?t=CYQ.Data-Redis">Redis</a>&nbsp;|&nbsp;
-            <a href="config?t=CYQ.Data-MemCache">MemCache</a>&nbsp;|&nbsp;
-            <a href="config?t=CYQ.Data-Debug">Debug</a>&nbsp;】
-        </div>
-        <div style="clear:both;">
-        </div>
-        <hr />
-        <table class="table table-striped">
-            <tr>
-                <td width="${t1:28}%">Config Key</td>
-                <td width="${t2:28}%">Config Value</td>
-                <td width="${t3:44}%">Description</td>
-            </tr>
-        </table>
-        <table class="table table-striped">
-            <tbody id="defaultView" clearflag="1">
-                <tr>
-                    <td width="${t1:28}%">${ConfigKey}</td>
-                    <td width="${t2:28}%" ondblclick="changeState(this,'${ConfigKey}')">${ConfigValue}</td>
-                    <td width="${t3:44}%">${Description}</td>
-                </tr>
-            </tbody>
-        </table>
         <![CDATA[
         <script type="text/javascript">
             function changeState(el, key) {
@@ -134,5 +140,6 @@
         </script>
         ]]>
     </div>
+
 </body>
 </html>

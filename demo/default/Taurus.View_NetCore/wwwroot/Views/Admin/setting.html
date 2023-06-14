@@ -16,24 +16,28 @@
     </style>
 </head>
 <body itemref="common.body">
-    <div id="container">
-        <div id="menu" style="float:left">
-            <a target="setting" href="settingofaccount">Admin - Account</a>&nbsp;|&nbsp;
-            <a target="setting" href="settingofipblackname">IP - Black - Add</a>&nbsp;|&nbsp;
-            <a target="setting" href="settingofhostadd">MS - Host - Add</a>&nbsp;|&nbsp;
-            <a target="setting" href="settingofmenuadd">Extend - Menu - Add</a>
+    <div id="container" class="container">
+        <div class="starter-template">
+            <div>
+                <div id="menu" style="float:left">
+                    <a target="setting" href="settingofaccount">Admin - Account</a>&nbsp;|&nbsp;
+                    <a target="setting" href="settingofipblackname">IP - Black - Add</a>&nbsp;|&nbsp;
+                    <a target="setting" href="settingofhostadd">MS - Host - Add</a>&nbsp;|&nbsp;
+                    <a target="setting" href="settingofmenuadd">Extend - Menu - Add</a>
 
+                </div>
+                <div style="clear:both;">
+                </div>
+                <hr />
+                <iframe name="setting" src="about:blank" frameborder="0" width="100%" height="880px" scrolling="auto"></iframe>
+                <script>
+                    window.onload = function () {
+                        document.getElementById("menu").childNodes[0].click();
+                        //document.getElementsByName("detail")[0].clientHeight = window.clientHeight;
+                    }
+                </script>
+            </div>
         </div>
-        <div style="clear:both;">
-        </div>
-        <hr />
-        <iframe name="setting" src="about:blank" frameborder="0" width="100%" height="880px" scrolling="auto"></iframe>
-        <script>
-window.onload = function () {
-                document.getElementById("menu").childNodes[0].click();
-                //document.getElementsByName("detail")[0].clientHeight = window.clientHeight;
-}
-        </script>
     </div>
 </body>
 </html>

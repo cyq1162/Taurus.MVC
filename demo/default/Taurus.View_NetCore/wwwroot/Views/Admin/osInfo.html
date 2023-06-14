@@ -17,35 +17,39 @@
     </style>
 </head>
 <body itemref="common.body">
-    <div id="container">
-        <div style="float:left"><b>Environment ：</b></div>
-        <div style="float:left">
-            <a href="osinfo?t=os">OS-Environment</a>&nbsp;|&nbsp;
-            <a href="osinfo?t=ass&t1=33&t2=10&t3=57">Runtime-Assembly（${Count}）</a>&nbsp;【&nbsp;
-            <a href="osinfo?t=ass-taurus&t1=23&t2=10&t3=67">Taurus（${Count-Taurus}）</a>&nbsp;|&nbsp;
-            <a href="osinfo?t=ass-microsoft&t1=33&t2=10&t3=57">Microsoft（${Count-Microsoft}）</a>&nbsp;|&nbsp;
-            <a href="osinfo?t=ass-system&t1=33&t2=10&t3=57">System（${Count-System}）</a>&nbsp;】&nbsp;
+    <div id="container" class="container">
+        <div class="starter-template">
+            <div>
+                <div style="float:left"><b>Environment ：</b></div>
+                <div style="float:left">
+                    <a href="osinfo?t=os">OS-Environment</a>&nbsp;|&nbsp;
+                    <a href="osinfo?t=ass&t1=33&t2=10&t3=57">Runtime-Assembly（${Count}）</a>&nbsp;【&nbsp;
+                    <a href="osinfo?t=ass-taurus&t1=23&t2=10&t3=67">Taurus（${Count-Taurus}）</a>&nbsp;|&nbsp;
+                    <a href="osinfo?t=ass-microsoft&t1=33&t2=10&t3=57">Microsoft（${Count-Microsoft}）</a>&nbsp;|&nbsp;
+                    <a href="osinfo?t=ass-system&t1=33&t2=10&t3=57">System（${Count-System}）</a>&nbsp;】&nbsp;
+                </div>
+                <div style="clear:both; height:5px;">
+                </div>
+                <hr />
+                <table class="table table-striped">
+                    <tr>
+                        <td width="${t1:27}%">Config Key</td>
+                        <td width="${t2:38}%">Config Value</td>
+                        <td width="${t3:35}%">Description</td>
+                    </tr>
+                </table>
+                <hr />
+                <table class="table table-striped">
+                    <tbody id="defaultView" clearflag="1">
+                        <tr>
+                            <td width="${t1:27}%">${ConfigKey}</td>
+                            <td width="${t2:38}%">${ConfigValue}</td>
+                            <td width="${t3:35}%">${Description}</td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
         </div>
-        <div style="clear:both; height:5px;">
-        </div>
-        <hr />
-        <table class="table table-striped">
-            <tr>
-                <td width="${t1:27}%">Config Key</td>
-                <td width="${t2:38}%">Config Value</td>
-                <td width="${t3:35}%">Description</td>
-            </tr>
-        </table>
-        <hr />
-        <table class="table table-striped">
-            <tbody id="defaultView" clearflag="1">
-                <tr>
-                    <td width="${t1:27}%">${ConfigKey}</td>
-                    <td width="${t2:38}%">${ConfigValue}</td>
-                    <td width="${t3:35}%">${Description}</td>
-                </tr>
-            </tbody>
-        </table>
     </div>
 </body>
 </html>

@@ -1,7 +1,7 @@
 ﻿<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
 <html xmlns="http://www.w3.org/1999/xhtml">
 <head itemref="common.head">
-    <title>Application Log Info.</title>
+    <title>Application Log Info</title>
     <link itemref="common.btcss" />
     <link itemref="common.btcss_extend" />
     <style type="text/css">
@@ -11,70 +11,74 @@
     </style>
 </head>
 <body itemref="common.body">
-    <div id="container" style="width:1400px">
-        <div style="float:left"><b>Taurus （Framework）：</b></div>
-        <div id="logType" style="float:left">
-            <a href="log?k=Taurus_${yyyyMM}">MVC</a>&nbsp;【
-            <a href="log?k=MicroService_${yyyyMM}">MicroService</a>&nbsp;|&nbsp;
-            Debug（
-            <a href="log?k=Debug_PrintRequestLog_${yyyyMM}" title="Taurus.IsPrintRequestLog:true">PrintRequestLog</a>&nbsp;|&nbsp;
-            <a href="log?k=Debug_PrintRequestSql_${yyyyMM}" title="Taurus.IsPrintRequestSql:true">PrintRequestSql</a>&nbsp;】
-        </div>
-        <div style="clear:both; height:5px;">
-        </div>
-        <div style="float:left"><b>CYQ.Data （ ORM ）：</b></div>
-        <div style="float:left">
-            <a href="log?k=*${yyyyMM}">Summary</a>【
-            <a href="log?k=Debug_${yyyyMM}">Debug</a>（
-            <a href="log?k=Debug_PrintSql_${yyyyMM}" title="DB.IsPrintSql>=0">PrintSql</a>&nbsp;）|
-            <a href="log?k=Error_${yyyyMM}">Error</a>&nbsp;|&nbsp;
-            <a href="log?k=Warn_${yyyyMM}">Warn</a>&nbsp;|&nbsp;
-            <a href="log?k=Info_${yyyyMM}">Info</a>&nbsp;|&nbsp;
-            <a href="log?k=Cache_${yyyyMM}">Cache</a>&nbsp;|&nbsp;
-            <a href="log?k=DataBase_${yyyyMM}">DataBase</a>&nbsp;】
-        </div>
-        <div style="clear:both;">
-        </div>
-        <hr />
-        <table width="100%" height="auto">
-            <tr>
-                <td width="300px" align="left" valign="top" style="padding:10px;">
-                    <div id="fileList" style="width:100%;height:790px;overflow:auto">
-                        <a href="logdetail?filename=${filename}" target="detail" ondblclick="delLog(this)" title="double click to delete log.">${filename}</a><br />
-                    </div>
-                </td>
-                <td align="left" valign="top" style="overflow: hidden">
-                    <iframe name="detail" src="about:blank" frameborder="0" width="100%" height="790px" scrolling="auto"></iframe>
-                </td>
-            </tr>
-        </table>
-        <script>
-            window.onload = function () {
-                document.getElementById("fileList").childNodes[0].click();
-                //document.getElementsByName("detail")[0].clientHeight = window.clientHeight;
-            }
-            function delLog(el) {
-                var $el = $(el);
-                var fileName = $el.html();
-                if (!confirm("Delete [" + fileName + "] Log File Confirm ?")) { return; }
-                $.ajax({
-                    type: "GET",
-                    url: "logdelete?filename=" + fileName,
-                    success: function (result) {
-                        if (result) {
-                            alert(result.msg);
-                            if (result.success) {
-                                location.reload();
-                            }
-                        }
-                    },
-                    error: function (result) {
-                        alert("delete fail.");
+    <div id="container" class="container">
+        <div class="starter-template">
+            <div style="width:1400px">
+                <div style="float:left"><b>Taurus （Framework）：</b></div>
+                <div id="logType" style="float:left">
+                    <a href="log?k=Taurus_${yyyyMM}">MVC</a>&nbsp;【
+                    <a href="log?k=MicroService_${yyyyMM}">MicroService</a>&nbsp;|&nbsp;
+                    Debug（
+                    <a href="log?k=Debug_PrintRequestLog_${yyyyMM}" title="Taurus.IsPrintRequestLog:true">PrintRequestLog</a>&nbsp;|&nbsp;
+                    <a href="log?k=Debug_PrintRequestSql_${yyyyMM}" title="Taurus.IsPrintRequestSql:true">PrintRequestSql</a>&nbsp;】
+                </div>
+                <div style="clear:both; height:5px;">
+                </div>
+                <div style="float:left"><b>CYQ.Data （ ORM ）：</b></div>
+                <div style="float:left">
+                    <a href="log?k=*${yyyyMM}">Summary</a>【
+                    <a href="log?k=Debug_${yyyyMM}">Debug</a>（
+                    <a href="log?k=Debug_PrintSql_${yyyyMM}" title="DB.IsPrintSql>=0">PrintSql</a>&nbsp;）|
+                    <a href="log?k=Error_${yyyyMM}">Error</a>&nbsp;|&nbsp;
+                    <a href="log?k=Warn_${yyyyMM}">Warn</a>&nbsp;|&nbsp;
+                    <a href="log?k=Info_${yyyyMM}">Info</a>&nbsp;|&nbsp;
+                    <a href="log?k=Cache_${yyyyMM}">Cache</a>&nbsp;|&nbsp;
+                    <a href="log?k=DataBase_${yyyyMM}">DataBase</a>&nbsp;】
+                </div>
+                <div style="clear:both;">
+                </div>
+                <hr />
+                <table width="100%" height="auto">
+                    <tr>
+                        <td width="300px" align="left" valign="top" style="padding:10px;">
+                            <div id="fileList" style="width:100%;height:790px;overflow:auto">
+                                <a href="logdetail?filename=${filename}" target="detail" ondblclick="delLog(this)" title="double click to delete log.">${filename}</a><br />
+                            </div>
+                        </td>
+                        <td align="left" valign="top" style="overflow: hidden">
+                            <iframe name="detail" src="about:blank" frameborder="0" width="100%" height="790px" scrolling="auto"></iframe>
+                        </td>
+                    </tr>
+                </table>
+                <script>
+                    window.onload = function () {
+                        document.getElementById("fileList").childNodes[0].click();
+                        //document.getElementsByName("detail")[0].clientHeight = window.clientHeight;
                     }
-                });
+                    function delLog(el) {
+                        var $el = $(el);
+                        var fileName = $el.html();
+                        if (!confirm("Delete [" + fileName + "] Log File Confirm ?")) { return; }
+                        $.ajax({
+                            type: "GET",
+                            url: "logdelete?filename=" + fileName,
+                            success: function (result) {
+                                if (result) {
+                                    alert(result.msg);
+                                    if (result.success) {
+                                        location.reload();
+                                    }
+                                }
+                            },
+                            error: function (result) {
+                                alert("delete fail.");
+                            }
+                        });
 
-            }
-        </script>
+                    }
+                </script>
+            </div>
+        </div>
     </div>
 </body>
 </html>

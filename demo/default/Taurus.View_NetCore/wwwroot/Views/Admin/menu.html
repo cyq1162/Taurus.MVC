@@ -1,7 +1,7 @@
 ﻿<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
 <html xmlns="http://www.w3.org/1999/xhtml">
 <head itemref="common.head">
-    <title>Extend Menu.</title>
+    <title>Extend Menu</title>
     <link itemref="common.btcss" />
     <link itemref="common.btcss_extend" />
     <style type="text/css">
@@ -19,17 +19,21 @@
     </style>
 </head>
 <body itemref="common.body">
-    <div id="container">
-        <div id="menuList">
-            <div style="float:left"><b>${0} ：</b></div>
-            <div name="hostList" style="float:left">
-                <a target="frame" href="${HostUrl}">${HostName}</a>&nbsp;|&nbsp;
-            </div>
-            <div style="clear:both;height:5px;">
+    <div id="container" class="container">
+        <div class="starter-template">
+            <div>
+                <div id="menuList">
+                    <div style="float:left"><b>${0} ：</b></div>
+                    <div name="hostList" style="float:left">
+                        <a target="frame" href="${HostUrl}">${HostName}</a>&nbsp;|&nbsp;
+                    </div>
+                    <div style="clear:both;height:5px;">
+                    </div>
+                </div>
+                <hr />
+                <iframe name="frame" src="about:blank" frameborder="0" width="100%" height="880px" scrolling="auto"></iframe>
             </div>
         </div>
-        <hr />
-        <iframe name="frame" src="about:blank" frameborder="0" width="100%" height="880px" scrolling="auto"></iframe>
     </div>
 </body>
 </html>
