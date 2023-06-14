@@ -13,11 +13,13 @@ using Microsoft.AspNetCore.Http.Features;
 using Microsoft.AspNetCore.Server.Kestrel.Core;
 using System.Net;
 using Microsoft.Extensions.Options;
+using Microsoft.AspNetCore.Hosting.Server;
 
 namespace Microsoft.AspNetCore.Http
 {
     public static class TaurusExtensions
     {
+        //static KestrelServerOptions kestrelServerOptions;
         /// <summary>
         /// 默认配置：HttpContext、FormOptions、KestrelServerOptions。
         /// </summary>
@@ -29,6 +31,14 @@ namespace Microsoft.AspNetCore.Http
             services.Configure<FormOptions>(options => options.MultipartBodyLengthLimit = MvcConfig.Kestrel.Limits.MaxRequestBodySize);
             services.Configure<KestrelServerOptions>((x) =>
             {
+                //kestrelServerOptions = x;
+
+                /*
+                研究说明：后期可以通过以下方式获取配置信息： 
+                1、builder.ApplicationServices.GetService<IOptions<KestrelServerOptions>>();
+                2、基本信息可以通过配置信息即时生效
+                3、MaxConcurrentConnections 并发属性无法通过修改配置即时生效，因为Kestrel内部搞了个ConnectionLimitMiddleware，并以值的方式传递了该属性。
+                 */
                 if (MvcConfig.Kestrel.SslCertificate.Count > 0)
                 {
                     //重新绑定监听端口。
@@ -148,8 +158,6 @@ namespace Microsoft.AspNetCore.Http
         */
         public static IApplicationBuilder UseTaurusMvc(this IApplicationBuilder builder)
         {
-            //var aaa = builder.ApplicationServices.GetService<IOptions<KestrelServerOptions>>();
-            //aaa.Value.Limits.MaxConcurrentConnections = 1;
             builder.UseHttpContext();
 
             Thread thread = new Thread(new ParameterizedThreadStart(StartMicroService));

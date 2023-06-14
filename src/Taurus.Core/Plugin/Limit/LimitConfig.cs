@@ -199,6 +199,21 @@ namespace Taurus.Plugin.Limit
                 }
             }
             /// <summary>
+            /// 为整个应用设置并发打开的最大 TCP 连接数,默认情况下，最大连接数不受限制。
+            /// Kestrel应用的该属性无法动态调整，因此追加实现，实现动态整体限速。
+            /// </summary>
+            public static long MaxConcurrentConnections
+            {
+                get
+                {
+                    return AppConfig.GetApp<long>("Limit.Rate.MaxConcurrentConnections", long.MaxValue);
+                }
+                set
+                {
+                    AppConfig.SetApp("Limit.Rate.MaxConcurrentConnections", value.ToString());
+                }
+            }
+            /// <summary>
             /// 配置是否使用 Token 做为限制请求频繁的key
             /// 如 Limit.Rate.Key ：IP， 默认值：IP
             /// </summary>

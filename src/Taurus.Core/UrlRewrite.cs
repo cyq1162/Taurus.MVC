@@ -103,8 +103,8 @@ namespace Taurus.Core
                         int ip;
                         if (items.Length == 4 && int.TryParse(items[3], out ip))
                         {
-                            context.Response.StatusCode = 503;
-                            context.Response.Write("503 Service unavailable.");
+                            context.Response.StatusCode = 403;
+                            context.Response.Write("403.8 - Forbidden: Disallow access to site via IP.");
                             context.Response.End();
                             return;
                         }
@@ -115,7 +115,7 @@ namespace Taurus.Core
                     {
                         //网关请求限制，直接返回
                         context.Response.StatusCode = 403;
-                        context.Response.Write("403.502 - Forbidden: Too many requests from the same client IP; Dynamic IP Restriction limit reached.");
+                        context.Response.Write("403.502 - Forbidden: Too many requests, dynamic restriction limit reached.");
                         context.Response.End();
                         return;
                     }
@@ -123,7 +123,7 @@ namespace Taurus.Core
                     {
                         //网关请求限制，直接返回
                         context.Response.StatusCode = 412;
-                        context.Response.Write("412 Precondition failed, ack is invalid.");
+                        context.Response.Write("412 - Precondition failed: Ack is invalid.");
                         context.Response.End();
                         return;
                     }
@@ -158,7 +158,7 @@ namespace Taurus.Core
                     if (MsConfig.IsGateway && !MsConfig.IsClient)
                     {
                         context.Response.StatusCode = 503;
-                        context.Response.Write("503 Service unavailable.");
+                        context.Response.Write("503 - Service unavailable.");
                         context.Response.End();
                         return;
                     }
@@ -168,7 +168,7 @@ namespace Taurus.Core
                 if (!MvcConfig.IsEnable)
                 {
                     context.Response.StatusCode = 503;
-                    context.Response.Write("503 Service unavailable.");
+                    context.Response.Write("503 - Service unavailable: The mvc module has been disabled");
                     context.Response.End();
                     return;
                 }
@@ -276,8 +276,8 @@ namespace Taurus.Core
             //}
             if (t == null)
             {
-                context.Response.StatusCode = 503;
-                context.Response.Write("503 Service unavailable.");
+                context.Response.StatusCode = 404;
+                context.Response.Write("404 - Not Found.");
                 // WriteError("You need a " + className + " controller for coding!", context);
             }
             else

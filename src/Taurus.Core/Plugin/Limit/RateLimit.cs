@@ -24,43 +24,57 @@ namespace Taurus.Plugin.Limit
         private static void DoWhileTask(object para)
         {
             bool day = false, night = false;
+            int count = 0;
             while (true)
             {
-                int period = LimitConfig.Rate.Period;
-                int limit = LimitConfig.Rate.Limit;
-                Thread.Sleep(period * 1000);
+                count++;
+                Thread.Sleep(1000);
+
                 try
                 {
-                    List<string> keys = rateKeyValue.GetKeys();
-                    foreach (string key in keys)
-                    {
-                        if (limit <= 10 || rateKeyValue[key] > 0)
-                        {
-                            rateKeyValue[key] = limit;
-                        }
-                        else
-                        {
-                            rateKeyValue[key] = limit / 2;//降级
-                        }
+                    #region 全局 限速
+                    maxConcurrentConnections = LimitConfig.Rate.MaxConcurrentConnections;
+                    #endregion
 
-                    }
-                    //每天清两次
-                    if (DateTime.Now.Hour == 4 && !night)
+                    #region 根据IP 或 Token 限制
+                    int period = LimitConfig.Rate.Period;
+                    if (count % period == 0)
                     {
-                        night = true;
-                        day = false;
-                        rateKeyValue.Clear(); // 凌晨，清空一次缓存。
-                    }
-                    else if (DateTime.Now.Hour == 13 && !day)
-                    {
-                        night = false;
-                        // 白天，缓存足够多才清空。
-                        if (keys.Count > 20000)
+                        int limit = LimitConfig.Rate.Limit;
+                        count = 0;
+
+                        List<string> keys = rateKeyValue.GetKeys();
+                        foreach (string key in keys)
                         {
-                            day = true;
-                            rateKeyValue.Clear();
+                            if (limit <= 10 || rateKeyValue[key] > 0)
+                            {
+                                rateKeyValue[key] = limit;
+                            }
+                            else
+                            {
+                                rateKeyValue[key] = limit / 2;//降级
+                            }
+
+                        }
+                        //每天清两次
+                        if (DateTime.Now.Hour == 4 && !night)
+                        {
+                            night = true;
+                            day = false;
+                            rateKeyValue.Clear(); // 凌晨，清空一次缓存。
+                        }
+                        else if (DateTime.Now.Hour == 13 && !day)
+                        {
+                            night = false;
+                            // 白天，缓存足够多才清空。
+                            if (keys.Count > 20000)
+                            {
+                                day = true;
+                                rateKeyValue.Clear();
+                            }
                         }
                     }
+                    #endregion
                 }
                 catch (Exception err)
                 {
@@ -74,6 +88,10 @@ namespace Taurus.Plugin.Limit
         /// </summary>
         internal static bool IsValid()
         {
+            if (IsOver())
+            {
+                return false;
+            }
             System.Web.HttpRequest request = System.Web.HttpContext.Current.Request;
             string ip = string.Empty;
             if (LimitConfig.Rate.Key.ToUpper() != "IP")
@@ -108,6 +126,7 @@ namespace Taurus.Plugin.Limit
         /// 存储Token（IP）对应的可使用次数
         /// </summary>
         static MDictionary<string, int> rateKeyValue = new MDictionary<string, int>();
+
         /// <summary>
         /// 是否超过限定请求次数
         /// </summary>
@@ -128,6 +147,22 @@ namespace Taurus.Plugin.Limit
             {
                 rateKeyValue.Add(ipOrToken, LimitConfig.Rate.Limit);
             }
+            return false;
+        }
+
+        /// <summary>
+        /// 全局：最大并数数
+        /// </summary>
+        static long maxConcurrentConnections = long.MaxValue;
+
+        /// <summary>
+        /// 全局限速：是否超过限定请求次数
+        /// </summary>
+        /// <returns></returns>
+        internal static bool IsOver()
+        {
+            if (maxConcurrentConnections <= 0) { return true; }
+            maxConcurrentConnections--;
             return false;
         }
     }

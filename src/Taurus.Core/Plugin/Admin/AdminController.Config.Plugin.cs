@@ -43,6 +43,7 @@ namespace Taurus.Plugin.Admin
                 else if (type == "plugin-limit-rate")
                 {
                     Sets(dt, "Limit.Rate.IsEnable", LimitConfig.Rate.IsEnable, "Rate limit : API request rate limiting plugin.");
+                    Sets(dt, "Limit.Rate.MaxConcurrentConnections", LimitConfig.Rate.MaxConcurrentConnections, "Rate limit : Maximum number of open connections..");
                     Sets(dt, "Limit.Rate.Period", LimitConfig.Rate.Period + " (s)", "Rate limit : interval period (second).");
                     Sets(dt, "Limit.Rate.Limit", LimitConfig.Rate.Limit, "Rate limit : maximum number of requests within an interval time.");
                     Sets(dt, "Limit.Rate.Key", LimitConfig.Rate.Key, "Rate limit : can customize a key to replace IP.");
