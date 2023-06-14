@@ -7,6 +7,8 @@ using Taurus.Plugin.MicroService;
 using Taurus.Plugin.Admin;
 using Taurus.Plugin.Doc;
 using System.Text;
+using System.IO;
+using System.Threading;
 
 namespace Taurus.Mvc
 {
@@ -322,12 +324,97 @@ namespace Taurus.Mvc
                         sb.AppendLine(key + " : " + form[key]);
                     }
                 }
-                //else
-                //{
-                //    sb.Append(request.)
-                //}
+                else
+                {
+                    sb.AppendLine("-----------Stream-----------");
+                    sb.Append(GetJson(context));
+                }
             }
             Log.WriteLogToTxt(sb.ToString(), err != null ? LogType.Taurus : LogType.Debug + "_PrintRequestLog");
+        }
+
+        internal static string GetJson(HttpContext context)
+        {
+            if (context.Items.Contains("GetJson"))
+            {
+                return Convert.ToString(context.Items["GetJson"]);
+            }
+            string json = string.Empty;
+            HttpRequest request = context.Request;
+            if (request.HttpMethod == "POST")
+            {
+                var form = request.Form;
+                var files = request.Files;
+                if (form.Count > 0)
+                {
+                    if (form.Count == 1 && form.Keys[0] == null)
+                    {
+                        json = JsonHelper.ToJson(form[0]);
+                    }
+                    else
+                    {
+                        json = JsonHelper.ToJson(form);
+                    }
+                }
+                else if (files == null || files.Count == 0)//请求头忘了带Http Type
+                {
+                    Stream stream = request.InputStream;
+                    if (stream != null && stream.CanRead)
+                    {
+                        long len = (long)request.ContentLength;
+                        if (len > 0)
+                        {
+                            Byte[] bytes = new Byte[len];
+                            // ////NetCore 3.0 会抛异常，可配置可以同步请求读取流数据
+                            //services.Configure<KestrelServerOptions>(x => x.AllowSynchronousIO = true)
+                            //    .Configure<IISServerOptions>(x => x.AllowSynchronousIO = true);
+                            stream.Position = 0;// 需要启用：context.Request.EnableBuffering();开启用，不需要启用AllowSynchronousIO = true
+                            stream.Read(bytes, 0, bytes.Length);
+                            if (stream.Position < len)
+                            {
+                                //Linux CentOS-8 大文件下读不全，会延时，导致：Unexpected end of Stream, the content may have already been read by another component.
+                                int max = 0;
+                                int timeout = MsConfig.Server.GatewayTimeout * 1000;
+                                while (stream.Position < len)
+                                {
+                                    max++;
+                                    if (max > timeout)//60秒超时
+                                    {
+                                        break;
+                                    }
+                                    Thread.Sleep(1);
+                                    stream.Read(bytes, (int)stream.Position, (int)(len - stream.Position));
+                                }
+                            }
+                            stream.Position = 0;//重置，允许重复使用。
+                            string data = Encoding.UTF8.GetString(bytes);
+                            if (data.IndexOf("%") > -1)
+                            {
+                                data = HttpUtility.UrlDecode(data);
+                            }
+                            json = JsonHelper.ToJson(data);
+                        }
+                    }
+                }
+            }
+            else if (request.HttpMethod == "GET")
+            {
+                string para = request.Url.Query.TrimStart('?');
+                if (!string.IsNullOrEmpty(para))
+                {
+                    if (para.IndexOf("%") > -1)
+                    {
+                        para = HttpUtility.UrlDecode(para);
+                    }
+                    json = JsonHelper.ToJson(para);
+                }
+            }
+            if (string.IsNullOrEmpty(json))
+            {
+                json = "{}";
+            }
+            context.Items.Add("GetJson", json);
+            return json;
         }
     }
 }
