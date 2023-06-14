@@ -16,6 +16,9 @@ namespace Taurus.Mvc
     public static partial class WebTool
     {
         #region 增加扩展后缀支持
+        /// <summary>
+        /// 获取LocalPath【检测后缀，若有，去掉】
+        /// </summary>
         internal static string GetLocalPath(Uri uri)
         {
             string localPath = uri.LocalPath;
@@ -244,7 +247,6 @@ namespace Taurus.Mvc
         }
         internal static T ChangeValueType<T>(string value, T defaultValue, bool filter)
         {
-
             if (value == null) { return defaultValue; }
             value = value.Trim();
             object result = null;

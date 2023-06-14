@@ -5,7 +5,7 @@ namespace Taurus.Plugin.CORS
     /// <summary>
     /// 跨域检测
     /// </summary>
-    public static class CORSRun
+    internal static class CORSRun
     {
         #region 检测CORS跨域请求
         /// <summary>

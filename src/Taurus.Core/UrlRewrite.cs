@@ -7,6 +7,7 @@ using Taurus.Plugin.MicroService;
 using Taurus.Mvc;
 using Taurus.Plugin.Limit;
 using Taurus.Plugin.CORS;
+using Taurus.Plugin.Metric;
 
 namespace Taurus.Core
 {
@@ -62,7 +63,7 @@ namespace Taurus.Core
             HttpContext context = app.Context;
             Uri uri = context.Request.Url;
 
-            #region 请求头设置
+            #region 0、请求头设置
             if (MvcConfig.IsAddTaurusHeader)
             {
                 int pid = MvcConst.ProcessID;
@@ -71,12 +72,28 @@ namespace Taurus.Core
                 context.Response.AppendHeader("Taurus" + "-" + ipNum + "-" + pid, MvcConst.Version);
             }
             #endregion
-            //#region 0、接口调用次数统计
-            //MetricRun.Start(uri);
-            //#endregion
+
+
 
             #region 1、微服务检测与启动
             MsRun.Start(uri);//微服务检测、启动。
+            #endregion
+
+            #region 主机 IP 地址访问限制
+
+            if (!MvcConfig.IsAllowIPHost)
+            {
+                string[] items = uri.Authority.Split('.');
+                int ip;
+                if (items.Length == 4 && int.TryParse(items[3], out ip))
+                {
+                    context.Response.StatusCode = 403;
+                    context.Response.Write("403.8 - Forbidden: Disallow access to site via IP.");
+                    context.Response.End();
+                    return;
+                }
+
+            }
             #endregion
 
             #region 2、网关安全限制策略检测 - Admin管理后台和微服务不处理。
@@ -92,25 +109,6 @@ namespace Taurus.Core
                 }
                 if (WebTool.IsMvcSuffix(uri.LocalPath))
                 {
-                    #region 打印请求日志、检测Mvc是否禁用IP访问
-                    if (MvcConfig.IsPrintRequestLog)
-                    {
-                        WebTool.PrintRequestLog(context, null);
-                    }
-                    if (!MvcConfig.IsAllowIPHost)
-                    {
-                        string[] items = uri.Authority.Split('.');
-                        int ip;
-                        if (items.Length == 4 && int.TryParse(items[3], out ip))
-                        {
-                            context.Response.StatusCode = 403;
-                            context.Response.Write("403.8 - Forbidden: Disallow access to site via IP.");
-                            context.Response.End();
-                            return;
-                        }
-
-                    }
-                    #endregion
                     if (!LimitRun.CheckRate())
                     {
                         //网关请求限制，直接返回
@@ -139,9 +137,26 @@ namespace Taurus.Core
             }
             #endregion
 
-            #region 4、网关代理请求检测与转发 - 5、纯网关检测 - 6、Mvc模块禁用检测
+
+
+            #region 4、网关代理请求检测与转发【接口调用次数统计】 - 5、纯网关检测 - 6、Mvc模块禁用检测
             if (!WebTool.IsSysInternalUrl(uri, context.Request.UrlReferrer))
             {
+                if (WebTool.IsMvcSuffix(uri))
+                {
+                    #region 接口调用次数统计
+                    if (MetricConfig.IsEnable)
+                    {
+                        MetricRun.Start(uri);
+                    }
+                    #endregion
+                    #region 打印请求日志
+                    if (MvcConfig.IsPrintRequestLog)
+                    {
+                        WebTool.PrintRequestLog(context, null);
+                    }
+                }
+                #endregion
                 if (MsConfig.Server.IsEnable)
                 {
                     #region 4、网关代理请求检测与转发

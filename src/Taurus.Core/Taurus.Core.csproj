@@ -95,6 +95,7 @@
     <Compile Include="Plugin\Admin\AdminController.Index.Event.cs" />
     <Compile Include="Plugin\Admin\AdminController.Log.cs" />
     <Compile Include="Plugin\Admin\AdminController.Login.cs" />
+    <Compile Include="Plugin\Admin\AdminController.Metric.cs" />
     <Compile Include="Plugin\Admin\AdminController.OSInfo.cs" />
     <Compile Include="Plugin\Admin\AdminController.Setting.cs" />
     <Compile Include="Plugin\CORS\CORSConfig.cs" />
@@ -107,6 +108,8 @@
     <Compile Include="Plugin\Limit\LimitConfig.cs" />
     <Compile Include="Plugin\Limit\LimitRun.cs" />
     <Compile Include="Plugin\Limit\RateLimit.cs" />
+    <Compile Include="Plugin\Metric\MetricConfig.cs" />
+    <Compile Include="Plugin\Metric\MetricRun.cs" />
     <Compile Include="Plugin\MicroService\Client\Client.Config.cs" />
     <Compile Include="Plugin\MicroService\Client\Client.cs" />
     <Compile Include="Plugin\MicroService\Client\Client.Gateway.cs" />

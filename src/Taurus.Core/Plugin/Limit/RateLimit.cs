@@ -10,7 +10,7 @@ namespace Taurus.Plugin.Limit
     /// <summary>
     /// 对请求频繁进行限制
     /// </summary>
-    public static class RateLimit
+    internal static class RateLimit
     {
         static RateLimit()
         {

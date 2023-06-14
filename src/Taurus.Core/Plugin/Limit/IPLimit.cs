@@ -14,7 +14,7 @@ namespace Taurus.Plugin.Limit
     /// <summary>
     /// IP类【负责IP黑名单检测】
     /// </summary>
-    public static partial class IPLimit
+    internal static partial class IPLimit
     {
         /// <summary>
         /// 用于直接比较
@@ -106,7 +106,7 @@ namespace Taurus.Plugin.Limit
         }
     }
 
-    public static partial class IPLimit
+    internal static partial class IPLimit
     {
         /// <summary>
         /// IP 黑名单最后一次更新时间
