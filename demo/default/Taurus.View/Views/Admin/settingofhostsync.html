@@ -27,25 +27,26 @@
     </style>
 </head>
 <body style="padding:0px;">
-
     <div id="container">
         <div>
-            Add extend menu manually ：
+            Register the service manually ：synchronize to all servers and clients.
         </div>
         <hr />
         <div style="margin: auto; text-align: center; ">
             <form method="post">
                 <table width="100%" align="center">
                     <tr>
-                        <td class="tdright"><span>Menu List</span> ：</td>
+                        <td class="tdright"></td>
                         <td class="tdleft">
-                            Formatter : MenuName,HostName,HttpUrl<br />
+                            Formatter : BindDomains , ModuleNames # Uri<br />
+                            Example :  taurus.cyqdata.com , api,home # http://192.18.9.121:8000 <br />
+                            Tips : * ：all module , *.* ：all domain , moduleName | Version | IsVirtual
                         </td>
                     </tr>
                     <tr>
-                        <td class="tdright"></td>
+                        <td class="tdright" valign="top"><span>Hosts</span> ：</td>
                         <td class="tdleft">
-                            <textarea name="menuList" style="width: 84%;height:400px">${MenuList}</textarea>
+                            <textarea name="hostList" style="width: 84%;height:400px">${HostList}</textarea>
                         </td>
                         <td></td>
                     </tr>
@@ -53,7 +54,7 @@
                     <tr>
                         <td class="tdright"></td>
                         <td class="tdleft" colspan="2">
-                            <input name="btnAddMenu" type="submit" value="Save" style="width: 71px; cursor: pointer; padding-top: 4px;" />
+                            <input name="btnAddHostSync" type="submit" value="Save" style="width: 71px; cursor: pointer; padding-top: 4px;" />
                         </td>
                     </tr>
                     <tr>

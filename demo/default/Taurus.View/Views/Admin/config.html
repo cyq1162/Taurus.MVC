@@ -23,12 +23,13 @@
                 <div id="kestrelNode">
                     <div style="float:left"><b>Kestrel （Web Host）：</b></div>
                     <div style="float:left">
-                        <a href="config?t=Kestrel">Kestrel</a>&nbsp;|&nbsp;
+                        <a href="config?t=Kestrel&t1=25&t2=25">Kestrel</a>&nbsp;&nbsp;|&nbsp;
+                        <a href="config?t=Kestrel-HostFilter&t1=25&t2=25">HostFilter</a>&nbsp;&nbsp;|&nbsp;
                         Limit【
-                        <a href="config?t=Kestrel-Connection&t1=35">Connection</a>&nbsp;|&nbsp;
-                        <a href="config?t=Kestrel-Request">Request</a>&nbsp;|&nbsp;
-                        <a href="config?t=Kestrel-Response">Response</a>&nbsp;|&nbsp;
-                        <a href="config?t=Kestrel-Timeout">Timeout</a>&nbsp;】
+                        <a href="config?t=Kestrel-Connection&t1=35&&t2=25">Connection</a>&nbsp;&nbsp;|&nbsp;
+                        <a href="config?t=Kestrel-Request">Request</a>&nbsp;&nbsp;|&nbsp;
+                        <a href="config?t=Kestrel-Response">Response</a>&nbsp;&nbsp;|&nbsp;
+                        <a href="config?t=Kestrel-Timeout&t1=25&t2=25">Timeout</a>&nbsp;】
                     </div>
                     <div style="clear:both; height:5px;">
                     </div>
@@ -36,17 +37,17 @@
                 <div style="float:left"><b>Taurus （Framework）：</b></div>
                 <div style="float:left">
                     <a href="config?t=Mvc&t1=28&t2=28&t3=44">MVC</a>（
-                    <a href="config?t=Mvc-Controller&t1=28&t2=28&t3=44">Controller</a>&nbsp;|&nbsp;
+                    <a href="config?t=Mvc-Controller&t1=28&t2=28&t3=44">Controller</a>&nbsp;&nbsp;|&nbsp;
                     <a href="config?t=Mvc-View&t1=28&t2=28&t3=44">View</a>&nbsp;）|&nbsp;
                     Plugin【
-                    <a href="config?t=Plugin-Microservice">MicroService</a>&nbsp;|&nbsp;
-                    <a href="config?t=Plugin-CORS&t1=28&t2=28&t3=44">CORS</a>&nbsp;|&nbsp;
-                    <a href="config?t=Plugin-Admin">Admin</a>&nbsp;|&nbsp;
-                    <a href="config?t=Plugin-Doc">Doc</a>&nbsp;|&nbsp;
-                    <a href="config?t=Plugin-Metric">Metric</a>&nbsp;|&nbsp;
+                    <a href="config?t=Plugin-Microservice">MicroService</a>&nbsp;&nbsp;|&nbsp;
+                    <a href="config?t=Plugin-CORS&t1=28&t2=28&t3=44">CORS</a>&nbsp;&nbsp;|&nbsp;
+                    <a href="config?t=Plugin-Admin">Admin</a>&nbsp;&nbsp;|&nbsp;
+                    <a href="config?t=Plugin-Doc">Doc</a>&nbsp;&nbsp;|&nbsp;
+                    <a href="config?t=Plugin-Metric">Metric</a>&nbsp;&nbsp;|&nbsp;
                     <a href="config?t=Plugin-Limit">Limit</a>（
-                    <a href="config?t=Plugin-Limit-Rate">Rate</a>&nbsp;|&nbsp;
-                    <a href="config?t=Plugin-Limit-IP">IP-Black</a>&nbsp;|&nbsp;
+                    <a href="config?t=Plugin-Limit-Rate">Rate</a>&nbsp;&nbsp;|&nbsp;
+                    <a href="config?t=Plugin-Limit-IP">IP-Black</a>&nbsp;&nbsp;|&nbsp;
                     <a href="config?t=Plugin-Limit-Ack&t2=40">Ack</a>&nbsp;）】
                 </div>
                 <div style="clear:both; height:5px;">
@@ -54,12 +55,12 @@
                 <div style="float:left"><b>CYQ.Data （ ORM ）：</b></div>
                 <div style="float:left">
                     <a href="config?t=CYQ.Data">Summary</a>【
-                    <a href="config?t=CYQ.Data-Conn&t1=20&t2=60&t3=20">Conn</a>&nbsp;|&nbsp;
-                    <a href="config?t=CYQ.Data-Log">Log</a>&nbsp;|&nbsp;
-                    <a href="config?t=CYQ.Data-DataBase">DataBase</a>&nbsp;|&nbsp;
-                    <a href="config?t=CYQ.Data-AutoCache">AutoCache</a>&nbsp;|&nbsp;
-                    <a href="config?t=CYQ.Data-Redis">Redis</a>&nbsp;|&nbsp;
-                    <a href="config?t=CYQ.Data-MemCache">MemCache</a>&nbsp;|&nbsp;
+                    <a href="config?t=CYQ.Data-Conn&t1=20&t2=60&t3=20">Conn</a>&nbsp;&nbsp;|&nbsp;
+                    <a href="config?t=CYQ.Data-Log">Log</a>&nbsp;&nbsp;|&nbsp;
+                    <a href="config?t=CYQ.Data-DataBase">DataBase</a>&nbsp;&nbsp;|&nbsp;
+                    <a href="config?t=CYQ.Data-AutoCache">AutoCache</a>&nbsp;&nbsp;|&nbsp;
+                    <a href="config?t=CYQ.Data-Redis">Redis</a>&nbsp;&nbsp;|&nbsp;
+                    <a href="config?t=CYQ.Data-MemCache">MemCache</a>&nbsp;&nbsp;|&nbsp;
                     <a href="config?t=CYQ.Data-Debug">Debug</a>&nbsp;】
                 </div>
                 <div style="clear:both;">
@@ -129,7 +130,6 @@
                 if (key.indexOf(' ') > -1 || key.endsWith("Conn") || key.startsWith("Conn")) { return false; }
                 switch (key) {
                     case "Mvc.Controllers":
-                    case "Mvc.Views":
                     case "MicroService.Server.Name":
                         return false;
                 }

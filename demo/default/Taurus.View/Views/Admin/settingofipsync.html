@@ -27,34 +27,33 @@
     </style>
 </head>
 <body style="padding:0px;">
+
     <div id="container">
         <div>
-            Register the service manually ：for register center of master.
+            Add ip blackname list ：if current is register center of master , it will be synchronize to all servers.
         </div>
         <hr />
         <div style="margin: auto; text-align: center; ">
             <form method="post">
                 <table width="100%" align="center">
                     <tr>
-                        <td class="tdright"><span>Host List</span> ：</td>
+                        <td class="tdright"></td>
                         <td class="tdleft">
-                            Formatter : BindDomains,ModuleNames#Uri<br />
-                            Demo :  api.taurus.com,*#http://192.18.9.121:8000 (Split By New Line)
-                            PS :Http://ip:port 【*：all module,*.*：all domain】
+                            Example : 192.168.8.*
                         </td>
                     </tr>
                     <tr>
-                        <td class="tdright"></td>
+                        <td class="tdright" valign="top"><span>IPs</span> ：</td>
                         <td class="tdleft">
-                            <textarea name="hostList" style="width: 84%;height:400px">${HostList}</textarea>
+                            <textarea name="ipList" style="width: 84%;height:400px">${IPList}</textarea>
                         </td>
                         <td></td>
                     </tr>
-
                     <tr>
                         <td class="tdright"></td>
                         <td class="tdleft" colspan="2">
-                            <input name="btnAddHost" type="submit" value="Save" style="width: 71px; cursor: pointer; padding-top: 4px;" />
+                            <input name="btnAddIPSync" type="submit" value="Save" style="width: 71px; cursor: pointer; padding-top: 4px;" />
+
                         </td>
                     </tr>
                     <tr>
@@ -68,6 +67,5 @@
 
         </div>
     </div>
-
 </body>
 </html>
