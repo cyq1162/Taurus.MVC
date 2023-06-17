@@ -39,7 +39,6 @@ namespace Taurus.Plugin.Admin
                 else if (type == "plugin-limit-ip")
                 {
                     Sets(dt, "Limit.IP.IsEnable", LimitConfig.IP.IsEnable, "IP limit : IP blackname plugin.");
-                    Sets(dt, "Limit.IP.IsSync", LimitConfig.IP.IsSync, "IP limit : Sync ip blackname list from register center.");
                 }
                 else if (type == "plugin-limit-rate")
                 {
@@ -126,6 +125,10 @@ namespace Taurus.Plugin.Admin
                 if (MsConfig.IsServer)
                 {
                     Sets(dt, "MicroService.Server.IsEnable", MsConfig.Server.IsEnable, "Microservice server (register center, gateway) plugin.");
+                    if(!MsConfig.IsRegCenterOfMaster)
+                    {
+                        Sets(dt, "MicroService.Server.IsAllowSyncIP", MsConfig.Server.IsAllowSyncIP, "IP limit : Synchronize ip blackname list from register center.");
+                    }
                     Sets(dt, "MicroService.Server.Name", MsConfig.Server.Name, "Server name.");
                     Sets(dt, "MicroService.Server.RcKey", MsConfig.Server.RcKey, "Register center secret key.");
                     Sets(dt, "MicroService.Server.RcUrl", MsConfig.Server.RcUrl, "Register center url.");
@@ -142,7 +145,8 @@ namespace Taurus.Plugin.Admin
                         dt.NewRow(true);
                     }
                     Sets(dt, "MicroService.Client.IsEnable", MsConfig.Client.IsEnable, "Microservice client plugin.");
-                    Sets(dt, "MicroService.Client.IsAllowRemoteExit", MsConfig.Client.IsAllowRemoteExit, "Client is allow remote stop by register center.");
+                    Sets(dt, "MicroService.Client.IsAllowSyncConfig", MsConfig.Client.IsAllowSyncConfig, "Client is allow synchronize config from register center.");
+                    Sets(dt, "MicroService.Client.IsAllowRemoteExit", MsConfig.Client.IsAllowRemoteExit, "Client is allow stop by register center.");
                     Sets(dt, "MicroService.Client.Name", MsConfig.Client.Name, "Client module name.");
                     Sets(dt, "MicroService.Client.Domain", MsConfig.Client.Domain, "Client bind domain.");
                     Sets(dt, "MicroService.Client.Version", MsConfig.Client.Version, "Client web version.");

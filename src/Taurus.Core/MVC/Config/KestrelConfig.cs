@@ -32,10 +32,48 @@ namespace Taurus.Mvc
             {
                 get
                 {
-                    string host = AppConfig.GetApp("AllowedHosts", "*");
+                    string host = AppConfig.GetApp("Kestrel.AllowedHosts", "*");
                     return host.TrimEnd('/');
                 }
+                set
+                {
+                    AppConfig.SetApp("Kestrel.AllowedHosts", value.ToString());
+                }
             }
+
+            /// <summary>
+            /// 应用配置：是否允许请求的主机头为空。
+            /// Kestrel.AllowEmptyHosts:false
+            /// </summary>
+            public static bool AllowEmptyHosts
+            {
+                get
+                {
+                    return AppConfig.GetAppBool("Kestrel.AllowEmptyHosts", false);
+                }
+                set
+                {
+                    AppConfig.SetApp("Kestrel.AllowEmptyHosts", value.ToString());
+                }
+            }
+            /// <summary>
+            /// 应用配置：是否输出400错误信息。
+            /// Kestrel.IncludeFailureMessage:true
+            /// </summary>
+            public static bool IncludeFailureMessage
+            {
+                get
+                {
+                    return AppConfig.GetAppBool("Kestrel.IncludeFailureMessage", true);
+                }
+                set
+                {
+                    AppConfig.SetApp("Kestrel.IncludeFailureMessage", value.ToString());
+                }
+            }
+
+
+
             /// <summary>
             /// 应用配置：当前Web监听Http主机【Kestrel启动运行时绑定】
             /// Kestrel.Urls:http://*:80
@@ -211,7 +249,7 @@ namespace Taurus.Mvc
                 {
                     get
                     {
-                        return AppConfig.GetAppInt("Kestrel.Limits.MaxRequestLineSize", 8192);
+                        return Math.Max(50, AppConfig.GetAppInt("Kestrel.Limits.MaxRequestLineSize", 8192));
                     }
                     set
                     {
@@ -226,7 +264,7 @@ namespace Taurus.Mvc
                 {
                     get
                     {
-                        return AppConfig.GetAppInt("Kestrel.Limits.MaxRequestHeadersTotalSize", 32768);
+                        return Math.Max(1024, AppConfig.GetAppInt("Kestrel.Limits.MaxRequestHeadersTotalSize", 32768));
                     }
                     set
                     {
@@ -241,7 +279,7 @@ namespace Taurus.Mvc
                 {
                     get
                     {
-                        return AppConfig.GetAppInt("Kestrel.Limits.MaxRequestHeaderCount", 100);
+                        return Math.Max(20, AppConfig.GetAppInt("Kestrel.Limits.MaxRequestHeaderCount", 100));
                     }
                     set
                     {

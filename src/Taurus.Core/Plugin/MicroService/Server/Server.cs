@@ -83,6 +83,16 @@ namespace Taurus.Plugin.MicroService
                 }
             }
         }
-        private static string _RcUrl = MsConfig.Server.RcUrl;
+        private static readonly string _RcUrl = MsConfig.Server.RcUrl;
+
+        /// <summary>
+        /// 上次和注册中心同步IP的时间。
+        /// </summary>
+        internal static DateTime SyncIPTime;
+
+        /// <summary>
+        /// 注册中心更新同步配置的时间。
+        /// </summary>
+        internal static DateTime SyncConfigTime;
     }
 }

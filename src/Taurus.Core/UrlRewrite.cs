@@ -87,8 +87,8 @@ namespace Taurus.Core
                 int ip;
                 if (items.Length == 4 && int.TryParse(items[3], out ip))
                 {
-                    context.Response.StatusCode = 403;
-                    context.Response.Write("403.8 - Forbidden: Disallow access to site via IP.");
+                    context.Response.StatusCode = 400;
+                    context.Response.Write("400 - Invalid hostname.");
                     context.Response.End();
                     return;
                 }

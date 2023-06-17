@@ -103,6 +103,20 @@ namespace Taurus.Plugin.MicroService
                 }
             }
             /// <summary>
+            /// 应用配置：开启应用程序远程同步配置功能
+            /// </summary>
+            public static bool IsAllowSyncConfig
+            {
+                get
+                {
+                    return AppConfig.GetAppBool("MicroService.Client.IsAllowSyncConfig", IsClient);
+                }
+                set
+                {
+                    AppConfig.SetApp("MicroService.Client.IsAllowSyncConfig", value.ToString());
+                }
+            }
+            /// <summary>
             /// 微服务应用配置：注册中心的Url
             /// 如 MicroService.Client.RcUrl ： "http://192.168.9.121:8000"
             /// </summary>

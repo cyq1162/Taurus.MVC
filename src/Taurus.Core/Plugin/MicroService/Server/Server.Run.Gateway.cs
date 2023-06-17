@@ -68,7 +68,7 @@ namespace Taurus.Plugin.MicroService
                 #region IP 黑名单同步
 
                 long ipTick = JsonHelper.GetValue<long>(result, "iptick");
-                IPLimit.SyncIPList(ipTick);
+                SyncIPList(ipTick);
                 #endregion
 
                 #region 从备份请求切回主程序

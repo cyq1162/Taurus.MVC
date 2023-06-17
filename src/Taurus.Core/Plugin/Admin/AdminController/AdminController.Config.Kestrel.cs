@@ -25,11 +25,10 @@ namespace Taurus.Plugin.Admin
             {
                 if (type == "kestrel")
                 {
-                    Sets(dt, "Kestrel - AllowedHosts", MvcConfig.Kestrel.AllowedHosts, "Kestrel allowed hosts.");
-                    Sets(dt, "Kestrel.Urls", MvcConfig.Kestrel.Urls, "Kestrel listen host.");
+                    Sets(dt, "Kestrel.Urls", MvcConfig.Kestrel.Urls, "Kestrel listen host. - 【Restart】");
                     Sets(dt, "Kestrel.AllowSynchronousIO", MvcConfig.Kestrel.AllowSynchronousIO, "Kestrel allow synchronous IO.");
-                    Sets(dt, "Kestrel.AddServerHeader", MvcConfig.Kestrel.AddServerHeader, "Kestrel is add 【server:kestrel】 header.");
-                    Sets(dt, "Kestrel.SslPort", MvcConfig.Kestrel.SslPort, "Ssl port for https.");
+                    Sets(dt, "Kestrel.AddServerHeader", MvcConfig.Kestrel.AddServerHeader, "Kestrel is add server header.");
+                    Sets(dt, "Kestrel.SslPort", MvcConfig.Kestrel.SslPort, "Ssl port for https. - 【Restart】");
                     Sets(dt, "Kestrel.SslPath", MvcConfig.Kestrel.SslPath, "Ssl path for https (*.pfx for ssl , *.txt for pwd).");
                     var cers = MvcConfig.Kestrel.SslCertificate;
                     Sets(dt, "----------SslCertificate - Count", cers.Count, "Num of ssl for https (Show Only).");
@@ -43,15 +42,21 @@ namespace Taurus.Plugin.Admin
                         }
                     }
                 }
+                else if (type == "kestrel-hostfilter")
+                {
+                    Sets(dt, "Kestrel.AllowedHosts", MvcConfig.Kestrel.AllowedHosts, "Allowed hosts. - 【Restart】");
+                    Sets(dt, "Kestrel.AllowEmptyHosts", MvcConfig.Kestrel.AllowEmptyHosts, "Indicates if requests without hosts are allowed.");
+                    Sets(dt, "Kestrel.IncludeFailureMessage", MvcConfig.Kestrel.IncludeFailureMessage, "Indicates if the 400 response should include a default message.");
+                }
                 else if (type == "kestrel-connection")
                 {
-                    Sets(dt, "Kestrel.Limits.MaxConcurrentConnections", MvcConfig.Kestrel.Limits.MaxConcurrentConnections, "Maximum number of open connections.");
-                    Sets(dt, "Kestrel.Limits.MaxConcurrentUpgradedConnections", MvcConfig.Kestrel.Limits.MaxConcurrentUpgradedConnections, "Maximum number of open, upgraded connections.");
+                    Sets(dt, "Kestrel.Limits.MaxConcurrentConnections", MvcConfig.Kestrel.Limits.MaxConcurrentConnections, "Maximum number of open connections. - 【Restart】");
+                    Sets(dt, "Kestrel.Limits.MaxConcurrentUpgradedConnections", MvcConfig.Kestrel.Limits.MaxConcurrentUpgradedConnections, "Maximum number of open, upgraded connections. - 【Restart】");
                 }
                 else if (type == "kestrel-request")
                 {
-                    Sets(dt, "Kestrel.Limits.MaxRequestBodySize", MvcConfig.Kestrel.Limits.MaxRequestBodySize, "Maximum allowed size of any request body in bytes.");
-                    Sets(dt, "Kestrel.Limits.MaxRequestBufferSize", MvcConfig.Kestrel.Limits.MaxRequestBufferSize, "Maximum size of the request buffer.");
+                    Sets(dt, "Kestrel.Limits.MaxRequestBodySize", MvcConfig.Kestrel.Limits.MaxRequestBodySize, "Maximum allowed size of any request body in bytes. - 【Restart】");
+                    Sets(dt, "Kestrel.Limits.MaxRequestBufferSize", MvcConfig.Kestrel.Limits.MaxRequestBufferSize, "Maximum size of the request buffer. - 【Restart】");
                     Sets(dt, "Kestrel.Limits.MaxRequestLineSize", MvcConfig.Kestrel.Limits.MaxRequestLineSize, "Maximum allowed size for the HTTP request line.");
                     dt.NewRow(true);
                     Sets(dt, "Kestrel.Limits.MaxRequestHeaderCount", MvcConfig.Kestrel.Limits.MaxRequestHeaderCount, "Maximum allowed number of headers per HTTP request.");
@@ -59,12 +64,12 @@ namespace Taurus.Plugin.Admin
                 }
                 else if (type == "kestrel-response")
                 {
-                    Sets(dt, "Kestrel.Limits.MaxResponseBufferSize", MvcConfig.Kestrel.Limits.MaxResponseBufferSize, "Maximum size of the response buffer.");
+                    Sets(dt, "Kestrel.Limits.MaxResponseBufferSize", MvcConfig.Kestrel.Limits.MaxResponseBufferSize, "Maximum size of the response buffer. - 【Restart】");
                 }
                 else if (type == "kestrel-timeout")
                 {
-                    Sets(dt, "Kestrel.Limits.KeepAliveTimeout", MvcConfig.Kestrel.Limits.KeepAliveTimeout + " (m)", "keep-alive timeout (minute).");
-                    Sets(dt, "Kestrel.Limits.RequestHeadersTimeout", MvcConfig.Kestrel.Limits.RequestHeadersTimeout + " (s)", "Maximum amount of time (sencond) the server will spend receiving request.");
+                    Sets(dt, "Kestrel.Limits.KeepAliveTimeout", MvcConfig.Kestrel.Limits.KeepAliveTimeout + " (m)", "Keep-alive timeout (minute). - 【Restart】");
+                    Sets(dt, "Kestrel.Limits.RequestHeadersTimeout", MvcConfig.Kestrel.Limits.RequestHeadersTimeout + " (s)", "Request header timeout (sencond). - 【Restart】");
                 }
             }
             dt.Bind(View);

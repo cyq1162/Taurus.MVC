@@ -19,7 +19,7 @@ namespace Taurus.Plugin.MicroService
             {
                 if (hostListByAdmin.Count == 0)
                 {
-                    string hostList = IO.Read(AdminConst.HostAddPath);
+                    string hostList = IO.Read(AdminConst.HostSyncPath);
                     if (!string.IsNullOrEmpty(hostList))
                     {
                         AddHostByAdmin(hostList);
@@ -120,6 +120,7 @@ namespace Taurus.Plugin.MicroService
                     string[] rows = hostList.Split('\n');
                     foreach (string row in rows)
                     {
+                        if (row.StartsWith("//") || row.StartsWith("#")) { continue; }
                         string[] kv = row.Split('#');
                         if (kv.Length == 2)
                         {

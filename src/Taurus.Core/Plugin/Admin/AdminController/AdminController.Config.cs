@@ -93,9 +93,11 @@ namespace Taurus.Plugin.Admin
             string key = Query<string>("key");
             string value = Query<string>("value");
             bool isDurable = Query<bool>("durable");
+
+            #region 先处理，再赋值 - 1
+
             string oldValue = string.Empty;
 
-            //需要特殊处理的值
             switch (key)
             {
                 case "Admin.Path":
@@ -106,7 +108,7 @@ namespace Taurus.Plugin.Admin
                     oldValue = MsConfig.Server.RcPath; break;
                 case "MicroService.Client.RcPath":
                     oldValue = MsConfig.Client.RcPath; break;
-                case "Taurus.Views":
+                case "Mvc.Views":
                     ViewEngine.ViewsPath = null;
                     break;
             }
@@ -114,15 +116,35 @@ namespace Taurus.Plugin.Admin
             {
                 ControllerCollector.ChangePath(oldValue, value);
             }
-            AppConfig.SetApp(key, value);
+
+            #endregion
+            if (key.EndsWith("Conn"))
+            {
+                AppConfig.SetConn(key, value);
+            }
+            else
+            {
+                AppConfig.SetApp(key, value);
+            }
+
             if (isDurable)
             {
-                AdminConfig.AddDurableConfig(key, value);
+                AdminConfig.AddDurableConfig(key, value, true);
             }
             else
             {
                 AdminConfig.RemoveDurableConfig(key, value);
             }
+
+            #region 先赋值，再处理 - 2
+
+            if (key.StartsWith("Kestrel."))
+            {
+                KestrelExtenstions.RefleshOptions();
+            }
+
+            #endregion
+
             Write("Save success.", true);
         }
     }

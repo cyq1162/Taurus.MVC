@@ -1,13 +1,8 @@
-﻿using CYQ.Data.Tool;
-using System;
+﻿using System;
 using System.Collections.Generic;
 using System.IO;
-using System.Net;
-using System.Threading;
-using Taurus.Mvc;
 using Taurus.Plugin.MicroService;
 using Taurus.Plugin.Admin;
-using CYQ.Data;
 
 namespace Taurus.Plugin.Limit
 {
@@ -24,16 +19,18 @@ namespace Taurus.Plugin.Limit
         /// 用于带*号的比较
         /// </summary>
         private static List<string> ipBlackList = new List<string>();
-        internal static void ResetIPList(string ipList)
+        internal static void ResetIPList(string ipList, bool isSaveToFile)
         {
-            IO.Write(AdminConst.IPBlacknamePath, ipList);
-            LastUpdateTime = DateTime.Now;
+            if (isSaveToFile)
+            {
+                IO.Write(AdminConst.IPSyncPath, ipList);
+            }
             Dictionary<string, byte> dic = new Dictionary<string, byte>();
             List<string> list = new List<string>();
             string[] items = ipList.Split(new char[] { ',', '\n', '\r' });
             foreach (string item in items)
             {
-                if (string.IsNullOrEmpty(item))
+                if (string.IsNullOrEmpty(item) || item.StartsWith("//") || item.StartsWith("#"))
                 {
                     continue;
                 }
@@ -108,75 +105,17 @@ namespace Taurus.Plugin.Limit
 
     internal static partial class IPLimit
     {
-        /// <summary>
-        /// IP 黑名单最后一次更新时间
-        /// </summary>
-        public static DateTime LastUpdateTime { get; set; }
         static IPLimit()
         {
             if (ipBlackDic.Count == 0 && ipBlackList.Count == 0)
             {
-                string ipList = IO.Read(AdminConst.IPBlacknamePath);
+                string ipList = IO.Read(AdminConst.IPSyncPath);
                 if (!string.IsNullOrEmpty(ipList))
                 {
-                    FileInfo info = new FileInfo(IO.Path(AdminConst.IPBlacknamePath));
-                    LastUpdateTime = info.LastWriteTime;
-                    ResetIPList(ipList);
-                }
-                else if (LimitConfig.IP.IsSync)
-                {
-                    if (MsConfig.IsServer && !MsConfig.IsRegCenterOfMaster)
-                    {
-                        SyncIPListWithRegisterCenter();
-                    }
+                    Server.SyncIPTime = IO.Info(AdminConst.IPSyncPath).LastWriteTime;
+                    ResetIPList(ipList, false);
                 }
             }
         }
-        /// <summary>
-        /// 与服务端IP黑名单保持同步。
-        /// </summary>
-        /// <param name="serverIPTick"></param>
-        internal static void SyncIPList(long serverIPTick)
-        {
-            if (serverIPTick > LastUpdateTime.Ticks && LimitConfig.IP.IsSync)
-            {
-                SyncIPListWithRegisterCenter();
-            }
-        }
-        private static void SyncIPListWithRegisterCenter()
-        {
-            Thread thread = new Thread(new ThreadStart(GetIPList));
-            thread.IsBackground = true;
-            thread.Start();
-        }
-        private static void GetIPList()
-        {
-            string url = MsConfig.Server.RcUrl + MsConfig.Server.RcPath + "/getiplist";
-            if (MsConfig.IsGateway)
-            {
-                url += "?isGateway=1";
-            }
-            try
-            {
-                using (WebClient wc = new WebClient())
-                {
-                    wc.Headers.Add(MsConst.HeaderKey, MsConfig.Server.RcKey);
-                    wc.Headers.Add("ack", AckLimit.CreateAck());
-                    wc.Headers.Add("Referer", MvcConfig.RunUrl);
-                    string result = wc.DownloadString(url);
-                    if (!string.IsNullOrEmpty(result) && JsonHelper.IsSuccess(result))
-                    {
-                        string ipList = JsonHelper.GetValue<string>(result, "msg");
-                        ResetIPList(ipList);
-                    }
-                }
-            }
-            catch (Exception err)
-            {
-                MsLog.Write(err.Message, url, "GET");
-            }
-        }
-
-
     }
 }

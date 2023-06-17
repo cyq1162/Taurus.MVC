@@ -1,7 +1,9 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.IO;
 using System.Net;
 using System.Threading;
+using CYQ.Data;
 using CYQ.Data.Tool;
 using Taurus.Mvc;
 
@@ -12,6 +14,18 @@ namespace Taurus.Plugin.MicroService
     /// </summary>
     internal partial class MsRun
     {
+        static MsRun()
+        {
+            if (MsConfig.IsServer || MsConfig.IsClient)
+            {
+                string folder = AppConfig.WebRootPath + "App_Data/microservice";
+                if (!Directory.Exists(folder))
+                {
+                    Directory.CreateDirectory(folder);
+                }
+            }
+        }
+
         private static bool isStart = false;
         internal static void Start(Uri uri)
         {

@@ -22,6 +22,13 @@ namespace Microsoft.AspNetCore.Http
         {
             try
             {
+                // 遍历 HttpContext.Features
+                //foreach (var feature in context.Features)
+                //{
+                //    // 输出特性类型和实例信息
+                //    Console.WriteLine($"Feature type: {feature.Key}, instance: {feature.Value}");
+                //}
+
                 if (!context.Request.Host.HasValue)
                 {
                     context.Response.StatusCode = 400;

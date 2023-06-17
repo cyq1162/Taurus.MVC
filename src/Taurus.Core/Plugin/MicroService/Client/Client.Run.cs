@@ -1,7 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Net;
-using System.Security.Policy;
 using System.Threading;
 using CYQ.Data;
 using CYQ.Data.Tool;
@@ -147,6 +146,9 @@ namespace Taurus.Plugin.MicroService
                     Thread.Sleep(1000);
                     AfterGetListOfClient(GetListOfClient());
                 }
+
+                long configTick = JsonHelper.GetValue<long>(result, "configtick");
+                SyncConfig(configTick);
             }
         }
 

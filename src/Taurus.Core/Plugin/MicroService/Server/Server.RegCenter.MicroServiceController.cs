@@ -222,7 +222,7 @@ namespace Taurus.Plugin.MicroService
             {
                 Server.Tick = DateTime.Now.Ticks;
             }
-            string result = JsonHelper.OutResult(sb.Length == 0, sb.ToString(), "tick", Server.Tick, "host2", Server.Host2);
+            string result = JsonHelper.OutResult(sb.Length == 0, sb.ToString(), "tick", Server.Tick, "host2", Server.Host2, "configtick", Server.SyncConfigTime.Ticks);
             Write(result);
         }
 
@@ -248,31 +248,19 @@ namespace Taurus.Plugin.MicroService
             }
             if (tick == Server.Tick || Server.RegCenter.HostList == null)
             {
-                string result = JsonHelper.OutResult(true, "", "tick", Server.Tick, "host2", host2, "host", host, "iptick", IPLimit.LastUpdateTime.Ticks);
+                string result = JsonHelper.OutResult(true, "", "tick", Server.Tick, "host2", host2, "host", host, "iptick", Server.SyncIPTime.Ticks);
                 Write(result);
             }
             else
             {
-                string result = JsonHelper.OutResult(true, Server.RegCenter.HostListJson, "tick", Server.Tick, "host2", host2, "host", host, "iptick", IPLimit.LastUpdateTime.Ticks);
+                string result = JsonHelper.OutResult(true, Server.RegCenter.HostListJson, "tick", Server.Tick, "host2", host2, "host", host, "iptick", Server.SyncIPTime.Ticks);
                 Write(result);
             }
 
             WriteLine(Environment.NewLine + "--------------------------------------");
             WriteLine(DateTime.Now.ToString("HH:mm:ss") + " : GetList : From :" + Request.UrlReferrer);
         }
-        /// <summary>
-        /// 注册中心 - 获取IP黑名单列表。
-        /// </summary>
-        [HttpGet]
-        [MicroService]
-        public void GetIPList()
-        {
-            string ipList = IO.Read(AdminConst.IPBlacknamePath);
-            Write(JsonHelper.OutResult(true, ipList));
 
-            WriteLine(Environment.NewLine + "--------------------------------------");
-            WriteLine(DateTime.Now.ToString("HH:mm:ss") + " : GetIPList From :" + Request.UrlReferrer);
-        }
         /// <summary>
         /// 注册中心 - 设置【从】的备用地址。
         /// </summary>
@@ -285,11 +273,11 @@ namespace Taurus.Plugin.MicroService
         {
             Server.RegCenter.AddHost("RegCenterOfSlave", host, pid, Request.UserHostAddress);
             Server.Host2 = host;
-            string result = JsonHelper.OutResult(true, "", "tick", Server.Tick, "iptick", IPLimit.LastUpdateTime.Ticks);
+            string result = JsonHelper.OutResult(true, "", "tick", Server.Tick, "iptick", Server.SyncIPTime.Ticks);
             Write(result);
 
             WriteLine(Environment.NewLine + "--------------------------------------");
-            WriteLine(DateTime.Now.ToString("HH:mm:ss") + " : Reg Host2 From :" + host);
+            WriteLine(DateTime.Now.ToString("HH:mm:ss") + " : Reg Host2 :" + host);
         }
 
         /// <summary>
@@ -314,5 +302,39 @@ namespace Taurus.Plugin.MicroService
             WriteLine(DateTime.Now.ToString("HH:mm:ss") + " : Server.API.Call.SyncList : Tick :" + tick);
         }
 
+    }
+
+    /// <summary>
+    /// 扩展【和 Admin 插件协同】 - 同步 IP、配置
+    /// </summary>
+    internal partial class MicroServiceController
+    {
+        /// <summary>
+        /// 注册中心 - 获取同步IP黑名单列表。
+        /// </summary>
+        [HttpGet]
+        [MicroService]
+        public void GetIPSyncList()
+        {
+            string ipList = IO.Read(AdminConst.IPSyncPath);
+            Write(JsonHelper.OutResult(true, ipList));
+
+            WriteLine(Environment.NewLine + "--------------------------------------");
+            WriteLine(DateTime.Now.ToString("HH:mm:ss") + " : GetIPList From :" + Request.UrlReferrer);
+        }
+
+        /// <summary>
+        /// 注册中心 - 获取同步配置列表。
+        /// </summary>
+        [HttpGet]
+        [MicroService]
+        public void GetConfigSyncList()
+        {
+            string configList = IO.Read(AdminConst.ConfigSyncPath);
+            Write(JsonHelper.OutResult(true, configList));
+
+            WriteLine(Environment.NewLine + "--------------------------------------");
+            WriteLine(DateTime.Now.ToString("HH:mm:ss") + " : GetConfigList From :" + Request.UrlReferrer);
+        }
     }
 }

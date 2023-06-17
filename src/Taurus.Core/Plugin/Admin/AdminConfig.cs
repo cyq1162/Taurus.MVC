@@ -1,6 +1,7 @@
 ﻿using CYQ.Data;
 using CYQ.Data.Tool;
 using System.Collections.Generic;
+using System.IO;
 using Taurus.Plugin.MicroService;
 
 namespace Taurus.Plugin.Admin
@@ -28,20 +29,40 @@ namespace Taurus.Plugin.Admin
                 {
                     foreach (var kv in dic)
                     {
-                        AppConfig.SetApp(kv.Key, kv.Value);
+                        if (kv.Key.EndsWith("Conn"))
+                        {
+                            AppConfig.SetConn(kv.Key, kv.Value);
+                        }
+                        else
+                        {
+                            AppConfig.SetApp(kv.Key, kv.Value);
+                        }
                     }
                     durableConfig = dic;
                 }
+            }
+
+            if (!string.IsNullOrEmpty(IO.Read(AdminConst.ConfigSyncPath)))
+            {
+                Server.SyncConfigTime = IO.Info(AdminConst.ConfigSyncPath).LastWriteTime;
             }
         }
         /// <summary>
         /// 由静态构造函数初始化。
         /// </summary>
-        internal static void Init() { }
+        internal static void Init()
+        {
+            string folder = AppConfig.WebRootPath + "App_Data/admin";
+            if (!Directory.Exists(folder))
+            {
+                Directory.CreateDirectory(folder);
+            }
+        }
+
         /// <summary>
         /// 添加持久化配置
         /// </summary>
-        internal static void AddDurableConfig(string key, string value)
+        internal static void AddDurableConfig(string key, string value, bool isSaveToFile)
         {
             if (tempConfig.ContainsKey(key))
             {
@@ -56,7 +77,10 @@ namespace Taurus.Plugin.Admin
             {
                 durableConfig.Add(key, value);
             }
-            IO.Write(AdminConst.ConfigPath, JsonHelper.ToJson(durableConfig));
+            if (isSaveToFile)
+            {
+                IO.Write(AdminConst.ConfigPath, JsonHelper.ToJson(durableConfig));
+            }
         }
         internal static void RemoveDurableConfig(string key, string value)
         {

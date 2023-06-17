@@ -142,7 +142,7 @@ namespace Taurus.Plugin.MicroService
             {
                 long tick = JsonHelper.GetValue<long>(result, "tick");
                 long ipTick = JsonHelper.GetValue<long>(result, "iptick");
-                IPLimit.SyncIPList(ipTick);
+                SyncIPList(ipTick);
                 if (tick != Server.Tick)
                 {
                     if (Server.Tick > tick)//主机重启了。
@@ -193,9 +193,6 @@ namespace Taurus.Plugin.MicroService
         {
             if (!string.IsNullOrEmpty(result) && JsonHelper.IsSuccess(result))
             {
-                long ipTick = JsonHelper.GetValue<long>(result, "iptick");
-                IPLimit.SyncIPList(ipTick);
-
                 long tick = JsonHelper.GetValue<long>(result, "tick");
                 if (Server.Tick > tick) { return; }
                 Server.Tick = tick;

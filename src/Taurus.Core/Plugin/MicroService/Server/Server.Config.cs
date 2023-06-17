@@ -89,16 +89,29 @@ namespace Taurus.Plugin.MicroService
                     AppConfig.SetApp("MicroService.Server.RcKey", value);
                 }
             }
-
             /// <summary>
-            /// 网关：接收请求（大文件上传）超时时间，单位秒（s）
-            /// 默认：60（s）
+            /// 应用配置：开启应用程序远程同步IP功能
+            /// </summary>
+            public static bool IsAllowSyncIP
+            {
+                get
+                {
+                    return AppConfig.GetAppBool("MicroService.Server.IsAllowSyncIP", IsClient);
+                }
+                set
+                {
+                    AppConfig.SetApp("MicroService.Server.IsAllowSyncIP", value.ToString());
+                }
+            }
+            /// <summary>
+            /// 网关：接收请求（大文件上传时需要根据情况重新设置）超时时间，单位秒（s）
+            /// 默认：10（s）
             /// </summary>
             public static int GatewayTimeout
             {
                 get
                 {
-                    return AppConfig.GetAppInt("MicroService.Server.GatewayTimeout", 60);
+                    return AppConfig.GetAppInt("MicroService.Server.GatewayTimeout", 10);
                 }
                 set
                 {

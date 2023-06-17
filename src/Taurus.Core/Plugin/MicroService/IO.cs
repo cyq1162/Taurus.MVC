@@ -1,5 +1,6 @@
 ﻿using CYQ.Data;
 using CYQ.Data.Tool;
+using System.IO;
 
 namespace Taurus.Plugin.MicroService
 {
@@ -8,6 +9,20 @@ namespace Taurus.Plugin.MicroService
     /// </summary>
     internal class IO
     {
+        /// <summary>
+        /// 获取文件信息
+        /// </summary>
+        public static FileInfo Info(string path)
+        {
+            return new FileInfo(Path(path));
+        }
+        /// <summary>
+        /// 检测文件是否存在
+        /// </summary>
+        public static bool Exists(string path)
+        {
+            return File.Exists(path);
+        }
         /// <summary>
         /// 获取绝对完整路径
         /// </summary>
@@ -45,5 +60,6 @@ namespace Taurus.Plugin.MicroService
             path = AppConfig.WebRootPath + "App_Data" + path;
             IOHelper.Delete(path);
         }
+
     }
 }

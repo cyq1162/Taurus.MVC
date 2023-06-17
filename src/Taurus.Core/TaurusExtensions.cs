@@ -12,14 +12,16 @@ using Microsoft.Extensions.DependencyInjection;
 using Microsoft.AspNetCore.Http.Features;
 using Microsoft.AspNetCore.Server.Kestrel.Core;
 using System.Net;
+using Microsoft.AspNetCore.HostFiltering;
+using System.Collections.Generic;
 using Microsoft.Extensions.Options;
-using Microsoft.AspNetCore.Hosting.Server;
 
 namespace Microsoft.AspNetCore.Http
 {
-    public static class TaurusExtensions
+    public static partial class TaurusExtensions
     {
-        //static KestrelServerOptions kestrelServerOptions;
+        static KestrelServerOptions kestrelServerOptions;
+        static HostFilteringOptions hostFilteringOptions;
         /// <summary>
         /// 默认配置：HttpContext、FormOptions、KestrelServerOptions。
         /// </summary>
@@ -31,8 +33,8 @@ namespace Microsoft.AspNetCore.Http
             services.Configure<FormOptions>(options => options.MultipartBodyLengthLimit = MvcConfig.Kestrel.Limits.MaxRequestBodySize);
             services.Configure<KestrelServerOptions>((x) =>
             {
-                //kestrelServerOptions = x;
-
+                kestrelServerOptions = x;
+                LoadKestrelServerOptions(false);
                 /*
                 研究说明：后期可以通过以下方式获取配置信息： 
                 1、builder.ApplicationServices.GetService<IOptions<KestrelServerOptions>>();
@@ -75,87 +77,16 @@ namespace Microsoft.AspNetCore.Http
                     }
                     #endregion
                 }
-                x.AddServerHeader = MvcConfig.Kestrel.AddServerHeader;
-                x.AllowSynchronousIO = MvcConfig.Kestrel.AllowSynchronousIO;
 
-                #region Limits 配置设置
 
-                if (MvcConfig.Kestrel.Limits.MaxRequestBufferSize == long.MaxValue)
-                {
-                    x.Limits.MaxRequestBufferSize = null;
-                }
-                else
-                {
-                    x.Limits.MaxRequestBufferSize = MvcConfig.Kestrel.Limits.MaxRequestBufferSize;
-                }
-                if (MvcConfig.Kestrel.Limits.MaxRequestBodySize == long.MaxValue)
-                {
-                    x.Limits.MaxRequestBodySize = null;
-                }
-                else
-                {
-                    x.Limits.MaxRequestBodySize = MvcConfig.Kestrel.Limits.MaxRequestBodySize;
-                }
-
-                x.Limits.MaxRequestLineSize = MvcConfig.Kestrel.Limits.MaxRequestLineSize;
-                x.Limits.MaxRequestHeaderCount = MvcConfig.Kestrel.Limits.MaxRequestHeaderCount;
-                x.Limits.MaxRequestHeadersTotalSize = MvcConfig.Kestrel.Limits.MaxRequestHeadersTotalSize;
-
-                //为整个应用设置并发打开的最大 TCP 连接数,默认情况下，最大连接数不受限制 (NULL)
-                if (MvcConfig.Kestrel.Limits.MaxConcurrentConnections != long.MaxValue)
-                {
-                    x.Limits.MaxConcurrentConnections = MvcConfig.Kestrel.Limits.MaxConcurrentConnections;
-                }
-                //对于已从 HTTP 或 HTTPS 升级到另一个协议（例如，Websocket 请求）的连接，有一个单独的限制。 连接升级后，不会计入 MaxConcurrentConnections 限制
-                if (MvcConfig.Kestrel.Limits.MaxConcurrentUpgradedConnections != long.MaxValue)
-                {
-                    x.Limits.MaxConcurrentUpgradedConnections = MvcConfig.Kestrel.Limits.MaxConcurrentUpgradedConnections;
-                }
-                if (MvcConfig.Kestrel.Limits.MaxResponseBufferSize == long.MaxValue)
-                {
-                    x.Limits.MaxResponseBufferSize = null;
-                }
-                else
-                {
-                    x.Limits.MaxResponseBufferSize = MvcConfig.Kestrel.Limits.MaxResponseBufferSize;
-                }
-                //获取或设置保持活动状态超时。 默认值为 2 分钟。
-                x.Limits.KeepAliveTimeout = TimeSpan.FromMinutes(MvcConfig.Kestrel.Limits.KeepAliveTimeout);
-                x.Limits.RequestHeadersTimeout = TimeSpan.FromSeconds(MvcConfig.Kestrel.Limits.RequestHeadersTimeout);
-                #endregion
+            });
+            services.Configure<HostFilteringOptions>((y) =>
+            {
+                hostFilteringOptions = y;
+                LoadHostFilteringOptions(false);
             });
         }
-        /*
-        /// <summary>
-        /// 使用Taurus.MVC中件间功能：Net Core 3.1 把IHostingEnvironment 拆分成了：IWebHostEnvironment和IHostEnvironment 
-        /// 所以增加重载方法适应。
-        /// </summary>
-        /// <param name="builder"></param>
-        /// <param name="env">传递参数，Debug模式下，设置项目目录为根目录</param>
-        /// <returns></returns>
-        public static IApplicationBuilder UseTaurusMvc(this IApplicationBuilder builder, object env)
-        {
-            if (env is IHostingEnvironment)
-            {
-                return UseTaurusMvc(builder, env as IHostingEnvironment);
-            }
-            throw new Exception("env must be IWebHostEnvironment or IHostingEnvironment or String");
-        }
-        public static IApplicationBuilder UseTaurusMvc(this IApplicationBuilder builder, IHostingEnvironment env)
-        {
-            char c = env.WebRootPath.StartsWith("/") ? '/' : '\\';
-            string path = (env.WebRootPath ?? env.ContentRootPath.TrimEnd('/', '\\') + c + "wwwroot") + c;
-            SetWebRootPath(path);
-            //Net6新建的项目，WebRootPath竟然是空。
-            return UseTaurusMvc(builder);
-        }
 
-        [Conditional("DEBUG")]
-        private static void SetWebRootPath(string path)
-        {
-            AppConfig.WebRootPath = path;
-        }
-        */
         public static IApplicationBuilder UseTaurusMvc(this IApplicationBuilder builder)
         {
             builder.UseHttpContext();
@@ -198,7 +129,6 @@ namespace Microsoft.AspNetCore.Http
         {
             if (string.IsNullOrEmpty(MvcConfig.RunUrl))
             {
-                //builder.ApplicationServices.
                 var saf = builder.ServerFeatures.Get<IServerAddressesFeature>();
                 if (saf != null)
                 {
@@ -225,5 +155,94 @@ namespace Microsoft.AspNetCore.Http
                 Console.WriteLine("MvcConfig.RunUrl = " + MvcConfig.RunUrl);
             }
         }
+    }
+
+    public static partial class TaurusExtensions
+    {
+        private static List<string> GetAllowedHostsList(string allowedHosts)
+        {
+            string[] hosts = allowedHosts.Split(',');
+            List<string> newHosts = new List<string>();
+            newHosts.AddRange(hosts);
+            return newHosts;
+        }
+        /// <summary>
+        /// 动态修改 Kestrel 配置相关属性。
+        /// </summary>
+        internal static void RefleshOptions()
+        {
+            LoadKestrelServerOptions(true);
+            LoadHostFilteringOptions(true);
+        }
+
+        private static void LoadKestrelServerOptions(bool isReflesh)
+        {
+            if (kestrelServerOptions == null) { return; }
+            var x = kestrelServerOptions;
+            x.AddServerHeader = MvcConfig.Kestrel.AddServerHeader;
+            x.AllowSynchronousIO = MvcConfig.Kestrel.AllowSynchronousIO;
+
+            #region Limits 配置设置
+            x.Limits.MaxRequestLineSize = MvcConfig.Kestrel.Limits.MaxRequestLineSize;
+            x.Limits.MaxRequestHeaderCount = MvcConfig.Kestrel.Limits.MaxRequestHeaderCount;
+            x.Limits.MaxRequestHeadersTotalSize = MvcConfig.Kestrel.Limits.MaxRequestHeadersTotalSize;
+
+            if (isReflesh) { return; }
+
+            if (MvcConfig.Kestrel.Limits.MaxRequestBufferSize == long.MaxValue)
+            {
+                x.Limits.MaxRequestBufferSize = null;
+            }
+            else
+            {
+                x.Limits.MaxRequestBufferSize = MvcConfig.Kestrel.Limits.MaxRequestBufferSize;
+            }
+            if (MvcConfig.Kestrel.Limits.MaxRequestBodySize == long.MaxValue)
+            {
+                x.Limits.MaxRequestBodySize = null;
+            }
+            else
+            {
+                x.Limits.MaxRequestBodySize = MvcConfig.Kestrel.Limits.MaxRequestBodySize;
+            }
+
+            //为整个应用设置并发打开的最大 TCP 连接数,默认情况下，最大连接数不受限制 (NULL)
+            if (MvcConfig.Kestrel.Limits.MaxConcurrentConnections != long.MaxValue)
+            {
+                x.Limits.MaxConcurrentConnections = MvcConfig.Kestrel.Limits.MaxConcurrentConnections;
+            }
+            //对于已从 HTTP 或 HTTPS 升级到另一个协议（例如，Websocket 请求）的连接，有一个单独的限制。 连接升级后，不会计入 MaxConcurrentConnections 限制
+            if (MvcConfig.Kestrel.Limits.MaxConcurrentUpgradedConnections != long.MaxValue)
+            {
+                x.Limits.MaxConcurrentUpgradedConnections = MvcConfig.Kestrel.Limits.MaxConcurrentUpgradedConnections;
+            }
+            if (MvcConfig.Kestrel.Limits.MaxResponseBufferSize == long.MaxValue)
+            {
+                x.Limits.MaxResponseBufferSize = null;
+            }
+            else
+            {
+                x.Limits.MaxResponseBufferSize = MvcConfig.Kestrel.Limits.MaxResponseBufferSize;
+            }
+            //获取或设置保持活动状态超时。 默认值为 2 分钟。
+            x.Limits.KeepAliveTimeout = TimeSpan.FromMinutes(MvcConfig.Kestrel.Limits.KeepAliveTimeout);
+            x.Limits.RequestHeadersTimeout = TimeSpan.FromSeconds(MvcConfig.Kestrel.Limits.RequestHeadersTimeout);
+            #endregion
+        }
+
+        private static void LoadHostFilteringOptions(bool isReflesh)
+        {
+            if (hostFilteringOptions == null) { return; }
+            var y = hostFilteringOptions;
+            y.AllowEmptyHosts = MvcConfig.Kestrel.AllowEmptyHosts;
+            y.IncludeFailureMessage = MvcConfig.Kestrel.IncludeFailureMessage;
+            //HostFilteringOptions 无法动态修改生效。
+            if (isReflesh)
+            {
+                return;
+            }
+            y.AllowedHosts = GetAllowedHostsList(MvcConfig.Kestrel.AllowedHosts);
+        }
+
     }
 }
