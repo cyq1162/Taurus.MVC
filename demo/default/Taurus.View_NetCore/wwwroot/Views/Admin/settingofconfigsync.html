@@ -30,30 +30,30 @@
 
     <div id="container">
         <div>
-            Add ip blackname list ：for register center (sync to gateway) or this web application.
+            Add app config list ：synchronize to all clients.
         </div>
         <hr />
         <div style="margin: auto; text-align: center; ">
             <form method="post">
                 <table width="100%" align="center">
                     <tr>
-                        <td class="tdright"><span>IP List</span> ：</td>
+                        <td class="tdright"></td>
                         <td class="tdleft">
-                            IP as 192.168.9.121,192.168.8.*  (Split By ',' or New Line)
+                            Example : Limit.IP.IsEnable = true
                         </td>
                     </tr>
                     <tr>
-                        <td class="tdright"></td>
+                        <td class="tdright" valign="top"><span>Configs</span> ：</td>
                         <td class="tdleft">
-                            <textarea name="ipList" style="width: 84%;height:400px">${IPList}</textarea>
+                            <textarea name="configList" style="width: 84%;height:400px">${ConfigList}</textarea>
                         </td>
                         <td></td>
                     </tr>
                     <tr>
                         <td class="tdright"></td>
                         <td class="tdleft" colspan="2">
-                            <input name="btnAddIPBlackname" type="submit" value="Save" style="width: 71px; cursor: pointer; padding-top: 4px;" />
-
+                            <input name="btnAddConfigSync" type="submit" value="Save" style="width: 71px; cursor: pointer; padding-top: 4px;" />
+                            &nbsp;&nbsp;<input name="isDurable" type="checkbox" value="1" checked="checked" />&nbsp;<span title='save to config file.'>durable to all clients</span>
                         </td>
                     </tr>
                     <tr>
