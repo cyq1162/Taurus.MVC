@@ -209,6 +209,10 @@ namespace Taurus.Mvc
             string host = Kestrel.Urls;
             if (!string.IsNullOrEmpty(host))
             {
+                if (host.EndsWith(":80"))
+                {
+                    host = host.Replace(":80", "");//去掉默认端口
+                }
                 string ip = MvcConst.HostIP;
                 return host.Replace("localhost", ip).Replace("*", ip);//设置启动路径
             }

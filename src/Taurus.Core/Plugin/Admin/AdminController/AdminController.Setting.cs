@@ -56,7 +56,7 @@ namespace Taurus.Plugin.Admin
                 else
                 {
                     View.Set("btnAddHostSync", SetType.Disabled, "true");
-                    View.Set("hostList", "#Current type is not register center of master.");
+                    View.Set("hostList", "# Current type is not register center of master.");
                     View.Set("hostList", SetType.Disabled, "true");
                 }
             }
@@ -102,10 +102,10 @@ namespace Taurus.Plugin.Admin
                     View.Set("btnAddConfigSync", SetType.Disabled, "true");
                     View.Set("configList", SetType.Disabled, "true");
                     View.Set("isDurable", SetType.Disabled, "true");
-                    string tip = "#Current type is not register center of master.\n";
+                    string tip = "# Current type is not register center of master.\n";
                     if (MsConfig.IsClient)
                     {
-                        tip += "#Current MicroService.Client.IsAllowSyncConfig = " + MsConfig.Client.IsAllowSyncConfig.ToString().ToLower() + "\n";
+                        tip += "# Current MicroService.Client.IsAllowSyncConfig = " + MsConfig.Client.IsAllowSyncConfig.ToString().ToLower() + "\n";
                     }
                     View.Set("configList", tip + configList);
                 }
