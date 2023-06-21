@@ -66,23 +66,25 @@ namespace Taurus.Plugin.Admin
                 if (!string.IsNullOrEmpty(AppConfig.Redis.Servers))
                 {
                     dt.NewRow(true);
-                    Sets(dt, "RedisUseDBCount", AppConfig.Redis.UseDBCount, "Redis use db count.");
-                    Sets(dt, "RedisUseDBIndex", AppConfig.Redis.UseDBIndex, "Redis use db index.");
+                    Sets(dt, "Redis.MaxSocket", AppConfig.Redis.MaxSocket, "Maximum socket pool size.");
+                    Sets(dt, "Redis.MaxWait", AppConfig.Redis.MaxWait+" (ms)", "Timeout (in milliseconds) waiting for a request from the socket pool.");
+                    Sets(dt, "Redis.UseDBCount", AppConfig.Redis.UseDBCount, "Redis use db count.");
+                    Sets(dt, "Redis.UseDBIndex", AppConfig.Redis.UseDBIndex, "Redis use db index.");
                     string[] items = AppConfig.Redis.Servers.Split(',');
-                    Sets(dt, "----------RedisServers - Count", items.Length, "Num of server node for redis (Show Only).");
+                    Sets(dt, "----------Redis.Servers - Count", items.Length, "Num of server node for redis (Show Only).");
 
                     for (int i = 0; i < items.Length; i++)
                     {
-                        Sets(dt, "----------RedisServers - " + (i + 1), items[i], "Server node for redis (Show Only).");
+                        Sets(dt, "----------Redis.Servers - " + (i + 1), items[i], "Server node for redis (Show Only).");
                     }
 
                     if (!string.IsNullOrEmpty(AppConfig.Redis.ServersBak))
                     {
                         items = AppConfig.Redis.ServersBak.Split(',');
-                        Sets(dt, "----------RedisServersBak - Count", items.Length, "Num of server node for redis bak(Show Only).");
+                        Sets(dt, "----------Redis.ServersBak - Count", items.Length, "Num of server node for redis bak(Show Only).");
                         for (int i = 0; i < items.Length; i++)
                         {
-                            Sets(dt, "----------RedisServersBak - " + (i + 1), items[i], "Server node for redis (Show Only).");
+                            Sets(dt, "----------Redis.ServersBak - " + (i + 1), items[i], "Server node for redis (Show Only).");
                         }
                     }
                 }
@@ -91,21 +93,23 @@ namespace Taurus.Plugin.Admin
             {
                 if (!string.IsNullOrEmpty(AppConfig.MemCache.Servers))
                 {
+                    Sets(dt, "MemCache.MaxSocket", AppConfig.MemCache.MaxSocket, "Maximum socket pool size.");
+                    Sets(dt, "MemCache.MaxWait", AppConfig.MemCache.MaxWait + " (ms)", "Timeout (in milliseconds) waiting for a request from the socket pool.");
                     string[] items = AppConfig.MemCache.Servers.Split(',');
-                    Sets(dt, "----------MemCacheServers - Count", items.Length, "Num of server node for memcache (Show Only).");
+                    Sets(dt, "----------MemCache.Servers - Count", items.Length, "Num of server node for memcache (Show Only).");
 
                     for (int i = 0; i < items.Length; i++)
                     {
-                        Sets(dt, "----------MemCacheServers - " + (i + 1), items[i], "Server node for memcache (Show Only).");
+                        Sets(dt, "----------MemCache.Servers - " + (i + 1), items[i], "Server node for memcache (Show Only).");
                     }
 
                     if (!string.IsNullOrEmpty(AppConfig.MemCache.ServersBak))
                     {
                         items = AppConfig.MemCache.ServersBak.Split(',');
-                        Sets(dt, "----------MemCacheServersBak - Count", items.Length, "Num of server node for memcache bak(Show Only).");
+                        Sets(dt, "----------MemCache.ServersBak - Count", items.Length, "Num of server node for memcache bak(Show Only).");
                         for (int i = 0; i < items.Length; i++)
                         {
-                            Sets(dt, "----------MemCacheServersBak - " + (i + 1), items[i], "Server node for memcache (Show Only).");
+                            Sets(dt, "----------MemCache.ServersBak - " + (i + 1), items[i], "Server node for memcache (Show Only).");
                         }
                     }
                 }
