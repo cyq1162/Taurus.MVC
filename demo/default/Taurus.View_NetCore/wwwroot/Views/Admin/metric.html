@@ -19,15 +19,34 @@
     <div id="container" class="container" style="width:100%">
         <div class="starter-template">
             <div>
-                <div style="float:left"><b>Metric ：</b></div>
+                <div style="float:left"><b>Metric - API：</b></div>
                 <div style="float:left">
                     <a href="metric?d=${yesterday}">Yesterday</a>&nbsp;&nbsp;|&nbsp;
                     <a href="metric?d=${today}">Today</a>
                 </div>
                 <div style="clear:both; height:5px;">
                 </div>
+                <div id="redis">
+                    <div style="float:left"><b>Metric - Redis：</b></div>
+                    <div style="text-align:left">
+                        <a href="metric?t=redis-status">Server - Status</a>&nbsp;&nbsp;|&nbsp;
+                        <a href="metric?t=redis-socket">Client - Socket</a>
+                    </div>
+                    <div style="clear:both; height:5px;">
+                    </div>
+                </div>
+                <div id="memcache">
+                    <div style="float:left"><b>Metric - MemCache：</b></div>
+                    <div style="text-align:left">
+                        <a href="metric?t=memcache-status">Server - Status</a>&nbsp;&nbsp;|&nbsp;
+                        <a href="metric?t=memcache-socket">Client - Socket</a>
+                    </div>
+                    <div style="clear:both; height:5px;">
+                    </div>
+                </div>
                 <hr />
-                <table class="table table-striped">
+
+                <table class="table table-striped" id="apiTable" clearflag="1">
                     <tr>
                         <td width="${t1:250}px" align="left"><a href="metric?d=${d}&s=LocalPath&desc=0">Local Path</a>（${KeyCount:0}）</td>
                         <td align="center"><a href="metric?d=${d}&s=h24&desc=1">Day</a>（${total:0}）</td>
@@ -56,7 +75,7 @@
                         <td>【22】</td>
                         <td>【23】</td>
                     </tr>
-                    <tbody id="defaultView" clearflag="1">
+                    <tbody id="apiView">
                         <tr>
                             <td width="${t1:250}px" align="left">${LocalPath}</td>
                             <td align="center">${h24}</td>
@@ -84,6 +103,26 @@
                             <td>${h21}</td>
                             <td>${h22}</td>
                             <td>${h23}</td>
+                        </tr>
+                    </tbody>
+                </table>
+                <table class="table table-striped" id="redisTable" clearflag="1">
+                    <tr id="redisHead">
+                        <td align="left">${0}</td>
+                    </tr>
+                    <tbody id="redisView">
+                        <tr>
+                            <td>${0}</td>
+                        </tr>
+                    </tbody>
+                </table>
+                <table class="table table-striped" id="memcacheTable" clearflag="1">
+                    <tr id="memcacheHead">
+                        <td align="left">${0}</td>
+                    </tr>
+                    <tbody id="memcacheView">
+                        <tr>
+                            <td>${0}</td>
                         </tr>
                     </tbody>
                 </table>
