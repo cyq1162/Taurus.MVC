@@ -298,6 +298,24 @@
             配置项：Redis.ServersBak ：192.168.1.9:6379 - 888888
             </summary>
         </member>
+        <member name="P:CYQ.Data.AppConfig.Redis.Timeout">
+            <summary>
+            Redis Socket 链接建立超时时间（毫秒ms）
+            配置项：Redis.Timeout ：1000
+            </summary>
+        </member>
+        <member name="P:CYQ.Data.AppConfig.Redis.MaxSocket">
+            <summary>
+            Redis 单个主机节点最大的链接数
+            配置项：Redis.MaxSocket ：32
+            </summary>
+        </member>
+        <member name="P:CYQ.Data.AppConfig.Redis.MaxWait">
+            <summary>
+            Redis 超出最大链接数后等等时间（ms毫秒)
+            配置项：Redis.MaxWait ：1000
+            </summary>
+        </member>
         <member name="T:CYQ.Data.AppConfig.MemCache">
             <summary>
             MemCache 配置
@@ -315,6 +333,24 @@
             MemCache 备份服务器（当主服务器挂了后，请求会转向备用机）
             格式：ip:port
             配置项：MemCache.ServersBak ：192.168.1.9:12121
+            </summary>
+        </member>
+        <member name="P:CYQ.Data.AppConfig.MemCache.Timeout">
+            <summary>
+            MemCache Socket 链接建立超时时间（毫秒ms）
+            配置项：MemCache.Timeout ：1000
+            </summary>
+        </member>
+        <member name="P:CYQ.Data.AppConfig.MemCache.MaxSocket">
+            <summary>
+            MemCache 单个主机节点最大的链接数
+            配置项：MemCache.MaxSocket ：32
+            </summary>
+        </member>
+        <member name="P:CYQ.Data.AppConfig.MemCache.MaxWait">
+            <summary>
+            MemCache 超出最大链接数后等等时间（ms毫秒)
+            配置项：MemCache.MaxWait ：1000
             </summary>
         </member>
         <member name="T:CYQ.Data.AppConfig.AutoCache">
@@ -1355,6 +1391,9 @@
             <summary>
             内部智能缓存
             </summary>
+            <summary>
+            线程任务
+            </summary>
         </member>
         <member name="F:CYQ.Data.Cache.AutoCache.cacheKeys">
             <summary>
@@ -1379,6 +1418,9 @@
             获取：       MDataTable table=cache.Get("路过秋天") as MDataTable;
                      }
             </code></example>
+            <summary>
+            处理分布式锁
+            </summary>
         </member>
         <member name="P:CYQ.Data.Cache.CacheManage.Instance">
             <summary>
@@ -1425,20 +1467,6 @@
             设置一个Cache对象(存在则更新，不存在则添加)
             </summary>
         </member>
-        <member name="M:CYQ.Data.Cache.CacheManage.Lock(System.String,System.Int32)">
-            <summary>
-            加锁（分布式锁需要启用Redis或Memcached）
-            </summary>
-            <param name="key">key</param>
-            <param name="waitTimeoutSeconds">尝试获取锁的最大等待时间（s秒），超过这个值，则认为获取锁失败</param>
-            <returns></returns>
-        </member>
-        <member name="M:CYQ.Data.Cache.CacheManage.UnLock(System.String)">
-            <summary>
-            释放（分布式锁）
-            </summary>
-            <returns></returns>
-        </member>
         <member name="M:CYQ.Data.Cache.CacheManage.Clear">
             <summary>
             清除所有缓存
@@ -1475,6 +1503,20 @@
             <summary>
             缓存的工作信息
             </summary>
+        </member>
+        <member name="M:CYQ.Data.Cache.CacheManage.Lock(System.String,System.Int32)">
+            <summary>
+            分布式锁（分布式锁需要启用Redis或Memcached）
+            </summary>
+            <param name="key">key</param>
+            <param name="millisecondsTimeout">尝试获取锁的最大等待时间（ms毫秒），超过这个值，则认为获取锁失败</param>
+            <returns></returns>
+        </member>
+        <member name="M:CYQ.Data.Cache.CacheManage.UnLock(System.String)">
+            <summary>
+            释放（分布式锁）
+            </summary>
+            <returns></returns>
         </member>
         <member name="M:CYQ.Data.Cache.CacheManage.GetKey(CYQ.Data.Cache.CacheKeyType,System.String)">
             <summary>
@@ -1526,10 +1568,18 @@
             单机缓存类
             为兼容.NET Core 去掉Web.Caching，重写
             </summary>
+            <summary>
+            处理分布式锁【单机】
+            </summary>
         </member>
         <member name="P:CYQ.Data.Cache.LocalCache.CacheInfo">
             <summary>
             获取缓存信息对象列表
+            </summary>
+        </member>
+        <member name="M:CYQ.Data.Cache.LocalCache.ThreadTask">
+            <summary>
+            单例，可以构造函数里使用。
             </summary>
         </member>
         <member name="P:CYQ.Data.Cache.LocalCache.WorkInfo">
@@ -1751,12 +1801,29 @@
             Socket的挂科时间。
             </summary>
         </member>
+        <member name="P:CYQ.Data.Cache.HostNode.MaxWait">
+            <summary>
+            超出最大链接后的等待时间。
+            </summary>
+        </member>
         <member name="F:CYQ.Data.Cache.HostNode.deadEndPointSecondsUntilRetry">
             <summary>
             If the host stops responding, we mark it as dead for this amount of seconds, 
             and we double this for each consecutive failed retry. If the host comes alive
             again, we reset this to 1 again.
             </summary>
+        </member>
+        <member name="P:CYQ.Data.Cache.HostNode.HostServer">
+            <summary>
+            主机服务。
+            </summary>
+        </member>
+        <member name="M:CYQ.Data.Cache.HostNode.GetFromQueue(System.Int32)">
+            <summary>
+            从队列获取数据，并可能进行等待。
+            </summary>
+            <param name="wait"></param>
+            <returns></returns>
         </member>
         <member name="M:CYQ.Data.Cache.HostNode.Acquire">
             <summary>
@@ -1788,6 +1855,11 @@
             </summary>
             <summary>
             处理一致性hash
+            </summary>
+        </member>
+        <member name="P:CYQ.Data.Cache.HostServer.ServerType">
+            <summary>
+            缓存类型
             </summary>
         </member>
         <member name="F:CYQ.Data.Cache.HostServer.hostServerBak">
@@ -1962,8 +2034,8 @@
             <summary>
             
             </summary>
-            <param name="data1"></param>
-            <param name="data2"></param>
+            <param name="dataType"></param>
+            <param name="dataValue"></param>
         </member>
         <member name="T:CYQ.Data.ConnBean">
             <summary>
@@ -2048,6 +2120,9 @@
         <member name="T:CYQ.Data.ConnObject">
             <summary>
             一个数据库对像实例：集合了主从备三种
+            </summary>
+            <summary>
+            线程任务
             </summary>
         </member>
         <member name="M:CYQ.Data.ConnObject.InterChange">
@@ -5894,7 +5969,7 @@
             <param name="bytes">检测字节</param>
             <returns></returns>
         </member>
-        <member name="F:CYQ.Data.Tool.IOWatch.watchPathList">
+        <member name="F:CYQ.Data.Tool.IOWatch.watchs">
             <summary>
             监控中的列表。
             </summary>
@@ -7581,9 +7656,16 @@
             兼容MVC（Taurus、Aries）
             </summary>
         </member>
+        <member name="M:System.Web.HttpApplication.GetInstance(System.String)">
+            <summary>
+            根据指定 Key 获得唯一实例
+            </summary>
+            <param name="key">在不同的NetCore中间件被使用时，用Key区分</param>
+            <returns></returns>
+        </member>
         <member name="P:System.Web.HttpApplication.Instance">
             <summary>
-            单例处理（不需要延时）
+            单例处理，（对于多个中间件，请使用GetInstance方法）
             </summary>
         </member>
         <member name="F:System.Web.HttpContext.contextAccessor">
