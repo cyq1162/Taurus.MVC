@@ -6335,7 +6335,6 @@
             <summary>
             转Json
             <param name="xml">xml字符串</param>
-            <param name="isConvertNameToLower">字段是否转小写</param>
             <param name="isWithAttr">是否将属性值也输出</param>
             </summary>
         </member>
@@ -7156,7 +7155,7 @@
             构造函数
             </summary>
             <param name="isForHtml">true时，将自动载入html的名称空间(http://www.w3.org/1999/xhtml)</param>
-            <param name="isNoClone">true时文档应为只读，所获取是同一份文档引用；false时文档可写，每次获取会克隆一份文档返回。</param>
+            <param name="isReadOnly">true时文档应为只读，所获取是同一份文档引用；false时文档可写，每次获取会克隆一份文档返回。</param>
         </member>
         <member name="M:CYQ.Data.Xml.XHtmlAction.#ctor(System.String)">
             <summary>
@@ -7292,6 +7291,11 @@
             <param name="text">用于循环的内容【通常传递node.InnerXml】</param>
             <param name="eventOnForeach">自定义事件</param>
         </member>
+        <member name="M:CYQ.Data.Xml.XHtmlAction.GetFromRow(CYQ.Data.Table.MDataRow)">
+            <summary>
+            能减少反射就减少反射
+            </summary>
+        </member>
         <member name="F:CYQ.Data.Xml.XHtmlAction.KeyValue">
             <summary>
             用于替换占位符的数据。
@@ -7396,9 +7400,9 @@
             xml缓存的key
             </summary>
         </member>
-        <member name="P:CYQ.Data.Xml.XHtmlBase.IsNoClone">
+        <member name="P:CYQ.Data.Xml.XHtmlBase.IsReadOnly">
             <summary>
-            存取档不克隆（此时XHtml应是只读模式)
+            XHtml 加载的模板是否只读模式
             </summary>
         </member>
         <member name="P:CYQ.Data.Xml.XHtmlBase.IsLoadFromCache">
@@ -7524,6 +7528,11 @@
         <member name="M:CYQ.Data.Xml.XHtmlUrlResolver.ResolveUri(System.Uri,System.String)">
             assemblyShortName;component/resourceLocation， 例如"/SilverlightLibraryAssembly;component/image.png"。 请注意，需要使用前导斜杠和 component 关键字（后跟一个斜杠）。
         </member>
+        <member name="M:CYQ.Data.Xml.XHtmlUrlResolver.InitDTD">
+            <summary>
+            初始化DTD文件
+            </summary>
+        </member>
         <member name="T:CYQ.Data.Xml.SetType">
             <summary>
             设置操作的节点属性类型
@@ -7642,6 +7651,11 @@
         <member name="T:System.Collections.Generic.IDictionaryExtent">
             <summary>
             For HttpContext.Items
+            </summary>
+        </member>
+        <member name="F:System.Configuration.ConfigurationManager.settings">
+            <summary>
+            appsetting.json
             </summary>
         </member>
         <member name="M:System.Configuration.ConfigurationManager.GetSection(System.String)">
