@@ -31,7 +31,7 @@ namespace Taurus.Plugin.Admin
                 dt.NewRow(true);
                 Sets(dt, "DB.SchemaMapPath", AppConfig.DB.SchemaMapPath, "Database metadata cache path.");
                 Sets(dt, "DB.CommandTimeout", AppConfig.DB.CommandTimeout + " (s)", "Timeout for database command.");
-                Sets(dt, "DB.PrintSql", AppConfig.DB.PrintSql + " (ms)", "Write sql to log file when sql exe time > value(value must>=0).");
+                Sets(dt, "DB.PrintSql", AppConfig.DB.PrintSql + " (ms)", "Write sql to log file when sql exe time > value (value must>=0).");
                 dt.NewRow(true);
                 Sets(dt, "Aop", AppConfig.Aop, "Aop config :【Aop-Class-FullName,DllName】");
                 Sets(dt, "EncryptKey", AppConfig.EncryptKey, "Encrypt key for EncryptHelper tool.");
@@ -66,6 +66,7 @@ namespace Taurus.Plugin.Admin
                 if (!string.IsNullOrEmpty(AppConfig.Redis.Servers))
                 {
                     dt.NewRow(true);
+                    Sets(dt, "Redis.Timeout", AppConfig.Redis.Timeout+" (ms)", "Socket connection establishment timeout time (milliseconds).");
                     Sets(dt, "Redis.MaxSocket", AppConfig.Redis.MaxSocket, "Maximum socket pool size.");
                     Sets(dt, "Redis.MaxWait", AppConfig.Redis.MaxWait+" (ms)", "Timeout (in milliseconds) waiting for a request from the socket pool.");
                     Sets(dt, "Redis.UseDBCount", AppConfig.Redis.UseDBCount, "Redis use db count.");
@@ -81,7 +82,7 @@ namespace Taurus.Plugin.Admin
                     if (!string.IsNullOrEmpty(AppConfig.Redis.ServersBak))
                     {
                         items = AppConfig.Redis.ServersBak.Split(',');
-                        Sets(dt, "----------Redis.ServersBak - Count", items.Length, "Num of server node for redis bak(Show Only).");
+                        Sets(dt, "----------Redis.ServersBak - Count", items.Length, "Num of server node for redis bak (Show Only).");
                         for (int i = 0; i < items.Length; i++)
                         {
                             Sets(dt, "----------Redis.ServersBak - " + (i + 1), items[i], "Server node for redis (Show Only).");
@@ -93,6 +94,7 @@ namespace Taurus.Plugin.Admin
             {
                 if (!string.IsNullOrEmpty(AppConfig.MemCache.Servers))
                 {
+                    Sets(dt, "MemCache.Timeout", AppConfig.MemCache.Timeout + " (ms)", "Socket connection establishment timeout time (milliseconds).");
                     Sets(dt, "MemCache.MaxSocket", AppConfig.MemCache.MaxSocket, "Maximum socket pool size.");
                     Sets(dt, "MemCache.MaxWait", AppConfig.MemCache.MaxWait + " (ms)", "Timeout (in milliseconds) waiting for a request from the socket pool.");
                     string[] items = AppConfig.MemCache.Servers.Split(',');
@@ -106,7 +108,7 @@ namespace Taurus.Plugin.Admin
                     if (!string.IsNullOrEmpty(AppConfig.MemCache.ServersBak))
                     {
                         items = AppConfig.MemCache.ServersBak.Split(',');
-                        Sets(dt, "----------MemCache.ServersBak - Count", items.Length, "Num of server node for memcache bak(Show Only).");
+                        Sets(dt, "----------MemCache.ServersBak - Count", items.Length, "Num of server node for memcache bak (Show Only).");
                         for (int i = 0; i < items.Length; i++)
                         {
                             Sets(dt, "----------MemCache.ServersBak - " + (i + 1), items[i], "Server node for memcache (Show Only).");
@@ -123,7 +125,7 @@ namespace Taurus.Plugin.Admin
             {
                 Sets(dt, "DB.CommandTimeout", AppConfig.DB.CommandTimeout + " (s)", "Timeout for database command.");
                 Sets(dt, "DB.SchemaMapPath", AppConfig.DB.SchemaMapPath, "Database metadata cache path.");
-                Sets(dt, "DB.PrintSql", AppConfig.DB.PrintSql + " (ms)", "Write sql to  to 【Debug_PrintSql*.txt】 when sql exe time > value(value must>=0).");
+                Sets(dt, "DB.PrintSql", AppConfig.DB.PrintSql + " (ms)", "Write sql to  to 【Debug_PrintSql*.txt】 when sql exe time > value (value must>=0).");
                 dt.NewRow(true);
                 Sets(dt, "DB.HiddenFields", AppConfig.DB.HiddenFields, "Hide fields that are not returned when querying.");
                 Sets(dt, "DB.DeleteField", AppConfig.DB.DeleteField, "Soft-deletion field name (if a table has this specified field name, MAction's delete operation will be changed to an update operation).");
