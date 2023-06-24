@@ -78,16 +78,6 @@ namespace Taurus.Plugin.Admin
                     {
                         Sets(dt, "----------Redis.Servers - " + (i + 1), items[i], "Server node for redis (Show Only).");
                     }
-
-                    if (!string.IsNullOrEmpty(AppConfig.Redis.ServersBak))
-                    {
-                        items = AppConfig.Redis.ServersBak.Split(',');
-                        Sets(dt, "----------Redis.ServersBak - Count", items.Length, "Num of server node for redis bak (Show Only).");
-                        for (int i = 0; i < items.Length; i++)
-                        {
-                            Sets(dt, "----------Redis.ServersBak - " + (i + 1), items[i], "Server node for redis (Show Only).");
-                        }
-                    }
                 }
             }
             else if (type == "cyq.data-memcache")
@@ -106,15 +96,6 @@ namespace Taurus.Plugin.Admin
                         Sets(dt, "----------MemCache.Servers - " + (i + 1), items[i], "Server node for memcache (Show Only).");
                     }
 
-                    if (!string.IsNullOrEmpty(AppConfig.MemCache.ServersBak))
-                    {
-                        items = AppConfig.MemCache.ServersBak.Split(',');
-                        Sets(dt, "----------MemCache.ServersBak - Count", items.Length, "Num of server node for memcache bak (Show Only).");
-                        for (int i = 0; i < items.Length; i++)
-                        {
-                            Sets(dt, "----------MemCache.ServersBak - " + (i + 1), items[i], "Server node for memcache (Show Only).");
-                        }
-                    }
                 }
             }
 
