@@ -291,13 +291,6 @@
             配置项：Redis.UseDBIndex ：0
             </summary>
         </member>
-        <member name="P:CYQ.Data.AppConfig.Redis.ServersBak">
-            <summary>
-            Redis  备份服务器（当主服务器挂了后，请求会转向备用机），多个用逗号（,）分隔
-            格式：ip:port - password
-            配置项：Redis.ServersBak ：192.168.1.9:6379 - 888888
-            </summary>
-        </member>
         <member name="P:CYQ.Data.AppConfig.Redis.Timeout">
             <summary>
             Redis Socket 链接建立超时时间（毫秒ms）
@@ -326,13 +319,6 @@
             MemCache分布式缓存的服务器配置，多个用逗号（,）分隔
             格式：ip:port
             配置项：MemCache.Servers ：192.168.1.9:12121
-            </summary>
-        </member>
-        <member name="P:CYQ.Data.AppConfig.MemCache.ServersBak">
-            <summary>
-            MemCache 备份服务器（当主服务器挂了后，请求会转向备用机）
-            格式：ip:port
-            配置项：MemCache.ServersBak ：192.168.1.9:12121
             </summary>
         </member>
         <member name="P:CYQ.Data.AppConfig.MemCache.Timeout">
@@ -1447,6 +1433,12 @@
             兼容NetCore下迷一般的Bug的写法。
             </summary>
         </member>
+        <member name="M:CYQ.Data.Cache.CacheManage.RefleshConfig(System.String)">
+            <summary>
+            Redis、MemCache 需要手工刷新配置值时使用。
+            </summary>
+            <param name="newConfigValue">新的配置值</param>
+        </member>
         <member name="P:CYQ.Data.Cache.CacheManage.CacheType">
             <summary>
             缓存的实例类型
@@ -1517,6 +1509,11 @@
             释放（分布式锁）
             </summary>
             <returns></returns>
+        </member>
+        <member name="M:CYQ.Data.Cache.CacheManage.SetAll(System.String,System.String,System.Double)">
+            <summary>
+            往所有节点写入数据【用于分布式锁的超时机制】
+            </summary>
         </member>
         <member name="M:CYQ.Data.Cache.CacheManage.GetKey(CYQ.Data.Cache.CacheKeyType,System.String)">
             <summary>
@@ -1644,6 +1641,14 @@
             <summary>
             MemCache分布式缓存类
             </summary>
+            <summary>
+            分布式锁
+            </summary>
+        </member>
+        <member name="P:CYQ.Data.Cache.MemCache.Client">
+            <summary>
+            返回客户端
+            </summary>
         </member>
         <member name="T:CYQ.Data.Cache.MemcachedClient">
             <summary>
@@ -1715,7 +1720,7 @@
             containing the results of the command.
             </summary>
         </member>
-        <member name="F:CYQ.Data.Cache.ClientBase.hostServer">
+        <member name="P:CYQ.Data.Cache.ClientBase.HostServer">
             <summary>
             主机服务
             </summary>
@@ -1765,6 +1770,12 @@
             变化后要移除的主机。
             </summary>
         </member>
+        <member name="M:CYQ.Data.Cache.HostConfigWatch.CompareHostListByConfig(System.String)">
+            <summary>
+            和旧配置相比较，找出变化后的主机信息
+            </summary>
+            <param name="configValue">新的配置值</param>
+        </member>
         <member name="T:CYQ.Data.Cache.HostNode">
             <summary>
             The SocketPool encapsulates the list of PooledSockets against one specific host, and contains methods for 
@@ -1789,11 +1800,6 @@
         <member name="F:CYQ.Data.Cache.HostNode.IsEndPointDead">
             <summary>
             主机节点是不是挂了。
-            </summary>
-        </member>
-        <member name="F:CYQ.Data.Cache.HostNode.HostNodeBak">
-            <summary>
-            备份的Socket池，如果某主机挂了，在配置了备份的情况下，会由备份Socket池提供服务。
             </summary>
         </member>
         <member name="F:CYQ.Data.Cache.HostNode.socketDeadTime">
@@ -1846,6 +1852,29 @@
             put back in the pool.
             </summary>
         </member>
+        <member name="M:CYQ.Data.Cache.HostNode.TryConnection">
+            <summary>
+            线程池里重试链接。
+            </summary>
+            <returns></returns>
+        </member>
+        <member name="M:CYQ.Data.Cache.HostNode.AddToDeadPool">
+            <summary>
+            添加故障节点
+            </summary>
+            <param name="hostNode"></param>
+        </member>
+        <member name="F:CYQ.Data.Cache.HostNode.deadNode">
+            <summary>
+            已故障节点
+            </summary>
+        </member>
+        <member name="M:CYQ.Data.Cache.HostNode.DoHostNodeTask(System.Object)">
+            <summary>
+            线程检测已故障节点。
+            </summary>
+            <param name="threadID"></param>
+        </member>
         <member name="T:CYQ.Data.Cache.HostServer">
             <summary>
             The ServerPool encapsulates a collection of memcached servers and the associated SocketPool objects.
@@ -1862,19 +1891,24 @@
             缓存类型
             </summary>
         </member>
-        <member name="F:CYQ.Data.Cache.HostServer.hostServerBak">
-            <summary>
-            备份的主机池，如果某主机挂了，在配置了备份的情况下，会由备份提供服务。
-            </summary>
-        </member>
         <member name="F:CYQ.Data.Cache.HostServer.watch">
             <summary>
             Internal constructor. This method takes the array of hosts and sets up an internal list of socketpools.
             </summary>
         </member>
-        <member name="M:CYQ.Data.Cache.HostServer.watch_OnConfigChangedEvent">
+        <member name="M:CYQ.Data.Cache.HostServer.watch_OnConfigChangedEvent(System.String)">
             <summary>
             缓存配置文件修改时
+            </summary>
+        </member>
+        <member name="M:CYQ.Data.Cache.HostServer.RefleshHostServer(System.String)">
+            <summary>
+            刷新主机配置
+            </summary>
+        </member>
+        <member name="F:CYQ.Data.Cache.HostServer.hostList">
+            <summary>
+            主机【仅有N个】
             </summary>
         </member>
         <member name="P:CYQ.Data.Cache.HostServer.HostList">
@@ -1889,7 +1923,7 @@
             This method takes care of disposing the socket properly once the delegate has executed.
             </summary>
         </member>
-        <member name="M:CYQ.Data.Cache.HostServer.ExecuteAll(CYQ.Data.Cache.UseSocket)">
+        <member name="M:CYQ.Data.Cache.HostServer.ExecuteAll(CYQ.Data.Cache.UseSocketVoid)">
             <summary>
             This method executes the given delegate on all servers.
             </summary>
@@ -2010,6 +2044,14 @@
         <member name="T:CYQ.Data.Cache.RedisCache">
             <summary>
             Redis分布式缓存类
+            </summary>
+            <summary>
+            分布式锁
+            </summary>
+        </member>
+        <member name="P:CYQ.Data.Cache.RedisCache.Client">
+            <summary>
+            读取客户端
             </summary>
         </member>
         <member name="T:CYQ.Data.Cache.RedisClient">
