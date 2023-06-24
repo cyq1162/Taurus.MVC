@@ -63,14 +63,14 @@ namespace Taurus.Plugin.Admin
 
             else if (type == "cyq.data-redis")
             {
+                Sets(dt, "Redis.Timeout", AppConfig.Redis.Timeout + " (ms)", "Socket connection establishment timeout time (milliseconds).");
+                Sets(dt, "Redis.MaxSocket", AppConfig.Redis.MaxSocket, "Maximum socket pool size.");
+                Sets(dt, "Redis.MaxWait", AppConfig.Redis.MaxWait + " (ms)", "Timeout (in milliseconds) waiting for a request from the socket pool.");
+                Sets(dt, "Redis.UseDBCount", AppConfig.Redis.UseDBCount, "Redis use db count.");
+                Sets(dt, "Redis.UseDBIndex", AppConfig.Redis.UseDBIndex, "Redis use db index.");
+                Sets(dt, "Redis.Servers", AppConfig.Redis.Servers, "Redis servers.");
                 if (!string.IsNullOrEmpty(AppConfig.Redis.Servers))
                 {
-                    dt.NewRow(true);
-                    Sets(dt, "Redis.Timeout", AppConfig.Redis.Timeout+" (ms)", "Socket connection establishment timeout time (milliseconds).");
-                    Sets(dt, "Redis.MaxSocket", AppConfig.Redis.MaxSocket, "Maximum socket pool size.");
-                    Sets(dt, "Redis.MaxWait", AppConfig.Redis.MaxWait+" (ms)", "Timeout (in milliseconds) waiting for a request from the socket pool.");
-                    Sets(dt, "Redis.UseDBCount", AppConfig.Redis.UseDBCount, "Redis use db count.");
-                    Sets(dt, "Redis.UseDBIndex", AppConfig.Redis.UseDBIndex, "Redis use db index.");
                     string[] items = AppConfig.Redis.Servers.Split(',');
                     Sets(dt, "----------Redis.Servers - Count", items.Length, "Num of server node for redis (Show Only).");
 
@@ -92,11 +92,12 @@ namespace Taurus.Plugin.Admin
             }
             else if (type == "cyq.data-memcache")
             {
+                Sets(dt, "MemCache.Timeout", AppConfig.MemCache.Timeout + " (ms)", "Socket connection establishment timeout time (milliseconds).");
+                Sets(dt, "MemCache.MaxSocket", AppConfig.MemCache.MaxSocket, "Maximum socket pool size.");
+                Sets(dt, "MemCache.MaxWait", AppConfig.MemCache.MaxWait + " (ms)", "Timeout (in milliseconds) waiting for a request from the socket pool.");
+                Sets(dt, "MemCache.Servers", AppConfig.MemCache.Servers, "MemCache servers.");
                 if (!string.IsNullOrEmpty(AppConfig.MemCache.Servers))
                 {
-                    Sets(dt, "MemCache.Timeout", AppConfig.MemCache.Timeout + " (ms)", "Socket connection establishment timeout time (milliseconds).");
-                    Sets(dt, "MemCache.MaxSocket", AppConfig.MemCache.MaxSocket, "Maximum socket pool size.");
-                    Sets(dt, "MemCache.MaxWait", AppConfig.MemCache.MaxWait + " (ms)", "Timeout (in milliseconds) waiting for a request from the socket pool.");
                     string[] items = AppConfig.MemCache.Servers.Split(',');
                     Sets(dt, "----------MemCache.Servers - Count", items.Length, "Num of server node for memcache (Show Only).");
 

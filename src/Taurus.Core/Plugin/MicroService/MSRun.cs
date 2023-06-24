@@ -14,8 +14,14 @@ namespace Taurus.Plugin.MicroService
     /// </summary>
     internal partial class MsRun
     {
+        /// <summary>
+        /// 应用程序启用时间
+        /// </summary>
+        public static DateTime StartTime = DateTime.MinValue;
+
         static MsRun()
         {
+            StartTime = DateTime.Now;
             if (MsConfig.IsServer || MsConfig.IsClient)
             {
                 string folder = AppConfig.WebRootPath + "App_Data/microservice";
@@ -78,7 +84,7 @@ namespace Taurus.Plugin.MicroService
                             ThreadBreak.AddGlobalThread(new ParameterizedThreadStart(RunLoopRegCenterOfSlave));
                         }
                         MsLog.WriteDebugLine("Current RegisterCenter Url：" + MsConfig.Server.RcUrl);
-                        
+
 
                     }
                 }

@@ -6,6 +6,7 @@ using System.Threading;
 using System.Diagnostics;
 using System.Reflection;
 using System.Net;
+using Taurus.Plugin.MicroService;
 
 namespace Taurus.Plugin.Admin
 {
@@ -52,6 +53,7 @@ namespace Taurus.Plugin.Admin
 
             if (type == "os")
             {
+                dtTaurus.NewRow(true).Sets(0, "App-StartTime", MsRun.StartTime.ToString("yyyy-MM-dd HH:mm:ss"), "Applicatin start time.");
                 dtTaurus.NewRow(true).Sets(0, "Client-IP-Public", Request.UserHostAddress, "Client public ip.");
                 IPAddress[] ips = Dns.GetHostAddresses(Request.Url.Host);
                 if(ips != null && ips.Length > 0)

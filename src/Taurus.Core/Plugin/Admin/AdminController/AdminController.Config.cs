@@ -7,7 +7,7 @@ using Taurus.Plugin.MicroService;
 using Taurus.Plugin.Limit;
 using Taurus.Plugin.Doc;
 using System.Configuration;
-
+using CYQ.Data.Cache;
 
 namespace Taurus.Plugin.Admin
 {
@@ -111,6 +111,13 @@ namespace Taurus.Plugin.Admin
                 case "Mvc.Views":
                     ViewEngine.ViewsPath = null;
                     break;
+                case "Redis.Servers":
+                    CacheManage.RedisInstance.RefleshConfig(value);
+                    break;
+                case "MemCache.Servers":
+                    CacheManage.MemCacheInstance.RefleshConfig(value);
+                    break;
+
             }
             if (!string.IsNullOrEmpty(oldValue))
             {

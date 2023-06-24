@@ -61,7 +61,7 @@ namespace Taurus.Plugin.Admin
                         }
                         else
                         {
-                            Response.Redirect("login");
+                            Response.Redirect("login?url=" + Request.RawUrl);
                         }
                         return false;
                     }
