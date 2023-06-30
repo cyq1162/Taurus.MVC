@@ -103,7 +103,10 @@ namespace Taurus.Plugin.Admin
             if (type.StartsWith("redis-status"))
             {
                 bindTable = CacheManage.RedisInstance.CacheInfo;
-
+                if (type.EndsWith("summary"))
+                {
+                    bindTable = FilterRedis(bindTable);
+                }
                 View.SetForeach(bindTable, "redisView", GetRowText(bindTable));
             }
             else if (type.StartsWith("redis-socket"))
@@ -136,7 +139,10 @@ namespace Taurus.Plugin.Admin
             if (type.StartsWith("memcache-status"))
             {
                 bindTable = CacheManage.MemCacheInstance.CacheInfo;
-
+                if (type.EndsWith("summary"))
+                {
+                    bindTable = FilterMemCache(bindTable);
+                }
                 View.SetForeach(bindTable, "memcacheView", GetRowText(bindTable));
             }
             else if (type.StartsWith("memcache-socket"))
@@ -202,6 +208,83 @@ namespace Taurus.Plugin.Admin
             cacheTable.TableName = "WorkTable";
 
             return cacheTable;
+        }
+
+        private MDataTable FilterRedis(MDataTable redisTable)
+        {
+            redisTable = redisTable.Clone();
+            string[] strings = new string[] { "redis_version", "os", "process_id", "executable", "config_file", "tcp_port", "connected_clients", "blocked_clients", "maxclients", "used_memory_human", "total_system_memory_human", "maxmemory_human", "total_connections_received", "total_commands_processed", "keyspace_hits", "keyspace_misses" };
+            List<string> list = new List<string>();
+            list.AddRange(strings);
+            MDataRow hitRow = null, missRow = null;
+            for (int i = 0; i < redisTable.Rows.Count; i++)
+            {
+                string key = redisTable.Rows[i][0].ToString();
+                if (!list.Contains(key))
+                {
+                    redisTable.Rows.RemoveAt(i);
+                    i--;
+                }
+                if (key == "keyspace_hits")
+                {
+                    hitRow = redisTable.Rows[i];
+                }
+                else if (key == "keyspace_misses")
+                {
+                    missRow = redisTable.Rows[i];
+                }
+            }
+            if (hitRow != null && missRow != null)
+            {
+                var row = redisTable.NewRow(true).Set(0, "keyspace_hits_percent");
+                for (int i = 1; i < redisTable.Columns.Count; i++)
+                {
+                    double hits = hitRow.Get<double>(i);
+                    double misses = missRow.Get<double>(i);
+                    double percent = hits / Math.Max(1, (hits + misses)) * 100;
+                    row.Set(i, percent.ToString("f2") + "%");
+                }
+            }
+
+            return redisTable;
+        }
+        private MDataTable FilterMemCache(MDataTable memCacheTable)
+        {
+            memCacheTable = memCacheTable.Clone();
+            string[] strings = new string[] { "pid", "version", "max_connections", "curr_connections", "total_connections", "cmd_get", "cmd_set", "get_hits", "get_misses", "threads", "curr_items", "total_items" };
+            List<string> list = new List<string>();
+            list.AddRange(strings);
+            MDataRow hitRow = null, missRow = null;
+            for (int i = 0; i < memCacheTable.Rows.Count; i++)
+            {
+                string key = memCacheTable.Rows[i][0].ToString();
+                if (!list.Contains(key))
+                {
+                    memCacheTable.Rows.RemoveAt(i);
+                    i--;
+                }
+                if (key == "get_hits")
+                {
+                    hitRow = memCacheTable.Rows[i];
+                }
+                else if (key == "get_misses")
+                {
+                    missRow = memCacheTable.Rows[i];
+                }
+            }
+            if (hitRow != null && missRow != null)
+            {
+                var row = memCacheTable.NewRow(true).Set(0, "get_hits_percent");
+                for (int i = 1; i < memCacheTable.Columns.Count; i++)
+                {
+                    double hits = hitRow.Get<double>(i);
+                    double misses = missRow.Get<double>(i);
+                    double percent = hits / Math.Max(1, (hits + misses)) * 100;
+                    row.Set(i, percent.ToString("f2") + "%");
+                }
+            }
+
+            return memCacheTable;
         }
     }
 }
