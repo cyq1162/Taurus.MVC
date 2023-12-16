@@ -69,7 +69,7 @@ namespace Taurus.Plugin.Admin
         {
             if (!string.IsNullOrEmpty(GetLoginValue("uid")) && !string.IsNullOrEmpty(GetLoginValue("isadmin")))
             {
-                string url = Query<string>("url", "index");
+                string url = Query<string>("returnurl", "index");
                 Response.Redirect(url);
             }
             if (!IsHttpPost)
@@ -101,11 +101,11 @@ namespace Taurus.Plugin.Admin
             if (isOK)
             {
                 SetLoginValue("uid", uid);
-                string url = Query<string>("url", "index");
+                string url = Query<string>("returnurl", "index");
                 Response.Redirect(url);
                 return;
             }
-            View.Set("msg", "user or password is error.");
+            View.Set("msg", "username or password is error.");
         }
     }
 }
