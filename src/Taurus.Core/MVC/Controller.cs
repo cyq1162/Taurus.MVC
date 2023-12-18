@@ -22,9 +22,9 @@ namespace Taurus.Mvc
     {
         private StringBuilder apiResult = new StringBuilder();
         /// <summary>
-        /// 获取待发送的缓冲区的数据
+        /// 获取【或重写】待发送的缓冲区的数据
         /// </summary>
-        public string APIResult
+        public virtual string APIResult
         {
             get
             {
@@ -204,7 +204,10 @@ namespace Taurus.Mvc
                 }
                 if (!isGoOn)
                 {
-                    Write("Check AckAttribute is illegal.", false);
+                    if (apiResult.Length == 0)
+                    {
+                        Write("Check AckAttribute is illegal.", false);
+                    }
                     return false;
                 }
                 #endregion
@@ -227,7 +230,10 @@ namespace Taurus.Mvc
                 }
                 if (!isGoOn)
                 {
-                    Write("Check TokenAttribute is illegal.", false);
+                    if (apiResult.Length == 0)
+                    {
+                        Write("Check TokenAttribute is illegal.", false);
+                    }
                     return false;
                 }
                 #endregion
@@ -254,7 +260,10 @@ namespace Taurus.Mvc
                 }
                 if (!isGoOn)
                 {
-                    Write("Check MicroServiceAttribute is illegal.", false);
+                    if (apiResult.Length == 0)
+                    {
+                        Write("Check MicroServiceAttribute is illegal.", false);
+                    }
                     return false;
                 }
                 #endregion
@@ -408,7 +417,7 @@ namespace Taurus.Mvc
             }
             else if (apiResult.Length > 0)
             {
-                string outResult = apiResult.ToString();
+                string outResult = APIResult;
                 if (string.IsNullOrEmpty(context.Response.ContentType))
                 {
                     context.Response.ContentType = "text/html;charset=" + context.Response.Charset;

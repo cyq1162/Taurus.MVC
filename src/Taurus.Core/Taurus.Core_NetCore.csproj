@@ -22,8 +22,8 @@ V2.3.4(2019-07-31)
 4、增加[Ack]属性（机制和Token一样）
 5、Doc功能增强：增加自动化API执行功能。</PackageReleaseNotes>
     <PackageTags>Taurus.MVC Core ASP.NET aspnetcore webapi</PackageTags>
-    <AssemblyVersion>3.1.7.5</AssemblyVersion>
-    <FileVersion>3.1.7.5</FileVersion>
+    <AssemblyVersion>3.1.7.6</AssemblyVersion>
+    <FileVersion>3.1.7.6</FileVersion>
   </PropertyGroup>
 
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|AnyCPU'">
