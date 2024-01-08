@@ -85,12 +85,12 @@ namespace Taurus.Plugin.DistributedTransaction
                         table.EditTime = DateTime.Now;
                         if (table.Update(msg.MsgID))
                         {
-                            DTCDebug.WriteLine("Server.OnDoTask.IsDeleteAck：更新表：" + msg.MsgID);
+                            //DTCLog.WriteDebugLine("Server.OnDoTask.IsDeleteAck：更新表：" + msg.MsgID);
                         }
                     }
                     if (Worker.IO.Delete(msg.TraceID, msg.MsgID, msg.ExeType))
                     {
-                        DTCDebug.WriteLine("Server.OnDoTask.IsDeleteAck：更新表：" + msg.MsgID);
+                        //DTCLog.WriteDebugLine("Server.OnDoTask.IsDeleteAck：更新表：" + msg.MsgID);
                     }
                     return;
                 }
@@ -104,7 +104,7 @@ namespace Taurus.Plugin.DistributedTransaction
                     {
                         msg.IsFirstAck = false;
                         Worker.MQPublisher.Add(msg);
-                        DTCDebug.WriteLine("Server.OnDoTask 方法已执行过，发送MQ响应：IsFirstAck = false。");
+                        //DTCLog.WriteDebugLine("Server.OnDoTask 方法已执行过，发送MQ响应：IsFirstAck = false。");
                         return;
                     }
                 }
@@ -119,8 +119,8 @@ namespace Taurus.Plugin.DistributedTransaction
                     object obj = method.IsStatic ? null : Activator.CreateInstance(method.DeclaringType);
                     object result = method.Invoke(obj, new object[] { para });
                     if (result is bool && !(bool)result) { return; }
-                    returnContent = para.ReturnContent;
-                    DTCDebug.WriteLine("Server.OnDoTask 执行方法：。" + method.Name);
+                    returnContent = para.CallBackContent;
+                    //DTCLog.WriteDebugLine("Server.OnDoTask 执行方法：。" + method.Name);
                 }
                 catch (Exception err)
                 {
@@ -131,7 +131,7 @@ namespace Taurus.Plugin.DistributedTransaction
                 msg.IsFirstAck = true;
                 msg.Content = returnContent;
                 Worker.MQPublisher.Add(msg);
-                DTCDebug.WriteLine("Server.OnDoTask 首次回应：IsFirstAck = true ，并执行方法：" + method.Name);
+                //DTCLog.WriteDebugLine("Server.OnDoTask 首次回应：IsFirstAck = true ，并执行方法：" + method.Name);
 
                 using (Table table = new Table())
                 {
@@ -147,11 +147,11 @@ namespace Taurus.Plugin.DistributedTransaction
                     table.ConfirmState = 1;//如果发送失败，则不设置确认，延时被删除。
                     if (table.Insert(InsertOp.ID))
                     {
-                        DTCDebug.WriteLine("Server.OnDoTask 首次回应：插入数据表。");
+                        //DTCLog.WriteDebugLine("Server.OnDoTask 首次回应：插入数据表。");
                     }
                     else if (Worker.IO.Write(table))//缓存1份。
                     {
-                        DTCDebug.WriteLine("Server.OnDoTask 首次回应：写入缓存。");
+                        //DTCLog.WriteDebugLine("Server.OnDoTask 首次回应：写入缓存。");
                     }
                 }
 
@@ -170,12 +170,12 @@ namespace Taurus.Plugin.DistributedTransaction
                         table.EditTime = DateTime.Now;
                         if (table.Update(msg.MsgID))
                         {
-                            DTCDebug.WriteLine("Server.OnCommitOrRollBack 收到MQ Ack：IsFirstAck=true ，更新表。");
+                            //DTCLog.WriteDebugLine("Server.OnCommitOrRollBack 收到MQ Ack：IsFirstAck=true ，更新表。");
                         }
                     }
                     if (Worker.IO.Delete(msg.TraceID, msg.MsgID, msg.ExeType))
                     {
-                        DTCDebug.WriteLine("Server.OnCommitOrRollBack 收到MQ Ack：IsFirstAck=true ，删除缓存。");
+                        //DTCLog.WriteDebugLine("Server.OnCommitOrRollBack 收到MQ Ack：IsFirstAck=true ，删除缓存。");
                     }
                     return;
                 }
@@ -191,7 +191,7 @@ namespace Taurus.Plugin.DistributedTransaction
                     {
                         msg.IsFirstAck = false;
                         Worker.MQPublisher.Add(msg);
-                        DTCDebug.WriteLine("Server.OnCommitOrRollBack 方法已执行过，直接回应MQ。");
+                        //DTCLog.WriteDebugLine("Server.OnCommitOrRollBack 方法已执行过，直接回应MQ。");
                         continue;
                     }
                     string returnContent = null;
@@ -203,8 +203,8 @@ namespace Taurus.Plugin.DistributedTransaction
                         object obj = method.IsStatic ? null : Activator.CreateInstance(method.DeclaringType);
                         object result = method.Invoke(obj, new object[] { para });
                         if (result is bool && !(bool)result) { continue; }
-                        returnContent = para.ReturnContent;
-                        DTCDebug.WriteLine("Server.OnCommitOrRollBack 执行方法：。" + method.Name);
+                        returnContent = para.CallBackContent;
+                        //DTCLog.WriteDebugLine("Server.OnCommitOrRollBack 执行方法：。" + method.Name);
                     }
                     catch (Exception err)
                     {
@@ -223,11 +223,11 @@ namespace Taurus.Plugin.DistributedTransaction
                     if (item.Update(item.MsgID))
                     {
                         item.Dispose();
-                        DTCDebug.WriteLine("Server.OnCommitOrRollBack 更新数据表。");
+                        //DTCLog.WriteDebugLine("Server.OnCommitOrRollBack 更新数据表。");
                     }
                     else if (Worker.IO.Write(item))//缓存1份。
                     {
-                        DTCDebug.WriteLine("Server.OnCommitOrRollBack 更新数据缓存。");
+                        //DTCLog.WriteDebugLine("Server.OnCommitOrRollBack 更新数据缓存。");
                     }
 
 

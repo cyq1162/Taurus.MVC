@@ -1,14 +1,101 @@
-﻿using RabbitMQ.Client;
+﻿using CYQ.Data;
+using RabbitMQ.Client;
 using RabbitMQ.Client.Events;
 using System;
 using System.Collections.Generic;
 using System.Text;
+using static Taurus.Plugin.DistributedTransaction.DTC.Client.Worker;
+using System.Threading;
+using CYQ.Data.Tool;
 
 namespace Taurus.Plugin.DistributedTransaction
 {
 
     internal class MQRabbit : MQ
     {
+        #region 错误链接断开重连机制处理
+        public class ListenPara
+        {
+            public OnReceivedDelegate onReceivedDelegate { get; set; }
+            public string BindExName { get; set; }
+        }
+        MDictionary<string, ListenPara> listenFailDic = new MDictionary<string, ListenPara>(StringComparer.OrdinalIgnoreCase);
+        private bool _IsConnectOK = false;
+        public bool IsConnectOK
+        {
+            get
+            {
+                if (!_IsConnectOK)
+                {
+                    TryConnect();
+                }
+                else if (_Connection != null && !_Connection.IsOpen)
+                {
+                    _IsConnectOK = false;
+                    TryConnect();
+                }
+                return _IsConnectOK;
+            }
+            set { _IsConnectOK = value; }
+        }
+        private object lockObj = new object();
+        private bool isThreadWorking = false;
+        private void TryConnect()
+        {
+            if (isThreadWorking) { count = 0; return; }
+            lock (lockObj)
+            {
+                if (isThreadWorking) { return; }
+                isThreadWorking = true;
+                count = 0;
+                ThreadPool.QueueUserWorkItem(new WaitCallback(ConnectAgain), null);
+            }
+        }
+        int count = 0;
+        private void ConnectAgain(object p)
+        {
+            if (_IsConnectOK) { return; }
+            while (true)
+            {
+                Thread.Sleep(3000);
+                try
+                {
+                    _Connection = factory.CreateConnection();
+                    _IsConnectOK = _Connection.IsOpen;
+                    if (_IsConnectOK)
+                    {
+                        //重新开启监听
+                        if (listenFailDic.Count > 0)
+                        {
+                            List<string> keys = listenFailDic.GetKeys();
+                            foreach (string key in keys)
+                            {
+                                ListenPara para = listenFailDic[key];
+                                if (Listen(key, para.onReceivedDelegate, para.BindExName))
+                                {
+                                    listenFailDic.Remove(key);
+                                }
+                            }
+                        }
+                        isThreadWorking = false;
+                        break;
+                    }
+                }
+                catch
+                {
+
+                }
+                count++;
+                if (count > 10)
+                {
+                    isThreadWorking = false;
+                    break;
+                }
+            }
+
+        }
+        #endregion
+
         public override MQType MQType
         {
             get
@@ -19,17 +106,26 @@ namespace Taurus.Plugin.DistributedTransaction
         ConnectionFactory factory;
         public MQRabbit(string mqConn)
         {
-            string[] items = mqConn.Split(new char[] { ';', ',' });
-            if (items.Length >= 4)
+            try
             {
-                factory = new ConnectionFactory()
+                string[] items = mqConn.Split(new char[] { ';', ',' });
+                if (items.Length >= 4)
                 {
-                    HostName = items[0],
-                    UserName = items[1],
-                    Password = items[2],
-                    VirtualHost = items[3]
-                };
-                factory.AutomaticRecoveryEnabled = true;
+                    factory = new ConnectionFactory()
+                    {
+                        HostName = items[0],
+                        UserName = items[1],
+                        Password = items[2],
+                        VirtualHost = items[3]
+                    };
+                    factory.AutomaticRecoveryEnabled = true;
+                }
+                _Connection = factory.CreateConnection();
+                _IsConnectOK = _Connection.IsOpen;
+            }
+            catch (Exception err)
+            {
+                Log.Write(err, "MQ.Rabbit");
             }
         }
 
@@ -39,27 +135,19 @@ namespace Taurus.Plugin.DistributedTransaction
         {
             get
             {
-                if (_Connection == null)
-                {
-                    _Connection = factory.CreateConnection();
-                }
-                if (!_Connection.IsOpen)
-                {
-                    _Connection.Close();
-                    _Connection = factory.CreateConnection();
-                }
                 return _Connection;
             }
         }
 
         public override bool Publish(MQMsg msg)
         {
+            if (msg == null || (string.IsNullOrEmpty(msg.QueueName) && string.IsNullOrEmpty(msg.ExChange)))
+            {
+                return false;
+            }
+            if (!IsConnectOK) { return false; }
             try
             {
-                if (msg == null || (string.IsNullOrEmpty(msg.QueueName) && string.IsNullOrEmpty(msg.ExChange)))
-                {
-                    return false;
-                }
                 using (var channel = DefaultConnection.CreateModel())
                 {
                     if (!string.IsNullOrEmpty(msg.QueueName))
@@ -74,13 +162,14 @@ namespace Taurus.Plugin.DistributedTransaction
             }
             catch (Exception err)
             {
-                CYQ.Data.Log.Write(err, "RabbitMQ");
+                Log.Write(err, "MQ.Rabbit");
                 return false;
             }
         }
         public override bool PublishBatch(List<MQMsg> msgList)
         {
             if (msgList == null || msgList.Count == 0) { return false; }
+            if (!IsConnectOK) { return false; }
             try
             {
 
@@ -111,24 +200,31 @@ namespace Taurus.Plugin.DistributedTransaction
             }
             catch (Exception err)
             {
-                CYQ.Data.Log.Write(err, "RabbitMQ");
+                Log.Write(err, "MQ.Rabbit");
                 return false;
             }
         }
-
-        List<string> listenQueueList = new List<string>();
+       
+        List<string> listenOKList = new List<string>();
         public override bool Listen(string queueName, OnReceivedDelegate onReceivedDelegate, string bindExName)
         {
             if (string.IsNullOrEmpty(queueName) || onReceivedDelegate == null)
             {
                 return false;
             }
-
+            if (!IsConnectOK)
+            {
+                if (!listenFailDic.ContainsKey(queueName))
+                {
+                    listenFailDic.Add(queueName, new ListenPara() { onReceivedDelegate = onReceivedDelegate, BindExName = bindExName });
+                }
+                return false;
+            }
             try
             {
-                if (!listenQueueList.Contains(queueName))
+                if (!listenOKList.Contains(queueName))
                 {
-                    listenQueueList.Add(queueName);
+                    listenOKList.Add(queueName);
                     var channel = DefaultConnection.CreateModel();
 
                     channel.QueueDeclare(queueName, true, false, false, null);//定义持久化队列
@@ -161,11 +257,13 @@ namespace Taurus.Plugin.DistributedTransaction
             }
             catch (Exception err)
             {
-                listenQueueList.Remove(queueName);
-                CYQ.Data.Log.Write(err, "RabbitMQ");
+                listenOKList.Remove(queueName);
+                listenFailDic.Add(queueName, new ListenPara() { onReceivedDelegate = onReceivedDelegate, BindExName = bindExName });
+                Log.Write(err, "MQ.Rabbit");
                 return false;
             }
-
         }
+
+
     }
 }

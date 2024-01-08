@@ -157,21 +157,21 @@ namespace Taurus.Plugin.DistributedTransaction
                 using (var consumer = new ConsumerBuilder<Ignore, string>(config).Build())
                 {
                     consumer.Subscribe(para.Topic);
-                    
-                        while (true)
+
+                    while (true)
+                    {
+                        try
                         {
-                            try
-                            {
-                                var consumeResult = consumer.Consume();
-                                para.Message = consumeResult.Value;
-                                ThreadPool.QueueUserWorkItem(new WaitCallback(OnReceive), para);
-                            }
-                            catch (Exception err)
-                            {
-                                CYQ.Data.Log.Write(err, "MQ.Kafka");
-                            }
+                            var consumeResult = consumer.Consume();
+                            para.Message = consumeResult.Value;
+                            ThreadPool.QueueUserWorkItem(new WaitCallback(OnReceive), para);
                         }
-                   
+                        catch (Exception err)
+                        {
+                            CYQ.Data.Log.Write(err, "MQ.Kafka");
+                        }
+                    }
+
                 }
 
             }
@@ -187,22 +187,29 @@ namespace Taurus.Plugin.DistributedTransaction
         /// </summary>
         private List<string> GetTopics(string exName)
         {
-            var config = new AdminClientConfig
-            {
-                BootstrapServers = servers // Kafka 服务器地址和端口
-            };
             List<string> topicList = new List<string>();
-            using (var adminClient = new AdminClientBuilder(config).Build())
+            try
             {
-                var metadata = adminClient.GetMetadata(TimeSpan.FromSeconds(10));
-
-                foreach (var topic in metadata.Topics)
+                var config = new AdminClientConfig
                 {
-                    if (topic.Topic.EndsWith(exName))
+                    BootstrapServers = servers // Kafka 服务器地址和端口
+                };
+                using (var adminClient = new AdminClientBuilder(config).Build())
+                {
+                    var metadata = adminClient.GetMetadata(TimeSpan.FromSeconds(10));
+
+                    foreach (var topic in metadata.Topics)
                     {
-                        topicList.Add(topic.Topic);
+                        if (topic.Topic.EndsWith(exName))
+                        {
+                            topicList.Add(topic.Topic);
+                        }
                     }
                 }
+            }
+            catch (Exception err)
+            {
+                CYQ.Data.Log.Write(err, "MQ.Kafka");
             }
             return topicList;
         }

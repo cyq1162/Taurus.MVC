@@ -191,7 +191,7 @@ namespace Taurus.Plugin.DistributedTransaction
                             object obj = method.IsStatic ? null : Activator.CreateInstance(method.DeclaringType);
                             object invokeResult = method.Invoke(obj, new object[] { para });
                             if (invokeResult is bool && !(bool)invokeResult) { return; }
-                            DTCDebug.WriteLine("Client.OnDoTask 首次执行方法：" + method.Name);
+                            //DTCLog.WriteDebugLine("Client.OnDoTask 首次执行方法：" + method.Name);
                         }
                         catch (Exception err)
                         {
@@ -214,12 +214,12 @@ namespace Taurus.Plugin.DistributedTransaction
                     isUpdateOK = table.Update(msg.MsgID);
                     if (isUpdateOK)
                     {
-                        DTCDebug.WriteLine("Client.OnDoTask 首次更新数据表。");
+                        //DTCLog.WriteDebugLine("Client.OnDoTask 首次更新数据表。");
                     }
                     else if (Worker.IO.Delete(msg.TraceID, msg.MsgID, msg.ExeType))
                     {
                         isUpdateOK = true;
-                        DTCDebug.WriteLine("Client.OnDoTask 首次删除缓存：" + msg.MsgID);
+                        //DTCLog.WriteDebugLine("Client.OnDoTask 首次删除缓存：" + msg.MsgID);
                     }
                 }
 
@@ -228,7 +228,7 @@ namespace Taurus.Plugin.DistributedTransaction
                 {
                     msg.SetDeleteAsk();
                     Worker.MQPublisher.Add(msg);
-                    DTCDebug.WriteLine("Client.OnDoTask IsDeleteAck=true，让服务端确认及删除掉缓存。");
+                    //DTCLog.WriteDebugLine("Client.OnDoTask IsDeleteAck=true，让服务端确认及删除掉缓存。");
                 }
             }
 
@@ -252,7 +252,7 @@ namespace Taurus.Plugin.DistributedTransaction
                             object obj = method.IsStatic ? null : Activator.CreateInstance(method.DeclaringType);
                             object invokeResult = method.Invoke(obj, new object[] { para });
                             if (invokeResult is bool && !(bool)invokeResult) { return; }
-                            DTCDebug.WriteLine("Server.OnCommitOrRollBack 执行方法：。" + method.Name);
+                            DTCLog.WriteDebugLine("Server.OnCommitOrRollBack 执行方法：。" + method.Name);
                         }
                         catch (Exception err)
                         {
@@ -285,7 +285,7 @@ namespace Taurus.Plugin.DistributedTransaction
                             isUpdateOK = table.Update();
                             if (isUpdateOK)
                             {
-                                DTCDebug.WriteLine("Client.OnCommitOrRollBack 更新状态。");
+                                DTCLog.WriteDebugLine("Client.OnCommitOrRollBack 更新状态。");
                             }
                         }
                         else if (!table.Content.Contains(msg.MsgID))
@@ -299,7 +299,7 @@ namespace Taurus.Plugin.DistributedTransaction
                             isUpdateOK = table.Update();
                             if (isUpdateOK)
                             {
-                                DTCDebug.WriteLine("Client.OnCommitOrRollBack 更新状态。");
+                                //DTCLog.WriteDebugLine("Client.OnCommitOrRollBack 更新状态。");
                             }
                         }
                     }
@@ -340,7 +340,7 @@ namespace Taurus.Plugin.DistributedTransaction
                     {
                         if (Worker.IO.Delete(msg.TraceID, msg.TraceID, msg.ExeType))
                         {
-                            DTCDebug.WriteLine("Client.OnCommitOrRollBack 删除缓存。");
+                            //DTCLog.WriteDebugLine("Client.OnCommitOrRollBack 删除缓存。");
                         }
                     }
 
@@ -349,7 +349,7 @@ namespace Taurus.Plugin.DistributedTransaction
                     {
                         msg.SetDeleteAsk();
                         Worker.MQPublisher.Add(msg);
-                        DTCDebug.WriteLine("Client.OnDoTask.IsDeleteAck，让服务端确认及删除掉缓存。");
+                        //DTCLog.WriteDebugLine("Client.OnDoTask.IsDeleteAck，让服务端确认及删除掉缓存。");
                     }
                 }
             }

@@ -34,7 +34,7 @@ namespace Taurus.Plugin.DistributedTransaction
         /// <summary>
         /// 如果需要写入内容发往回调处，可以对此赋值。
         /// </summary>
-        public string ReturnContent { get; set; }
+        public string CallBackContent { get; set; }
         /// <summary>
         /// 方法绑定Key
         /// </summary>

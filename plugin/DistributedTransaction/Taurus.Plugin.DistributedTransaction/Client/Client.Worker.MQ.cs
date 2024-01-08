@@ -92,9 +92,12 @@ namespace Taurus.Plugin.DistributedTransaction
                         if (mq.MQType != MQType.Empty)
                         {
                             //对默认对列绑定交换机。
-                            MQ.Client.Listen(DTCConfig.Client.MQ.DefaultQueue, Client.OnReceived, DTCConfig.Client.MQ.DefaultExChange);
-                            MQ.Client.Listen(DTCConfig.Client.MQ.RetryQueue, Client.OnReceived, DTCConfig.Client.MQ.RetryExChange);
-                            MQ.Client.Listen(DTCConfig.Client.MQ.ConfirmQueue, Client.OnReceived, DTCConfig.Client.MQ.ConfirmExChange);
+                            bool isOK = MQ.Client.Listen(DTCConfig.Client.MQ.DefaultQueue, Client.OnReceived, DTCConfig.Client.MQ.DefaultExChange);
+                            DTCLog.WriteDebugLine("DTC.Client." + mq.MQType + ".Listen : " + DTCConfig.Client.MQ.DefaultQueue + (isOK ? " - OK." : " - Fail."));
+                            isOK = MQ.Client.Listen(DTCConfig.Client.MQ.RetryQueue, Client.OnReceived, DTCConfig.Client.MQ.RetryExChange);
+                            DTCLog.WriteDebugLine("DTC.Client." + mq.MQType + ".Listen : " + DTCConfig.Client.MQ.RetryQueue + (isOK ? " - OK." : " - Fail."));
+                            isOK = MQ.Client.Listen(DTCConfig.Client.MQ.ConfirmQueue, Client.OnReceived, DTCConfig.Client.MQ.ConfirmExChange);
+                            DTCLog.WriteDebugLine("DTC.Client." + mq.MQType + ".Listen : " + DTCConfig.Client.MQ.ConfirmQueue + (isOK ? " - OK." : " - Fail."));
                         }
                     }
                 }

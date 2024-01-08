@@ -4,7 +4,7 @@ using System.Data;
 namespace Taurus.Plugin.DistributedTransaction
 {
     /// <summary>
-    /// 用于分布式事务服务端【即提供端】回调订阅。
+    /// 用于分布式事务服务端【即提供端】回调订阅，SubKey 区分大小写。
     /// </summary>
     [AttributeUsage(AttributeTargets.Method, AllowMultiple = true, Inherited = true)]
     public class DTCServerSubscribeAttribute : Attribute

@@ -1,10 +1,10 @@
 ﻿<Project Sdk="Microsoft.NET.Sdk">
 
   <PropertyGroup>
-    <TargetFramework>netcoreapp2.1</TargetFramework>
+    <TargetFramework>net8.0</TargetFramework>
     <AssemblyName>Taurus.DTC</AssemblyName>
-    <AssemblyVersion>1.1.0.0</AssemblyVersion>
-    <FileVersion>1.1.0.0</FileVersion>
+    <AssemblyVersion>3.2.0.0</AssemblyVersion>
+    <FileVersion>3.2.0.0</FileVersion>
     <Authors>路过秋天</Authors>
     <Company>路过秋天 （2023-12-23）</Company>
     <Copyright>Copyright ©  路过秋天 2024-2124</Copyright>
@@ -12,6 +12,10 @@
     <Product>Taurus.DTC 分布式事务框架 .NET Core 版本</Product>
     <Description>Taurus.DTC 是一款用于分布事务的框架，支持.Net和.Net Core 双系列版本</Description>
     <PackageProjectUrl>https://github.com/cyq1162/Taurus.MVC</PackageProjectUrl>
+    <GeneratePackageOnBuild>True</GeneratePackageOnBuild>
+    <PackageId>Taurus.DTC</PackageId>
+    <Version>3.2.0</Version>
+    <GenerateDocumentationFile>True</GenerateDocumentationFile>
   </PropertyGroup>
 
   <ItemGroup>

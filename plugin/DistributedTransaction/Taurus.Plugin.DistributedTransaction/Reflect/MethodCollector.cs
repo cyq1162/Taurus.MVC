@@ -10,9 +10,9 @@ namespace Taurus.Plugin.DistributedTransaction
         {
             InitMethods();
         }
-
-        private static MDictionary<string, MethodInfo> dicServerMethods = new MDictionary<string, MethodInfo>(StringComparer.OrdinalIgnoreCase);
-        private static MDictionary<string, MethodInfo> dicClientMethods = new MDictionary<string, MethodInfo>(StringComparer.OrdinalIgnoreCase);
+        //这里区分大小写，是为了保持用户方法传的key和回调key一致。
+        private static MDictionary<string, MethodInfo> dicServerMethods = new MDictionary<string, MethodInfo>();
+        private static MDictionary<string, MethodInfo> dicClientMethods = new MDictionary<string, MethodInfo>();
         private static void InitMethods()
         {
             List<Assembly> assList = AssemblyCollector.GetRefAssemblyList();
@@ -44,7 +44,7 @@ namespace Taurus.Plugin.DistributedTransaction
                         foreach (var item in items)
                         {
                             var dtcs = item as DTCServerSubscribeAttribute;
-                            string key =dtcs.SubKey;
+                            string key = dtcs.SubKey;
                             if (!dicServerMethods.ContainsKey(key))
                             {
                                 dicServerMethods.Add(key, method);

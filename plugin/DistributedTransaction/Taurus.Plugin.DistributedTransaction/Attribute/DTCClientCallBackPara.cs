@@ -15,8 +15,8 @@ namespace Taurus.Plugin.DistributedTransaction
         {
             this.MsgID = msg.MsgID;
             this.ExeType = ConvertTool.ChangeType<ExeType>(msg.ExeType);
-            this.Content = msg.Content;
-            this.SubKey = msg.TaskKey;
+            this.CallBackContent = msg.Content;
+            this.TaskKey = msg.TaskKey;
             this.CallBackKey = msg.CallBackKey;
             this.TraceID = msg.TraceID;
         }
@@ -28,14 +28,15 @@ namespace Taurus.Plugin.DistributedTransaction
         /// 执行类型
         /// </summary>
         public ExeType ExeType { get; set; }
+
         /// <summary>
-        /// 消息内容
+        /// 回调回来的消息内容
         /// </summary>
-        public string Content { get; set; }
+        public string CallBackContent { get; set; }
         /// <summary>
-        /// 对方监听Key
+        /// 任务Key
         /// </summary>
-        public string SubKey { get; set; }
+        public string TaskKey { get; set; }
 
         /// <summary>
         /// 回调Key
