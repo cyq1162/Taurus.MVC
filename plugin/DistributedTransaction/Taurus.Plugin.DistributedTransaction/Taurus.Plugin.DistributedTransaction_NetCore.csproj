@@ -1,0 +1,38 @@
+﻿<Project Sdk="Microsoft.NET.Sdk">
+
+  <PropertyGroup>
+    <TargetFramework>netcoreapp2.1</TargetFramework>
+    <AssemblyName>Taurus.DTC</AssemblyName>
+    <AssemblyVersion>1.1.0.0</AssemblyVersion>
+    <FileVersion>1.1.0.0</FileVersion>
+    <Authors>路过秋天</Authors>
+    <Company>路过秋天 （2023-12-23）</Company>
+    <Copyright>Copyright ©  路过秋天 2024-2124</Copyright>
+	  <AssemblyTitle>Taurus.DTC 分布式事务框架 .Net Core 版本</AssemblyTitle>
+    <Product>Taurus.DTC 分布式事务框架 .NET Core 版本</Product>
+    <Description>Taurus.DTC 是一款用于分布事务的框架，支持.Net和.Net Core 双系列版本</Description>
+    <PackageProjectUrl>https://github.com/cyq1162/Taurus.MVC</PackageProjectUrl>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <Compile Remove="MQ\Kafka\DotNet\**" />
+    <Compile Remove="MQ\Rabbit\DotNet\**" />
+    <Compile Remove="Properties\**" />
+    <EmbeddedResource Remove="MQ\Kafka\DotNet\**" />
+    <EmbeddedResource Remove="MQ\Rabbit\DotNet\**" />
+    <EmbeddedResource Remove="Properties\**" />
+    <None Remove="MQ\Kafka\DotNet\**" />
+    <None Remove="MQ\Rabbit\DotNet\**" />
+    <None Remove="Properties\**" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <PackageReference Include="Confluent.Kafka" Version="2.3.0" />
+    <PackageReference Include="RabbitMQ.Client" Version="6.8.1" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <ProjectReference Include="..\..\..\..\..\cyqdata\trunk\src\CYQ.Data_NetCore.csproj" />
+  </ItemGroup>
+
+</Project>
