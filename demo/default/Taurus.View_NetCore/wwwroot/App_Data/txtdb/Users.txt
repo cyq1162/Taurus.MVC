@@ -13,4 +13,5 @@
 {"ID":15,"Name":"55555","IsEnabled":true,"Sex":0,"HeadImgUrl":"","UserType":1,"CreateTime":"2016-08-02 01:21:23"},
 {"ID":16,"Name":"166666","IsEnabled":true,"Sex":1,"HeadImgUrl":"","UserType":2,"CreateTime":"2016-08-02 01:21:23"},
 {"ID":17,"Name":"323222","IsEnabled":false,"Sex":0,"HeadImgUrl":null,"UserType":0,"CreateTime":"0001-01-01 00:00:00"},
-{"ID":18,"Name":"323222","IsEnabled":false,"Sex":0,"HeadImgUrl":null,"UserType":0,"CreateTime":"0001-01-01 00:00:00"}
+{"ID":18,"Name":"323222","IsEnabled":false,"Sex":0,"HeadImgUrl":null,"UserType":0,"CreateTime":"0001-01-01 00:00:00"},
+{"ID":19,"Name":"323222","IsEnabled":false,"Sex":0,"HeadImgUrl":null,"UserType":3,"CreateTime":"2016-08-02 01:21:23"}

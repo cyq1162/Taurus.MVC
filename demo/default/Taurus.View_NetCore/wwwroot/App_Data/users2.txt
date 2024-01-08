@@ -1,4 +1,0 @@
-{"ID":"System.Int32","Name":"System.String","IsEnabled":"System.Boolean","Sex":"System.Int32","HeadImgUrl":"System.String","UserType":"System.Int32","CreateTime":"System.DateTime"},
-{"ID":1,"Name":"2222xxxxxx","IsEnabled":false,"Sex":0,"HeadImgUrl":"","UserType":1,"CreateTime":"2022-09-08 18:50:15"},
-{"ID":2,"Name":"°¡55555","IsEnabled":false,"Sex":1,"HeadImgUrl":"/Upload/ra.png","UserType":1,"CreateTime":"2022-09-08 18:50:15"},
-{"ID":3,"Name":"°¡","IsEnabled":false,"Sex":0,"HeadImgUrl":"","UserType":1,"CreateTime":"2022-09-08 18:50:15"}
