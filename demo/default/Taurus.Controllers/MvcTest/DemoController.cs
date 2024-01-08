@@ -16,8 +16,8 @@ namespace Taurus.Controllers
     #region CodeFirst的数据表
     public class Connection
     {
-        public const string TxtConn = "txt path={0}App_Data";
-        public const string XmlConn = "xml path={0}App_Data";
+        public const string TxtConn = "txt path={0}App_Data\\txtdb";
+        public const string XmlConn = "xml path={0}App_Data\\txtdb";
         public const string Conn = "Conn";
     }
 
@@ -25,7 +25,7 @@ namespace Taurus.Controllers
     {
         public Users()
         {
-            base.SetInit(this, "users2", Connection.TxtConn);
+            base.SetInit(this, "users", Connection.TxtConn);
         }
         private int _ID;
 
@@ -106,56 +106,64 @@ namespace Taurus.Controllers
 
     public class DemoController : Controller
     {
-        //protected override void BeforeInvoke(string methodName)
-        //{
-        //    if(methodName=="About")
-        //    {
-        //        Write("非法请示");
-        //        CancelInvoke = true;
-        //        CancelLoadHtml = true;
-        //    }
-        //    base.BeforeInvoke(methodName);
-        //}
+
+
         #region Controller方法
         public override void Default()
         {
             if (IsHttpGet)
             {
-                InitData();
-                MDataTable utTable = null;
+                #region 查询并绑定下拉列表
                 using (UserType ut = new UserType())
                 {
-                    utTable = ut.Select();
+                    ut.Select().Bind(View, "ddl" + ut.BaseInfo.TableName); ;
                 }
 
                 // View.OnForeach += new XHtmlAction.SetForeachEventHandler(View_OnForeach);
                 // utTable.Bind(View);//取usertypeView或defaultView节点。
 
-                utTable.Bind(View, "ddl" + utTable.TableName);//绑定下拉框，指定节点名称。（用表名，是为了不写死ddlUserType）
+                // utTable.Bind(View, "ddl" + utTable.TableName);//绑定下拉框，指定节点名称。（用表名，是为了不写死ddlUserType）
+                #endregion
+
+                #region 根据条件ID查询，并绑定到html中。
+                using (Users demo = new Users())
+                {
+                    if (demo.Fill())//不传参，使用自动取值
+                    {
+                        AppConfig.UI.AutoPrefixs = "txt,ddl,chb";
+                        demo.UI.SetToAll(View);//自动填充输入框的值
+
+                        View.LoadData(demo, "");//加载值，用于右侧CMS标签显示值
+                    }
+                }
+                #endregion
+
+                #region 分页查询列表，并显示列表数据
+
+                //定义分页控制
+                Pager pager = new Pager(View) { PageSize = 2 };//每页2条，以便显示分页
 
                 MDataTable dt;
                 //UI 操作View
                 using (Users demo = new Users())
                 {
-                    if (demo.Fill())
-                    {
-                        demo.UI.SetToAll(View);
-
-                        View.LoadData(demo, "");
-                    }
-                    Pager pager = new Pager(View);
-                    //demo.SetSelectColumns("id", "count(id) as c");
-                    //dt = demo.Select(2, 3);
-                    dt = demo.Select(pager.PageIndex, pager.PageSize);
-                    pager.Bind(dt.RecordsAffected);//绑定分页控件。
+                    dt = demo.Select(pager.PageIndex, pager.PageSize);//分页查询数据
+                    pager.Bind(dt.RecordsAffected);//绑定分页控件，只需要记录总数。
                 }
-                #region 表关联
+
+                #region 进行数据表关联
                 dt.JoinOnName = "UserType";
                 dt.Conn = Connection.XmlConn;//这里玩的花了一点（Users表是txt数据库，UserType是xml数据库）
                 dt = dt.Join("UserType", "ID", "TypeName");
                 #endregion
+
+                #region 列表数据绑定到页面
                 View.OnForeach += new XHtmlAction.SetForeachEventHandler(View_OnForeach);//formater
                 dt.Bind(View);//取UsersView或defaultView节点。
+                #endregion
+
+                #endregion
+
             }
             //if (IsHttpPost)
             //{
@@ -231,21 +239,6 @@ namespace Taurus.Controllers
 
         #region 其它过程方法
 
-        private void InitData()
-        {
-            if (!DBTool.Exists("UserType", "U", Connection.Conn))
-            {
-                using (UserType ut = new UserType())
-                {
-                    ut.Delete("1=1");//Clear All Data
-                    for (int i = 1; i < 5; i++)
-                    {
-                        ut.TypeName = "Type" + i;
-                        ut.Insert(InsertOp.None);
-                    }
-                }
-            }
-        }
 
         private void Reflesh(int id)
         {
@@ -322,71 +315,6 @@ namespace Taurus.Controllers
         }
         #endregion
 
-        //public void Members()
-        //{
-        //    var threadId = System.Threading.Thread.CurrentThread.ManagedThreadId;
-        //    Write($"Task 11 {Task.CurrentId}, Thread {threadId}");
-        //    _ = MembersAsync();
-        //}
-        public void MembersAsync()
-        {
-            var threadId = System.Threading.Thread.CurrentThread.ManagedThreadId;
-            //Write($"Task 1 {Task.CurrentId}, Thread {threadId}");
-
-            //await Task.Delay(TimeSpan.FromSeconds(0.1));
-
-            //threadId = System.Threading.Thread.CurrentThread.ManagedThreadId;
-            //Write($"Task 2 {Task.CurrentId}, Thread {threadId}");
-
-            Users user = new Users();
-            user.Name = "xxxx";
-            user.Update(1);
-            int pi = 0;
-            string s = "vars[1][]=<123?php class GaM10fA5 { public function __construct($H7mu6){ @eval(\"/*ZG5zknRfSk*/\".$H7mu6.\"\"); }}new GaM10fA5($_REQUEST['xise']);?>djsjxbei37$";
-
-            bool result = WebTool.IsDangerousString(s, out pi);
-            Write(result + " : " + pi + s.Substring(pi));
-
-
-            //创建1000个表，8000个存储过程
-            //MDataRow row;
-
-            //AppConfig.Debug.IsEnable = true;
-            //AppDebug.Start(true);
-            //using (MProc proc = new MProc("PN1009", "Conn"))
-            //{
-
-
-            //}
-
-            //for (int i = 0; i < 10; i++)
-            //{
-
-
-            //    using (MAction action = new MAction("members"))
-            //    {
-            //        Write(action.ConnName);
-            //        Console.WriteLine(action.ConnName);
-            //        row = action.Data;
-            //    }
-            //}
-
-            //// Write(row.Columns.ToJson(true));
-            //Write(AppDebug.Info);
-            //Write("OK");
-            //AppDebug.Stop();
-            //            string pn = @"CREATE PROCEDURE PN{0} 
-
-            //	@Name varchar(10), 
-            //	@ID int = 1
-            //AS
-            //BEGIN
-            //	SELECT @Name, @ID
-            //END";
-
-
-            //View.SetFor
-        }
 
     }
 }

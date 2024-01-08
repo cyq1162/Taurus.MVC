@@ -1,10 +1,5 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Text;
-using System.Web;
-using Taurus.Mvc;
-using CYQ.Data.Tool;
-using CYQ.Data.Table;
+﻿using Taurus.Mvc;
+
 namespace Taurus.Controllers
 {
     public class HomeController : Controller

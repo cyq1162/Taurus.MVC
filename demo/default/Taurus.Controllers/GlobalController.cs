@@ -1,8 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Text;
-using Taurus.Mvc;
-using CYQ.Data;
+﻿using Taurus.Mvc;
 using System.Web;
 using Taurus.Plugin.Limit;
 using Taurus.Plugin.MicroService;
@@ -12,7 +8,7 @@ namespace Taurus.Controllers
     /// <summary>
     /// 全局控制器（适全全局事件处理）
     /// </summary>
-    public partial class DefaultController : Taurus.Mvc.Controller
+    public partial class GlobalController : Taurus.Mvc.Controller
     {
         /// <summary>
         /// 所有寻址不到的请求都集中执行到此方法。
@@ -20,7 +16,7 @@ namespace Taurus.Controllers
         public override void Default()
         {
             Response.StatusCode = 404;
-            Write("404 - DefaultController : Default()");
+            Write("404 - by GlobalController.Default()");
         }
         /// <summary>
         /// 用于所有的请求合法性验证，配合[Ack]属性

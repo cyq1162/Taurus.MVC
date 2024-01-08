@@ -10,7 +10,7 @@
     <AppDesignerFolder>Properties</AppDesignerFolder>
     <RootNamespace>Taurus.Controllers</RootNamespace>
     <AssemblyName>Taurus.Controllers</AssemblyName>
-    <TargetFrameworkVersion>v2.0</TargetFrameworkVersion>
+    <TargetFrameworkVersion>v4.5</TargetFrameworkVersion>
     <FileUpgradeFlags>
     </FileUpgradeFlags>
     <UpgradeBackupLocation>
@@ -31,6 +31,7 @@
     <IsWebBootstrapper>false</IsWebBootstrapper>
     <UseApplicationTrust>false</UseApplicationTrust>
     <BootstrapperEnabled>true</BootstrapperEnabled>
+    <TargetFrameworkProfile />
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
     <DebugSymbols>true</DebugSymbols>
@@ -41,6 +42,7 @@
     <ErrorReport>prompt</ErrorReport>
     <WarningLevel>4</WarningLevel>
     <DocumentationFile>bin\Debug\Taurus.Controllers.xml</DocumentationFile>
+    <Prefer32Bit>false</Prefer32Bit>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|AnyCPU' ">
     <DebugType>pdbonly</DebugType>
@@ -50,6 +52,7 @@
     <ErrorReport>prompt</ErrorReport>
     <WarningLevel>4</WarningLevel>
     <DocumentationFile>bin\Release\Taurus.Controllers.xml</DocumentationFile>
+    <Prefer32Bit>false</Prefer32Bit>
   </PropertyGroup>
   <ItemGroup>
     <Reference Include="System" />
@@ -58,17 +61,19 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="APIController.cs" />
-    <Compile Include="DefaultController.cs" />
-    <Compile Include="DemoController.cs" />
-    <Compile Include="Hello.cs" />
-    <Compile Include="HomeController.cs" />
-    <Compile Include="Pager.cs" />
+    <Compile Include="DistributedCacheTest\RedisController.cs" />
+    <Compile Include="DistributedLockTest\DLController.cs" />
+    <Compile Include="DistributedTransationTest\DTCCaller.cs" />
+    <Compile Include="DistributedTransationTest\DTCProvider.cs" />
+    <Compile Include="MvcTest\DemoController.cs" />
+    <Compile Include="MvcTest\HomeController.cs" />
+    <Compile Include="MvcTest\Pager.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
-    <Compile Include="TestModule.cs" />
+    <Compile Include="RouteTest\MSController.cs" />
+    <Compile Include="RpcTest\RpcController.cs" />
     <Compile Include="Test\EvalController.cs" />
-    <Compile Include="Test\MSController.cs" />
-    <Compile Include="Test\RpcController.cs" />
+    <Compile Include="WebAPITest\APIController.cs" />
+    <Compile Include="WebAPITest\Hello.cs" />
   </ItemGroup>
   <ItemGroup>
     <BootstrapperPackage Include="Microsoft.Net.Client.3.5">
@@ -87,6 +92,10 @@
     <ProjectReference Include="..\..\..\..\..\cyqdata\trunk\src\CYQ.Data.csproj">
       <Project>{bd5ccc87-278f-4feb-ad23-157fcba9ffa1}</Project>
       <Name>CYQ.Data</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\..\..\plugin\DistributedTransaction\Taurus.Plugin.DistributedTransaction\Taurus.Plugin.DistributedTransaction.csproj">
+      <Project>{41ba3881-ab5c-4f80-a880-7274937aa99b}</Project>
+      <Name>Taurus.Plugin.DistributedTransaction</Name>
     </ProjectReference>
     <ProjectReference Include="..\..\..\src\Taurus.Core\Taurus.Core.csproj">
       <Project>{adf7675f-36f0-4ad5-8d20-83ae72bb4c99}</Project>

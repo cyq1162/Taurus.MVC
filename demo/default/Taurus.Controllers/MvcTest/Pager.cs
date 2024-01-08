@@ -26,7 +26,10 @@ namespace Taurus.Logic
             {
                 if (_PageIndex == 0)
                 {
-                    int.TryParse(System.Web.HttpContext.Current.Request["page"], out _PageIndex);
+                    if (!int.TryParse(System.Web.HttpContext.Current.Request["page"], out _PageIndex))
+                    {
+                        _PageIndex = 1;
+                    }
                 }
                 return _PageIndex;
             }
@@ -63,7 +66,7 @@ namespace Taurus.Logic
                 {
                     if (!int.TryParse(System.Web.HttpContext.Current.Request["rows"], out _PageSize))
                     {
-                        _PageSize = 5;
+                        _PageSize = 2;
                     }
                 }
                 return _PageSize;

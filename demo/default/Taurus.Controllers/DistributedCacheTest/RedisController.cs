@@ -1,8 +1,6 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.Text;
+using CYQ.Data;
 using CYQ.Data.Cache;
-using Microsoft.Extensions.Hosting;
 
 namespace Taurus.Controllers
 {
@@ -11,16 +9,26 @@ namespace Taurus.Controllers
     /// </summary>
     public class RedisController : Taurus.Mvc.Controller
     {
-
+        public RedisController()
+        {
+            //对应配置："Redis.Servers": "127.0.0.1:6379"
+            AppConfig.Redis.Servers = "127.0.0.1:6379";
+        }
+        /// <summary>
+        /// 读取一个值
+        /// </summary>
         public void Get()
         {
-            CacheManage cache = CacheManage.RedisInstance;
+            DistributedCache cache = DistributedCache.Redis;
             string value = cache.Get<string>("a");
             Write(value, value != null);
         }
+        /// <summary>
+        /// 写入一个值
+        /// </summary>
         public void Set()
         {
-            CacheManage cache = CacheManage.RedisInstance;
+            DistributedCache cache = DistributedCache.Redis;
             bool result = cache.Set("a", DateTime.Now.Ticks);
            
             Write(cache.WorkInfo, result);

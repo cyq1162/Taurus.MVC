@@ -23,6 +23,7 @@
   </ItemGroup>
 
   <ItemGroup>
+    <ProjectReference Include="..\..\..\plugin\DistributedTransaction\Taurus.Plugin.DistributedTransaction\Taurus.Plugin.DistributedTransaction_NetCore.csproj" />
     <ProjectReference Include="..\..\..\src\Taurus.Core\Taurus.Core_NetCore.csproj" />
   </ItemGroup>
 

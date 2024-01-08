@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Text;
 using CYQ.Data;
+using CYQ.Data.Json;
 using CYQ.Data.Tool;
 using Taurus.Plugin.MicroService;
 
@@ -115,7 +116,7 @@ namespace Taurus.Controllers.Test
             RpcTask task = Rpc.StartTaskAsync(request);
             System.Diagnostics.Debug.WriteLine("-----------------------------" + i);
             task.Wait();
-            string text = task.Result.IsSuccess ? CYQ.Data.Tool.JsonHelper.ToJson(task.Result.Header) + "<br />" + task.Result.ResultText : task.Result.ErrorText;
+            string text = task.Result.IsSuccess ? JsonHelper.ToJson(task.Result.Header) + "<br />" + task.Result.ResultText : task.Result.ErrorText;
             RpcTaskState state = task.State;
             if (string.IsNullOrEmpty(text) || !task.Result.IsSuccess)
             {
