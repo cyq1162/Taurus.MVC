@@ -18,7 +18,7 @@ namespace Taurus.Plugin.Doc
         {
             get
             {
-                return AppConfig.GetAppBool("Doc.IsEnable", MsConfig.IsClient || MsConfig.IsRegCenter);
+                return AppConfig.GetAppBool("Doc.IsEnable", !MsConfig.IsGateway);
             }
             set
             {
