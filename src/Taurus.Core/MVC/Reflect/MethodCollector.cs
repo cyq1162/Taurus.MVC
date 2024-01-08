@@ -3,7 +3,7 @@ using System.Collections.Generic;
 using System.Reflection;
 using Taurus.Mvc.Attr;
 
-namespace Taurus.Mvc
+namespace Taurus.Mvc.Reflect
 {
     //internal static partial class MethodCollector
     //{
@@ -116,10 +116,20 @@ namespace Taurus.Mvc
     //    }
     //    #endregion
     //}
-    internal static partial class MethodCollector
+
+    /// <summary>
+    /// 方法搜集器
+    /// </summary>
+    public static partial class MethodCollector
     {
         static Dictionary<string, Dictionary<string, MethodEntity>> typeMethods = new Dictionary<string, Dictionary<string, MethodEntity>>();
-        static Dictionary<string, MethodEntity> GetMethods(Type t)
+
+        /// <summary>
+        /// 获取类的所有实体方法
+        /// </summary>
+        /// <param name="t">控制器类型</param>
+        /// <returns></returns>
+        public static Dictionary<string, MethodEntity> GetMethods(Type t)
         {
             if (!typeMethods.ContainsKey(t.FullName))
             {
@@ -143,11 +153,11 @@ namespace Taurus.Mvc
             bool hasToken = t.GetCustomAttributes(typeof(TokenAttribute), true).Length > 0;
             bool hasAck = t.GetCustomAttributes(typeof(AckAttribute), true).Length > 0;
             bool hasMicroService = t.GetCustomAttributes(typeof(MicroServiceAttribute), true).Length > 0;
-            bool hasIgnoreDefaultController = t.GetCustomAttributes(typeof(IgnoreDefaultControllerAttribute), true).Length > 0;
+            bool hasIgnoreGlobalController = t.GetCustomAttributes(typeof(IgnoreGlobalControllerAttribute), true).Length > 0;
             bool hasWebSocket = t.GetCustomAttributes(typeof(WebSocketAttribute), true).Length > 0;
             Dictionary<string, MethodEntity> dic = new Dictionary<string, MethodEntity>(StringComparer.OrdinalIgnoreCase);
             MethodInfo[] methods = null;
-            if (t.FullName.EndsWith(ReflectConst.DefaultController))
+            if (t.FullName.EndsWith(ReflectConst.GlobalController))
             {
                 methods = t.GetMethods(BindingFlags.Instance | BindingFlags.Static | BindingFlags.Public | BindingFlags.DeclaredOnly);
             }
@@ -165,10 +175,13 @@ namespace Taurus.Mvc
                 }
                 if (dic.ContainsKey(name)) { continue; }
                 AttributeEntity attributeEntity = new AttributeEntity();
+                //attributeEntity.
+                attributeEntity.Attributes = method.GetCustomAttributes(true);
+
                 attributeEntity.HasToken = hasToken || method.GetCustomAttributes(typeof(TokenAttribute), true).Length > 0;
                 attributeEntity.HasAck = hasAck || method.GetCustomAttributes(typeof(AckAttribute), true).Length > 0;
                 attributeEntity.HasMicroService = hasMicroService || method.GetCustomAttributes(typeof(MicroServiceAttribute), true).Length > 0;
-                attributeEntity.HasIgnoreDefaultController = hasIgnoreDefaultController || method.GetCustomAttributes(typeof(IgnoreDefaultControllerAttribute), true).Length > 0;
+                attributeEntity.HasIgnoreGlobalController = hasIgnoreGlobalController || method.GetCustomAttributes(typeof(IgnoreGlobalControllerAttribute), true).Length > 0;
                 attributeEntity.HasWebSocket = hasWebSocket || method.GetCustomAttributes(typeof(WebSocketAttribute), true).Length > 0;
 
                 attributeEntity.HasGet = method.GetCustomAttributes(typeof(HttpGetAttribute), true).Length > 0;
@@ -229,12 +242,23 @@ namespace Taurus.Mvc
                 typeMethods.Add(t.FullName, dic);
             }
         }
-
+        /// <summary>
+        /// 获取方法：找不到时返回默认方法【default】
+        /// </summary>
+        /// <param name="t">控制器类型</param>
+        /// <param name="methodName">方法名</param>
+        /// <returns></returns>
         public static MethodEntity GetMethod(Type t, String methodName)
         {
             return GetMethod(t, methodName, true);
         }
-
+        /// <summary>
+        /// 获取方法
+        /// </summary>
+        /// <param name="t">控制器类型</param>
+        /// <param name="methodName">方法名</param>
+        /// <param name="isReturnDefault">找不到时是否返回默认方法【default】</param>
+        /// <returns></returns>
         public static MethodEntity GetMethod(Type t, String methodName, Boolean isReturnDefault)
         {
             Dictionary<String, MethodEntity> methods = GetMethods(t);
@@ -265,18 +289,18 @@ namespace Taurus.Mvc
             {
                 return "/" + items[items.Length - 2] + "/" + lv1Name + "/";
             }
-            return "/" + lv1Name+ "/";
+            return "/" + lv1Name + "/";
         }
     }
 
     /// <summary>
     /// 全局静态方法
     /// </summary>
-    internal static partial class MethodCollector
+    public static partial class MethodCollector
     {
         private static MethodEntity GetGlobalMethod(String name)
         {
-            Type t = ControllerCollector.GetController(ReflectConst.Default);
+            Type t = ControllerCollector.GetController(ReflectConst.Global);
             if (t != null)
             {
                 return GetMethod(t, "Static." + name, false);

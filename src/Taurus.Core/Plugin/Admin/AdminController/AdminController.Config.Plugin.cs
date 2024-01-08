@@ -99,14 +99,15 @@ namespace Taurus.Plugin.Admin
                 Sets(dt, "Doc.Path", DocConfig.Path, "Doc url path.");
                 Sets(dt, "Doc.HtmlFolderName", DocConfig.HtmlFolderName, "Mvc view folder name for doc.");
                 Sets(dt, "Doc.DefaultImg", DocConfig.DefaultImg, "Default images path for doc auto test,as :/App_Data/xxx.jpg");
-                Sets(dt, "Doc.DefaultParas", DocConfig.DefaultParas, "global para for doc auto test,as :ack,token");
+                Sets(dt, "Doc.DefaultParas", DocConfig.DefaultParas, "Global para for doc auto test,as :ack,token");
             }
             else if (type == "plugin-metric")
             {
                 Sets(dt, "Metric.IsEnable", MetricConfig.IsEnable, "Metric plugin : API metric plugin.");
-                Sets(dt, "Metric.IsDurable", MetricConfig.IsDurable, "Durable : metric write to file.");
+                Sets(dt, "Metric.IsIgnorePluginUrl", MetricConfig.IsIgnorePluginUrl, "Metric : Ignore plugin url.");
+                Sets(dt, "Metric.IsDurable", MetricConfig.IsDurable, "Durable : Metric write to file.");
                 Sets(dt, "Metric.DurableInterval", MetricConfig.DurableInterval+" (s)", "Durable: Interval period (second).");
-                Sets(dt, "Metric.DurablePath", MetricConfig.DurablePath, "Durable : metric【write to file】 folder name or path.");
+                Sets(dt, "Metric.DurablePath", MetricConfig.DurablePath, "Durable : Metric【write to file】 folder name or path.");
             }
             else if (type == "plugin-cors")
             {

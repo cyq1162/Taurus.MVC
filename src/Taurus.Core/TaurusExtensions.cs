@@ -15,6 +15,7 @@ using System.Net;
 using Microsoft.AspNetCore.HostFiltering;
 using System.Collections.Generic;
 using Microsoft.Extensions.Options;
+using Taurus.Mvc.Reflect;
 
 namespace Microsoft.AspNetCore.Http
 {
@@ -22,6 +23,7 @@ namespace Microsoft.AspNetCore.Http
     {
         static KestrelServerOptions kestrelServerOptions;
         static HostFilteringOptions hostFilteringOptions;
+       // static IISServerOptions iisServerOptions;
         /// <summary>
         /// 默认配置：HttpContext、FormOptions、KestrelServerOptions。
         /// </summary>
@@ -77,8 +79,6 @@ namespace Microsoft.AspNetCore.Http
                     }
                     #endregion
                 }
-
-
             });
             services.Configure<HostFilteringOptions>((y) =>
             {

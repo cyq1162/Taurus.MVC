@@ -3,14 +3,26 @@ using System.Collections.Generic;
 using System.Reflection;
 using System.Text;
 
-namespace Taurus.Mvc
+namespace Taurus.Mvc.Reflect
 { 
-    internal class MethodEntity
+	/// <summary>
+	/// 方法元数据实体
+	/// </summary>
+    public class MethodEntity
     {
+		/// <summary>
+		/// 反射方法，Invoke调用
+		/// </summary>
 		public MethodInfo Method { get; set; }
+		/// <summary>
+		/// 方法的特性
+		/// </summary>
 		public AttributeEntity AttrEntity { get; set; }
+		/// <summary>
+		/// 方法的参数
+		/// </summary>
 		public ParameterInfo[] Parameters;
-		public MethodEntity(MethodInfo method, AttributeEntity attributeEntity)
+		internal MethodEntity(MethodInfo method, AttributeEntity attributeEntity)
 		{
 			Method = method;
 			Parameters = method.GetParameters();

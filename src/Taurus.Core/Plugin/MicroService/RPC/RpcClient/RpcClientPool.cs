@@ -14,7 +14,7 @@ namespace Taurus.Plugin.MicroService
     /// </summary>
     internal class RpcClientPool
     {
-        static CacheManage cache = CacheManage.LocalInstance;
+        static DistributedCache cache = DistributedCache.Local;
         static MDictionary<string, Queue<RpcClient>> rpcClientPool = new MDictionary<string, Queue<RpcClient>>();
         /// <summary>
         /// NET 6 及以上自带池。

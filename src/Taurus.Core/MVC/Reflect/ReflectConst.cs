@@ -1,11 +1,12 @@
 ﻿using CYQ.Data;
-namespace Taurus.Mvc
+namespace Taurus.Mvc.Reflect
 {
     internal class ReflectConst
     {
         internal const string Default = "Default";
         internal const string Controller = "Controller";
-        internal const string DefaultController = "DefaultController";
+        internal const string Global = "Global";
+        internal const string GlobalController = "GlobalController";
         internal const string TaurusMvcController = "Taurus.Mvc.Controller";
 
 

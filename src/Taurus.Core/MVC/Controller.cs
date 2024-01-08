@@ -11,6 +11,8 @@ using Taurus.Plugin.Doc;
 using Taurus.Mvc.Attr;
 using System.Threading;
 using Taurus.Plugin.MicroService;
+using Taurus.Mvc.Reflect;
+using CYQ.Data.Json;
 
 namespace Taurus.Mvc
 {
@@ -130,11 +132,11 @@ namespace Taurus.Mvc
                     if (CheckMethodAttributeLimit(methodEntity))
                     {
                         LoadHtmlView();
-                        if (ExeBeforeInvoke(methodEntity.AttrEntity.HasIgnoreDefaultController))
+                        if (ExeBeforeInvoke(methodEntity.AttrEntity.HasIgnoreGlobalController))
                         {
                             if (ExeMethodInvoke(methodEntity))
                             {
-                                ExeEndInvoke(methodEntity.AttrEntity.HasIgnoreDefaultController);
+                                ExeEndInvoke(methodEntity.AttrEntity.HasIgnoreGlobalController);
                             }
                         }
                     }
@@ -194,7 +196,7 @@ namespace Taurus.Mvc
                 {
                     isGoOn = Convert.ToBoolean(checkAck.Method.Invoke(this, new object[] { Query<string>("ack") }));
                 }
-                else if (!attrEntity.HasIgnoreDefaultController)
+                else if (!attrEntity.HasIgnoreGlobalController)
                 {
                     checkAck = MethodCollector.GlobalCheckAck;
                     if (checkAck != null)
@@ -220,7 +222,7 @@ namespace Taurus.Mvc
                 {
                     isGoOn = Convert.ToBoolean(checkToken.Method.Invoke(this, new object[] { Query<string>("token") }));
                 }
-                else if (!attrEntity.HasIgnoreDefaultController)
+                else if (!attrEntity.HasIgnoreGlobalController)
                 {
                     checkToken = MethodCollector.GlobalCheckToken;
                     if (checkToken != null)
@@ -242,7 +244,7 @@ namespace Taurus.Mvc
             {
                 #region Validate CheckMicroService 【如果开启全局，即需要调整授权机制，则原有局部机制失效。】
                 MethodEntity checkMicroService = null;
-                if (!attrEntity.HasIgnoreDefaultController)
+                if (!attrEntity.HasIgnoreGlobalController)
                 {
                     checkMicroService = MethodCollector.GlobalCheckMicroService;
                     if (checkMicroService != null)

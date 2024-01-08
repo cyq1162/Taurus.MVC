@@ -10,6 +10,7 @@ using CYQ.Data.Table;
 using System.Data;
 using Taurus.Mvc.Attr;
 using Taurus.Plugin.MicroService;
+using Taurus.Mvc.Reflect;
 
 namespace Taurus.Plugin.Doc
 {
@@ -49,17 +50,18 @@ namespace Taurus.Plugin.Doc
             if (actions == null)
             {
                 actions = new List<XHtmlAction>();
-                string[] dllNames = ("Taurus.Core," + ControllerCollector.DllNames).Split(',');
-                foreach (string dll in dllNames)
+                List<Assembly> assList = AssemblyCollector.ControllerAssemblyList;
+                foreach (Assembly ass in assList)
                 {
+                    string dllName = ass.GetName().Name;
                     string xmlPath = string.Empty;
-                    if (dll.Contains(".dll"))
+                    if (dllName.Contains(".dll"))
                     {
-                        xmlPath = dll.Replace(".dll", ".xml");
+                        xmlPath = dllName.Replace(".dll", ".xml");
                     }
                     else
                     {
-                        xmlPath = dll + ".xml";
+                        xmlPath = dllName + ".xml";
                     }
                     if (xmlPath[0] != '/' && !xmlPath.Contains(":")) //非 linux 或 window 完整路径
                     {
@@ -135,7 +137,7 @@ namespace Taurus.Plugin.Doc
                 {
                     string fullName = item.Value.FullName;
                     //过滤插件控制器，插件只有一级，不用过滤。
-                    if (fullName.EndsWith(ReflectConst.DefaultController))
+                    if (fullName.EndsWith(ReflectConst.GlobalController))
                     {
                         continue;
                     }

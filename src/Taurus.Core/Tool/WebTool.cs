@@ -9,6 +9,7 @@ using Taurus.Plugin.Doc;
 using System.Text;
 using System.IO;
 using System.Threading;
+using CYQ.Data.Json;
 
 namespace Taurus.Mvc
 {
@@ -44,7 +45,7 @@ namespace Taurus.Mvc
         /// </summary>
         /// <param name="uri"></param>
         /// <returns></returns>
-        internal static bool IsSysInternalUrl(Uri uri, Uri referrerUrl)
+        internal static bool IsPluginUrl(Uri uri, Uri referrerUrl)
         {
             return IsCallMicroService(uri) || IsCallAdmin(uri, referrerUrl) || IsCallDoc(uri, referrerUrl);
         }
@@ -97,14 +98,14 @@ namespace Taurus.Mvc
             return DocConfig.IsEnable && localPath.ToLower().Contains("/" + DocConfig.Path.Trim('/', '\\') + "/");
         }
 
-        /// <summary>
-        /// 是否常规走MVC调用流程
-        /// </summary>
-        /// <returns></returns>
-        internal static bool IsCallMvc(Uri uri)
-        {
-            return !string.IsNullOrEmpty(MvcConfig.Controllers) || IsCallMicroService(uri);//有配置时才启动MVC，否则默认仅启动微服务。
-        }
+        ///// <summary>
+        ///// 是否常规走MVC调用流程
+        ///// </summary>
+        ///// <returns></returns>
+        //internal static bool IsCallMvc(Uri uri)
+        //{
+        //    return !string.IsNullOrEmpty(MvcConfig.Controllers) || IsCallMicroService(uri);//有配置时才启动MVC，否则默认仅启动微服务。
+        //}
 
         /// <summary>
         /// 当前请求是否Mvc处理范围。

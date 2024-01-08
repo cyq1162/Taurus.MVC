@@ -8,6 +8,7 @@ using Taurus.Plugin.Limit;
 using Taurus.Plugin.Doc;
 using System.Configuration;
 using System.IO;
+using Taurus.Mvc.Reflect;
 
 namespace Taurus.Plugin.Admin
 {
@@ -37,13 +38,16 @@ namespace Taurus.Plugin.Admin
             }
             else if (type == "mvc-controller")
             {
-                Sets(dt, "Mvc.Controllers", MvcConfig.Controllers, "Load controller dll names.");
-                var controllerAssemblys = ControllerCollector.GetAssemblys();
-                Sets(dt, "----------Mvc.Controllers - Count", controllerAssemblys.Count, "Num of controller dll for mvc (Show Only).");
-                for (int i = 0; i < controllerAssemblys.Count; i++)
+                //Sets(dt, "Mvc.Controllers", MvcConfig.Controllers, "Load controller dll names.");
+                var controllerAssemblys = AssemblyCollector.ControllerAssemblyList;
+                if (controllerAssemblys != null)
                 {
-                    var assembly = controllerAssemblys[i].GetName();
-                    Sets(dt, "----------Mvc.Controllers - " + (i + 1), assembly.Name + ".dll", assembly.Version.ToString());
+                    Sets(dt, "----------Mvc.Controllers - Count", controllerAssemblys.Count, "Num of controller dll for mvc (Show Only).");
+                    for (int i = 0; i < controllerAssemblys.Count; i++)
+                    {
+                        var assembly = controllerAssemblys[i].GetName();
+                        Sets(dt, "----------Mvc.Controllers - " + (i + 1), assembly.Name + ".dll", assembly.Version.ToString());
+                    }
                 }
             }
             else if (type == "mvc-view")

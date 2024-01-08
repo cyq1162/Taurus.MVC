@@ -11,6 +11,7 @@ using System.Collections.Generic;
 using CYQ.Data.Xml;
 using CYQ.Data.Cache;
 using CYQ.Data.Tool;
+using CYQ.Data.Json;
 
 namespace Taurus.Plugin.Admin
 {
@@ -102,7 +103,7 @@ namespace Taurus.Plugin.Admin
             MDataTable bindTable = null;
             if (type.StartsWith("redis-status"))
             {
-                bindTable = CacheManage.RedisInstance.CacheInfo;
+                bindTable = DistributedCache.Redis.CacheInfo;
                 if (type.EndsWith("summary"))
                 {
                     bindTable = FilterRedis(bindTable);
@@ -111,7 +112,7 @@ namespace Taurus.Plugin.Admin
             }
             else if (type.StartsWith("redis-socket"))
             {
-                bindTable = GetTable(CacheManage.RedisInstance.WorkInfo);
+                bindTable = GetTable(DistributedCache.Redis.WorkInfo);
                 if (bindTable != null)
                 {
                     View.SetForeach(bindTable, "redisView", GetRowText(bindTable));
@@ -138,7 +139,7 @@ namespace Taurus.Plugin.Admin
             MDataTable bindTable = null;
             if (type.StartsWith("memcache-status"))
             {
-                bindTable = CacheManage.MemCacheInstance.CacheInfo;
+                bindTable = DistributedCache.MemCache.CacheInfo;
                 if (type.EndsWith("summary"))
                 {
                     bindTable = FilterMemCache(bindTable);
@@ -147,7 +148,7 @@ namespace Taurus.Plugin.Admin
             }
             else if (type.StartsWith("memcache-socket"))
             {
-                bindTable = GetTable(CacheManage.MemCacheInstance.WorkInfo);
+                bindTable = GetTable(DistributedCache.MemCache.WorkInfo);
                 if (bindTable != null)
                 {
                     View.SetForeach(bindTable, "memcacheView", GetRowText(bindTable));

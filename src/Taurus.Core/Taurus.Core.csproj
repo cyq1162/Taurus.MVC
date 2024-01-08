@@ -31,6 +31,7 @@
     <IsWebBootstrapper>false</IsWebBootstrapper>
     <UseApplicationTrust>false</UseApplicationTrust>
     <BootstrapperEnabled>true</BootstrapperEnabled>
+    <TargetFrameworkProfile />
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
     <DebugSymbols>true</DebugSymbols>
@@ -61,7 +62,7 @@
   <ItemGroup>
     <Compile Include="Attribute\AckAttribute.cs" />
     <Compile Include="Attribute\HttpAttribute.cs" />
-    <Compile Include="Attribute\IgnoreDefaultControllerAttribute.cs" />
+    <Compile Include="Attribute\IgnoreGlobalControllerAttribute.cs" />
     <Compile Include="Attribute\MicroServiceAttribute.cs" />
     <Compile Include="Attribute\RegexConst.cs" />
     <Compile Include="Attribute\RequireAttribute.cs" />
@@ -73,6 +74,7 @@
     <Compile Include="MVC\Config\MvcConfig.cs" />
     <Compile Include="MVC\Config\MvcConst.cs" />
     <Compile Include="MVC\Filter\HttpResponseFilter.cs" />
+    <Compile Include="MVC\Reflect\AssemblyCollector.cs" />
     <Compile Include="MVC\Reflect\ControllerCollector.cs" />
     <Compile Include="MVC\Reflect\Entity\AttributeEntity.cs" />
     <Compile Include="MVC\Reflect\Entity\MethodEntity.cs" />

@@ -4,6 +4,8 @@ using CYQ.Data;
 using CYQ.Data.Tool;
 using System.IO;
 using System.Xml;
+using Taurus.Mvc.Reflect;
+
 namespace Taurus.Mvc
 {
     /// <summary>

@@ -8,6 +8,8 @@ using Taurus.Mvc;
 using Taurus.Plugin.Limit;
 using Taurus.Plugin.CORS;
 using Taurus.Plugin.Metric;
+using Taurus.Mvc.Reflect;
+using CYQ.Data.Json;
 
 namespace Taurus.Core
 {
@@ -140,7 +142,9 @@ namespace Taurus.Core
 
 
             #region 4、网关代理请求检测与转发【接口调用次数统计】 - 5、纯网关检测 - 6、Mvc模块禁用检测
-            if (!WebTool.IsSysInternalUrl(uri, context.Request.UrlReferrer))
+            bool isPluginUrl = WebTool.IsPluginUrl(uri, context.Request.UrlReferrer);
+
+            if (!isPluginUrl || !MetricConfig.IsIgnorePluginUrl)
             {
                 #region 接口调用次数统计，包含统计其它后缀。
                 if (MetricConfig.IsEnable)
@@ -148,6 +152,10 @@ namespace Taurus.Core
                     MetricRun.Start(uri);
                 }
                 #endregion
+            }
+
+            if (!isPluginUrl)
+            {
                 if (WebTool.IsMvcSuffix(uri))
                 {
                     #region 打印请求日志
@@ -156,7 +164,7 @@ namespace Taurus.Core
                         WebTool.PrintRequestLog(context, null);
                     }
                 }
-                #endregion
+                    #endregion
                 if (MsConfig.Server.IsEnable)
                 {
                     #region 4、网关代理请求检测与转发
@@ -248,7 +256,7 @@ namespace Taurus.Core
         void context_Error(object sender, EventArgs e)
         {
             HttpContext cont = ((HttpApplication)sender).Context;
-            if (cont != null)
+            if (cont != null && cont.Request.Url.LocalPath != "/favicon.ico")
             {
                 WebTool.PrintRequestLog(cont, cont.Error);
             }
@@ -272,7 +280,7 @@ namespace Taurus.Core
 
             //ViewController是由页面的前两个路径决定了。
             string[] items = WebTool.GetLocalPath(context.Request.Url).Trim('/').Split('/');
-            string className = ReflectConst.Default;
+            string className = ReflectConst.Global;
             if (MvcConfig.RouteMode == 1)
             {
                 className = items.Length > 2 ? items[0] + "." + items[1] : items[0];

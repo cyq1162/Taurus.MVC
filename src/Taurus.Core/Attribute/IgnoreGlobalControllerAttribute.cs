@@ -8,7 +8,7 @@ namespace Taurus.Mvc.Attr
     /// 用于（忽略默认全局控制器的事件方法）
     /// </summary>
     [AttributeUsage(AttributeTargets.Class, AllowMultiple = false, Inherited = true)]
-    public class IgnoreDefaultControllerAttribute : Attribute
+    public class IgnoreGlobalControllerAttribute : Attribute
     {
 
     }

@@ -15,8 +15,10 @@ namespace Taurus.Plugin.MicroService
         {
 
         }
+
         /// <summary>
-        /// 调用是否成功
+        /// 调用是否成功：Gets a value that indicates if the HTTP response was successful.
+        /// A value that indicates if the HTTP response was successful. true if System.Net.Http.HttpResponseMessage.StatusCode,was in the range 200-299; otherwise false.  
         /// </summary>
         public bool IsSuccess { get; set; }
         /// <summary>
@@ -43,6 +45,9 @@ namespace Taurus.Plugin.MicroService
         /// </summary>
         public Dictionary<string, string> Header { get { return _Header; } set { _Header = value; } }
 
+        /// <summary>
+        /// 调用异常时信息
+        /// </summary>
         public Exception Error { get; set; }
 
         /// <summary>

@@ -111,6 +111,10 @@ namespace Taurus.Plugin.MicroService
             {
                 get
                 {
+#if DEBUG
+                    return AppConfig.GetAppInt("MicroService.Server.GatewayTimeout", 120);
+#endif
+
                     return AppConfig.GetAppInt("MicroService.Server.GatewayTimeout", 10);
                 }
                 set

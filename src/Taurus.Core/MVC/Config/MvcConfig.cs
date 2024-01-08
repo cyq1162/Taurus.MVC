@@ -84,21 +84,21 @@ namespace Taurus.Mvc
                 AppConfig.SetApp("Mvc.IsPrintRequestSql", value.ToString());
             }
         }
-        /// <summary>
-        /// 指定控制器(控制器所在的项目名称)。
-        /// 如 Mvc.Controllers : "Taurus.Controllers"， 默认值："*"
-        /// </summary>
-        public static string Controllers
-        {
-            get
-            {
-                return AppConfig.GetApp("Mvc.Controllers", "*");
-            }
-            set
-            {
-                AppConfig.SetApp("Mvc.Controllers", value);
-            }
-        }
+        ///// <summary>
+        ///// 指定控制器(控制器所在的项目名称)。
+        ///// 如 Mvc.Controllers : "Taurus.Controllers"， 默认值："*"
+        ///// </summary>
+        //public static string Controllers
+        //{
+        //    get
+        //    {
+        //        return AppConfig.GetApp("Mvc.Controllers", "*");
+        //    }
+        //    set
+        //    {
+        //        AppConfig.SetApp("Mvc.Controllers", value);
+        //    }
+        //}
         /// <summary>
         /// 配置请求路径的默认后缀。
         /// 如 Mvc.Suffix : ".html"，默认值：空

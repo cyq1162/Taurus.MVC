@@ -17,6 +17,12 @@ namespace Taurus.Plugin.MicroService
     {
         public static void ExeTaskAsync(RpcTask task)
         {
+            if (HttpContext.Current != null)
+            {
+                if (task.Request.Header == null) { task.Request.Header = new Dictionary<string, string>(); }
+                //分布式请求追踪ID。
+                task.Request.Header.Add("X-Request-ID", HttpContext.Current.GetTraceID());
+            }
             MutilQueue.Add(task);
             //OneQueue.Add(task);
         }
@@ -43,6 +49,7 @@ namespace Taurus.Plugin.MicroService
                     wc.Timeout = task.Request.Timeout;
                 }
                 wc.Headers.Add(MsConst.HeaderKey, (MsConfig.IsClient ? MsConfig.Client.RcKey : MsConfig.Server.RcKey));
+                
                 //wc.Headers.Add("X-Real-IP", MvcConst.HostIP);
                 //if (HttpContext.Current != null && HttpContext.Current.Request != null)
                 //{

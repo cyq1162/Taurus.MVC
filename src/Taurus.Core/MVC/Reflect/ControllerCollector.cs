@@ -8,97 +8,15 @@ using Taurus.Plugin.Doc;
 using Taurus.Plugin.Admin;
 using Taurus.Plugin.MicroService;
 
-namespace Taurus.Mvc
+namespace Taurus.Mvc.Reflect
 {
     /// <summary>
-    /// 反射Controller类
+    /// Controller 类搜索器
     /// </summary>
-    internal static class ControllerCollector
+    public static class ControllerCollector
     {
 
-        #region GetAssembly
-        private static bool _IsSearchAll = false;
-        private static string _DllNames;
-        /// <summary>
-        /// 控制器名称（多个时逗号分隔）
-        /// </summary>
-        public static string DllNames
-        {
-            get
-            {
-                if (string.IsNullOrEmpty(_DllNames))
-                {
-                    _DllNames = MvcConfig.Controllers;
-                    if (string.IsNullOrEmpty(_DllNames) || _DllNames == "*")
-                    {
-                        _DllNames = string.Empty;
-                        string[] files = Directory.GetFiles(AppConfig.AssemblyPath, "*Controllers.dll", SearchOption.TopDirectoryOnly);
-                        if (files == null || files.Length == 0)
-                        {
-                            _IsSearchAll = true;
-                            files = Directory.GetFiles(AppConfig.AssemblyPath, "*.dll", SearchOption.TopDirectoryOnly);//没有配置，搜索所有的dll。
-                        }
-                        if (files != null)
-                        {
-                            StringBuilder sb = new StringBuilder();
-                            foreach (string file in files)
-                            {
-                                string name = Path.GetFileName(file);
-                                if (name == "CYQ.Data.dll" || name == "Taurus.Core.dll" || name == "sni.dll" || name.StartsWith("System.") || name.StartsWith("Microsoft."))
-                                {
-                                    continue;
-                                }
-                                sb.Append(file);
-                                sb.Append(',');
-                            }
-                            _DllNames = sb.ToString().TrimEnd(',');
-                        }
-                    }
-                }
-                return _DllNames;
-            }
-        }
-        private static List<Assembly> _Assemblys;
-        public static List<Assembly> GetAssemblys()
-        {
-            if (_Assemblys == null)
-            {
-                string[] dllItems = DllNames.Split(',');
-                _Assemblys = new List<Assembly>(dllItems.Length);
-                foreach (string dll in dllItems)
-                {
-                    try
-                    {
-                        if (AppConfig.IsNetCore && dll.IndexOfAny(new char[] { '\\', '/' }) > 0 && dll[0] != '/')
-                        {
-                            //1、NetCore 程序 部署在Linux 环境，有些无理要求此方式才能正常加载。
-                            //2、NetCore 程序 部署在Window IIS，反正会被W3wp.exe 锁定，因此用此法也无啥影响。
-                            //3、传统.Net Framewok 应避开此方式加载（会独站锁定dll文件），重复停止应用程序影响开发效率。
-                            _Assemblys.Add(Assembly.LoadFile(dll));
-                        }
-                        else
-                        {
-                            _Assemblys.Add(Assembly.Load(Path.GetFileName(dll.Replace(".dll", "")))); // 可直接抛异常。
-                        }
-                    }
-                    catch (Exception err)
-                    {
-                        Log.WriteLogToTxt(err, LogType.Taurus);
-                        if (!_IsSearchAll)
-                        {
-                            throw err;
-                        }
-                    }
 
-                }
-            }
-            return _Assemblys;
-        }
-        //public static string GetClassFullName(string className)
-        //{
-        //    return DllName + "." + className;
-        //}
-        #endregion
 
         #region GetControllers
         /// <summary>
@@ -110,7 +28,7 @@ namespace Taurus.Mvc
         /// </summary>
         private static Dictionary<string, Type> _Lv2Controllers = new Dictionary<string, Type>(StringComparer.OrdinalIgnoreCase);
         private static readonly object objLock = new object();
-        public static bool InitControllers()
+        internal static bool InitControllers()
         {
             if (_Lv1Controllers.Count == 0)
             {
@@ -118,7 +36,7 @@ namespace Taurus.Mvc
                 {
                     if (_Lv1Controllers.Count == 0)
                     {
-                        List<Assembly> assList = GetAssemblys();
+                        List<Assembly> assList = AssemblyCollector.ControllerAssemblyList;
                         if (assList != null && assList.Count > 0)
                         {
                             for (int i = 0; i < assList.Count; i++)
@@ -216,7 +134,8 @@ namespace Taurus.Mvc
             return _Lv1Controllers.Count > 0;
         }
         /// <summary>
-        /// 获取控制器
+        /// 获取所有Mvc控制器
+        /// <param name="level">1、以ControllerName为key；2、以NameSpace.ControllerName为Key</param>
         /// </summary>
         public static Dictionary<string, Type> GetControllers(int level)
         {
@@ -246,7 +165,7 @@ namespace Taurus.Mvc
         {
             if (string.IsNullOrEmpty(className) || !IsModuleEnable(className))
             {
-                className = ReflectConst.Default;
+                className = ReflectConst.Global;
             }
             Dictionary<string, Type> controllers = GetControllers(1);
             string[] names = className.Split('.');//home/index
@@ -280,14 +199,14 @@ namespace Taurus.Mvc
                 }
             }
 
-            if (controllers.ContainsKey(ReflectConst.Default))
+            if (controllers.ContainsKey(ReflectConst.Global))
             {
-                return controllers[ReflectConst.Default];
+                return controllers[ReflectConst.Global];
             }
             return null;
         }
 
-        public static bool IsModuleEnable(string name)
+        internal static bool IsModuleEnable(string name)
         {
             if (!AdminConfig.IsEnable && name == AdminConfig.Path.Trim('/', '\\'))
             {
@@ -306,7 +225,7 @@ namespace Taurus.Mvc
         #region 修改控制器路径
 
         /// <summary>
-        /// 修改控制器路径
+        /// 修改控制器请求映射路径
         /// </summary>
         /// <returns></returns>
         public static bool ChangePath(string oldPath, string newPath)

@@ -1,16 +1,16 @@
 ﻿using Taurus.Mvc.Attr;
 
-namespace Taurus.Mvc
+namespace Taurus.Mvc.Reflect
 {
     /// <summary>
-    /// 框架内部支持的属性
+    /// 属性元数据实体
     /// </summary>
-    internal class AttributeEntity
+    public class AttributeEntity
     {
         public bool HasToken { get; set; }
         public bool HasAck { get; set; }
         public bool HasMicroService { get; set; }
-        public bool HasIgnoreDefaultController { get; set; }
+        public bool HasIgnoreGlobalController { get; set; }
         public bool HasWebSocket { get; set; }
         public bool HasGet { get; set; }
         public bool HasPost { get; set; }
@@ -24,7 +24,10 @@ namespace Taurus.Mvc
 
         public bool HasRequire { get; set; }
         public RequireAttribute[] RequireAttributes { get; set; }
-
+        /// <summary>
+        /// 所有属性值
+        /// </summary>
+        public object[] Attributes { get; set; }
         /// <summary>
         /// 是否允许指定的HttpMethod请求
         /// </summary>

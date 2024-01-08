@@ -25,6 +25,21 @@ namespace Taurus.Plugin.Metric
         }
 
         /// <summary>
+        /// 配置是否 忽略统计内部插件Url数据  
+        /// 如 Metric.IsIgnorePluginUrl ：true
+        /// </summary>
+        public static bool IsIgnorePluginUrl
+        {
+            get
+            {
+                return AppConfig.GetAppBool("Metric.IsIgnorePluginUrl", true);
+            }
+            set
+            {
+                AppConfig.SetApp("Metric.IsIgnorePluginUrl", value.ToString());
+            }
+        }
+        /// <summary>
         /// 配置是否 持久化【写文件】
         /// 如 Metric.IsDurable ：true
         /// </summary>

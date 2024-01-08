@@ -127,7 +127,7 @@ namespace Taurus.Plugin.Admin
                 case 2:
                     return "2 【/module/controller/method】";
             }
-            return "0 【/method】 (code in DefaultController.cs)";
+            return "0 【/method】 (code in GlobalController.cs)";
         }
 
         private string GetOnlineText(bool isAdminKey)

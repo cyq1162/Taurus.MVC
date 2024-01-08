@@ -106,8 +106,16 @@ namespace Taurus.Plugin.MicroService
             {
                 if (task.Status != TaskStatus.RanToCompletion && !Wait())
                 {
-                    State = RpcTaskState.Timeout;
-                    result.Error = new Exception("timeout.");
+                    if (task.Status == TaskStatus.Faulted)
+                    {
+                        State = RpcTaskState.Complete;
+                        result.Error = task.Exception;
+                    }
+                    else
+                    {
+                        State = RpcTaskState.Timeout;
+                        result.Error = new Exception("timeout.");
+                    }
                 }
                 else
                 {
