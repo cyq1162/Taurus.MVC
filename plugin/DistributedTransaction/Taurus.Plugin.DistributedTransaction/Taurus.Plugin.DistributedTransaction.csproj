@@ -65,7 +65,7 @@
     <Compile Include="DTC.cs" />
     <Compile Include="DTCConfig.cs" />
     <Compile Include="DTCDebug.cs" />
-    <Compile Include="Enum\DTCExeTypeEnum.cs" />
+    <Compile Include="Enum\ExeTypeEnum.cs" />
     <Compile Include="Enum\TableClearMode.cs" />
     <Compile Include="MQ\Kafka\MQ.Kafka.cs" />
     <Compile Include="MQ\MQ.cs" />
