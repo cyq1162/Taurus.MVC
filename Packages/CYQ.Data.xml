@@ -177,8 +177,38 @@
         </member>
         <member name="P:CYQ.Data.AppConfig.DB.IsPostgreLower">
             <summary>
-            Postgre 是否小写模式(默认false)。
-            配置项：DB.IsPostgreLower ：false
+            Postgre 是否小写模式(默认true)。
+            配置项：DB.IsPostgreLower ：true
+            </summary>
+        </member>
+        <member name="P:CYQ.Data.AppConfig.DB.IsKingBaseESLower">
+            <summary>
+            KingBaseES 是否小写模式(默认true)。
+            配置项：DB.IsKingBaseESLower ：true
+            </summary>
+        </member>
+        <member name="P:CYQ.Data.AppConfig.DB.IsOracleUpper">
+            <summary>
+            Oracle 是否大写模式(默认true)。
+            配置项：DB.IsOracleUpper ：true
+            </summary>
+        </member>
+        <member name="P:CYQ.Data.AppConfig.DB.IsDB2Upper">
+            <summary>
+            DB2 是否大写模式(默认true)。
+            配置项：DB.IsDB2Upper ：true
+            </summary>
+        </member>
+        <member name="P:CYQ.Data.AppConfig.DB.IsFireBirdUpper">
+            <summary>
+            Firebird 是否大写模式(默认true)。
+            配置项：DB.IsFireBirdUpper ：true
+            </summary>
+        </member>
+        <member name="P:CYQ.Data.AppConfig.DB.IsDaMengUpper">
+            <summary>
+            DaMeng 是否大写模式(默认true)。
+            配置项：DB.IsDaMengUpper ：true
             </summary>
         </member>
         <member name="P:CYQ.Data.AppConfig.DB.FilterSqlInjection">
@@ -1126,6 +1156,13 @@
             是否允许进入写日志中模块(默认true)
             </summary>
         </member>
+        <member name="M:CYQ.Data.DalBase.GetUVPSql(System.String)">
+            <summary>
+            读取表名、视图、存储过程列表
+            </summary>
+            <param name="type">U、V、P</param>
+            <returns></returns>
+        </member>
         <member name="M:CYQ.Data.DalBase.ChangeDatabase(System.String)">
             <summary>
             切换数据库（修改数据库链接）
@@ -1193,6 +1230,11 @@
             获得链接的数据库名称
             </summary>
         </member>
+        <member name="P:CYQ.Data.DalBase.SchemaName">
+            <summary>
+            获得链接的模式名称
+            </summary>
+        </member>
         <member name="P:CYQ.Data.DalBase.Version">
             <summary>
             数据库的版本号
@@ -1218,6 +1260,22 @@
             存储过程OutPut输出参数值。
             如果只有一个输出，则为值；
             如果有多个输出，则为Dictionary。
+            </summary>
+        </member>
+        <member name="T:CYQ.Data.DaMengDal">
+            <summary>
+            单数据库 =》 多模式
+            </summary>
+        </member>
+        <member name="P:CYQ.Data.DaMengDal.DataBaseName">
+            <summary>
+            select * from v$database
+            达梦以（端口号对应服务）一个服务对应一个数据库名称，因此数据库名称可以忽略。
+            </summary>
+        </member>
+        <member name="P:CYQ.Data.DaMengDal.SchemaName">
+            <summary>
+            模式 此数据库中提供约为 数据库名称等同
             </summary>
         </member>
         <member name="M:CYQ.Data.NoSqlAction.Clear">
@@ -1430,193 +1488,6 @@
             参数类型
             </summary>
         </member>
-        <member name="T:CYQ.Data.Cache.AutoCache">
-            <summary>
-            内部智能缓存
-            </summary>
-            <summary>
-            线程任务
-            </summary>
-        </member>
-        <member name="F:CYQ.Data.Cache.AutoCache.cacheKeys">
-            <summary>
-            单机存档： 表的baseKey:key1,key2,key3...
-            </summary>
-        </member>
-        <member name="P:CYQ.Data.Cache.AutoCache.KeyTable.ActionInstance">
-            <summary>
-            使用同一个链接，并且不关闭。
-            </summary>
-        </member>
-        <member name="T:CYQ.Data.Cache.CacheManage">
-            <summary>
-            全局缓存类
-            </summary>
-            <example><code>
-            使用示例：
-            实例化： CacheManage cache=CacheManage.Instance;
-            添加：   Cache.Set("路过秋天",new MDataTable);
-            判断：   if(cache.Contains("路过秋天"))
-                     {
-            获取：       MDataTable table=cache.Get("路过秋天") as MDataTable;
-                     }
-            </code></example>
-            <summary>
-            处理分布式锁
-            </summary>
-        </member>
-        <member name="M:CYQ.Data.Cache.CacheManage.RefleshConfig(System.String)">
-            <summary>
-            Redis、MemCache 需要手工刷新配置值时使用。
-            </summary>
-            <param name="newConfigValue">新的配置值</param>
-        </member>
-        <member name="M:CYQ.Data.Cache.CacheManage.Add(System.String,System.Object)">
-            <summary>
-            添一个Cache对象(不存在则添加，存在则返回false)
-            </summary>
-        </member>
-        <member name="M:CYQ.Data.Cache.CacheManage.Set(System.String,System.Object)">
-            <summary>
-            设置一个Cache对象(存在则更新，不存在则添加)
-            </summary>
-        </member>
-        <member name="M:CYQ.Data.Cache.CacheManage.Clear">
-            <summary>
-            清除所有缓存
-            </summary>
-        </member>
-        <member name="M:CYQ.Data.Cache.CacheManage.Contains(System.String)">
-            <summary>
-            是否存在缓存
-            </summary>
-            <param name="key"></param>
-            <returns></returns>
-        </member>
-        <member name="M:CYQ.Data.Cache.CacheManage.Get(System.String)">
-            <summary>
-            获得一个Cache对象
-            </summary>
-        </member>
-        <member name="M:CYQ.Data.Cache.CacheManage.Get``1(System.String)">
-            <summary>
-            获得一个Cache对象
-            </summary>
-        </member>
-        <member name="M:CYQ.Data.Cache.CacheManage.Remove(System.String)">
-            <summary>
-            删除一个Cache对象
-            </summary>
-        </member>
-        <member name="M:CYQ.Data.Cache.CacheManage.Lock(System.String,System.Int32)">
-            <summary>
-            分布式锁（分布式锁需要启用Redis或Memcached）
-            </summary>
-            <param name="key">key</param>
-            <param name="millisecondsTimeout">尝试获取锁的最大等待时间（ms毫秒），超过这个值，则认为获取锁失败</param>
-            <returns></returns>
-        </member>
-        <member name="M:CYQ.Data.Cache.CacheManage.UnLock(System.String)">
-            <summary>
-            释放（分布式锁）
-            </summary>
-            <returns></returns>
-        </member>
-        <member name="M:CYQ.Data.Cache.CacheManage.SetAll(System.String,System.String,System.Double)">
-            <summary>
-            往所有节点写入数据【用于分布式锁的超时机制】
-            </summary>
-        </member>
-        <member name="M:CYQ.Data.Cache.CacheManage.GetKey(CYQ.Data.Cache.CacheKeyType,System.String)">
-            <summary>
-            获取系统内部缓存Key
-            </summary>
-        </member>
-        <member name="M:CYQ.Data.Cache.CacheManage.GetKey(CYQ.Data.Cache.CacheKeyType,System.String,System.String)">
-            <summary>
-            获取系统内部缓存Key
-            </summary>
-        </member>
-        <member name="P:CYQ.Data.Cache.CacheManage.Instance">
-            <summary>
-            返回唯一实例(根据配置(AppConfig.Cache.XXXCacheServers)决定启用顺序：Redis、MemCache、本地缓存）
-            </summary>
-        </member>
-        <member name="P:CYQ.Data.Cache.CacheManage.LocalInstance">
-            <summary>
-            单机本地缓存
-            </summary>
-        </member>
-        <member name="P:CYQ.Data.Cache.CacheManage.MemCacheInstance">
-            <summary>
-            MemCache缓存（需要配置AppConfig.Cache.MemCacheServers）
-            </summary>
-        </member>
-        <member name="P:CYQ.Data.Cache.CacheManage.RedisInstance">
-            <summary>
-            Redis缓存（需要配置AppConfig.Cache.RedisServers）
-            </summary>
-        </member>
-        <member name="P:CYQ.Data.Cache.CacheManage.CacheType">
-            <summary>
-            缓存的实例类型
-            </summary>
-        </member>
-        <member name="P:CYQ.Data.Cache.CacheManage.CacheInfo">
-            <summary>
-            缓存的信息
-            </summary>
-        </member>
-        <member name="P:CYQ.Data.Cache.CacheManage.Count">
-            <summary>
-            获和缓存总数
-            </summary>
-        </member>
-        <member name="P:CYQ.Data.Cache.CacheManage.WorkInfo">
-            <summary>
-            缓存的工作信息
-            </summary>
-        </member>
-        <member name="P:CYQ.Data.Cache.CacheManage.LocalShell.instance">
-            <summary>
-            兼容NetCore下迷一般的Bug的写法。
-            </summary>
-        </member>
-        <member name="T:CYQ.Data.Cache.CacheType">
-            <summary>
-            支持的Cache类型
-            </summary>
-        </member>
-        <member name="F:CYQ.Data.Cache.CacheType.LocalCache">
-            <summary>
-            本地缓存
-            </summary>
-        </member>
-        <member name="F:CYQ.Data.Cache.CacheType.MemCache">
-            <summary>
-            MemCached分布式缓存
-            </summary>
-        </member>
-        <member name="F:CYQ.Data.Cache.CacheType.Redis">
-            <summary>
-            Redis分布式缓存
-            </summary>
-        </member>
-        <member name="T:CYQ.Data.Cache.CacheKeyType">
-            <summary>
-            Cache的Key类型
-            </summary>
-        </member>
-        <member name="F:CYQ.Data.Cache.CacheKeyType.Schema">
-            <summary>
-            表架构的Key
-            </summary>
-        </member>
-        <member name="F:CYQ.Data.Cache.CacheKeyType.AutoCache">
-            <summary>
-            智能缓存Key
-            </summary>
-        </member>
         <member name="T:CYQ.Data.Aop.InterAop">
             <summary>
             内部预先实现CacheAop
@@ -1727,525 +1598,6 @@
             Aop 首次加载时被触发的事件
             </summary>
         </member>
-        <member name="T:CYQ.Data.Cache.LocalCache">
-            <summary>
-            单机缓存类
-            为兼容.NET Core 去掉Web.Caching，重写
-            </summary>
-            <summary>
-            处理分布式锁【单机】
-            </summary>
-        </member>
-        <member name="M:CYQ.Data.Cache.LocalCache.ThreadTask">
-            <summary>
-            单例，可以构造函数里使用。
-            </summary>
-        </member>
-        <member name="M:CYQ.Data.Cache.LocalCache.Get(System.String)">
-            <summary>
-            获得一个Cache对象
-            </summary>
-            <param name="key">标识</param>
-        </member>
-        <member name="M:CYQ.Data.Cache.LocalCache.Contains(System.String)">
-            <summary>
-            是否存在缓存
-            </summary>
-            <param name="key">标识</param>
-            <returns></returns>
-        </member>
-        <member name="M:CYQ.Data.Cache.LocalCache.Set(System.String,System.Object)">
-            <summary>
-            添加一个Cache对象
-            </summary>
-            <param name="key">标识</param>
-            <param name="value">对象值</param>
-        </member>
-        <member name="M:CYQ.Data.Cache.LocalCache.Set(System.String,System.Object,System.Double)">
-            <param name="cacheMinutes">缓存时间(单位分钟)</param>
-        </member>
-        <member name="M:CYQ.Data.Cache.LocalCache.Set(System.String,System.Object,System.Double,System.String)">
-            <param name="fileName">文件依赖路径</param>
-        </member>
-        <member name="M:CYQ.Data.Cache.LocalCache.Remove(System.String)">
-            <summary>
-            删除一个Cache对象
-            </summary>
-            <param name="key">标识</param>
-        </member>
-        <member name="M:CYQ.Data.Cache.LocalCache.RemoveList(System.Collections.Generic.List{System.String})">
-            <summary>
-            移除Key和Value
-            </summary>
-            <param name="removeKeys"></param>
-        </member>
-        <member name="M:CYQ.Data.Cache.LocalCache.Clear">
-            <summary>
-            清除所有缓存
-            </summary>
-        </member>
-        <member name="M:CYQ.Data.Cache.LocalCache.ClearDB">
-            <summary>
-            清空外部缓存数据
-            </summary>
-        </member>
-        <member name="P:CYQ.Data.Cache.LocalCache.CacheInfo">
-            <summary>
-            获取缓存信息对象列表
-            </summary>
-        </member>
-        <member name="P:CYQ.Data.Cache.LocalCache.WorkInfo">
-            <summary>
-            内存工作信息
-            </summary>
-        </member>
-        <member name="P:CYQ.Data.Cache.LocalCache.Count">
-            <summary>
-            获和缓存总数
-            </summary>
-        </member>
-        <member name="T:CYQ.Data.Cache.MemCache">
-            <summary>
-            MemCache分布式缓存类
-            </summary>
-            <summary>
-            分布式锁
-            </summary>
-        </member>
-        <member name="P:CYQ.Data.Cache.MemCache.Client">
-            <summary>
-            返回客户端
-            </summary>
-        </member>
-        <member name="F:CYQ.Data.Cache.ClientBase.compressionThreshold">
-            <summary>
-            指定数据长度超过值时进行压缩，默认128K
-            </summary>
-        </member>
-        <member name="M:CYQ.Data.Cache.ClientBase.hash(System.String)">
-            <summary>
-            Private key hashing method that uses the modified FNV hash.
-            </summary>
-            <param name="key">The key to hash.</param>
-            <returns>The hashed key.</returns>
-        </member>
-        <member name="M:CYQ.Data.Cache.ClientBase.checkKey(System.String)">
-            <summary>
-            Private key-checking method.
-            Throws an exception if the key does not conform to memcached protocol requirements:
-            It may not contain whitespace, it may not be null or empty, and it may not be longer than 250 characters.
-            </summary>
-            <param name="key">The key to check.</param>
-        </member>
-        <member name="M:CYQ.Data.Cache.ClientBase.GetAllHostNodeStatus">
-            <summary>
-            获取主机节点的基础信息
-            </summary>
-        </member>
-        <member name="P:CYQ.Data.Cache.ClientBase.HostServer">
-            <summary>
-            主机服务
-            </summary>
-        </member>
-        <member name="T:CYQ.Data.Cache.HostConfigWatch">
-            <summary>
-            用于监控分布式缓存的配置列表，实际高可用，动态加载，而不需要关停运行的服务。
-            </summary>
-        </member>
-        <member name="F:CYQ.Data.Cache.HostConfigWatch.HostList">
-            <summary>
-            存档配置文件对应的原始主机列表。
-            </summary>
-        </member>
-        <member name="F:CYQ.Data.Cache.HostConfigWatch.HostAddList">
-            <summary>
-            变化后要追加的主机。
-            </summary>
-        </member>
-        <member name="F:CYQ.Data.Cache.HostConfigWatch.HostRemoveList">
-            <summary>
-            变化后要移除的主机。
-            </summary>
-        </member>
-        <member name="M:CYQ.Data.Cache.HostConfigWatch.CompareHostListByConfig(System.String)">
-            <summary>
-            和旧配置相比较，找出变化后的主机信息
-            </summary>
-            <param name="configValue">新的配置值</param>
-        </member>
-        <member name="T:CYQ.Data.Cache.MemcachedClient">
-            <summary>
-            Memcached client main class.
-            Use the static methods Setup and GetInstance to setup and get an instance of the client for use.
-            </summary>
-        </member>
-        <member name="M:CYQ.Data.Cache.MemcachedClient.Set(System.String,System.Object)">
-            <summary>
-            This method corresponds to the "set" command in the memcached protocol. 
-            It will unconditionally set the given key to the given value.
-            Using the overloads it is possible to specify an expiry time, either relative as a TimeSpan or 
-            absolute as a DateTime. It is also possible to specify a custom hash to override server selection.
-            This method returns true if the value was successfully set.
-            </summary>
-        </member>
-        <member name="M:CYQ.Data.Cache.MemcachedClient.Add(System.String,System.Object)">
-            <summary>
-            This method corresponds to the "add" command in the memcached protocol. 
-            It will set the given key to the given value only if the key does not already exist.
-            Using the overloads it is possible to specify an expiry time, either relative as a TimeSpan or 
-            absolute as a DateTime. It is also possible to specify a custom hash to override server selection.
-            This method returns true if the value was successfully added.
-            </summary>
-        </member>
-        <member name="M:CYQ.Data.Cache.MemcachedClient.Get(System.String)">
-            <summary>
-            This method corresponds to the "get" command in the memcached protocol.
-            It will return the value for the given key. It will return null if the key did not exist,
-            or if it was unable to retrieve the value.
-            If given an array of keys, it will return a same-sized array of objects with the corresponding
-            values.
-            Use the overload to specify a custom hash to override server selection.
-            </summary>
-        </member>
-        <member name="M:CYQ.Data.Cache.MemcachedClient.Delete(System.String)">
-            <summary>
-            This method corresponds to the "delete" command in the memcache protocol.
-            It will immediately delete the given key and corresponding value.
-            Use the overloads to specify an amount of time the item should be in the delete queue on the server,
-            or to specify a custom hash to override server selection.
-            </summary>
-        </member>
-        <member name="M:CYQ.Data.Cache.MemcachedClient.FlushAll">
-            <summary>
-            This method corresponds to the "flush_all" command in the memcached protocol.
-            When this method is called, it will send the flush command to all servers, thereby deleting
-            all items on all servers.
-            Use the overloads to set a delay for the flushing. If the parameter staggered is set to true,
-            the client will increase the delay for each server, i.e. the first will flush after delay*0, 
-            the second after delay*1, the third after delay*2, etc. If set to false, all servers will flush 
-            after the same delay.
-            It returns true if the command was successful on all servers.
-            </summary>
-        </member>
-        <member name="M:CYQ.Data.Cache.MemcachedClient.Stats">
-            <summary>
-            This method corresponds to the "stats" command in the memcached protocol.
-            It will send the stats command to all servers, and it will return a Dictionary for each server
-            containing the results of the command.
-            </summary>
-        </member>
-        <member name="T:CYQ.Data.Cache.MemcachedClient.CasResult">
-            <summary>
-            This method corresponds to the "replace" command in the memcached protocol. 
-            It will set the given key to the given value only if the key already exists.
-            Using the overloads it is possible to specify an expiry time, either relative as a TimeSpan or 
-            absolute as a DateTime. It is also possible to specify a custom hash to override server selection.
-            This method returns true if the value was successfully replaced.
-            </summary>
-        </member>
-        <member name="T:CYQ.Data.Cache.MSocket">
-            <summary>
-            底层Cache Socket
-            </summary>
-        </member>
-        <member name="M:CYQ.Data.Cache.MSocket.ReturnPool">
-            <summary>
-            回归 Socket池
-            </summary>
-        </member>
-        <member name="M:CYQ.Data.Cache.MSocket.Close">
-            <summary>
-            This method closes the underlying stream and socket.
-            关闭Socket并释放相关资源。
-            </summary>
-        </member>
-        <member name="M:CYQ.Data.Cache.MSocket.Write(System.String)">
-            <summary>
-            Writes a string to the socket encoded in UTF8 format.
-            </summary>
-        </member>
-        <member name="M:CYQ.Data.Cache.MSocket.Write(System.Byte[])">
-            <summary>
-            Writes an array of bytes to the socket and flushes the stream.
-            </summary>
-        </member>
-        <member name="M:CYQ.Data.Cache.MSocket.ReadLine">
-            <summary>
-            Reads from the socket until the sequence '\r\n' is encountered, 
-            and returns everything up to but not including that sequence as a UTF8-encoded string
-            返回Null即没有数据了！
-            </summary>
-        </member>
-        <member name="M:CYQ.Data.Cache.MSocket.ReadLineBytes">
-            <summary>
-            读一行的数据
-            </summary>
-            <returns></returns>
-        </member>
-        <member name="M:CYQ.Data.Cache.MSocket.ReadBytes(System.Int32)">
-            <summary>
-            读一行的数据
-            </summary>
-            <returns></returns>
-        </member>
-        <member name="M:CYQ.Data.Cache.MSocket.ReadResponse">
-            <summary>
-            Reads a response line from the socket, checks for general memcached errors, and returns the line.
-            If an error is encountered, this method will throw an exception.
-            </summary>
-        </member>
-        <member name="M:CYQ.Data.Cache.MSocket.Read(System.Byte[])">
-            <summary>
-            Fills the given byte array with data from the socket.
-            </summary>
-        </member>
-        <member name="M:CYQ.Data.Cache.MSocket.SkipToEndOfLine">
-            <summary>
-            Reads from the socket until the sequence '\r\n' is encountered.
-            </summary>
-        </member>
-        <member name="M:CYQ.Data.Cache.MSocket.SkipToEndOfLine(System.Int32)">
-            <summary>
-            //跳过N个命令的结果
-            </summary>
-            <param name="cmdCount"></param>
-        </member>
-        <member name="M:CYQ.Data.Cache.MSocket.Reset">
-            <summary>
-            Resets this PooledSocket by making sure the incoming buffer of the socket is empty.
-            If there was any leftover data, this method return true.
-            </summary>
-        </member>
-        <member name="P:CYQ.Data.Cache.MSocket.HostNode">
-            <summary>
-            挂载的Socket池。
-            </summary>
-        </member>
-        <member name="P:CYQ.Data.Cache.MSocket.IsAlive">
-            <summary>
-            Checks if the underlying socket and stream is connected and available.
-            </summary>
-        </member>
-        <member name="M:CYQ.Data.Cache.Serializer.Serialize(System.Object,CYQ.Data.Cache.SerializedType@,System.UInt32)">
-            <summary>
-            序列化
-            </summary>
-            <param name="value">值</param>
-            <param name="type">返回序列化类型</param>
-            <param name="compressionThreshold">指定超过长度时启用压缩功能</param>
-            <returns></returns>
-        </member>
-        <member name="T:CYQ.Data.Cache.HostServer">
-            <summary>
-            The ServerPool encapsulates a collection of memcached servers and the associated SocketPool objects.
-            This class contains the server-selection logic, and contains methods for executing a block of code on 
-            a socket from the server corresponding to a given key.
-            管理多个主机实例的服务
-            </summary>
-            <summary>
-            处理一致性hash
-            </summary>
-        </member>
-        <member name="F:CYQ.Data.Cache.HostServer.watch">
-            <summary>
-            Internal constructor. This method takes the array of hosts and sets up an internal list of socketpools.
-            </summary>
-        </member>
-        <member name="M:CYQ.Data.Cache.HostServer.watch_OnConfigChangedEvent(System.String)">
-            <summary>
-            缓存配置文件修改时
-            </summary>
-        </member>
-        <member name="M:CYQ.Data.Cache.HostServer.RefleshHostServer(System.String)">
-            <summary>
-            刷新主机配置
-            </summary>
-        </member>
-        <member name="F:CYQ.Data.Cache.HostServer.hostList">
-            <summary>
-            主机【仅有N个】
-            </summary>
-        </member>
-        <member name="M:CYQ.Data.Cache.HostServer.Execute``1(System.UInt32,``0,CYQ.Data.Cache.UseSocket{``0})">
-            <summary>
-            This method executes the given delegate on a socket from the server that corresponds to the given hash.
-            If anything causes an error, the given defaultValue will be returned instead.
-            This method takes care of disposing the socket properly once the delegate has executed.
-            </summary>
-        </member>
-        <member name="M:CYQ.Data.Cache.HostServer.ExecuteAll(CYQ.Data.Cache.UseSocketVoid)">
-            <summary>
-            This method executes the given delegate on all servers.
-            </summary>
-        </member>
-        <member name="F:CYQ.Data.Cache.HostServer.hashHostDic">
-            <summary>
-            一致性hash的主机分布列表
-            </summary>
-        </member>
-        <member name="F:CYQ.Data.Cache.HostServer.hashKeys">
-            <summary>
-            创建用于查询（已排序）的hashkey。
-            </summary>
-        </member>
-        <member name="M:CYQ.Data.Cache.HostServer.GetHost(System.UInt32)">
-            <summary>
-            Given an item key hash, this method returns the socketpool which is closest on the server key continuum.
-            获取一台用于服务的主机实例。
-            </summary>
-        </member>
-        <member name="P:CYQ.Data.Cache.HostServer.ServerType">
-            <summary>
-            缓存类型
-            </summary>
-        </member>
-        <member name="P:CYQ.Data.Cache.HostServer.HostList">
-            <summary>
-            主机列表。
-            </summary>
-        </member>
-        <member name="P:CYQ.Data.Cache.HostServer.HashNodeCount">
-            <summary>
-            一致性Hash产生的结点数，数越大，分布越平均
-            </summary>
-        </member>
-        <member name="T:CYQ.Data.Cache.HostNode">
-            <summary>
-            The SocketPool encapsulates the list of PooledSockets against one specific host, and contains methods for 
-            acquiring or returning PooledSockets.
-            </summary>
-        </member>
-        <member name="F:CYQ.Data.Cache.HostNode.Password">
-            <summary>
-            扩展属性：如果链接后需要验证密码（如Redis可设置密码）
-            </summary>
-        </member>
-        <member name="F:CYQ.Data.Cache.HostNode.Error">
-            <summary>
-            最后的错误信息。
-            </summary>
-        </member>
-        <member name="F:CYQ.Data.Cache.HostNode.IsEndPointDead">
-            <summary>
-            主机节点是不是挂了。
-            </summary>
-        </member>
-        <member name="F:CYQ.Data.Cache.HostNode.socketDeadTime">
-            <summary>
-            Socket的挂科时间。
-            </summary>
-        </member>
-        <member name="F:CYQ.Data.Cache.HostNode.deadEndPointSecondsUntilRetry">
-            <summary>
-            If the host stops responding, we mark it as dead for this amount of seconds, 
-            and we double this for each consecutive failed retry. If the host comes alive
-            again, we reset this to 1 again.
-            </summary>
-        </member>
-        <member name="M:CYQ.Data.Cache.HostNode.GetFromQueue(System.Int32)">
-            <summary>
-            从队列获取数据，并可能进行等待。
-            </summary>
-            <param name="wait"></param>
-            <returns></returns>
-        </member>
-        <member name="M:CYQ.Data.Cache.HostNode.Acquire">
-            <summary>
-            Gets a socket from the pool.
-            If there are no free sockets, a new one will be created. If something goes
-            wrong while creating the new socket, this pool's endpoint will be marked as dead
-            and all subsequent calls to this method will return null until the retry interval
-            has passed.
-            这个方法扩展（备份链接池）
-            </summary>
-        </member>
-        <member name="M:CYQ.Data.Cache.HostNode.Return(CYQ.Data.Cache.MSocket)">
-            <summary>
-            Returns a socket to the pool.
-            If the socket is dead, it will be destroyed.
-            If there are more than MaxPoolSize sockets in the pool, it will be destroyed.
-            If there are less than MinPoolSize sockets in the pool, it will always be put back.
-            If there are something inbetween those values, the age of the socket is checked. 
-            If it is older than the SocketRecycleAge, it is destroyed, otherwise it will be 
-            put back in the pool.
-            </summary>
-        </member>
-        <member name="M:CYQ.Data.Cache.HostNode.TryConnection">
-            <summary>
-            线程池里重试链接。
-            </summary>
-            <returns></returns>
-        </member>
-        <member name="M:CYQ.Data.Cache.HostNode.AddToDeadPool">
-            <summary>
-            添加故障节点
-            </summary>
-            <param name="hostNode"></param>
-        </member>
-        <member name="F:CYQ.Data.Cache.HostNode.deadNode">
-            <summary>
-            已故障节点
-            </summary>
-        </member>
-        <member name="M:CYQ.Data.Cache.HostNode.DoHostNodeTask(System.Object)">
-            <summary>
-            线程检测已故障节点。
-            </summary>
-            <param name="threadID"></param>
-        </member>
-        <member name="P:CYQ.Data.Cache.HostNode.Poolsize">
-            <summary>
-            当前 Socket 池的可用数量。
-            </summary>
-        </member>
-        <member name="P:CYQ.Data.Cache.HostNode.MaxWait">
-            <summary>
-            超出最大链接后的等待时间。
-            </summary>
-        </member>
-        <member name="P:CYQ.Data.Cache.HostNode.HostServer">
-            <summary>
-            主机服务。
-            </summary>
-        </member>
-        <member name="T:CYQ.Data.Cache.RedisCache">
-            <summary>
-            Redis分布式缓存类
-            </summary>
-            <summary>
-            分布式锁
-            </summary>
-        </member>
-        <member name="P:CYQ.Data.Cache.RedisCache.Client">
-            <summary>
-            读取客户端
-            </summary>
-        </member>
-        <member name="T:CYQ.Data.Cache.RedisClient">
-            <summary>
-            Redis client main class.
-            Use the static methods Setup and GetInstance to setup and get an instance of the client for use.
-            </summary>
-        </member>
-        <member name="M:CYQ.Data.Cache.RedisClient.Stats">
-            <summary>
-            This method corresponds to the "stats" command in the memcached protocol.
-            It will send the stats command to all servers, and it will return a Dictionary for each server
-            containing the results of the command.
-            </summary>
-        </member>
-        <member name="T:CYQ.Data.Cache.RedisCommand">
-            <summary>
-            RedisCommand
-            </summary>
-        </member>
-        <member name="M:CYQ.Data.Cache.RedisCommand.AddValue(System.Byte[],System.Byte[])">
-            <summary>
-            
-            </summary>
-            <param name="dataType"></param>
-            <param name="dataValue"></param>
-        </member>
         <member name="T:CYQ.Data.ConnBean">
             <summary>
             数据库对象基础实例
@@ -2280,6 +1632,11 @@
         <member name="F:CYQ.Data.ConnBean.ConnString">
             <summary>
             经过格式化后的数据库链接字符串
+            </summary>
+        </member>
+        <member name="F:CYQ.Data.ConnBean.ConnStringOrg">
+            <summary>
+            原始的数据库链接字符串
             </summary>
         </member>
         <member name="F:CYQ.Data.ConnBean.ConnDataBaseType">
@@ -2378,6 +1735,16 @@
         <member name="F:CYQ.Data.DataBaseType.Xml">
             <summary>
             Xml DataBase
+            </summary>
+        </member>
+        <member name="F:CYQ.Data.DataBaseType.DaMeng">
+            <summary>
+            国产达梦数据库
+            </summary>
+        </member>
+        <member name="F:CYQ.Data.DataBaseType.KingBaseES">
+            <summary>
+            国产人大金仓数据库
             </summary>
         </member>
         <member name="T:CYQ.Data.ParaType">
@@ -2531,6 +1898,801 @@
             <para>使用此项：插入数据后,会根据返回id进行查询后填充数据行。</para>
             </summary>
         </member>
+        <member name="T:CYQ.Data.KingBaseESDal">
+            <summary>
+            多数据库 =》 多模式
+            </summary>
+        </member>
+        <member name="P:CYQ.Data.KingBaseESDal.SchemaName">
+            <summary>
+            模式名称 （非等同数据库名称）
+            </summary>
+        </member>
+        <member name="T:CYQ.Data.Cache.AutoCache">
+            <summary>
+            内部智能缓存
+            </summary>
+            <summary>
+            线程任务
+            </summary>
+        </member>
+        <member name="F:CYQ.Data.Cache.AutoCache.cacheKeys">
+            <summary>
+            单机存档： 表的baseKey:key1,key2,key3...
+            </summary>
+        </member>
+        <member name="P:CYQ.Data.Cache.AutoCache.KeyTable.ActionInstance">
+            <summary>
+            使用同一个链接，并且不关闭。
+            </summary>
+        </member>
+        <member name="T:CYQ.Data.Cache.LocalCache">
+            <summary>
+            单机缓存类
+            为兼容.NET Core 去掉Web.Caching，重写
+            </summary>
+            <summary>
+            处理分布式锁【单机】
+            </summary>
+        </member>
+        <member name="T:CYQ.Data.Cache.DistributedCache">
+            <summary>
+            全局缓存类
+            </summary>
+            <example><code>
+            使用示例：
+            实例化： CacheManage cache=CacheManage.Instance;
+            添加：   Cache.Set("路过秋天",new MDataTable);
+            判断：   if(cache.Contains("路过秋天"))
+                     {
+            获取：       MDataTable table=cache.Get("路过秋天") as MDataTable;
+                     }
+            </code></example>
+            <summary>
+            处理分布式锁
+            </summary>
+        </member>
+        <member name="M:CYQ.Data.Cache.DistributedCache.RefleshConfig(System.String)">
+            <summary>
+            Redis、MemCache 需要手工刷新配置值时使用。
+            </summary>
+            <param name="newConfigValue">新的配置值</param>
+        </member>
+        <member name="M:CYQ.Data.Cache.DistributedCache.Add(System.String,System.Object)">
+            <summary>
+            添一个Cache对象(不存在则添加，存在则返回false)
+            </summary>
+        </member>
+        <member name="M:CYQ.Data.Cache.DistributedCache.Set(System.String,System.Object)">
+            <summary>
+            设置一个Cache对象(存在则更新，不存在则添加)
+            </summary>
+        </member>
+        <member name="M:CYQ.Data.Cache.DistributedCache.Clear">
+            <summary>
+            清除所有缓存
+            </summary>
+        </member>
+        <member name="M:CYQ.Data.Cache.DistributedCache.Contains(System.String)">
+            <summary>
+            是否存在缓存
+            </summary>
+            <param name="key"></param>
+            <returns></returns>
+        </member>
+        <member name="M:CYQ.Data.Cache.DistributedCache.Get(System.String)">
+            <summary>
+            获得一个Cache对象
+            </summary>
+        </member>
+        <member name="M:CYQ.Data.Cache.DistributedCache.Get``1(System.String)">
+            <summary>
+            获得一个Cache对象
+            </summary>
+        </member>
+        <member name="M:CYQ.Data.Cache.DistributedCache.Remove(System.String)">
+            <summary>
+            删除一个Cache对象
+            </summary>
+        </member>
+        <member name="M:CYQ.Data.Cache.DistributedCache.Lock(System.String,System.Int32)">
+            <summary>
+            分布式锁（分布式锁需要启用Redis或Memcached）
+            </summary>
+            <param name="key">key</param>
+            <param name="millisecondsTimeout">尝试获取锁的最大等待时间（ms毫秒），超过这个值，则认为获取锁失败</param>
+            <returns></returns>
+        </member>
+        <member name="M:CYQ.Data.Cache.DistributedCache.UnLock(System.String)">
+            <summary>
+            释放（分布式锁）
+            </summary>
+            <returns></returns>
+        </member>
+        <member name="M:CYQ.Data.Cache.DistributedCache.SetAll(System.String,System.String,System.Double)">
+            <summary>
+            往所有节点写入数据【用于分布式锁的超时机制】
+            </summary>
+        </member>
+        <member name="M:CYQ.Data.Cache.DistributedCache.GetKey(CYQ.Data.Cache.CacheKeyType,System.String)">
+            <summary>
+            获取系统内部缓存Key
+            </summary>
+        </member>
+        <member name="M:CYQ.Data.Cache.DistributedCache.GetKey(CYQ.Data.Cache.CacheKeyType,System.String,System.String)">
+            <summary>
+            获取系统内部缓存Key
+            </summary>
+        </member>
+        <member name="P:CYQ.Data.Cache.DistributedCache.Instance">
+            <summary>
+            返回唯一实例(根据配置(Redis、MemCache是否配置启用)决定启用顺序：Redis、MemCache、本地缓存）
+            </summary>
+        </member>
+        <member name="P:CYQ.Data.Cache.DistributedCache.Local">
+            <summary>
+            单机本地缓存
+            </summary>
+        </member>
+        <member name="P:CYQ.Data.Cache.DistributedCache.MemCache">
+            <summary>
+            MemCache缓存（需要配置AppConfig.MemCache.Servers）
+            </summary>
+        </member>
+        <member name="P:CYQ.Data.Cache.DistributedCache.Redis">
+            <summary>
+            Redis缓存（需要配置AppConfig.Redis.Servers）
+            </summary>
+        </member>
+        <member name="P:CYQ.Data.Cache.DistributedCache.CacheType">
+            <summary>
+            缓存的实例类型
+            </summary>
+        </member>
+        <member name="P:CYQ.Data.Cache.DistributedCache.CacheInfo">
+            <summary>
+            缓存的信息
+            </summary>
+        </member>
+        <member name="P:CYQ.Data.Cache.DistributedCache.Count">
+            <summary>
+            获和缓存总数
+            </summary>
+        </member>
+        <member name="P:CYQ.Data.Cache.DistributedCache.WorkInfo">
+            <summary>
+            缓存的工作信息
+            </summary>
+        </member>
+        <member name="P:CYQ.Data.Cache.DistributedCache.LocalShell.instance">
+            <summary>
+            兼容NetCore下迷一般的Bug的写法。
+            </summary>
+        </member>
+        <member name="M:CYQ.Data.Cache.LocalCache.ThreadTask">
+            <summary>
+            单例，可以构造函数里使用。
+            </summary>
+        </member>
+        <member name="M:CYQ.Data.Cache.LocalCache.Get(System.String)">
+            <summary>
+            获得一个Cache对象
+            </summary>
+            <param name="key">标识</param>
+        </member>
+        <member name="M:CYQ.Data.Cache.LocalCache.Contains(System.String)">
+            <summary>
+            是否存在缓存
+            </summary>
+            <param name="key">标识</param>
+            <returns></returns>
+        </member>
+        <member name="M:CYQ.Data.Cache.LocalCache.Set(System.String,System.Object)">
+            <summary>
+            添加一个Cache对象
+            </summary>
+            <param name="key">标识</param>
+            <param name="value">对象值</param>
+        </member>
+        <member name="M:CYQ.Data.Cache.LocalCache.Set(System.String,System.Object,System.Double)">
+            <param name="cacheMinutes">缓存时间(单位分钟)</param>
+        </member>
+        <member name="M:CYQ.Data.Cache.LocalCache.Set(System.String,System.Object,System.Double,System.String)">
+            <param name="fileName">文件依赖路径</param>
+        </member>
+        <member name="M:CYQ.Data.Cache.LocalCache.Remove(System.String)">
+            <summary>
+            删除一个Cache对象
+            </summary>
+            <param name="key">标识</param>
+        </member>
+        <member name="M:CYQ.Data.Cache.LocalCache.RemoveList(System.Collections.Generic.List{System.String})">
+            <summary>
+            移除Key和Value
+            </summary>
+            <param name="removeKeys"></param>
+        </member>
+        <member name="M:CYQ.Data.Cache.LocalCache.Clear">
+            <summary>
+            清除所有缓存
+            </summary>
+        </member>
+        <member name="M:CYQ.Data.Cache.LocalCache.ClearDB">
+            <summary>
+            清空外部缓存数据
+            </summary>
+        </member>
+        <member name="P:CYQ.Data.Cache.LocalCache.CacheInfo">
+            <summary>
+            获取缓存信息对象列表
+            </summary>
+        </member>
+        <member name="P:CYQ.Data.Cache.LocalCache.WorkInfo">
+            <summary>
+            内存工作信息
+            </summary>
+        </member>
+        <member name="P:CYQ.Data.Cache.LocalCache.Count">
+            <summary>
+            获和缓存总数
+            </summary>
+        </member>
+        <member name="T:CYQ.Data.Cache.MemCache">
+            <summary>
+            MemCache分布式缓存类
+            </summary>
+            <summary>
+            分布式锁
+            </summary>
+        </member>
+        <member name="P:CYQ.Data.Cache.MemCache.Client">
+            <summary>
+            返回客户端
+            </summary>
+        </member>
+        <member name="T:CYQ.Data.Cache.MemcachedClient">
+            <summary>
+            Memcached client main class.
+            Use the static methods Setup and GetInstance to setup and get an instance of the client for use.
+            </summary>
+        </member>
+        <member name="F:CYQ.Data.Cache.ClientBase.compressionThreshold">
+            <summary>
+            指定数据长度超过值时进行压缩，默认128K
+            </summary>
+        </member>
+        <member name="M:CYQ.Data.Cache.ClientBase.hash(System.String)">
+            <summary>
+            Private key hashing method that uses the modified FNV hash.
+            </summary>
+            <param name="key">The key to hash.</param>
+            <returns>The hashed key.</returns>
+        </member>
+        <member name="M:CYQ.Data.Cache.ClientBase.checkKey(System.String)">
+            <summary>
+            Private key-checking method.
+            Throws an exception if the key does not conform to memcached protocol requirements:
+            It may not contain whitespace, it may not be null or empty, and it may not be longer than 250 characters.
+            </summary>
+            <param name="key">The key to check.</param>
+        </member>
+        <member name="M:CYQ.Data.Cache.ClientBase.GetAllHostNodeStatus">
+            <summary>
+            获取主机节点的基础信息
+            </summary>
+        </member>
+        <member name="P:CYQ.Data.Cache.ClientBase.HostServer">
+            <summary>
+            主机服务
+            </summary>
+        </member>
+        <member name="M:CYQ.Data.Cache.MemcachedClient.Set(System.String,System.Object)">
+            <summary>
+            This method corresponds to the "set" command in the memcached protocol. 
+            It will unconditionally set the given key to the given value.
+            Using the overloads it is possible to specify an expiry time, either relative as a TimeSpan or 
+            absolute as a DateTime. It is also possible to specify a custom hash to override server selection.
+            This method returns true if the value was successfully set.
+            </summary>
+        </member>
+        <member name="M:CYQ.Data.Cache.MemcachedClient.Add(System.String,System.Object)">
+            <summary>
+            This method corresponds to the "add" command in the memcached protocol. 
+            It will set the given key to the given value only if the key does not already exist.
+            Using the overloads it is possible to specify an expiry time, either relative as a TimeSpan or 
+            absolute as a DateTime. It is also possible to specify a custom hash to override server selection.
+            This method returns true if the value was successfully added.
+            </summary>
+        </member>
+        <member name="M:CYQ.Data.Cache.MemcachedClient.Get(System.String)">
+            <summary>
+            This method corresponds to the "get" command in the memcached protocol.
+            It will return the value for the given key. It will return null if the key did not exist,
+            or if it was unable to retrieve the value.
+            If given an array of keys, it will return a same-sized array of objects with the corresponding
+            values.
+            Use the overload to specify a custom hash to override server selection.
+            </summary>
+        </member>
+        <member name="M:CYQ.Data.Cache.MemcachedClient.Delete(System.String)">
+            <summary>
+            This method corresponds to the "delete" command in the memcache protocol.
+            It will immediately delete the given key and corresponding value.
+            Use the overloads to specify an amount of time the item should be in the delete queue on the server,
+            or to specify a custom hash to override server selection.
+            </summary>
+        </member>
+        <member name="M:CYQ.Data.Cache.MemcachedClient.FlushAll">
+            <summary>
+            This method corresponds to the "flush_all" command in the memcached protocol.
+            When this method is called, it will send the flush command to all servers, thereby deleting
+            all items on all servers.
+            Use the overloads to set a delay for the flushing. If the parameter staggered is set to true,
+            the client will increase the delay for each server, i.e. the first will flush after delay*0, 
+            the second after delay*1, the third after delay*2, etc. If set to false, all servers will flush 
+            after the same delay.
+            It returns true if the command was successful on all servers.
+            </summary>
+        </member>
+        <member name="M:CYQ.Data.Cache.MemcachedClient.Stats">
+            <summary>
+            This method corresponds to the "stats" command in the memcached protocol.
+            It will send the stats command to all servers, and it will return a Dictionary for each server
+            containing the results of the command.
+            </summary>
+        </member>
+        <member name="T:CYQ.Data.Cache.MemcachedClient.CasResult">
+            <summary>
+            This method corresponds to the "replace" command in the memcached protocol. 
+            It will set the given key to the given value only if the key already exists.
+            Using the overloads it is possible to specify an expiry time, either relative as a TimeSpan or 
+            absolute as a DateTime. It is also possible to specify a custom hash to override server selection.
+            This method returns true if the value was successfully replaced.
+            </summary>
+        </member>
+        <member name="T:CYQ.Data.Cache.HostConfigWatch">
+            <summary>
+            用于监控分布式缓存的配置列表，实际高可用，动态加载，而不需要关停运行的服务。
+            </summary>
+        </member>
+        <member name="F:CYQ.Data.Cache.HostConfigWatch.HostList">
+            <summary>
+            存档配置文件对应的原始主机列表。
+            </summary>
+        </member>
+        <member name="F:CYQ.Data.Cache.HostConfigWatch.HostAddList">
+            <summary>
+            变化后要追加的主机。
+            </summary>
+        </member>
+        <member name="F:CYQ.Data.Cache.HostConfigWatch.HostRemoveList">
+            <summary>
+            变化后要移除的主机。
+            </summary>
+        </member>
+        <member name="M:CYQ.Data.Cache.HostConfigWatch.CompareHostListByConfig(System.String)">
+            <summary>
+            和旧配置相比较，找出变化后的主机信息
+            </summary>
+            <param name="configValue">新的配置值</param>
+        </member>
+        <member name="T:CYQ.Data.Cache.HostNode">
+            <summary>
+            The SocketPool encapsulates the list of PooledSockets against one specific host, and contains methods for 
+            acquiring or returning PooledSockets.
+            </summary>
+        </member>
+        <member name="F:CYQ.Data.Cache.HostNode.Password">
+            <summary>
+            扩展属性：如果链接后需要验证密码（如Redis可设置密码）
+            </summary>
+        </member>
+        <member name="F:CYQ.Data.Cache.HostNode.Error">
+            <summary>
+            最后的错误信息。
+            </summary>
+        </member>
+        <member name="F:CYQ.Data.Cache.HostNode.IsEndPointDead">
+            <summary>
+            主机节点是不是挂了。
+            </summary>
+        </member>
+        <member name="F:CYQ.Data.Cache.HostNode.socketDeadTime">
+            <summary>
+            Socket的挂科时间。
+            </summary>
+        </member>
+        <member name="F:CYQ.Data.Cache.HostNode.deadEndPointSecondsUntilRetry">
+            <summary>
+            If the host stops responding, we mark it as dead for this amount of seconds, 
+            and we double this for each consecutive failed retry. If the host comes alive
+            again, we reset this to 1 again.
+            </summary>
+        </member>
+        <member name="M:CYQ.Data.Cache.HostNode.GetFromQueue(System.Int32)">
+            <summary>
+            从队列获取数据，并可能进行等待。
+            </summary>
+            <param name="wait"></param>
+            <returns></returns>
+        </member>
+        <member name="M:CYQ.Data.Cache.HostNode.Acquire">
+            <summary>
+            Gets a socket from the pool.
+            If there are no free sockets, a new one will be created. If something goes
+            wrong while creating the new socket, this pool's endpoint will be marked as dead
+            and all subsequent calls to this method will return null until the retry interval
+            has passed.
+            这个方法扩展（备份链接池）
+            </summary>
+        </member>
+        <member name="M:CYQ.Data.Cache.HostNode.Return(CYQ.Data.Cache.MSocket)">
+            <summary>
+            Returns a socket to the pool.
+            If the socket is dead, it will be destroyed.
+            If there are more than MaxPoolSize sockets in the pool, it will be destroyed.
+            If there are less than MinPoolSize sockets in the pool, it will always be put back.
+            If there are something inbetween those values, the age of the socket is checked. 
+            If it is older than the SocketRecycleAge, it is destroyed, otherwise it will be 
+            put back in the pool.
+            </summary>
+        </member>
+        <member name="M:CYQ.Data.Cache.HostNode.TryConnection">
+            <summary>
+            线程池里重试链接。
+            </summary>
+            <returns></returns>
+        </member>
+        <member name="M:CYQ.Data.Cache.HostNode.AddToDeadPool">
+            <summary>
+            添加故障节点
+            </summary>
+            <param name="hostNode"></param>
+        </member>
+        <member name="F:CYQ.Data.Cache.HostNode.deadNode">
+            <summary>
+            已故障节点
+            </summary>
+        </member>
+        <member name="M:CYQ.Data.Cache.HostNode.DoHostNodeTask(System.Object)">
+            <summary>
+            线程检测已故障节点。
+            </summary>
+            <param name="threadID"></param>
+        </member>
+        <member name="P:CYQ.Data.Cache.HostNode.Poolsize">
+            <summary>
+            当前 Socket 池的可用数量。
+            </summary>
+        </member>
+        <member name="P:CYQ.Data.Cache.HostNode.MaxWait">
+            <summary>
+            超出最大链接后的等待时间。
+            </summary>
+        </member>
+        <member name="P:CYQ.Data.Cache.HostNode.HostServer">
+            <summary>
+            主机服务。
+            </summary>
+        </member>
+        <member name="T:CYQ.Data.Cache.HostServer">
+            <summary>
+            The ServerPool encapsulates a collection of memcached servers and the associated SocketPool objects.
+            This class contains the server-selection logic, and contains methods for executing a block of code on 
+            a socket from the server corresponding to a given key.
+            管理多个主机实例的服务
+            </summary>
+            <summary>
+            处理一致性hash
+            </summary>
+        </member>
+        <member name="F:CYQ.Data.Cache.HostServer.watch">
+            <summary>
+            Internal constructor. This method takes the array of hosts and sets up an internal list of socketpools.
+            </summary>
+        </member>
+        <member name="M:CYQ.Data.Cache.HostServer.watch_OnConfigChangedEvent(System.String)">
+            <summary>
+            缓存配置文件修改时
+            </summary>
+        </member>
+        <member name="M:CYQ.Data.Cache.HostServer.RefleshHostServer(System.String)">
+            <summary>
+            刷新主机配置
+            </summary>
+        </member>
+        <member name="F:CYQ.Data.Cache.HostServer.hostList">
+            <summary>
+            主机【仅有N个】
+            </summary>
+        </member>
+        <member name="M:CYQ.Data.Cache.HostServer.Execute``1(System.UInt32,``0,CYQ.Data.Cache.UseSocket{``0})">
+            <summary>
+            This method executes the given delegate on a socket from the server that corresponds to the given hash.
+            If anything causes an error, the given defaultValue will be returned instead.
+            This method takes care of disposing the socket properly once the delegate has executed.
+            </summary>
+        </member>
+        <member name="M:CYQ.Data.Cache.HostServer.ExecuteAll(CYQ.Data.Cache.UseSocketVoid)">
+            <summary>
+            This method executes the given delegate on all servers.
+            </summary>
+        </member>
+        <member name="F:CYQ.Data.Cache.HostServer.hashHostDic">
+            <summary>
+            一致性hash的主机分布列表
+            </summary>
+        </member>
+        <member name="F:CYQ.Data.Cache.HostServer.hashKeys">
+            <summary>
+            创建用于查询（已排序）的hashkey。
+            </summary>
+        </member>
+        <member name="M:CYQ.Data.Cache.HostServer.GetHost(System.UInt32)">
+            <summary>
+            Given an item key hash, this method returns the socketpool which is closest on the server key continuum.
+            获取一台用于服务的主机实例。
+            </summary>
+        </member>
+        <member name="P:CYQ.Data.Cache.HostServer.ServerType">
+            <summary>
+            缓存类型
+            </summary>
+        </member>
+        <member name="P:CYQ.Data.Cache.HostServer.HostList">
+            <summary>
+            主机列表。
+            </summary>
+        </member>
+        <member name="P:CYQ.Data.Cache.HostServer.HashNodeCount">
+            <summary>
+            一致性Hash产生的结点数，数越大，分布越平均
+            </summary>
+        </member>
+        <member name="T:CYQ.Data.Cache.MSocket">
+            <summary>
+            底层Cache Socket
+            </summary>
+        </member>
+        <member name="M:CYQ.Data.Cache.MSocket.ReturnPool">
+            <summary>
+            回归 Socket池
+            </summary>
+        </member>
+        <member name="M:CYQ.Data.Cache.MSocket.Close">
+            <summary>
+            This method closes the underlying stream and socket.
+            关闭Socket并释放相关资源。
+            </summary>
+        </member>
+        <member name="M:CYQ.Data.Cache.MSocket.Write(System.String)">
+            <summary>
+            Writes a string to the socket encoded in UTF8 format.
+            </summary>
+        </member>
+        <member name="M:CYQ.Data.Cache.MSocket.Write(System.Byte[])">
+            <summary>
+            Writes an array of bytes to the socket and flushes the stream.
+            </summary>
+        </member>
+        <member name="M:CYQ.Data.Cache.MSocket.ReadLine">
+            <summary>
+            Reads from the socket until the sequence '\r\n' is encountered, 
+            and returns everything up to but not including that sequence as a UTF8-encoded string
+            返回Null即没有数据了！
+            </summary>
+        </member>
+        <member name="M:CYQ.Data.Cache.MSocket.ReadLineBytes">
+            <summary>
+            读一行的数据
+            </summary>
+            <returns></returns>
+        </member>
+        <member name="M:CYQ.Data.Cache.MSocket.ReadBytes(System.Int32)">
+            <summary>
+            读一行的数据
+            </summary>
+            <returns></returns>
+        </member>
+        <member name="M:CYQ.Data.Cache.MSocket.ReadResponse">
+            <summary>
+            Reads a response line from the socket, checks for general memcached errors, and returns the line.
+            If an error is encountered, this method will throw an exception.
+            </summary>
+        </member>
+        <member name="M:CYQ.Data.Cache.MSocket.Read(System.Byte[])">
+            <summary>
+            Fills the given byte array with data from the socket.
+            </summary>
+        </member>
+        <member name="M:CYQ.Data.Cache.MSocket.SkipToEndOfLine">
+            <summary>
+            Reads from the socket until the sequence '\r\n' is encountered.
+            </summary>
+        </member>
+        <member name="M:CYQ.Data.Cache.MSocket.SkipToEndOfLine(System.Int32)">
+            <summary>
+            //跳过N个命令的结果
+            </summary>
+            <param name="cmdCount"></param>
+        </member>
+        <member name="M:CYQ.Data.Cache.MSocket.Reset">
+            <summary>
+            Resets this PooledSocket by making sure the incoming buffer of the socket is empty.
+            If there was any leftover data, this method return true.
+            </summary>
+        </member>
+        <member name="P:CYQ.Data.Cache.MSocket.HostNode">
+            <summary>
+            挂载的Socket池。
+            </summary>
+        </member>
+        <member name="P:CYQ.Data.Cache.MSocket.IsAlive">
+            <summary>
+            Checks if the underlying socket and stream is connected and available.
+            </summary>
+        </member>
+        <member name="M:CYQ.Data.Cache.Serializer.Serialize(System.Object,CYQ.Data.Cache.SerializedType@,System.UInt32)">
+            <summary>
+            序列化
+            </summary>
+            <param name="value">值</param>
+            <param name="type">返回序列化类型</param>
+            <param name="compressionThreshold">指定超过长度时启用压缩功能</param>
+            <returns></returns>
+        </member>
+        <member name="T:CYQ.Data.Cache.RedisCache">
+            <summary>
+            Redis分布式缓存类
+            </summary>
+            <summary>
+            分布式锁
+            </summary>
+        </member>
+        <member name="P:CYQ.Data.Cache.RedisCache.Client">
+            <summary>
+            读取客户端
+            </summary>
+        </member>
+        <member name="T:CYQ.Data.Cache.RedisClient">
+            <summary>
+            Redis client main class.
+            Use the static methods Setup and GetInstance to setup and get an instance of the client for use.
+            </summary>
+        </member>
+        <member name="M:CYQ.Data.Cache.RedisClient.Stats">
+            <summary>
+            This method corresponds to the "stats" command in the memcached protocol.
+            It will send the stats command to all servers, and it will return a Dictionary for each server
+            containing the results of the command.
+            </summary>
+        </member>
+        <member name="T:CYQ.Data.Cache.RedisCommand">
+            <summary>
+            RedisCommand
+            </summary>
+        </member>
+        <member name="M:CYQ.Data.Cache.RedisCommand.AddValue(System.Byte[],System.Byte[])">
+            <summary>
+            
+            </summary>
+            <param name="dataType"></param>
+            <param name="dataValue"></param>
+        </member>
+        <member name="T:CYQ.Data.Cache.CacheType">
+            <summary>
+            支持的Cache类型
+            </summary>
+        </member>
+        <member name="F:CYQ.Data.Cache.CacheType.LocalCache">
+            <summary>
+            本地缓存
+            </summary>
+        </member>
+        <member name="F:CYQ.Data.Cache.CacheType.MemCache">
+            <summary>
+            MemCached分布式缓存
+            </summary>
+        </member>
+        <member name="F:CYQ.Data.Cache.CacheType.Redis">
+            <summary>
+            Redis分布式缓存
+            </summary>
+        </member>
+        <member name="T:CYQ.Data.Cache.CacheKeyType">
+            <summary>
+            Cache的Key类型
+            </summary>
+        </member>
+        <member name="F:CYQ.Data.Cache.CacheKeyType.Schema">
+            <summary>
+            表架构的Key
+            </summary>
+        </member>
+        <member name="F:CYQ.Data.Cache.CacheKeyType.AutoCache">
+            <summary>
+            智能缓存Key
+            </summary>
+        </member>
+        <member name="T:CYQ.Data.Lock.DistributedLock">
+            <summary>
+            分布式锁
+            </summary>
+        </member>
+        <member name="M:CYQ.Data.Lock.DistributedLock.Lock(System.String,System.Int32)">
+            <summary>
+            对指定key进行分布式锁
+            </summary>
+            <param name="key">key</param>
+            <param name="millisecondsTimeout">尝试获取锁的最大等待时间（ms毫秒），超过这个值，则认为获取锁失败</param>
+            <returns></returns>
+        </member>
+        <member name="M:CYQ.Data.Lock.DistributedLock.UnLock(System.String)">
+            <summary>
+            释放（分布式锁）
+            </summary>
+            <param name="key">key</param>
+        </member>
+        <member name="P:CYQ.Data.Lock.DistributedLock.Instance">
+            <summary>
+            分布式锁实例【根据配置顺序取值：Redis=》MemCache=》Local】
+            </summary>
+        </member>
+        <member name="P:CYQ.Data.Lock.DistributedLock.Redis">
+            <summary>
+            Redis 分布式锁实例
+            </summary>
+        </member>
+        <member name="P:CYQ.Data.Lock.DistributedLock.MemCache">
+            <summary>
+            MemCach 分布式锁实例
+            </summary>
+        </member>
+        <member name="P:CYQ.Data.Lock.DistributedLock.Local">
+            <summary>
+            Local 单机锁 基于 Mutex 锁实例
+            </summary>
+        </member>
+        <member name="P:CYQ.Data.Lock.DistributedLock.File">
+            <summary>
+            Local 单机内 文件锁【可跨进程或线程释放】
+            </summary>
+        </member>
+        <member name="P:CYQ.Data.Lock.DistributedLock.LockType">
+            <summary>
+            锁类型
+            </summary>
+        </member>
+        <member name="M:CYQ.Data.Lock.FileLock.RemoveTimeoutLock(System.String)">
+            <summary>
+            清除过期锁
+            </summary>
+        </member>
+        <member name="T:CYQ.Data.Lock.LockType">
+            <summary>
+            锁的类型
+            </summary>
+        </member>
+        <member name="F:CYQ.Data.Lock.LockType.Redis">
+            <summary>
+            基于Redis的分布式锁
+            </summary>
+        </member>
+        <member name="F:CYQ.Data.Lock.LockType.MemCache">
+            <summary>
+            基于MemCache的分布式锁
+            </summary>
+        </member>
+        <member name="F:CYQ.Data.Lock.LockType.Local">
+            <summary>
+            基于本机的Mutex锁，仅允许同线程持有者释放。
+            </summary>
+        </member>
+        <member name="F:CYQ.Data.Lock.LockType.File">
+            <summary>
+            基于本机的文件锁，允许其它进程或线程释放。
+            </summary>
+        </member>
         <member name="M:System.Web.HttpContexExtend.GetTraceID(System.Web.HttpContext)">
             <summary>
             获得分布式追踪ID
@@ -2540,6 +2702,382 @@
             <summary>
             仅 2.0 或 3.0 下编绎使用，其它环境编绎可以移除。
             </summary>
+        </member>
+        <member name="T:CYQ.Data.Json.CharState">
+            <summary>
+            字符状态
+            </summary>
+        </member>
+        <member name="F:CYQ.Data.Json.CharState.isStrictMode">
+            <summary>
+            是否格式格式【true属性必须双引号，false属性可以单引号和无引号。】
+            </summary>
+        </member>
+        <member name="F:CYQ.Data.Json.CharState.arrayStart">
+            <summary>
+            数组开始【仅第一开头才算】，值嵌套的以【childrenStart】来标识。
+            </summary>
+        </member>
+        <member name="F:CYQ.Data.Json.CharState.keyValueState">
+            <summary>
+            【-1 未初始化】【0取名阶段】【1 取值阶段】
+            </summary>
+        </member>
+        <member name="F:CYQ.Data.Json.CharState.keyStart">
+            <summary>
+            【-2 已结束】【-1 未初始化】【0 未开始】【1 无引号开始】【2 单引号开始】【3 双引号开始】
+            </summary>
+        </member>
+        <member name="F:CYQ.Data.Json.CharState.valueStart">
+            <summary>
+            【-2 已结束】【-1 未初始化】【0 未开始】【1 无引号开始】【2 单引号开始】【3 双引号开始】
+            </summary>
+        </member>
+        <member name="M:CYQ.Data.Json.CharState.IsKeyword(System.Char)">
+            <summary>
+            设置字符状态(返回true则为关键词，返回false则当为普通字符处理）
+            </summary>
+        </member>
+        <member name="T:CYQ.Data.Json.EscapeOp">
+            <summary>
+            Escape json char options
+            <para>JsonHelper 的符号转义选项</para>
+            </summary>
+        </member>
+        <member name="F:CYQ.Data.Json.EscapeOp.Default">
+            <summary>
+            过滤ascii小于32的特殊值、并对\n "（双引号）进行转义，对\转义符 （仅\\"或\\n时不转义，其它情况转义）
+            </summary>
+        </member>
+        <member name="F:CYQ.Data.Json.EscapeOp.No">
+            <summary>
+             不进行任何转义，只用于保留原如数据（注意：存在双引号时，[或ascii小于32的值都会破坏json格式]，从而json数据无法被解析）
+            </summary>
+        </member>
+        <member name="F:CYQ.Data.Json.EscapeOp.Yes">
+            <summary>
+             过滤ascii小于32的特殊值、并对 ：\r \n \t "（双引号） \(转义符号) 直接进行转义
+            </summary>
+        </member>
+        <member name="F:CYQ.Data.Json.EscapeOp.Encode">
+            <summary>
+            系统内部使用： ascii小于32（包括\n \t \r）、"(双引号)，\(转义符号) 进行编码（规则为：@#{0}#@ {0}为asciii值，系统转的时候会自动解码）
+            </summary>
+        </member>
+        <member name="T:CYQ.Data.Json.JsonIgnoreAttribute">
+            <summary>
+            Json 转换忽略的字段
+            </summary>
+        </member>
+        <member name="T:CYQ.Data.Json.JsonFormatAttribute">
+            <summary>
+            Json 格式化【时间】
+            </summary>
+        </member>
+        <member name="T:CYQ.Data.Json.JsonEnumToStringAttribute">
+            <summary>
+            Json 枚举字段转字符串
+            </summary>
+        </member>
+        <member name="T:CYQ.Data.Json.JsonEnumToDescriptionAttribute">
+            <summary>
+            Json 枚举字段转属性描述
+            </summary>
+        </member>
+        <member name="T:CYQ.Data.Json.JsonHelper">
+            <summary>
+            Json class for you easy to operate json
+            <para>功能全面的json帮助类</para>
+            </summary>
+        </member>
+        <member name="M:CYQ.Data.Json.JsonHelper.#ctor(System.Boolean)">
+            <param name="addHead">with easyui header ?<para>是否带输出头</para></param>
+        </member>
+        <member name="M:CYQ.Data.Json.JsonHelper.#ctor(System.Boolean,System.Boolean)">
+            <param name="addSchema">first row with table schema ?
+            <para>是否首行带表结构[MDataTable.LoadFromJson可以还原表的数据类型]</para></param>
+        </member>
+        <member name="F:CYQ.Data.Json.JsonHelper.Escape">
+            <summary>
+            Escape options
+            <para>转义符号</para>
+            </summary>
+        </member>
+        <member name="F:CYQ.Data.Json.JsonHelper.IsConvertNameToLower">
+            <summary>
+            convert filed to lower
+            <para>是否将名称转为小写</para>
+            </summary>
+        </member>
+        <member name="F:CYQ.Data.Json.JsonHelper.IsConvertEnumToString">
+            <summary>
+            convert enum to string
+            <para>是否将枚举转字符串</para>
+            </summary>
+        </member>
+        <member name="F:CYQ.Data.Json.JsonHelper.IsConvertEnumToDescription">
+            <summary>
+            convert enum to DescriptionAttribute
+            <para>是否将枚举转属性描述</para>
+            </summary>
+        </member>
+        <member name="F:CYQ.Data.Json.JsonHelper.DateTimeFormatter">
+            <summary>
+            formate datetime
+            <para>日期的格式化（默认：yyyy-MM-dd HH:mm:ss）</para>
+            </summary>
+        </member>
+        <member name="M:CYQ.Data.Json.JsonHelper.AddBr">
+            <summary>
+            flag a json is end and start a new json
+            <para> 添加完一个Json数据后调用此方法换行</para>
+            </summary>
+        </member>
+        <member name="M:CYQ.Data.Json.JsonHelper.AddFoot(System.String,System.String)">
+            <summary>
+            attach json data (AddHead must be true)
+            <para>添加底部数据（只有AddHead为true情况才能添加数据）</para>
+            </summary>
+        </member>
+        <member name="M:CYQ.Data.Json.JsonHelper.Add(System.String,System.String)">
+            <summary>
+            add json key value
+            <para>添加一个字段的值</para>
+            </summary>
+        </member>
+        <member name="M:CYQ.Data.Json.JsonHelper.Add(System.String,System.String,System.Boolean)">
+            <param name="noQuotes">value is no quotes
+            <para>值不带引号</para></param>
+        </member>
+        <member name="M:CYQ.Data.Json.JsonHelper.ToString">
+            <summary>
+            out json result
+            <para>输出Json字符串</para>
+            </summary>
+        </member>
+        <member name="M:CYQ.Data.Json.JsonHelper.ToString(System.Boolean)">
+            <param name="arrayEnd">end with [] ?</param>
+            <returns></returns>
+        </member>
+        <member name="M:CYQ.Data.Json.JsonHelper.IsJson(System.String)">
+            <summary>
+            check string is json
+            <para>检测是否Json格式的字符串</para>
+            </summary>
+        </member>
+        <member name="M:CYQ.Data.Json.JsonHelper.IsJson(System.String,System.Int32@)">
+            <param name="errIndex">the index of the error char
+            <para>错误的字符索引</para></param>
+        </member>
+        <member name="M:CYQ.Data.Json.JsonHelper.GetValue(System.String,System.String,CYQ.Data.Json.EscapeOp)">
+            <summary>
+            Get json value
+            <para>获取Json字符串的值</para>
+            </summary>
+            <param name="key">the name or key of json
+            <para>键值(有层级时用：XXX.YYY.ZZZ)</para></param>
+            <returns></returns>
+        </member>
+        <member name="M:CYQ.Data.Json.JsonHelper.IsSuccess(System.String)">
+            <summary>
+            Json 返回值是否为true（包含"success":true）
+            </summary>
+            <param name="json"></param>
+            <returns></returns>
+        </member>
+        <member name="M:CYQ.Data.Json.JsonHelper.OutResult(System.Boolean,System.String)">
+            <summary>
+            a easy method for you to return a json
+            <para>返回Json格式的结果信息</para>
+            </summary>
+        </member>
+        <member name="M:CYQ.Data.Json.JsonHelper.OutResult(System.Boolean,System.String,System.Boolean)">
+            <param name="noQuates">no ""</param>
+        </member>
+        <member name="M:CYQ.Data.Json.JsonHelper.Split(System.String)">
+            <summary>
+             split json to dicationary
+            <para>将Json分隔成键值对。</para>
+            </summary>
+        </member>
+        <member name="M:CYQ.Data.Json.JsonHelper.SplitArray(System.String)">
+            <summary>
+             split json to dicationary array
+            <para>将Json 数组分隔成多个键值对。</para>
+            </summary>
+        </member>
+        <member name="M:CYQ.Data.Json.JsonHelper.UnEscape(System.String,CYQ.Data.Json.EscapeOp)">
+            <summary>
+            解码替换数据转义符
+            </summary>
+        </member>
+        <member name="F:CYQ.Data.Json.JsonHelper.Level">
+            <summary>
+            用于控制自循环的层级判断。
+            </summary>
+        </member>
+        <member name="F:CYQ.Data.Json.JsonHelper.LoopCheckList">
+            <summary>
+            用于自循环检测列表。
+            </summary>
+        </member>
+        <member name="M:CYQ.Data.Json.JsonHelper.Fill(CYQ.Data.Table.MDataTable)">
+            <summary>
+            Fill obj and get json from  ToString() method
+            <para>从数据表中取数据填充,最终可输出json字符串</para>
+            </summary>
+        </member>
+        <member name="M:CYQ.Data.Json.JsonHelper.Fill(CYQ.Data.Table.MDataRow)">
+            <summary>
+            Fill obj and get json from  ToString() method
+            <para>从数据行中取数据填充,最终可输出json字符串</para>
+            </summary>
+        </member>
+        <member name="M:CYQ.Data.Json.JsonHelper.Fill(CYQ.Data.Table.MDataColumn,System.Boolean)">
+            <summary>
+            从数据结构填充，最终可输出json字符串。
+            </summary>
+            <param name="column">数据结构</param>
+            <param name="isFullSchema">false：输出单行的[列名：数据类型]；true：输出多行的完整的数据结构</param>
+        </member>
+        <member name="M:CYQ.Data.Json.JsonHelper.Fill(System.Object)">
+            <summary>
+             Fill obj and get json from  ToString() method
+            <para>可从类(对象,泛型List、泛型Dictionary）中填充，最终可输出json字符串。</para>
+            </summary>
+            <param name="obj">实体类对象</param>
+        </member>
+        <member name="M:CYQ.Data.Json.JsonHelper.FillEntity(System.Object)">
+            <summary>
+            加载实体
+            </summary>
+            <param name="entity"></param>
+        </member>
+        <member name="M:CYQ.Data.Json.JsonHelper.ToMDataTable(System.String,CYQ.Data.Table.MDataColumn,CYQ.Data.Json.EscapeOp)">
+            <summary>
+            从Json字符串中反加载成数据表
+            </summary>
+        </member>
+        <member name="M:CYQ.Data.Json.JsonHelper.ToIEnumerator``1(System.String,CYQ.Data.Json.EscapeOp)">
+            <summary>
+            将Json转换成集合
+            </summary>
+            <typeparam name="T">集合类型</typeparam>
+            <param name="json">json数据</param>
+            <returns></returns>
+            
+        </member>
+        <member name="M:CYQ.Data.Json.JsonHelper.ToEntity``1(System.String,CYQ.Data.Json.EscapeOp)">
+            <summary>
+            Convert json to Entity
+            <para>将Json转换为实体</para>
+            </summary>
+            <typeparam name="T">Type<para>类型</para></typeparam>
+        </member>
+        <member name="M:CYQ.Data.Json.JsonHelper.ToList``1(System.String,CYQ.Data.Json.EscapeOp)">
+            <summary>
+             Convert json to Entity List
+             <para>将Json转换为实体列表</para>
+            </summary>
+            <typeparam name="T">Type<para>类型</para></typeparam>
+        </member>
+        <member name="M:CYQ.Data.Json.JsonHelper.ToJson(System.Object)">
+            <summary>
+            Convert object to json
+            <para>将一个对象（实体，泛型List，字典Dictionary）转成Json</para>
+            </summary>
+        </member>
+        <member name="M:CYQ.Data.Json.JsonHelper.ToJson(System.Object,System.Boolean,CYQ.Data.Table.RowOp,CYQ.Data.Json.EscapeOp)">
+            <param name="op">default value is RowOp.All
+            <para>默认值为RowOp.All</para></param>
+        </member>
+        <member name="M:CYQ.Data.Json.JsonHelper.XmlToJson(System.String,System.Boolean)">
+            <summary>
+            转Json
+            <param name="xml">xml字符串</param>
+            <param name="isWithAttr">是否将属性值也输出</param>
+            </summary>
+        </member>
+        <member name="M:CYQ.Data.Json.JsonHelper.ToXml(System.String)">
+            <summary>
+            Convert json to Xml
+            <para>将一个Json转成Xml</para>
+            </summary>
+        </member>
+        <member name="M:CYQ.Data.Json.JsonHelper.ToXml(System.String,System.Boolean,CYQ.Data.Json.EscapeOp,System.String)">
+            <param name="isWithAttr">default value is true
+            <para>是否转成属性，默认true</para></param>
+        </member>
+        <member name="M:CYQ.Data.Json.JsonHelper.ReadJson(System.String)">
+            <summary>
+            读取文本中的Json（并去掉注释）
+            </summary>
+            <returns></returns>
+        </member>
+        <member name="P:CYQ.Data.Json.JsonHelper.RowOp">
+            <summary>
+             filter json data
+            <para>Json输出行数据的过滤选项</para>
+            </summary>
+        </member>
+        <member name="P:CYQ.Data.Json.JsonHelper.Success">
+            <summary>
+             is success
+            <para>是否成功</para>
+            </summary>
+        </member>
+        <member name="P:CYQ.Data.Json.JsonHelper.ErrorMsg">
+            <summary>
+            Error message
+            <para>错误提示信息  </para> 
+            </summary>
+        </member>
+        <member name="P:CYQ.Data.Json.JsonHelper.RowCount">
+            <summary>
+            data rows count
+            <para>当前返回的行数</para>
+            </summary>
+        </member>
+        <member name="P:CYQ.Data.Json.JsonHelper.Total">
+            <summary>
+            totla count
+            <para>所有记录的总数（多数用于分页的记录总数）。</para>
+            </summary>
+        </member>
+        <member name="T:CYQ.Data.Json.JsonSplit">
+            <summary>
+            分隔Json字符串为字典集合。
+            </summary>
+        </member>
+        <member name="M:CYQ.Data.Json.JsonSplit.Split(System.String,System.Int32)">
+            <summary>
+            解析Json
+            </summary>
+            <returns></returns>
+        </member>
+        <member name="M:CYQ.Data.Json.JsonSplit.GetValueLength(System.Boolean,System.String,System.Int32,System.Boolean,System.Int32@)">
+            <summary>
+            获取值的长度（当Json值嵌套以"{"或"["开头时），【优化后】
+            </summary>
+        </member>
+        <member name="M:CYQ.Data.Json.JsonSplit.ToEntityOrList(System.Type,System.String,CYQ.Data.Json.EscapeOp)">
+            <summary>
+            支持转换：实体或实体列表二合一
+            </summary>
+        </member>
+        <member name="M:CYQ.Data.Json.JsonSplit.SplitEscapeArray(System.String)">
+            <summary>
+            将json数组分成字符串List
+            </summary>
+            <param name="jsonArray">["a,","bbb,,"]</param>
+            <returns></returns>
+        </member>
+        <member name="M:CYQ.Data.Json.JsonSplit.GetCharCount(System.String,System.Char)">
+            <summary>
+            获取字符在字符串出现的次数
+            </summary>
+            <param name="c"></param>
+            <returns></returns>
         </member>
         <member name="T:CYQ.Data.LocalEnvironment">
             <summary>
@@ -2682,6 +3220,18 @@
             <summary>
             设置参数化
             </summary>
+        </member>
+        <member name="M:CYQ.Data.Orm.SimpleOrmBase.SetPara(System.Object,System.Object,System.Data.DbType)">
+            <summary>
+            设置参数化
+            </summary>
+        </member>
+        <member name="M:CYQ.Data.Orm.SimpleOrmBase.SetExpression(System.String)">
+            <summary>
+            Sets a custom expression for the Update operation.
+            <para>为Update操作设置自定义表达式。</para>
+            </summary>
+            <param name="updateExpression">as："a=a+1"<para>如："a=a+1"</para></param>
         </member>
         <member name="M:CYQ.Data.Orm.SimpleOrmBase.SetAopState(CYQ.Data.Aop.AopOp)">
             <summary>
@@ -2882,6 +3432,12 @@
             <summary>
             标识是否允许写日志(默认true)
             </summary>
+        </member>
+        <member name="P:CYQ.Data.Orm.SimpleOrmBase.AllowInsertID">
+             <summary>
+             Whether to allow manual insertion of ids for self-incrementing primary key identification
+            <para>自增主键标识的，是否允许手动插入id</para> 
+             </summary>
         </member>
         <member name="P:CYQ.Data.Orm.SimpleOrmBase.UI">
             <summary>
@@ -3703,7 +4259,7 @@
             </summary>
             <returns></returns>
         </member>
-        <member name="M:CYQ.Data.Table.MDataRow.CreateFrom(System.Object,System.Type,CYQ.Data.Table.BreakOp,CYQ.Data.Tool.EscapeOp)">
+        <member name="M:CYQ.Data.Table.MDataRow.CreateFrom(System.Object,System.Type,CYQ.Data.Table.BreakOp,CYQ.Data.Json.EscapeOp)">
             <summary>
             从实体、Json、Xml、IEnumerable接口实现的类、MDataRow
             </summary>
@@ -3718,7 +4274,7 @@
             输出行的数据Json
             </summary>
         </member>
-        <member name="M:CYQ.Data.Table.MDataRow.ToJson(CYQ.Data.Table.RowOp,System.Boolean,CYQ.Data.Tool.EscapeOp)">
+        <member name="M:CYQ.Data.Table.MDataRow.ToJson(CYQ.Data.Table.RowOp,System.Boolean,CYQ.Data.Json.EscapeOp)">
             <summary>
             输出Json
             </summary>
@@ -3781,12 +4337,12 @@
             </summary>
             <param name="values"></param>
         </member>
-        <member name="M:CYQ.Data.Table.MDataRow.LoadFrom(System.String,CYQ.Data.Tool.EscapeOp)">
+        <member name="M:CYQ.Data.Table.MDataRow.LoadFrom(System.String,CYQ.Data.Json.EscapeOp)">
             <summary>
             从json里加载值
             </summary>
         </member>
-        <member name="M:CYQ.Data.Table.MDataRow.LoadFrom(System.String,CYQ.Data.Tool.EscapeOp,CYQ.Data.Table.BreakOp)">
+        <member name="M:CYQ.Data.Table.MDataRow.LoadFrom(System.String,CYQ.Data.Json.EscapeOp,CYQ.Data.Table.BreakOp)">
             <summary>
             从json里加载值
             </summary>
@@ -4070,7 +4626,7 @@
         <member name="M:CYQ.Data.Table.MDataTable.ToJson(System.Boolean,System.Boolean,CYQ.Data.Table.RowOp)">
             <param name="rowOp">过滤选项</param>
         </member>
-        <member name="M:CYQ.Data.Table.MDataTable.ToJson(System.Boolean,System.Boolean,CYQ.Data.Table.RowOp,System.Boolean,CYQ.Data.Tool.EscapeOp)">
+        <member name="M:CYQ.Data.Table.MDataTable.ToJson(System.Boolean,System.Boolean,CYQ.Data.Table.RowOp,System.Boolean,CYQ.Data.Json.EscapeOp)">
             <param name="op">符号转义选项</param>
         </member>
         <member name="M:CYQ.Data.Table.MDataTable.WriteJson(System.Boolean,System.Boolean,System.String)">
@@ -4258,7 +4814,7 @@
             从Json或Xml字符串反加载成MDataTable
             </summary>
         </member>
-        <member name="M:CYQ.Data.Table.MDataTable.CreateFrom(System.String,CYQ.Data.Table.MDataColumn,CYQ.Data.Tool.EscapeOp)">
+        <member name="M:CYQ.Data.Table.MDataTable.CreateFrom(System.String,CYQ.Data.Table.MDataColumn,CYQ.Data.Json.EscapeOp)">
             <summary>
             从Json或Xml字符串反加载成MDataTable
             </summary>
@@ -4942,7 +5498,7 @@
             DbDataReader To List
             </summary>
         </member>
-        <member name="M:CYQ.Data.Tool.ConvertTool.ChangeReaderToJson(System.Data.Common.DbDataReader,CYQ.Data.Tool.JsonHelper,System.Boolean)">
+        <member name="M:CYQ.Data.Tool.ConvertTool.ChangeReaderToJson(System.Data.Common.DbDataReader,CYQ.Data.Json.JsonHelper,System.Boolean)">
             <summary>
             DbDataReader To Json
             </summary>
@@ -5140,6 +5696,9 @@
             <summary>
             文件读取类（能自动识别文件编码）
             </summary>
+            <summary>
+            文件夹操作
+            </summary>
         </member>
         <member name="M:CYQ.Data.Tool.IOHelper.ReadAllText(System.String)">
             <summary>
@@ -5186,6 +5745,11 @@
             <param name="text"></param>
             <returns></returns>
         </member>
+        <member name="M:CYQ.Data.Tool.IOHelper.Exists(System.String)">
+            <summary>
+            检测文件是否存在
+            </summary>
+        </member>
         <member name="M:CYQ.Data.Tool.IOHelper.Delete(System.String)">
             <summary>
             删除文件
@@ -5204,6 +5768,26 @@
             </summary>
             <param name="bytes">检测字节</param>
             <returns></returns>
+        </member>
+        <member name="M:CYQ.Data.Tool.IOHelper.ExistsDirectory(System.String)">
+            <summary>
+            检测文件夹是否存在
+            </summary>
+        </member>
+        <member name="M:CYQ.Data.Tool.IOHelper.DeleteDirectory(System.String,System.Boolean)">
+            <summary>
+            删除文件夹
+            </summary>
+        </member>
+        <member name="M:CYQ.Data.Tool.IOHelper.GetFiles(System.String)">
+            <summary>
+            获取文件夹文件
+            </summary>
+        </member>
+        <member name="M:CYQ.Data.Tool.IOHelper.GetFiles(System.String,System.String,System.IO.SearchOption)">
+            <summary>
+            获取文件夹文件
+            </summary>
         </member>
         <member name="F:CYQ.Data.Tool.IOWatch.watchs">
             <summary>
@@ -5282,26 +5866,6 @@
         <member name="M:CYQ.Data.Tool.TextEncodingDetect.CheckChinese(System.Byte[],System.Int32)">
             <summary>
             是否中文编码（GB2312、GBK、Big5）
-            </summary>
-        </member>
-        <member name="T:CYQ.Data.Tool.JsonIgnoreAttribute">
-            <summary>
-            Json 转换忽略的字段
-            </summary>
-        </member>
-        <member name="T:CYQ.Data.Tool.JsonFormatAttribute">
-            <summary>
-            Json 格式化【时间】
-            </summary>
-        </member>
-        <member name="T:CYQ.Data.Tool.JsonEnumToStringAttribute">
-            <summary>
-            Json 枚举字段转字符串
-            </summary>
-        </member>
-        <member name="T:CYQ.Data.Tool.JsonEnumToDescriptionAttribute">
-            <summary>
-            Json 枚举字段转属性描述
             </summary>
         </member>
         <member name="T:CYQ.Data.Tool.ReflectTool">
@@ -5487,8 +6051,7 @@
             <summary>
             将各数据库默认值格式化成标准值，将标准值还原成各数据库默认值
             </summary>
-            <param name="flag">[0:转成标准值],[1:转成各数据库值],[2:转成各数据库值并补充字符串前后缀]</param>
-            <param name="sqlDbType">该列的值</param>
+            <param name="flag">[0:转成标准值],[1:转成各数据库值]</param>
             <returns></returns>
         </member>
         <member name="P:CYQ.Data.SQL.SqlInjection.FilterKeyList">
@@ -6053,292 +6616,6 @@
             SQL操作符号
             </summary>
         </member>
-        <member name="T:CYQ.Data.Tool.EscapeOp">
-            <summary>
-            Escape json char options
-            <para>JsonHelper 的符号转义选项</para>
-            </summary>
-        </member>
-        <member name="F:CYQ.Data.Tool.EscapeOp.Default">
-            <summary>
-            过滤ascii小于32的特殊值、并对\n "（双引号）进行转义，对\转义符 （仅\\"或\\n时不转义，其它情况转义）
-            </summary>
-        </member>
-        <member name="F:CYQ.Data.Tool.EscapeOp.No">
-            <summary>
-             不进行任何转义，只用于保留原如数据（注意：存在双引号时，[或ascii小于32的值都会破坏json格式]，从而json数据无法被解析）
-            </summary>
-        </member>
-        <member name="F:CYQ.Data.Tool.EscapeOp.Yes">
-            <summary>
-             过滤ascii小于32的特殊值、并对 ：\r \n \t "（双引号） \(转义符号) 直接进行转义
-            </summary>
-        </member>
-        <member name="F:CYQ.Data.Tool.EscapeOp.Encode">
-            <summary>
-            系统内部使用： ascii小于32（包括\n \t \r）、"(双引号)，\(转义符号) 进行编码（规则为：@#{0}#@ {0}为asciii值，系统转的时候会自动解码）
-            </summary>
-        </member>
-        <member name="T:CYQ.Data.Tool.JsonHelper">
-            <summary>
-            Json class for you easy to operate json
-            <para>功能全面的json帮助类</para>
-            </summary>
-        </member>
-        <member name="M:CYQ.Data.Tool.JsonHelper.#ctor(System.Boolean)">
-            <param name="addHead">with easyui header ?<para>是否带输出头</para></param>
-        </member>
-        <member name="M:CYQ.Data.Tool.JsonHelper.#ctor(System.Boolean,System.Boolean)">
-            <param name="addSchema">first row with table schema ?
-            <para>是否首行带表结构[MDataTable.LoadFromJson可以还原表的数据类型]</para></param>
-        </member>
-        <member name="F:CYQ.Data.Tool.JsonHelper.Escape">
-            <summary>
-            Escape options
-            <para>转义符号</para>
-            </summary>
-        </member>
-        <member name="F:CYQ.Data.Tool.JsonHelper.IsConvertNameToLower">
-            <summary>
-            convert filed to lower
-            <para>是否将名称转为小写</para>
-            </summary>
-        </member>
-        <member name="F:CYQ.Data.Tool.JsonHelper.IsConvertEnumToString">
-            <summary>
-            convert enum to string
-            <para>是否将枚举转字符串</para>
-            </summary>
-        </member>
-        <member name="F:CYQ.Data.Tool.JsonHelper.IsConvertEnumToDescription">
-            <summary>
-            convert enum to DescriptionAttribute
-            <para>是否将枚举转属性描述</para>
-            </summary>
-        </member>
-        <member name="F:CYQ.Data.Tool.JsonHelper.DateTimeFormatter">
-            <summary>
-            formate datetime
-            <para>日期的格式化（默认：yyyy-MM-dd HH:mm:ss）</para>
-            </summary>
-        </member>
-        <member name="M:CYQ.Data.Tool.JsonHelper.AddBr">
-            <summary>
-            flag a json is end and start a new json
-            <para> 添加完一个Json数据后调用此方法换行</para>
-            </summary>
-        </member>
-        <member name="M:CYQ.Data.Tool.JsonHelper.AddFoot(System.String,System.String)">
-            <summary>
-            attach json data (AddHead must be true)
-            <para>添加底部数据（只有AddHead为true情况才能添加数据）</para>
-            </summary>
-        </member>
-        <member name="M:CYQ.Data.Tool.JsonHelper.Add(System.String,System.String)">
-            <summary>
-            add json key value
-            <para>添加一个字段的值</para>
-            </summary>
-        </member>
-        <member name="M:CYQ.Data.Tool.JsonHelper.Add(System.String,System.String,System.Boolean)">
-            <param name="noQuotes">value is no quotes
-            <para>值不带引号</para></param>
-        </member>
-        <member name="M:CYQ.Data.Tool.JsonHelper.ToString">
-            <summary>
-            out json result
-            <para>输出Json字符串</para>
-            </summary>
-        </member>
-        <member name="M:CYQ.Data.Tool.JsonHelper.ToString(System.Boolean)">
-            <param name="arrayEnd">end with [] ?</param>
-            <returns></returns>
-        </member>
-        <member name="M:CYQ.Data.Tool.JsonHelper.IsJson(System.String)">
-            <summary>
-            check string is json
-            <para>检测是否Json格式的字符串</para>
-            </summary>
-        </member>
-        <member name="M:CYQ.Data.Tool.JsonHelper.IsJson(System.String,System.Int32@)">
-            <param name="errIndex">the index of the error char
-            <para>错误的字符索引</para></param>
-        </member>
-        <member name="M:CYQ.Data.Tool.JsonHelper.GetValue(System.String,System.String,CYQ.Data.Tool.EscapeOp)">
-            <summary>
-            Get json value
-            <para>获取Json字符串的值</para>
-            </summary>
-            <param name="key">the name or key of json
-            <para>键值(有层级时用：XXX.YYY.ZZZ)</para></param>
-            <returns></returns>
-        </member>
-        <member name="M:CYQ.Data.Tool.JsonHelper.IsSuccess(System.String)">
-            <summary>
-            Json 返回值是否为true（包含"success":true）
-            </summary>
-            <param name="json"></param>
-            <returns></returns>
-        </member>
-        <member name="M:CYQ.Data.Tool.JsonHelper.OutResult(System.Boolean,System.String)">
-            <summary>
-            a easy method for you to return a json
-            <para>返回Json格式的结果信息</para>
-            </summary>
-        </member>
-        <member name="M:CYQ.Data.Tool.JsonHelper.OutResult(System.Boolean,System.String,System.Boolean)">
-            <param name="noQuates">no ""</param>
-        </member>
-        <member name="M:CYQ.Data.Tool.JsonHelper.Split(System.String)">
-            <summary>
-             split json to dicationary
-            <para>将Json分隔成键值对。</para>
-            </summary>
-        </member>
-        <member name="M:CYQ.Data.Tool.JsonHelper.SplitArray(System.String)">
-            <summary>
-             split json to dicationary array
-            <para>将Json 数组分隔成多个键值对。</para>
-            </summary>
-        </member>
-        <member name="M:CYQ.Data.Tool.JsonHelper.UnEscape(System.String,CYQ.Data.Tool.EscapeOp)">
-            <summary>
-            解码替换数据转义符
-            </summary>
-        </member>
-        <member name="F:CYQ.Data.Tool.JsonHelper.Level">
-            <summary>
-            用于控制自循环的层级判断。
-            </summary>
-        </member>
-        <member name="F:CYQ.Data.Tool.JsonHelper.LoopCheckList">
-            <summary>
-            用于自循环检测列表。
-            </summary>
-        </member>
-        <member name="M:CYQ.Data.Tool.JsonHelper.Fill(CYQ.Data.Table.MDataTable)">
-            <summary>
-            Fill obj and get json from  ToString() method
-            <para>从数据表中取数据填充,最终可输出json字符串</para>
-            </summary>
-        </member>
-        <member name="M:CYQ.Data.Tool.JsonHelper.Fill(CYQ.Data.Table.MDataRow)">
-            <summary>
-            Fill obj and get json from  ToString() method
-            <para>从数据行中取数据填充,最终可输出json字符串</para>
-            </summary>
-        </member>
-        <member name="M:CYQ.Data.Tool.JsonHelper.Fill(CYQ.Data.Table.MDataColumn,System.Boolean)">
-            <summary>
-            从数据结构填充，最终可输出json字符串。
-            </summary>
-            <param name="column">数据结构</param>
-            <param name="isFullSchema">false：输出单行的[列名：数据类型]；true：输出多行的完整的数据结构</param>
-        </member>
-        <member name="M:CYQ.Data.Tool.JsonHelper.Fill(System.Object)">
-            <summary>
-             Fill obj and get json from  ToString() method
-            <para>可从类(对象,泛型List、泛型Dictionary）中填充，最终可输出json字符串。</para>
-            </summary>
-            <param name="obj">实体类对象</param>
-        </member>
-        <member name="M:CYQ.Data.Tool.JsonHelper.FillEntity(System.Object)">
-            <summary>
-            加载实体
-            </summary>
-            <param name="entity"></param>
-        </member>
-        <member name="M:CYQ.Data.Tool.JsonHelper.ToMDataTable(System.String,CYQ.Data.Table.MDataColumn,CYQ.Data.Tool.EscapeOp)">
-            <summary>
-            从Json字符串中反加载成数据表
-            </summary>
-        </member>
-        <member name="M:CYQ.Data.Tool.JsonHelper.ToIEnumerator``1(System.String,CYQ.Data.Tool.EscapeOp)">
-            <summary>
-            将Json转换成集合
-            </summary>
-            <typeparam name="T">集合类型</typeparam>
-            <param name="json">json数据</param>
-            <returns></returns>
-            
-        </member>
-        <member name="M:CYQ.Data.Tool.JsonHelper.ToEntity``1(System.String,CYQ.Data.Tool.EscapeOp)">
-            <summary>
-            Convert json to Entity
-            <para>将Json转换为实体</para>
-            </summary>
-            <typeparam name="T">Type<para>类型</para></typeparam>
-        </member>
-        <member name="M:CYQ.Data.Tool.JsonHelper.ToList``1(System.String,CYQ.Data.Tool.EscapeOp)">
-            <summary>
-             Convert json to Entity List
-             <para>将Json转换为实体列表</para>
-            </summary>
-            <typeparam name="T">Type<para>类型</para></typeparam>
-        </member>
-        <member name="M:CYQ.Data.Tool.JsonHelper.ToJson(System.Object)">
-            <summary>
-            Convert object to json
-            <para>将一个对象（实体，泛型List，字典Dictionary）转成Json</para>
-            </summary>
-        </member>
-        <member name="M:CYQ.Data.Tool.JsonHelper.ToJson(System.Object,System.Boolean,CYQ.Data.Table.RowOp,CYQ.Data.Tool.EscapeOp)">
-            <param name="op">default value is RowOp.All
-            <para>默认值为RowOp.All</para></param>
-        </member>
-        <member name="M:CYQ.Data.Tool.JsonHelper.XmlToJson(System.String,System.Boolean)">
-            <summary>
-            转Json
-            <param name="xml">xml字符串</param>
-            <param name="isWithAttr">是否将属性值也输出</param>
-            </summary>
-        </member>
-        <member name="M:CYQ.Data.Tool.JsonHelper.ToXml(System.String)">
-            <summary>
-            Convert json to Xml
-            <para>将一个Json转成Xml</para>
-            </summary>
-        </member>
-        <member name="M:CYQ.Data.Tool.JsonHelper.ToXml(System.String,System.Boolean,CYQ.Data.Tool.EscapeOp,System.String)">
-            <param name="isWithAttr">default value is true
-            <para>是否转成属性，默认true</para></param>
-        </member>
-        <member name="M:CYQ.Data.Tool.JsonHelper.ReadJson(System.String)">
-            <summary>
-            读取文本中的Json（并去掉注释）
-            </summary>
-            <returns></returns>
-        </member>
-        <member name="P:CYQ.Data.Tool.JsonHelper.RowOp">
-            <summary>
-             filter json data
-            <para>Json输出行数据的过滤选项</para>
-            </summary>
-        </member>
-        <member name="P:CYQ.Data.Tool.JsonHelper.Success">
-            <summary>
-             is success
-            <para>是否成功</para>
-            </summary>
-        </member>
-        <member name="P:CYQ.Data.Tool.JsonHelper.ErrorMsg">
-            <summary>
-            Error message
-            <para>错误提示信息  </para> 
-            </summary>
-        </member>
-        <member name="P:CYQ.Data.Tool.JsonHelper.RowCount">
-            <summary>
-            data rows count
-            <para>当前返回的行数</para>
-            </summary>
-        </member>
-        <member name="P:CYQ.Data.Tool.JsonHelper.Total">
-            <summary>
-            totla count
-            <para>所有记录的总数（多数用于分页的记录总数）。</para>
-            </summary>
-        </member>
         <member name="T:CYQ.Data.Tool.DBTool">
             <summary>
             数据库工具类[都是静态方法]
@@ -6518,76 +6795,6 @@
         <member name="P:CYQ.Data.Tool.DBTool.DataBases">
             <summary>
             获取配置项中所有的数据库列表
-            </summary>
-        </member>
-        <member name="T:CYQ.Data.Tool.JsonSplit">
-            <summary>
-            分隔Json字符串为字典集合。
-            </summary>
-        </member>
-        <member name="M:CYQ.Data.Tool.JsonSplit.Split(System.String,System.Int32)">
-            <summary>
-            解析Json
-            </summary>
-            <returns></returns>
-        </member>
-        <member name="M:CYQ.Data.Tool.JsonSplit.GetValueLength(System.Boolean,System.String,System.Int32,System.Boolean,System.Int32@)">
-            <summary>
-            获取值的长度（当Json值嵌套以"{"或"["开头时），【优化后】
-            </summary>
-        </member>
-        <member name="M:CYQ.Data.Tool.JsonSplit.ToEntityOrList(System.Type,System.String,CYQ.Data.Tool.EscapeOp)">
-            <summary>
-            支持转换：实体或实体列表二合一
-            </summary>
-        </member>
-        <member name="M:CYQ.Data.Tool.JsonSplit.SplitEscapeArray(System.String)">
-            <summary>
-            将json数组分成字符串List
-            </summary>
-            <param name="jsonArray">["a,","bbb,,"]</param>
-            <returns></returns>
-        </member>
-        <member name="M:CYQ.Data.Tool.JsonSplit.GetCharCount(System.String,System.Char)">
-            <summary>
-            获取字符在字符串出现的次数
-            </summary>
-            <param name="c"></param>
-            <returns></returns>
-        </member>
-        <member name="T:CYQ.Data.Tool.CharState">
-            <summary>
-            字符状态
-            </summary>
-        </member>
-        <member name="F:CYQ.Data.Tool.CharState.isStrictMode">
-            <summary>
-            是否格式格式【true属性必须双引号，false属性可以单引号和无引号。】
-            </summary>
-        </member>
-        <member name="F:CYQ.Data.Tool.CharState.arrayStart">
-            <summary>
-            数组开始【仅第一开头才算】，值嵌套的以【childrenStart】来标识。
-            </summary>
-        </member>
-        <member name="F:CYQ.Data.Tool.CharState.keyValueState">
-            <summary>
-            【-1 未初始化】【0取名阶段】【1 取值阶段】
-            </summary>
-        </member>
-        <member name="F:CYQ.Data.Tool.CharState.keyStart">
-            <summary>
-            【-2 已结束】【-1 未初始化】【0 未开始】【1 无引号开始】【2 单引号开始】【3 双引号开始】
-            </summary>
-        </member>
-        <member name="F:CYQ.Data.Tool.CharState.valueStart">
-            <summary>
-            【-2 已结束】【-1 未初始化】【0 未开始】【1 无引号开始】【2 单引号开始】【3 双引号开始】
-            </summary>
-        </member>
-        <member name="M:CYQ.Data.Tool.CharState.IsKeyword(System.Char)">
-            <summary>
-            设置字符状态(返回true则为关键词，返回false则当为普通字符处理）
             </summary>
         </member>
         <member name="T:CYQ.Data.Tool.MDictionary`2">
