@@ -167,7 +167,7 @@
     </BootstrapperPackage>
   </ItemGroup>
   <ItemGroup>
-    <ProjectReference Include="..\..\..\..\cyqdata\trunk\src\CYQ.Data.csproj">
+    <ProjectReference Include="..\..\..\..\cyqdata.git\cyqdata\src\CYQ.Data.csproj">
       <Project>{bd5ccc87-278f-4feb-ad23-157fcba9ffa1}</Project>
       <Name>CYQ.Data</Name>
     </ProjectReference>

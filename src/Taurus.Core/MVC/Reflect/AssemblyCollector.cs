@@ -134,10 +134,8 @@ namespace Taurus.Mvc.Reflect
                 {
                     dllFileList.Remove(assembly.Location);
                 }
-                AssemblyName assName = assembly.GetName();
-                
-                if (assName.Name.StartsWith("Microsoft") || assName.Name.StartsWith("System") || assName.Name.StartsWith("netstandard")
-                    || assName.Name.StartsWith("mscorlib") || assName.Name.StartsWith("Anonymously"))
+
+                if (assembly.GlobalAssemblyCache || assembly.GetName().GetPublicKeyToken().Length > 0)
                 {
                     //过滤一下系统标准库
                     continue;
@@ -157,7 +155,7 @@ namespace Taurus.Mvc.Reflect
                 }
             }
 
-            if( dllFileList.Count > 0 )
+            if (dllFileList.Count > 0)
             {
                 foreach (string dll in dllFileList)
                 {
@@ -193,7 +191,7 @@ namespace Taurus.Mvc.Reflect
                         {
                             ass = Assembly.Load(name.Replace(".dll", ""));
                         }
-                        if(ass!= null)
+                        if (ass != null)
                         {
                             foreach (AssemblyName item in ass.GetReferencedAssemblies())
                             {
