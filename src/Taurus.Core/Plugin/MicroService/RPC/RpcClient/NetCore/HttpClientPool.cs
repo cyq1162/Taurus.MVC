@@ -14,12 +14,20 @@ namespace Taurus.Plugin.MicroService
             if (uri == null) { return null; }
             if (!rpcClientPool.ContainsKey(uri.Authority))
             {
-                HttpClient httpClient = new HttpClient();
+                // 创建一个新的HttpClientHandler实例
+                HttpClientHandler handler = new HttpClientHandler();
+
+                // 禁用系统代理
+                handler.Proxy = null;
+                handler.UseProxy = false;
+
+                HttpClient httpClient = new HttpClient(handler);
                 List<HttpClient> list = new List<HttpClient>();
                 list.Add(httpClient);//默认。
                 if (timeout > 0)//带超时的。
                 {
-                    HttpClient httpClient2 = new HttpClient();
+
+                    HttpClient httpClient2 = new HttpClient(handler);
                     httpClient2.Timeout = TimeSpan.FromMilliseconds(timeout);
                     list.Add(httpClient2);
                 }
@@ -43,7 +51,13 @@ namespace Taurus.Plugin.MicroService
                         return item;
                     }
                 }
-                HttpClient httpClient = new HttpClient();
+                // 创建一个新的HttpClientHandler实例
+                HttpClientHandler handler = new HttpClientHandler();
+
+                // 禁用系统代理
+                handler.Proxy = null;
+                handler.UseProxy = false;
+                HttpClient httpClient = new HttpClient(handler);
                 httpClient.Timeout = TimeSpan.FromMilliseconds(timeout);
                 list.Add(httpClient);
                 return httpClient;

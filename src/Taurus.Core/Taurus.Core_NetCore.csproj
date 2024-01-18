@@ -22,8 +22,8 @@ V2.3.4(2019-07-31)
 4、增加[Ack]属性（机制和Token一样）
 5、Doc功能增强：增加自动化API执行功能。</PackageReleaseNotes>
     <PackageTags>Taurus.MVC Core ASP.NET aspnetcore webapi</PackageTags>
-    <AssemblyVersion>3.2.0.3</AssemblyVersion>
-    <FileVersion>3.2.0.3</FileVersion>
+    <AssemblyVersion>3.2.0.4</AssemblyVersion>
+    <FileVersion>3.2.0.4</FileVersion>
   </PropertyGroup>
 
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|AnyCPU'">
@@ -74,7 +74,7 @@ V2.3.4(2019-07-31)
   </ItemGroup>
 
   <ItemGroup>
-    <ProjectReference Include="..\..\..\..\cyqdata.git\cyqdata\src\CYQ.Data_NetCore.csproj" />
+    <ProjectReference Include="..\..\..\..\taurus.dtc.git\Taurus.DTC\src\Taurus.Plugin.DistributedTransaction_NetCore.csproj" />
   </ItemGroup>
 
 </Project>

@@ -51,7 +51,6 @@ namespace Taurus.Plugin.MicroService
         {
             task.State = RpcTaskState.Running;
             HttpClient httpClient = HttpClientPool.Create(task.Request.Uri, task.Request.Timeout);
-
             //Task<HttpResponseMessage>[] httpResponseMessages = new Task<HttpResponseMessage>[1000];
 
             //for (int i = 0; i < 1000; i++)
