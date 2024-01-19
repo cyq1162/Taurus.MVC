@@ -96,7 +96,6 @@ namespace Microsoft.AspNetCore.Http
             //执行一次，用于注册事件
             UrlRewrite url = new UrlRewrite();
             url.Init(System.Web.HttpApplication.GetInstance("Taurus"));
-            ControllerCollector.InitControllers();
             return builder.UseMiddleware<TaurusMiddleware>();
         }
 

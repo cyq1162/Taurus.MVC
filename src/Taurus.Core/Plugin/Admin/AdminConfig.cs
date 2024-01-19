@@ -143,13 +143,13 @@ namespace Taurus.Plugin.Admin
         }
         /// <summary>
         /// 配置Admin的html加载文件夹名称
-        /// 如 Admin.HtmlFolderName ： "admin"， 默认值：admin
+        /// 如 Admin.HtmlFolderName ： "Admin"， 默认值：Admin
         /// </summary>
         internal static string HtmlFolderName
         {
             get
             {
-                return AppConfig.GetApp("Admin.HtmlFolderName", "admin").Trim('/');
+                return AppConfig.GetApp("Admin.HtmlFolderName", "Admin").Trim('/');
             }
         }
         /// <summary>

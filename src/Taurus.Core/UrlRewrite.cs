@@ -24,6 +24,7 @@ namespace Taurus.Core
         }
         public void Init(HttpApplication context)
         {
+            MvcRun.Start();
             context.BeginRequest += context_BeginRequest;
             context.AcquireRequestState += context_AcquireRequestState;
             context.Error += context_Error;
@@ -75,12 +76,9 @@ namespace Taurus.Core
             }
             #endregion
 
-
-
-            #region 1、微服务检测与启动
-            MsRun.Start(uri);//微服务检测、启动。
+            #region 1、微服务启动检测
+            MsRun.Start(uri);
             #endregion
-
             #region 主机 IP 地址访问限制
 
             if (!MvcConfig.IsAllowIPHost)

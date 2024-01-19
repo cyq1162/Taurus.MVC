@@ -5,13 +5,17 @@ using CYQ.Data.Tool;
 using System.IO;
 using System.Xml;
 using Taurus.Mvc.Reflect;
+using Taurus.Plugin.Admin;
+using System.Runtime.Versioning;
+using System.IO.Compression;
+using Taurus.Plugin.Doc;
 
 namespace Taurus.Mvc
 {
     /// <summary>
     /// 视图引擎
     /// </summary>
-    public static class ViewEngine
+    public static partial class ViewEngine
     {
         private static string _ViewPath = string.Empty;
         internal static string ViewsPath
@@ -218,5 +222,39 @@ namespace Taurus.Mvc
             return null;
         }
         #endregion
+    }
+
+    public static partial class ViewEngine
+    {
+        internal static void InitStyles()
+        {
+            if (!Directory.Exists(ViewsPath)) { return; }
+
+            try
+            {
+                string adminPath = ViewsPath + "/" + AdminConfig.HtmlFolderName;
+                if (!Directory.Exists(adminPath))
+                {
+                    ZipTo(adminPath, Properties.Resources.admin);
+                }
+                string docPath = ViewsPath + "/" + DocConfig.HtmlFolderName;
+                if (!Directory.Exists(docPath))
+                {
+                    ZipTo(docPath, Properties.Resources.doc);
+                }
+
+                string stylesPath = ViewsPath + "/styles";
+                if (!Directory.Exists(stylesPath))
+                {
+                    ZipTo(stylesPath, Properties.Resources.styles);
+                }
+            }
+            catch (Exception err)
+            {
+                Log.Write(err, LogType.Taurus);
+
+            }
+
+        }
     }
 }

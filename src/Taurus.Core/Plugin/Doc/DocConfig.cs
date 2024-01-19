@@ -42,13 +42,13 @@ namespace Taurus.Plugin.Doc
         }
         /// <summary>
         /// 配置Doc的html加载文件夹名称
-        /// 如 Doc.HtmlFolderName ： "doc"， 默认值：doc
+        /// 如 Doc.HtmlFolderName ： "Doc"， 默认值：Doc
         /// </summary>
         internal static string HtmlFolderName
         {
             get
             {
-                return AppConfig.GetApp("Doc.HtmlFolderName", "doc").Trim('/');
+                return AppConfig.GetApp("Doc.HtmlFolderName", "Doc").Trim('/');
             }
         }
         /// <summary>
