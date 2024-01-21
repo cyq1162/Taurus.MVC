@@ -48,7 +48,7 @@ namespace Taurus.Plugin.Admin
         {
             if (!IsHttpPost)
             {
-                if (MsConfig.IsRegCenterOfMaster)
+                if (MsConfig.IsRegistryCenterOfMaster)
                 {
                     string hostList = IO.Read(AdminConst.HostSyncPath);
                     View.KeyValue.Add("HostList", hostList);
@@ -56,7 +56,7 @@ namespace Taurus.Plugin.Admin
                 else
                 {
                     View.Set("btnAddHostSync", SetType.Disabled, "true");
-                    View.Set("hostList", "# Current type is not register center of master.");
+                    View.Set("hostList", "# Current type is not registry center of master.");
                     View.Set("hostList", SetType.Disabled, "true");
                 }
             }
@@ -93,7 +93,7 @@ namespace Taurus.Plugin.Admin
             {
                 string configList = IO.Read(AdminConst.ConfigSyncPath);
                 View.Set("isDurable", SetType.Checked, configList.StartsWith("#durable\n").ToString());
-                if (MsConfig.IsRegCenterOfMaster)
+                if (MsConfig.IsRegistryCenterOfMaster)
                 {
                     View.KeyValue.Add("configList", configList.Replace("#durable\n", ""));
                 }
@@ -102,7 +102,7 @@ namespace Taurus.Plugin.Admin
                     View.Set("btnAddConfigSync", SetType.Disabled, "true");
                     View.Set("configList", SetType.Disabled, "true");
                     View.Set("isDurable", SetType.Disabled, "true");
-                    string tip = "# Current type is not register center of master.\n";
+                    string tip = "# Current type is not registry center of master.\n";
                     if (MsConfig.IsClient)
                     {
                         tip += "# Current MicroService.Client.IsAllowSyncConfig = " + MsConfig.Client.IsAllowSyncConfig.ToString().ToLower() + "\n";
@@ -170,14 +170,14 @@ namespace Taurus.Plugin.Admin
         /// </summary>
         public void BtnAddHostSync()
         {
-            if (!MsConfig.IsRegCenterOfMaster)
+            if (!MsConfig.IsRegistryCenterOfMaster)
             {
-                View.Set("msg", "Setting only for register center of master.");
+                View.Set("msg", "Setting only for registry center of master.");
                 return;
             }
 
             string hostList = Query<string>("hostList");
-            Server.RegCenter.AddHostByAdmin(hostList);
+            Server.RegistryCenter.AddHostByAdmin(hostList);
             IO.Write(AdminConst.HostSyncPath, hostList);
             View.KeyValue.Add("HostList", hostList);
             View.Set("msg", "Save success.");
@@ -191,7 +191,7 @@ namespace Taurus.Plugin.Admin
             string ipList = Query<string>("ipList");
             Server.SyncIPTime = DateTime.Now;
             IPLimit.ResetIPList(ipList, true);
-            if (!MsConfig.IsRegCenterOfMaster)
+            if (!MsConfig.IsRegistryCenterOfMaster)
             {
                 //手工保存后，重启服务前不再与注册同心保持同步。
                 MsConfig.Server.IsAllowSyncIP = false;
@@ -206,9 +206,9 @@ namespace Taurus.Plugin.Admin
         /// </summary>
         public void BtnAddConfigSync()
         {
-            if (!MsConfig.IsRegCenterOfMaster)
+            if (!MsConfig.IsRegistryCenterOfMaster)
             {
-                View.Set("msg", "Setting only for register center of master.");
+                View.Set("msg", "Setting only for registry center of master.");
                 return;
             }
             bool isDurable = Query<bool>("isDurable");

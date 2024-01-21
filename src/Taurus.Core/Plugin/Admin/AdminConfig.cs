@@ -10,16 +10,8 @@ namespace Taurus.Plugin.Admin
     /// <summary>
     /// Admin（文件）信息查看配置
     /// </summary>
-    public static class AdminConfig
+    public static partial class AdminConfig
     {
-        /// <summary>
-        /// 独立的持久化配置。
-        /// </summary>
-        private static Dictionary<string, string> durableConfig = new Dictionary<string, string>();
-        /// <summary>
-        /// 临时修改的配置。
-        /// </summary>
-        private static Dictionary<string, string> tempConfig = new Dictionary<string, string>();
         static AdminConfig()
         {
             string config = IO.Read(AdminConst.ConfigPath);
@@ -39,7 +31,7 @@ namespace Taurus.Plugin.Admin
                             AppConfig.SetApp(kv.Key, kv.Value);
                         }
                     }
-                    durableConfig = dic;
+                    AdminAPI.Durable.Init(dic);
                 }
             }
 
@@ -60,56 +52,10 @@ namespace Taurus.Plugin.Admin
             }
         }
 
-        /// <summary>
-        /// 添加持久化配置
-        /// </summary>
-        internal static void AddDurableConfig(string key, string value, bool isSaveToFile)
-        {
-            if (tempConfig.ContainsKey(key))
-            {
-                tempConfig.Remove(key);
-            }
+    }
 
-            if (durableConfig.ContainsKey(key))
-            {
-                durableConfig[key] = value;
-            }
-            else
-            {
-                durableConfig.Add(key, value);
-            }
-            if (isSaveToFile)
-            {
-                IO.Write(AdminConst.ConfigPath, JsonHelper.ToJson(durableConfig));
-            }
-        }
-        internal static void RemoveDurableConfig(string key, string value)
-        {
-            if (!tempConfig.ContainsKey(key))
-            {
-                tempConfig.Add(key, value);
-            }
-
-            if (durableConfig.ContainsKey(key))
-            {
-                durableConfig.Remove(key);
-                IO.Write(AdminConst.ConfigPath, JsonHelper.ToJson(durableConfig));
-            }
-        }
-        /// <summary>
-        /// 检测是否包含持久化配置。
-        /// </summary>
-        internal static bool IsContainsDurableKey(string key)
-        {
-            return durableConfig.ContainsKey(key);
-        }
-        /// <summary>
-        /// 检测是否包含临时修改配置。
-        /// </summary>
-        internal static bool IsContainsTempKey(string key)
-        {
-            return tempConfig.ContainsKey(key);
-        }
+    public static partial class AdminConfig
+    {
         /// <summary>
         /// 配置是否启用Admin 后台管理功能
         /// 如 Admin.IsEnable ：true， 默认值：true
@@ -145,7 +91,7 @@ namespace Taurus.Plugin.Admin
         /// 配置Admin的html加载文件夹名称
         /// 如 Admin.HtmlFolderName ： "Admin"， 默认值：Admin
         /// </summary>
-        internal static string HtmlFolderName
+        public static string HtmlFolderName
         {
             get
             {

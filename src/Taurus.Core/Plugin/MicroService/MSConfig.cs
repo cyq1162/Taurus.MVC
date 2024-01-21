@@ -8,6 +8,14 @@ namespace Taurus.Plugin.MicroService
     /// </summary>
     public static partial class MsConfig
     {
+        internal static void OnChange(string key, string value)
+        {
+            //Start 方法内都有判断条件。
+            MsRun.ClientRun.Start();
+            MsRun.Gateway.Start();
+            MsRun.RegistryCenterOfMaster.Start();
+            MsRun.RegistryCenterOfSlave.Start();
+        }
 
         #region 只读属性
 
@@ -29,17 +37,17 @@ namespace Taurus.Plugin.MicroService
         {
             get
             {
-                return IsRegCenter || IsGateway;
+                return IsRegistryCenter || IsGateway;
             }
         }
         /// <summary>
         /// 是否注册中心
         /// </summary>
-        public static bool IsRegCenter
+        public static bool IsRegistryCenter
         {
             get
             {
-                return MsConfig.Server.Name.ToLower() == MsConst.RegCenter;
+                return MsConfig.Server.Type.ToLower() == MsConst.RegistryCenter;
             }
         }
         /// <summary>
@@ -49,28 +57,28 @@ namespace Taurus.Plugin.MicroService
         {
             get
             {
-                return MsConfig.Server.Name.ToLower() == MsConst.Gateway;
+                return MsConfig.Server.Type.ToLower() == MsConst.Gateway;
             }
         }
         /// <summary>
         /// 是否注册中心（主）
         /// </summary>
-        public static bool IsRegCenterOfMaster
+        public static bool IsRegistryCenterOfMaster
         {
             get
             {
-                return IsRegCenter && (string.IsNullOrEmpty(MsConfig.Server.RcUrl) || MsConfig.Server.RcUrl == MvcConfig.RunUrl);
+                return IsRegistryCenter && (string.IsNullOrEmpty(MsConfig.Server.RcUrl) || MsConfig.Server.RcUrl == MvcConfig.RunUrl);
             }
         }
 
         /// <summary>
         /// 是否注册中心（从）
         /// </summary>
-        public static bool IsRegCenterOfSlave
+        public static bool IsRegistryCenterOfSlave
         {
             get
             {
-                return IsRegCenter && (!string.IsNullOrEmpty(MsConfig.Server.RcUrl) && MsConfig.Server.RcUrl != MvcConfig.RunUrl);
+                return IsRegistryCenter && (!string.IsNullOrEmpty(MsConfig.Server.RcUrl) && MsConfig.Server.RcUrl != MvcConfig.RunUrl);
             }
         }
         #endregion

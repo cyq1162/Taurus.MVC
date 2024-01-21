@@ -184,10 +184,11 @@ namespace Taurus.Mvc
                 string url = AppConfig.GetApp("Mvc.RunUrl", "");
                 if (string.IsNullOrEmpty(url))
                 {
-                    url = InitRunUrl();
-                    if (!string.IsNullOrEmpty(url))
+                    string dockerUrl = Environment.GetEnvironmentVariable("RunUrl");
+                    if (!string.IsNullOrEmpty(dockerUrl))
                     {
-                        AppConfig.SetApp("Mvc.RunUrl", url);
+                        url = dockerUrl;
+                        AppConfig.SetApp("Mvc.RunUrl", dockerUrl);
                     }
                 }
                 return url.TrimEnd('/');
@@ -198,25 +199,26 @@ namespace Taurus.Mvc
             }
         }
 
-        private static string InitRunUrl()
+        private static string InitDockerUrl()
         {
-            // Docker部署：设置映射后的地址
-            string dockerUrl = Environment.GetEnvironmentVariable("RunUrl");//跨服务器配置完整路径：http://ip:port
-            if (!string.IsNullOrEmpty(dockerUrl))
-            {
-                return dockerUrl;
-            }
-            string host = Kestrel.Urls;
-            if (!string.IsNullOrEmpty(host))
-            {
-                if (host.EndsWith(":80"))
-                {
-                    host = host.Replace(":80", "");//去掉默认端口
-                }
-                string ip = MvcConst.HostIP;
-                return host.Replace("localhost", ip).Replace("*", ip);//设置启动路径
-            }
-            return host;
+            // Docker 部署：则返回映射后的地址
+            return Environment.GetEnvironmentVariable("RunUrl");//跨服务器配置完整路径：http://ip:port
+            //string dockerUrl =
+            //if (!string.IsNullOrEmpty(dockerUrl))
+            //{
+            //    return dockerUrl;
+            //}
+            //string host = Kestrel.Urls;
+            //if (!string.IsNullOrEmpty(host))
+            //{
+            //    if (host.EndsWith(":80"))
+            //    {
+            //        host = host.Replace(":80", "");//去掉默认端口
+            //    }
+            //    string ip = MvcConst.HostIP;
+            //    return host.Replace("*", ip);//设置启动路径
+            //}
+            //return host;
         }
     }
 }

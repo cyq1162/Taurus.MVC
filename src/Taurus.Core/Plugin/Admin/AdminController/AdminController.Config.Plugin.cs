@@ -118,47 +118,6 @@ namespace Taurus.Plugin.Admin
                 Sets(dt, "CORS.Credentials", CORSConfig.Credentials, "CORS Header：Access-Control-Allow-Credentials.");
                 Sets(dt, "CORS.MaxAge", CORSConfig.MaxAge + " (s)", "CORS Header：Access-Control-Max-Age.");
             }
-            else if (type == "plugin-microservice")
-            {
-                #region MicroService
-
-                Sets(dt, "MicroService Type", GetMsTypeText(), "Type of current microservice (Show Only).");
-                if (MsConfig.IsServer)
-                {
-                    Sets(dt, "MicroService.Server.IsEnable", MsConfig.Server.IsEnable, "Microservice server (register center, gateway) plugin.");
-                    if(!MsConfig.IsRegCenterOfMaster)
-                    {
-                        Sets(dt, "MicroService.Server.IsAllowSyncIP", MsConfig.Server.IsAllowSyncIP, "IP limit : Synchronize ip blackname list from register center.");
-                    }
-                    Sets(dt, "MicroService.Server.Name", MsConfig.Server.Name, "Server name.");
-                    Sets(dt, "MicroService.Server.RcKey", MsConfig.Server.RcKey, "Register center secret key.");
-                    Sets(dt, "MicroService.Server.RcUrl", MsConfig.Server.RcUrl, "Register center url.");
-                    Sets(dt, "MicroService.Server.RcUrl - 2", Server.Host2, "Register center backup url.");
-                    Sets(dt, "MicroService.Server.RcPath", MsConfig.Server.RcPath, "Register center local path.");
-                    Sets(dt, "MicroService.Server.GatewayTimeout", MsConfig.Server.GatewayTimeout + " (s)", "Gateway timeout (second) for request forward.");
-                    Sets(dt, "MicroService Gateway Proxy LastTime", Rpc.Gateway.LastProxyTime.ToString("yyyy-MM-dd HH:mm:ss"), "The last time the proxy forwarded the request (Show Only).");
-                }
-
-                if (MsConfig.IsClient)
-                {
-                    if (MsConfig.IsServer)
-                    {
-                        dt.NewRow(true);
-                    }
-                    Sets(dt, "MicroService.Client.IsEnable", MsConfig.Client.IsEnable, "Microservice client plugin.");
-                    Sets(dt, "MicroService.Client.IsAllowSyncConfig", MsConfig.Client.IsAllowSyncConfig, "Client is allow synchronize config from register center.");
-                    Sets(dt, "MicroService.Client.IsAllowRemoteExit", MsConfig.Client.IsAllowRemoteExit, "Client is allow stop by register center.");
-                    Sets(dt, "MicroService.Client.Name", MsConfig.Client.Name, "Client module name.");
-                    Sets(dt, "MicroService.Client.Domain", MsConfig.Client.Domain, "Client bind domain.");
-                    Sets(dt, "MicroService.Client.Version", MsConfig.Client.Version, "Client web version.");
-                    Sets(dt, "MicroService.Client.RcKey", MsConfig.Client.RcKey, "Register center secret key.");
-                    Sets(dt, "MicroService.Client.RcUrl", MsConfig.Client.RcUrl, "Register center url.");
-                    Sets(dt, "MicroService.Client.RcUrl - 2", Client.Host2, "Register center backup url.");
-                    Sets(dt, "MicroService.Client.RcPath", MsConfig.Client.RcPath, "Register center local path.");
-
-                }
-                #endregion
-            }
             dt.Bind(View);
         }
     }

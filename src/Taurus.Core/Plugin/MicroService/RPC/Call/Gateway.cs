@@ -55,7 +55,7 @@ namespace Taurus.Plugin.MicroService
 
                 int count = infoList.Count;
                 int max = 3;//最多循环3个节点，避免长时间循环卡机。
-                bool isRegCenterOfMaster = MsConfig.IsRegCenterOfMaster;
+                bool isRCOfMaster = MsConfig.IsRegistryCenterOfMaster;
                 string runUrl = MvcConfig.RunUrl;
                 HostInfo firstInfo = infoList[0];
                 if (firstInfo.CallIndex >= count)
@@ -70,7 +70,7 @@ namespace Taurus.Plugin.MicroService
                         callIndex = callIndex - count;//溢出后重置循环
                     }
                     HostInfo info = infoList[callIndex];//并发下有异步抛出
-                    if (info.Version < 0 || info.CallTime > DateTime.Now || (isRegCenterOfMaster && info.RegTime < DateTime.Now.AddSeconds(-10)))//正常5-10秒注册1次。
+                    if (info.Version < 0 || info.CallTime > DateTime.Now || (isRCOfMaster && info.RegTime < DateTime.Now.AddSeconds(-10)))//正常5-10秒注册1次。
                     {
                         continue;//已经断开服务的。
                     }

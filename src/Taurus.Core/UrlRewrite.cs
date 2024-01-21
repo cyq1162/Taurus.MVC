@@ -79,6 +79,7 @@ namespace Taurus.Core
             #region 1、微服务启动检测
             MsRun.Start(uri);
             #endregion
+
             #region 主机 IP 地址访问限制
 
             if (!MvcConfig.IsAllowIPHost)
@@ -161,8 +162,9 @@ namespace Taurus.Core
                     {
                         WebTool.PrintRequestLog(context, null);
                     }
-                }
                     #endregion
+                }
+
                 if (MsConfig.Server.IsEnable)
                 {
                     #region 4、网关代理请求检测与转发

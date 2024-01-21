@@ -20,7 +20,7 @@ namespace Taurus.Plugin.MicroService
             {
                 if (_IsLiveOfMasterRC == -1)
                 {
-                    _IsLiveOfMasterRC = MsConfig.IsRegCenterOfMaster ? 0 : 1;
+                    _IsLiveOfMasterRC = MsConfig.IsRegistryCenterOfMaster ? 0 : 1;
                 }
                 return _IsLiveOfMasterRC == 1;
             }
@@ -49,7 +49,7 @@ namespace Taurus.Plugin.MicroService
         {
             get
             {
-                if (MsConfig.IsRegCenterOfSlave)
+                if (MsConfig.IsRegistryCenterOfSlave)
                 {
                     return MsConfig.Server.RcUrl;//从注册中心备份也指向主链接
                 }
@@ -69,7 +69,7 @@ namespace Taurus.Plugin.MicroService
             }
             set
             {
-                if (!MsConfig.IsRegCenterOfSlave)
+                if (!MsConfig.IsRegistryCenterOfSlave)
                 {
                     _Host2 = value;
                     if (MsConfig.IsGateway)

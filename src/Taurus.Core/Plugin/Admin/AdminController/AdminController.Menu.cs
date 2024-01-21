@@ -22,15 +22,39 @@ namespace Taurus.Plugin.Admin
         /// </summary>
         public void Menu()
         {
-            string menuList = IO.Read(AdminConst.MenuPath);
-            if (!string.IsNullOrEmpty(menuList))
+
+            menuTable = new MDataTable();
+            menuTable.Columns.Add("MenuName,HostName,HostUrl");
+            MDataTable dtGroup = new MDataTable();
+            dtGroup.Columns.Add("MenuName");
+
+            List<string> groupNames = new List<string>();
+
+            #region 加载自定义菜单 - 来自代码 - 临时内存
+            var menus = AdminAPI.ExtMenu.menuList;
+            if (menus.Count > 0)
             {
-                menuTable = new MDataTable();
-                menuTable.Columns.Add("MenuName,HostName,HostUrl");
-                MDataTable dt = new MDataTable();
-                dt.Columns.Add("MenuName");
-                List<string> menus = new List<string>();
-                string[] items = menuList.Split('\n');
+                List<string> keys = menus.GetKeys();
+                foreach (string key in keys)
+                {
+                    string[] keyvalue = key.Split(',');
+                    if (!groupNames.Contains(keyvalue[0].ToLower()))
+                    {
+                        groupNames.Add(keyvalue[0].ToLower());
+                        dtGroup.NewRow(true).Set(0, keyvalue[0]);
+                    }
+
+                    menuTable.NewRow(true).Sets(0, keyvalue[0].Trim(), keyvalue[1].Trim(), menus[key].Trim());
+                }
+            }
+
+            #endregion
+
+            #region 加载自定义菜单 - 来自配置 - 持久化
+            string menuText = IO.Read(AdminConst.MenuPath);
+            if (!string.IsNullOrEmpty(menuText))
+            {
+                string[] items = menuText.Split('\n');
                 foreach (string item in items)
                 {
                     string[] names = item.Split(',');
@@ -39,15 +63,16 @@ namespace Taurus.Plugin.Admin
                         menuTable.NewRow(true).Sets(0, names[0].Trim(), names[1].Trim(), names[2].Trim());
                     }
                     string name = names[0].Trim();
-                    if (!menus.Contains(name.ToLower()))
+                    if (!groupNames.Contains(name.ToLower()))
                     {
-                        menus.Add(name.ToLower());
-                        dt.NewRow(true).Set(0, name);
+                        groupNames.Add(name.ToLower());
+                        dtGroup.NewRow(true).Set(0, name);
                     }
                 }
-                View.OnForeach += View_OnForeach_Menu;
-                dt.Bind(View, "menuList");
             }
+            #endregion
+            View.OnForeach += View_OnForeach_Menu;
+            dtGroup.Bind(View, "menuList");
         }
 
         private string View_OnForeach_Menu(string text, MDictionary<string, string> values, int rowIndex)

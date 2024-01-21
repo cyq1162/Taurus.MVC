@@ -24,10 +24,10 @@ namespace Taurus.Plugin.MicroService
         {
             if (configTick > Client.SyncConfigTime.Ticks && MsConfig.Client.IsAllowSyncConfig)
             {
-                SyncConfigFromRegisterCenter();
+                SyncConfigFromRegistryCenter();
             }
         }
-        private static void SyncConfigFromRegisterCenter()
+        private static void SyncConfigFromRegistryCenter()
         {
             string url = MsConfig.Client.RcUrl + MsConfig.Client.RcPath + "/getconfigsynclist";
 
@@ -85,7 +85,7 @@ namespace Taurus.Plugin.MicroService
                 }
                 if (isDurable)
                 {
-                    AdminConfig.AddDurableConfig(key, value, i == configs.Length - 1);
+                    AdminAPI.Durable.Add(key, value, i == configs.Length - 1);
                 }
             }
         }

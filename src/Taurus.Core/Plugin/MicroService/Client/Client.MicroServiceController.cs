@@ -36,7 +36,7 @@ namespace Taurus.Plugin.MicroService
             {
                 MsConfig.Client.IsExitApplication = true;//注销注册中心服务。
                 new Thread(new ThreadStart(AppExit)).Start();
-                Write("Remote exit success: wait for the register center to unregister the host (15s).", true);
+                Write("Remote exit success: wait for the registry center to remove the host (15s).", true);
             }
             else
             {
@@ -46,7 +46,7 @@ namespace Taurus.Plugin.MicroService
 
         private void AppExit()
         {
-            MsLog.WriteDebugLine("Remote Exit : wait for the register center to unregister the host (15s).");
+            MsLog.WriteDebugLine("Remote Exit : wait for the registry center to remove the host (15s).");
             for (int i = 15; i >= 0; i--)
             {
                 MsLog.WriteDebugLine("Ready to stop : " + i + "s");

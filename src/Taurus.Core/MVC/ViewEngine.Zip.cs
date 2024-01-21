@@ -14,25 +14,38 @@ namespace Taurus.Mvc
     public static partial class ViewEngine
     {
 
-        private static void ZipTo(string directoryPath, byte[] zipBytes)
+        internal static bool ZipTo(string directoryPath, byte[] zipBytes)
         {
-            Directory.CreateDirectory(directoryPath);
-            string zipFileName = directoryPath + "/htmlcssjs.zip";
-            using (FileStream fs = File.Create(zipFileName))
+            try
             {
-                fs.Write(zipBytes, 0, zipBytes.Length);
-            }
-            using (ZipFile zipFile = ZipFile.Read(zipFileName))
-            {
-                foreach (ZipEntry entry in zipFile)
+                if (!Directory.Exists(directoryPath))
                 {
-                    if (!entry.IsDirectory)
+                    Directory.CreateDirectory(directoryPath);
+                }
+                string zipFileName = directoryPath + "/" + DateTime.Now.Ticks + ".zip";
+                using (FileStream fs = File.Create(zipFileName))
+                {
+                    fs.Write(zipBytes, 0, zipBytes.Length);
+                }
+                using (ZipFile zipFile = ZipFile.Read(zipFileName))
+                {
+                    foreach (ZipEntry entry in zipFile)
                     {
-                        entry.Extract(directoryPath, ExtractExistingFileAction.OverwriteSilently);
+                        if (!entry.IsDirectory)
+                        {
+                            entry.Extract(directoryPath, ExtractExistingFileAction.OverwriteSilently);
+                        }
                     }
                 }
+                File.Delete(zipFileName);
+                return true;
             }
-            File.Delete(zipFileName);
+            catch (Exception err)
+            {
+                Log.Write(err);
+                return false;
+            }
+            
         }
     }
 }

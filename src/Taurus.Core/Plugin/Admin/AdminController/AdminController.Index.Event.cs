@@ -39,7 +39,8 @@ namespace Taurus.Plugin.Admin
             HostInfo hostInfo = null;
             foreach (var item in hostList)
             {
-                if (item.Key == "RegCenter" || item.Key == "RegCenterOfSlave" || item.Key == "Gateway" || item.Key.Contains("."))
+                string lowerKey=item.Key.ToLower();
+                if (lowerKey == MsConst.RegistryCenter || lowerKey == MsConst.RegistryCenterOfSlave || lowerKey == MsConst.Gateway || lowerKey.Contains("."))
                 {
                     continue;
                 }

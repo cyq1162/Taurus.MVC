@@ -79,6 +79,7 @@ namespace Microsoft.AspNetCore.Http
                     }
                     #endregion
                 }
+
             });
             services.Configure<HostFilteringOptions>((y) =>
             {

@@ -369,7 +369,7 @@ namespace Taurus.Mvc
         {
             if (!CancelLoadHtml)
             {
-                _View = ViewEngine.Create(HtmlFolderName, MethodName);//这里ControllerName用原始大写，兼容Linux下大小写名称。
+                _View = ViewEngine.Create(HtmlFolderName, HtmlFileName);//这里ControllerName用原始大写，兼容Linux下大小写名称。
                 if (_View != null)
                 {
                     //追加几个全局标签变量
@@ -472,6 +472,18 @@ namespace Taurus.Mvc
             get
             {
                 return ControllerName;
+            }
+        }
+
+        /// <summary>
+        /// 默认返回方法名称，可通过重写重定向到自定义html文件名
+        /// </summary>
+        /// <returns></returns>
+        protected virtual string HtmlFileName
+        {
+            get
+            {
+                return MethodName;
             }
         }
         /// <summary>

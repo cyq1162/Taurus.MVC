@@ -172,7 +172,7 @@ namespace Taurus.Plugin.Limit
             {
                 get
                 {
-                    return AppConfig.GetAppBool("Limit.IP.IsSync", MsConfig.IsServer && !MsConfig.IsRegCenterOfMaster);
+                    return AppConfig.GetAppBool("Limit.IP.IsSync", MsConfig.IsServer && !MsConfig.IsRegistryCenterOfMaster);
                 }
                 set
                 {

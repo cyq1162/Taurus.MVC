@@ -29,7 +29,7 @@ namespace Taurus.Plugin.Admin
                     Sets(dt, "Kestrel.AllowSynchronousIO", MvcConfig.Kestrel.AllowSynchronousIO, "Kestrel allow synchronous IO.");
                     Sets(dt, "Kestrel.AddServerHeader", MvcConfig.Kestrel.AddServerHeader, "Kestrel is add server header.");
                     Sets(dt, "Kestrel.SslPort", MvcConfig.Kestrel.SslPort, "Ssl port for https. - 【Restart】");
-                    Sets(dt, "Kestrel.SslPath", MvcConfig.Kestrel.SslPath, "Ssl path for https (*.pfx for ssl , *.txt for pwd).");
+                    Sets(dt, "Kestrel.SslPath", MvcConfig.Kestrel.SslPath, "Ssl path for https (domain.pfx for ssl , domain.txt for pwd).");
                     var cers = MvcConfig.Kestrel.SslCertificate;
                     Sets(dt, "----------SslCertificate - Count", cers.Count, "Num of ssl for https (Show Only).");
                     if (cers.Count > 0)

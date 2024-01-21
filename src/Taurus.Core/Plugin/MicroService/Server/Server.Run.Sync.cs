@@ -22,10 +22,10 @@ namespace Taurus.Plugin.MicroService
         {
             if (serverIPTick > Server.SyncIPTime.Ticks && MsConfig.Server.IsAllowSyncIP)
             {
-                SyncIPListFromRegisterCenter();
+                SyncIPListFromRegistryCenter();
             }
         }
-        private static void SyncIPListFromRegisterCenter()
+        private static void SyncIPListFromRegistryCenter()
         {
             string url = MsConfig.Server.RcUrl + MsConfig.Server.RcPath + "/getipsynclist";
             if (MsConfig.IsGateway)

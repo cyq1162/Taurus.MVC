@@ -103,12 +103,12 @@ namespace Taurus.Plugin.MicroService
                         }
                         else //普通模块
                         {
-                            switch (name)
+                            switch (name.ToLower())
                             {
                                 case "*":
-                                case "RegCenter":
-                                case "RegCenterOfSlave":
-                                case "Gateway":
+                                case MsConst.RegistryCenter:
+                                case MsConst.RegistryCenterOfSlave:
+                                case MsConst.Gateway:
                                     return list;
                             }
                             if (hostList.ContainsKey("*"))

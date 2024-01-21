@@ -29,18 +29,18 @@ namespace Taurus.Plugin.MicroService
                 }
             }
             /// <summary>
-            /// 网关或注册中心配置：服务端模块名称【可配置：Gateway或RegCenter】
-            /// 如 MicroService.Server.Name ： "RegCenter"
+            /// 网关或注册中心配置：服务端模块名称【可配置：Gateway 或 RegistryCenter】
+            /// 如 MicroService.Server.Type ： "RegistryCenter"
             /// </summary>
-            public static string Name
+            public static string Type
             {
                 get
                 {
-                    return AppConfig.GetApp("MicroService.Server.Name");
+                    return AppConfig.GetApp("MicroService.Server.Type");
                 }
                 set
                 {
-                    AppConfig.SetApp("MicroService.Server.Name", value);
+                    AppConfig.SetApp("MicroService.Server.Type", value);
                 }
             }
             /// <summary>
@@ -111,11 +111,7 @@ namespace Taurus.Plugin.MicroService
             {
                 get
                 {
-#if DEBUG
-                    return AppConfig.GetAppInt("MicroService.Server.GatewayTimeout", 120);
-#endif
-
-                    return AppConfig.GetAppInt("MicroService.Server.GatewayTimeout", 10);
+                    return AppConfig.GetAppInt("MicroService.Server.GatewayTimeout", AppConfig.IsDebugMode ? 120 : 10);
                 }
                 set
                 {

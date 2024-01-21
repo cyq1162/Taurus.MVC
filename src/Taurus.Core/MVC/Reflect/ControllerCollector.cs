@@ -108,23 +108,19 @@ namespace Taurus.Mvc.Reflect
                         #endregion
 
                         Type msType = typeof(MicroServiceController);
-                        if (MsConfig.IsServer)
+
+                        path = MsConfig.Server.RcPath.Trim('/', '\\');
+                        //微服务API
+                        if (!_Lv1Controllers.ContainsKey(path))
                         {
-                            path = MsConfig.Server.RcPath.Trim('/', '\\');
-                            //微服务API
-                            if (!_Lv1Controllers.ContainsKey(path))
-                            {
-                                _Lv1Controllers.Add(path, msType);
-                            }
+                            _Lv1Controllers.Add(path, msType);
                         }
-                        if (MsConfig.IsClient)
+
+                        path = MsConfig.Client.RcPath.Trim('/', '\\');
+                        //微服务API
+                        if (!_Lv1Controllers.ContainsKey(path))
                         {
-                            path = MsConfig.Client.RcPath.Trim('/', '\\');
-                            //微服务API
-                            if (!_Lv1Controllers.ContainsKey(path))
-                            {
-                                _Lv1Controllers.Add(path, msType);
-                            }
+                            _Lv1Controllers.Add(path, msType);
                         }
 
                         MethodCollector.InitMethodInfo(msType);

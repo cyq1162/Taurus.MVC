@@ -6,7 +6,7 @@ namespace Taurus.Mvc
     /// <summary>
     /// 手工操作路由映射
     /// </summary>
-    internal static class RouteEngine
+    public static class RouteEngine
     {
         /// <summary>
         /// 手工添加方法（For Method）映射地址。

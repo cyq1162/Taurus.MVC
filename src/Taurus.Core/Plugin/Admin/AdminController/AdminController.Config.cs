@@ -39,7 +39,14 @@ namespace Taurus.Plugin.Admin
             }
             else if (type.StartsWith("plugin"))
             {
-                ConfigPlugin();
+                if (type.StartsWith("plugin-microservice"))
+                {
+                    ConfigMicroService();
+                }
+                else
+                {
+                    ConfigPlugin();
+                }
             }
             else if (type.StartsWith("cyq.data"))
             {
@@ -75,11 +82,11 @@ namespace Taurus.Plugin.Admin
             {
                 value = value == "True" ? "√" : "×";
             }
-            if (AdminConfig.IsContainsDurableKey(key))
+            if (AdminAPI.Durable.ContainsKey(key))
             {
                 value = value + " 【durable】";
             }
-            else if (AdminConfig.IsContainsTempKey(key))
+            else if (AdminAPI.Durable.ContainsTempKey(key))
             {
                 value = value + " 【temp modify】";
             }
@@ -137,23 +144,27 @@ namespace Taurus.Plugin.Admin
 
             if (isDurable)
             {
-                AdminConfig.AddDurableConfig(key, value, true);
+                AdminAPI.Durable.Add(key, value, true);
             }
             else
             {
-                AdminConfig.RemoveDurableConfig(key, value);
+                AdminAPI.Durable.Remove(key, value);
             }
 
-            #region 先赋值，再处理 - 2
+            #region 赋值后，需要触发事件的
 
             if (key.StartsWith("Kestrel."))
             {
                 KestrelExtenstions.RefleshOptions();
             }
-
+            else if (key.StartsWith("MicroService."))
+            {
+                MsConfig.OnChange(key, value);
+            }
             #endregion
 
             Write("Save success.", true);
         }
+
     }
 }

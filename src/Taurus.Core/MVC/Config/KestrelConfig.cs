@@ -165,6 +165,7 @@ namespace Taurus.Mvc
                     AppConfig.SetApp("Kestrel.SslPath", value);
                 }
             }
+            private static List<string> _SslErrors = new List<string>();
             //引用不能丢。
             public static MDictionary<string, X509Certificate2> _SslCertificate = new MDictionary<string, X509Certificate2>(StringComparer.OrdinalIgnoreCase);
             /// <summary>
@@ -187,9 +188,19 @@ namespace Taurus.Mvc
                                 string pwd = IOHelper.ReadAllText(pwdPath);
                                 string domain = Path.GetFileName(pwdPath).Replace(".txt", "");
                                 keys.Remove(domain);
-                                if (!_SslCertificate.ContainsKey(domain))
+                                if (!_SslCertificate.ContainsKey(domain) && !_SslErrors.Contains(domain))
                                 {
-                                    _SslCertificate.Add(domain, new X509Certificate2(file, pwd));//实例化比较耗时，避开重复实例化，兼顾缓存更新。
+                                    try
+                                    {
+                                        _SslCertificate.Add(domain, new X509Certificate2(file, pwd));//实例化比较耗时，避开重复实例化，兼顾缓存更新。
+                                    }
+                                    catch (Exception err)
+                                    {
+                                        Log.Write(err);
+                                        //无效的证书文件
+                                        _SslErrors.Add(domain);
+                                    }
+                                   
                                 }
                             }
                         }

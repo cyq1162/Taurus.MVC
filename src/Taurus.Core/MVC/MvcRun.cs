@@ -1,8 +1,11 @@
-﻿using System;
+﻿using CYQ.Data;
+using System;
 using System.Collections.Generic;
+using System.Diagnostics;
 using System.Text;
 using System.Threading;
 using Taurus.Mvc.Reflect;
+using Taurus.Plugin.MicroService;
 
 namespace Taurus.Mvc
 {
@@ -17,6 +20,12 @@ namespace Taurus.Mvc
             if (!hasStart)
             {
                 hasStart = true;
+                WriteDebugLine("--------------------------------------------------");
+                WriteDebugLine("Current App Start Time    ：" + DateTime.Now.ToString("yyyy-MM-dd HH:mm:ss"));
+                WriteDebugLine("Current App Process ID    ：" + MvcConst.ProcessID);
+                WriteDebugLine("Current Taurus Version    ：" + MvcConst.Version);
+                WriteDebugLine("Current CYQ.Data Version  ：" + AppConfig.Version);
+                WriteDebugLine("--------------------------------------------------");
                 ThreadPool.QueueUserWorkItem(new WaitCallback(ThreadStart), null);
             }
         }
@@ -25,6 +34,11 @@ namespace Taurus.Mvc
         {
             ControllerCollector.InitControllers();
             ViewEngine.InitStyles();
+        }
+        private static void WriteDebugLine(string msg)
+        {
+            Console.WriteLine(msg);
+            Debug.WriteLine(msg);
         }
     }
 }

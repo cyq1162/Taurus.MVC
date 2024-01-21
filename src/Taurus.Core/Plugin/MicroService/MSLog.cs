@@ -7,6 +7,10 @@ namespace Taurus.Plugin.MicroService
 {
     internal class MsLog
     {
+        public static void Write(Exception err)
+        {
+            Log.Write(err, "MicroService");
+        }
         /// <summary>
         /// 内部日志记录
         /// </summary>

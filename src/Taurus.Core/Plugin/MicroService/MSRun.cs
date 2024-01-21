@@ -32,10 +32,10 @@ namespace Taurus.Plugin.MicroService
             }
         }
 
-        private static bool isStart = false;
+        private static bool hasStart = false;
         internal static void Start(Uri uri)
         {
-            if (!isStart)
+            if (!hasStart)
             {
                 string urlAbs = uri.AbsoluteUri;
                 string urlPath = uri.PathAndQuery;
@@ -52,66 +52,40 @@ namespace Taurus.Plugin.MicroService
             {
                 MvcConfig.RunUrl = host.ToLower().TrimEnd('/');//设置当前程序运行的请求网址。
             }
-            if (!isStart)
+            if (!hasStart)
             {
-                MsLog.WriteDebugLine("--------------------------------------------------");
-                MsLog.WriteDebugLine("Current App Process ID    ：" + MvcConst.ProcessID);
-                MsLog.WriteDebugLine("Current Taurus Version    ：" + MvcConst.Version);
-                isStart = true;
-                if (MsConfig.IsServer)
-                {
-                    ServicePointManager.ServerCertificateValidationCallback = delegate { return true; };
-                    if (ServicePointManager.DefaultConnectionLimit == 2)
-                    {
-                        ServicePointManager.DefaultConnectionLimit = 2048;//对.net framework有效。
-                        ThreadPool.SetMinThreads(30, 50);
-                    }
-                    if (MsConfig.IsRegCenterOfMaster)
-                    {
-                        MsLog.WriteDebugLine("Current MicroService Type ：RegCenter of Master");
-                        ThreadBreak.AddGlobalThread(new ParameterizedThreadStart(RunLoopRegCenterOfMaster));
-                    }
-                    else
-                    {
-                        if (MsConfig.IsGateway)
-                        {
-                            MsLog.WriteDebugLine("Current MicroService Type ：Gateway");
-                            ThreadBreak.AddGlobalThread(new ParameterizedThreadStart(RunLoopOfGateway));
-                        }
-                        else
-                        {
-                            MsLog.WriteDebugLine("Current MicroService Type ：RegCenter of Slave");
-                            ThreadBreak.AddGlobalThread(new ParameterizedThreadStart(RunLoopRegCenterOfSlave));
-                        }
-                        MsLog.WriteDebugLine("Current RegisterCenter Url：" + MsConfig.Server.RcUrl);
-
-
-                    }
-                }
-
-                if (MsConfig.IsClient)
-                {
-                    MsLog.WriteDebugLine("Current MicroService Type ：Client of 【" + MsConfig.Client.Name + "】");
-
-                    if (!string.IsNullOrEmpty(MsConfig.Client.Domain))
-                    {
-                        MsLog.WriteDebugLine("Current MicroService Domin：" + MsConfig.Client.Domain);
-                    }
-                    MsLog.WriteDebugLine("Current RegisterCenter Url：" + MsConfig.Client.RcUrl);
-                    ThreadBreak.AddGlobalThread(new ParameterizedThreadStart(RunLoopOfClient));
-                }
-                MsLog.WriteDebugLine("--------------------------------------------------");
+                hasStart = true;
+                //Start 内部自有判断。
+                MsRun.RegistryCenterOfMaster.Start();
+                MsRun.RegistryCenterOfSlave.Start();
+                MsRun.Gateway.Start();
+                MsRun.ClientRun.Start();
             }
         }
 
         #region 链接预建立检测。
+
+        static bool hasInitThreads = false;
+        private static void InitThreads()
+        {
+            if (hasInitThreads) { return; }
+            hasInitThreads = true;
+            ServicePointManager.ServerCertificateValidationCallback = delegate { return true; };
+            if (ServicePointManager.DefaultConnectionLimit == 2)
+            {
+                ServicePointManager.DefaultConnectionLimit = 2048;//对.net framework有效。
+                ThreadPool.SetMinThreads(30, 50);
+            }
+        }
+
 
         private static void PreConnection(MDictionary<string, List<HostInfo>> keyValues)
         {
             Dictionary<string, byte> keyValuePairs = new Dictionary<string, byte>();
             foreach (var items in keyValues)
             {
-                if (items.Key == "RegCenter" || items.Key == "RegCenterOfSlave" || items.Key == "Gateway" || items.Key.Contains("."))
+                string lowerKey = items.Key;
+                if (lowerKey == MsConst.RegistryCenter || lowerKey == MsConst.RegistryCenterOfSlave || lowerKey == MsConst.Gateway || lowerKey.Contains("."))
                 {
                     continue;//不需要对服务端进行预请求，域名也不需要进行。
                 }

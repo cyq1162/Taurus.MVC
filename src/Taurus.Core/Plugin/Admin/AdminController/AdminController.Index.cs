@@ -97,13 +97,13 @@ namespace Taurus.Plugin.Admin
                             case 1://to doc
                                 string gatewayUrl = string.Empty;
                                 var hostList = HostList;
-                                if (hostList.ContainsKey("Gateway"))
+                                if (hostList.ContainsKey(MsConst.Gateway))
                                 {
-                                    gatewayUrl = hostList["Gateway"][0].Host;
+                                    gatewayUrl = hostList[MsConst.Gateway][0].Host;
                                 }
-                                else if (hostList.ContainsKey("RegCenter"))
+                                else if (hostList.ContainsKey(MsConst.RegistryCenter))
                                 {
-                                    gatewayUrl = hostList["RegCenter"][0].Host;
+                                    gatewayUrl = hostList[MsConst.RegistryCenter][0].Host;
                                 }
                                 url = url + "/doc?g=" + gatewayUrl;
                                 break;
@@ -130,7 +130,8 @@ namespace Taurus.Plugin.Admin
             var hostDic = new Dictionary<string, int>();
             foreach (var item in hostList)
             {
-                if (item.Key == "RegCenter" || item.Key == "RegCenterOfSlave" || item.Key == "Gateway")
+                string lowerKey = item.Key.ToLower();
+                if (lowerKey == MsConst.RegistryCenter || lowerKey == MsConst.RegistryCenterOfSlave || lowerKey == MsConst.Gateway)
                 {
                     dtServer.NewRow(true).Sets(0, item.Key, item.Value.Count);
                 }
@@ -187,7 +188,7 @@ namespace Taurus.Plugin.Admin
         private void BindDefaultView()
         {
             int type = Query<int>("t", 1);
-            string name = Query<string>("n", "RegCenter");
+            string name = Query<string>("n", "RegistryCenter");
             switch (type)
             {
                 case 2:
@@ -263,7 +264,8 @@ namespace Taurus.Plugin.Admin
             List<HostInfo> list = new List<HostInfo>();
             foreach (var item in hostList)
             {
-                if (item.Key == "RegCenter" || item.Key == "RegCenterOfSlave" || item.Key == "Gateway" || item.Key.Contains("."))
+                string lowerKey = item.Key.ToLower();
+                if (lowerKey == MsConst.RegistryCenter || lowerKey == MsConst.RegistryCenterOfSlave || lowerKey == MsConst.Gateway || lowerKey.Contains("."))
                 {
                     continue;
                 }
@@ -285,7 +287,7 @@ namespace Taurus.Plugin.Admin
                 dt.Rows.Sort("Host");
                 dt.Columns.Add("Name");
                 dt.Columns["Name"].Set(name);
-                if (state == 1 && MsConfig.IsRegCenterOfMaster && IsAdmin)
+                if (state == 1 && MsConfig.IsRegistryCenterOfMaster && IsAdmin)
                 {
                     dt.Columns.Add("RemoteExit");
                     dt.Columns["RemoteExit"].Set("Stop");

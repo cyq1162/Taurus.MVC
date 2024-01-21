@@ -19,12 +19,17 @@ namespace Taurus.Plugin.MicroService
         /// </summary>
         internal const string Gateway = "gateway";
         /// <summary>
-        /// 注册中心
+        /// 注册中心（主）
         /// </summary>
-        internal const string RegCenter = "regcenter";
+        internal const string RegistryCenter = "registrycenter";
 
-        internal const string ServerRegCenterJsonPath = "/microservice/server_regcenter.json";
-        internal const string ServerRegCenterOfSlaveJsonPath = "/microservice/server_regcenterofslave.json";
+        /// <summary>
+        /// 注册中心（从）
+        /// </summary>
+        internal const string RegistryCenterOfSlave = "registrycenterofslave";
+
+        internal const string ServerRegistryCenterJsonPath = "/microservice/server_rc.json";
+        internal const string ServerRegistryCenterOfSlaveJsonPath = "/microservice/server_rcofslave.json";
         internal const string ServerGatewayJsonPath = "/microservice/server_gateway.json";
         internal const string ClientGatewayJsonPath = "/microservice/client_gateway.json";
         internal const string ServerHost2Path = "/microservice/server_host2.json";
