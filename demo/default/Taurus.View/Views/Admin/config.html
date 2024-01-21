@@ -23,7 +23,7 @@
                 <div id="kestrelNode">
                     <div style="float:left"><b>Kestrel （Web Host）：</b></div>
                     <div style="float:left">
-                        <a href="config?t=Kestrel&t1=25&t2=25">Kestrel</a>&nbsp;&nbsp;|&nbsp;
+                        <a href="config?t=Kestrel&t1=25&t2=35">Kestrel</a>&nbsp;&nbsp;|&nbsp;
                         <a href="config?t=Kestrel-HostFilter&t1=25&t2=25">HostFilter</a>&nbsp;&nbsp;|&nbsp;
                         Limit【
                         <a href="config?t=Kestrel-Connection&t1=35&&t2=25">Connection</a>&nbsp;&nbsp;|&nbsp;
@@ -40,15 +40,22 @@
                     <a href="config?t=Mvc-Controller&t1=28&t2=28&t3=44">Controller</a>&nbsp;&nbsp;|&nbsp;
                     <a href="config?t=Mvc-View&t1=28&t2=28&t3=44">View</a>&nbsp;）|&nbsp;
                     Plugin【
-                    <a href="config?t=Plugin-Microservice">MicroService</a>&nbsp;&nbsp;|&nbsp;
-                    <a href="config?t=Plugin-CORS&t1=28&t2=28&t3=44">CORS</a>&nbsp;&nbsp;|&nbsp;
                     <a href="config?t=Plugin-Admin">Admin</a>&nbsp;&nbsp;|&nbsp;
+                    <a href="config?t=Plugin-CORS&t1=28&t2=28&t3=44">CORS</a>&nbsp;&nbsp;|&nbsp;
                     <a href="config?t=Plugin-Doc">Doc</a>&nbsp;&nbsp;|&nbsp;
                     <a href="config?t=Plugin-Metric">Metric</a>&nbsp;&nbsp;|&nbsp;
                     <a href="config?t=Plugin-Limit">Limit</a>（
                     <a href="config?t=Plugin-Limit-Rate">Rate</a>&nbsp;&nbsp;|&nbsp;
                     <a href="config?t=Plugin-Limit-IP">IP-Black</a>&nbsp;&nbsp;|&nbsp;
                     <a href="config?t=Plugin-Limit-Ack&t2=40">Ack</a>&nbsp;）】
+                </div>
+                <div style="clear:both; height:5px;">
+                </div>
+                <div style="float:left"><b>Taurus （MicroService）：</b></div>
+                <div style="float:left">
+                    Plugin【
+                    <a href="config?t=Plugin-Microservice-Client">Client</a>&nbsp;&nbsp;|&nbsp;
+                    <a href="config?t=Plugin-Microservice-Server">Server</a>（&nbsp;Gateway、Registry Center&nbsp;）】
                 </div>
                 <div style="clear:both; height:5px;">
                 </div>
@@ -66,76 +73,9 @@
                 <div style="clear:both;">
                 </div>
                 <hr />
-                <table class="table table-striped">
-                    <tr>
-                        <td width="${t1:28}%">Config Key</td>
-                        <td width="${t2:28}%">Config Value</td>
-                        <td width="${t3:44}%">Description</td>
-                    </tr>
-                </table>
-                <table class="table table-striped">
-                    <tbody id="defaultView" clearflag="1">
-                        <tr>
-                            <td width="${t1:28}%">${ConfigKey}</td>
-                            <td width="${t2:28}%" ondblclick="changeState(this,'${ConfigKey}')">${ConfigValue}</td>
-                            <td width="${t3:44}%">${Description}</td>
-                        </tr>
-                    </tbody>
-                </table>
-
+                <div itemref="configitems.table-items"></div>
             </div>
         </div>
-        <script type="text/javascript">
-            function changeState(el, key) {
-                if (!isAllowChange(key)) { return; }
-                var $el = $(el);
-                if ($el.attr("state") == "1") { return; }
-                $el.attr("state", "1");
-                var value = $el.html();
-                var items = value.split(' ');
-                var html = "<input type=\"text\" value='" + (items[0] == '√' ? 'true' : (items[0] == '×' ? 'false' : items[0])) + "'' />";
-                html += "&nbsp;&nbsp;<input type=\"checkbox\" value=\"1\" />&nbsp;<span title='save to config file.'>durable</span><br /><br />";
-                html += "<input class=\"btn-primary\" type=\"button\" value=\"Save\" onclick=\"save(this,'" + key + "','" + value + "')\"/>";
-                html += "&nbsp;&nbsp;<input class=\"btn-default\" type=\"button\" value=\"Cancel\" onclick=\"cancel(this,'" + value + "')\" />";
-                $el.html(html);
-            }
-            function cancel(el, value) {
-                var $td = $(el.parentNode);
-                $td.attr("state", "0");
-                $td.html(value);
-            }
-            function save(el, key, oldValue) {
-                var isDurable = false;
-                var value = "";
-                var td = el.parentNode;
-                for (var i = 0; i < td.childNodes.length; i++) {
-                    if (td.childNodes[i].type == "text") {
-                        value = td.childNodes[i].value;
-                    }
-                    else if (td.childNodes[i].type == "checkbox") {
-                        isDurable = td.childNodes[i].checked;
-                        break;
-                    }
-                }
-                var data = {};
-                data.key = key;
-                data.value = value;
-                data.durable = isDurable;
-                $.post("BtnSaveConfig", data, function (result) {
-                    cancel(el, (result && result.success) ? value : oldValue);
-                    if (result && !result.success) { alert(result.msg); }
-                });
-            }
-            function isAllowChange(key) {
-                if (key.indexOf(' ') > -1 || key.endsWith("Conn") || key.startsWith("Conn")) { return false; }
-                switch (key) {
-                    case "Mvc.Controllers":
-                    case "MicroService.Server.Name":
-                        return false;
-                }
-                return true;
-            }
-        </script>
     </div>
 
 </body>
