@@ -1,0 +1,133 @@
+﻿<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head itemref="common.head">
+    <title>Application Config Info</title>
+    <link itemref="common.btcss" />
+    <link itemref="common.btcss_extend" />
+    <style type="text/css">
+        a {
+            cursor: pointer;
+        }
+
+        table td {
+            text-align: left;
+            word-break: break-all;
+            word-wrap: break-word;
+        }
+    </style>
+</head>
+<body style="padding-top:0px;">
+    <div style="width:100%">
+        <div id="table-items">
+            <table class="table table-striped">
+                <tr>
+                    <td width="${t1:28}%">Config Key</td>
+                    <td width="${t2:28}%">Config Value</td>
+                    <td width="${t3:44}%">Description</td>
+                </tr>
+            </table>
+            <table class="table table-striped">
+                <tbody id="defaultView" clearflag="1">
+                    <tr>
+                        <td width="${t1:28}%">${ConfigKey}</td>
+                        <td width="${t2:28}%" ondblclick="changeState(this,'${ConfigKey}')">${ConfigValue}</td>
+                        <td width="${t3:44}%">${Description}</td>
+                    </tr>
+                </tbody>
+            </table>
+            <script type="text/javascript">
+                function changeState(el, key) {
+                    if (!isAllowChange(key)) { return; }
+                    var $el = $(el);
+                    if ($el.attr("state") == "1") { return; }
+                    $el.attr("state", "1");
+                    var value = $el.html();
+                    var items = value.split(' 【');
+                    var html = "";
+                    if (key == "MicroService.Server.Type") {
+                        html += "<select>";
+                        html += "<option " + (items[0] == 'Gateway' ? 'selected="selected"' :'' )+">Gateway</option>";
+                        html += "<option " + (items[0] == 'RegistryCenter' ? 'selected="selected"' : '') +">RegistryCenter</option>";
+                        html += "</select>";
+                    }
+                    else {
+                        html += "<input style='width:70%' type=\"text\" value='" + (items[0] == '√' ? 'true' : (items[0] == '×' ? 'false' : items[0])) + "'' />";
+                    }
+                    
+                    html += "&nbsp;&nbsp;<input type=\"checkbox\" value=\"1\" />&nbsp;<span title='save to config file.'>durable</span><br /><br />";
+                    html += "<input class=\"btn-primary\" type=\"button\" value=\"Save\" onclick=\"save(this,'" + key + "','" + value + "')\"/>";
+                    html += "&nbsp;&nbsp;<input class=\"btn-default\" type=\"button\" value=\"Cancel\" onclick=\"cancel(this,'" + value + "')\" />";
+                    if (key == "Kestrel.SslPath") {
+                        html += "&nbsp;&nbsp;<input id='upFile' class=\"btn-success\" type=\"button\" value=\"Upload Zip File For SSL\" />";
+                    }
+                    $el.html(html);
+                    if (key == "Kestrel.SslPath") {
+                        upload($("#upFile"));
+                    }
+                }
+                function cancel(el, value) {
+                    var $td = $(el.parentNode);
+                    $td.attr("state", "0");
+                    if (value) { value = value.replace("\t", "\\t").replace("\r", "\\r").replace("\n", "\\n"); }
+                    $td.html(value);
+                }
+                function save(el, key, oldValue) {
+                    var isDurable = false;
+                    var value = "";
+                    var td = el.parentNode;
+                    for (var i = 0; i < td.childNodes.length; i++) {
+                        if (td.childNodes[i].type == "text" || td.childNodes[i].type =="select-one") {
+                            value = td.childNodes[i].value;
+                        }
+                        else if (td.childNodes[i].type == "checkbox") {
+                            isDurable = td.childNodes[i].checked;
+                            break;
+                        }
+                    }
+                    var data = {};
+                    data.key = key;
+                    data.value = value;
+                    data.durable = isDurable;
+                    $.post("BtnSaveConfig", data, function (result) {
+                        cancel(el, (result && result.success) ? value : oldValue);
+                        if (result && !result.success) { alert(result.msg); }
+                    });
+                }
+                function isAllowChange(key) {
+                    // || key.endsWith("Conn") || key.startsWith("Conn")
+                    if (key.indexOf(' ') > -1) { return false; }
+                    //switch (key) {
+                    //    case "MicroService.Server.Name":
+                    //        return false;
+                    //}
+                    return true;
+                }
+                function upload(e) {
+                    var opts = {}
+                    opts.action = "uploadssl";
+                    opts.onSubmit = function () {
+                        return function (file, ext) {
+                            if (ext != "zip") {
+                                alert("only zip file can be upload.")
+                                return false;
+                            }
+                        }
+                    }();
+                    opts.onComplete = function () {
+                        return function (file, data) {
+                            if (typeof (data) == "string") {
+                                data = JSON.parse(data);
+                            }
+                            if (data.msg) {
+                                alert(data.msg);
+                            }
+                        }
+                    }();
+                    new AR.Upload(e, opts);
+                }
+
+            </script>
+        </div>
+    </div>
+</body>
+</html>
