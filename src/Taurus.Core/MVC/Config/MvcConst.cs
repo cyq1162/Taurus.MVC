@@ -29,6 +29,22 @@ namespace Taurus.Mvc
                 return _Version;
             }
         }
+        private static Process _Proc;
+        /// <summary>
+        /// 当前进程ID
+        /// </summary>
+        internal static Process Proc
+        {
+            get
+            {
+                if (_Proc == null)
+                {
+                    _Proc = Process.GetCurrentProcess();
+                }
+                return _Proc;
+            }
+        }
+
         private static int _ProcessID;
         /// <summary>
         /// 当前进程ID
@@ -37,11 +53,7 @@ namespace Taurus.Mvc
         {
             get
             {
-                if (_ProcessID == 0)
-                {
-                    _ProcessID = Process.GetCurrentProcess().Id;
-                }
-                return _ProcessID;
+                return Proc.Id;
             }
         }
 
@@ -59,6 +71,11 @@ namespace Taurus.Mvc
                     var nets = NetworkInterface.GetAllNetworkInterfaces();
                     foreach (var item in nets)
                     {
+                        // 跳过虚拟机网卡
+                        if (item.Description.StartsWith("VirtualBox ") || item.Description.StartsWith("Hyper-V") || item.Description.StartsWith("VMware ") || item.Description.StartsWith("Bluetooth "))
+                        {
+                            continue;
+                        }
                         var ips = item.GetIPProperties().UnicastAddresses;
                         foreach (var ip in ips)
                         {

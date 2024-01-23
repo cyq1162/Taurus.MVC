@@ -46,17 +46,6 @@ namespace Microsoft.AspNetCore.Http
                 if (MvcConfig.Kestrel.SslCertificate.Count > 0)
                 {
                     //重新绑定监听端口。
-                    #region 处理 Https 端口监听
-                    x.Listen(IPAddress.Any, MvcConfig.Kestrel.SslPort, op =>
-                    {
-                        op.UseHttps(opx =>
-                        {
-                            var certificates = MvcConfig.Kestrel.SslCertificate;
-                            opx.ServerCertificateSelector = (connectionContext, name) =>
-                               name != null && certificates.TryGetValue(name, out var cert) ? cert : certificates[0];
-                        });
-                    });
-                    #endregion
 
                     #region 处理常规端口绑定配置
                     string host = MvcConfig.Kestrel.Urls;
@@ -78,6 +67,21 @@ namespace Microsoft.AspNetCore.Http
                         }
                     }
                     #endregion
+
+
+                    #region 处理 Https 端口监听
+                    x.Listen(IPAddress.Any, MvcConfig.Kestrel.SslPort, op =>
+                    {
+                        op.UseHttps(opx =>
+                        {
+                            var certificates = MvcConfig.Kestrel.SslCertificate;
+                            opx.ServerCertificateSelector = (connectionContext, name) =>
+                               name != null && certificates.TryGetValue(name, out var cert) ? cert : certificates[0];
+                        });
+                    });
+                    #endregion
+
+                    
                 }
 
             });
