@@ -102,6 +102,11 @@
             Cache.CacheManage 默认缓存项的时间[分钟(默认60)]
             </summary>
         </member>
+        <member name="P:CYQ.Data.AppConfig.IsDebugMode">
+            <summary>
+            检查当前正在运行的主程序是否是在 Debug 配置下编译生成的。
+            </summary>
+        </member>
         <member name="P:CYQ.Data.AppConfig.WebRootPath">
             <summary>
             Web根目录，以"/"或"\"结尾。
@@ -2633,6 +2638,21 @@
             </summary>
             <param name="key">key</param>
         </member>
+        <member name="M:CYQ.Data.Lock.DistributedLock.Idempotent(System.String)">
+            <summary>
+            幂等性
+            </summary>
+            <param name="key">key</param>
+            <returns></returns>
+        </member>
+        <member name="M:CYQ.Data.Lock.DistributedLock.Idempotent(System.String,System.Double)">
+            <summary>
+            幂等性
+            </summary>
+            <param name="key">key</param>
+            <param name="keepMinutes">数据保留时间，单位分钟，0 则永久。</param>
+            <returns></returns>
+        </member>
         <member name="P:CYQ.Data.Lock.DistributedLock.Instance">
             <summary>
             分布式锁实例【根据配置顺序取值：Redis=》MemCache=》Local】
@@ -4282,11 +4302,12 @@
             <param name="escapeOp">转义选项</param>
             <returns></returns>
         </member>
-        <member name="M:CYQ.Data.Table.MDataRow.ToEntity``1(System.Boolean)">
+        <member name="M:CYQ.Data.Table.MDataRow.ToEntity``1">
             <summary>
-            转成实体
+            转实体类
             </summary>
-            <typeparam name="T">实体名称</typeparam>
+            <typeparam name="T">类型</typeparam>
+            <returns></returns>
         </member>
         <member name="M:CYQ.Data.Table.MDataRow.SetToAll(System.Object[])">
             <summary>
@@ -5347,6 +5368,11 @@
         <member name="T:CYQ.Data.Tool.FastToT">
             <summary>
             快速转换类[数据量越大[500条起],性能越高]
+            </summary>
+        </member>
+        <member name="F:CYQ.Data.Tool.FastToT.dynamicMethodDic">
+            <summary>
+            存储动态方法
             </summary>
         </member>
         <member name="M:CYQ.Data.Tool.FastToT.CreateMethod(System.Type,CYQ.Data.Table.MDataColumn)">
