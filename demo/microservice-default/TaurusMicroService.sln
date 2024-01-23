@@ -11,8 +11,6 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "MicroService-Gateway", "Mic
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "MicroService-Web", "MicroService-Web\MicroService-Web.csproj", "{D4513110-5F91-42F7-9B41-2E532B1BE2BB}"
 EndProject
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Taurus.Core_NetCore", "..\..\src\Taurus.Core\Taurus.Core_NetCore.csproj", "{C98171C9-5EA2-458F-B631-54DE60A05A3C}"
-EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -35,10 +33,6 @@ Global
 		{D4513110-5F91-42F7-9B41-2E532B1BE2BB}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{D4513110-5F91-42F7-9B41-2E532B1BE2BB}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{D4513110-5F91-42F7-9B41-2E532B1BE2BB}.Release|Any CPU.Build.0 = Release|Any CPU
-		{C98171C9-5EA2-458F-B631-54DE60A05A3C}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
-		{C98171C9-5EA2-458F-B631-54DE60A05A3C}.Debug|Any CPU.Build.0 = Debug|Any CPU
-		{C98171C9-5EA2-458F-B631-54DE60A05A3C}.Release|Any CPU.ActiveCfg = Release|Any CPU
-		{C98171C9-5EA2-458F-B631-54DE60A05A3C}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

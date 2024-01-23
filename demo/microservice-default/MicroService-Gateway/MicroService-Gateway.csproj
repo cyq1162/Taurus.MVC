@@ -2,19 +2,32 @@
 
   <PropertyGroup>
     <TargetFramework>net6.0</TargetFramework>
-    <Nullable>enable</Nullable>
-    <ImplicitUsings>enable</ImplicitUsings>
-    <RootNamespace>MicroService_Gateway</RootNamespace>
+	  <AssemblyName>Taurus.Gateway</AssemblyName>
+	  <RootNamespace>Taurus.Gateway</RootNamespace>
+	  <Description>Taurus.Gateway is a high-performance gateway for webapi（适合场景：对性能和并发有较高要求的电商、站点、WebAPI等系统，支持.Net Framework 2.0+，.Net Core 2.1+，天然支持分布式，内置微服务【注册中心、网关、客户端】三合一。【开源：https://github.com/cyq1162/Taurus.MVC】</Description>
+	  <Company>路过秋天 （2024-01-20）</Company>
+	  <Authors>路过秋天</Authors>
+	  <Copyright>Copyright ©  路过秋天 2016-2096</Copyright>
+	  <Version>3.2.0.6</Version>
+	  <Product>Taurus.Gateway .NET Core 版本</Product>
+	  <PackageProjectUrl>https://github.com/cyq1162/Taurus.MVC</PackageProjectUrl>
+	  <AssemblyTitle>Taurus.Gateway 微服务网关</AssemblyTitle>
+	  <AssemblyVersion>3.3.0.1</AssemblyVersion>
+	  <FileVersion>3.3.0.1</FileVersion>
   </PropertyGroup>
 
   <ItemGroup>
-    <ProjectReference Include="..\..\..\src\Taurus.Core\Taurus.Core_NetCore.csproj" />
+    <PackageReference Include="Taurus.MVC" Version="3.3.0.1" />
   </ItemGroup>
 
   <ItemGroup>
-    <Reference Include="CYQ.Data">
-      <HintPath>..\..\..\Packages\netcoreapp2.1\CYQ.Data.dll</HintPath>
-    </Reference>
+    <Folder Include="wwwroot\Views\" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <Content Update="appsettings.json">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
   </ItemGroup>
 
 </Project>

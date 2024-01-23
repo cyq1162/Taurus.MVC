@@ -2,19 +2,22 @@
 
   <PropertyGroup>
     <TargetFramework>net6.0</TargetFramework>
-    <Nullable>enable</Nullable>
-    <ImplicitUsings>enable</ImplicitUsings>
-    <RootNamespace>MicroService_Web</RootNamespace>
+	  <AssemblyName>Taurus.Client.Web</AssemblyName>
+	  <RootNamespace>Taurus.Client.Web</RootNamespace>
+	  <Description>Taurus.Mvc is a microservice mvc client for webapi（适合场景：对性能和并发有较高要求的电商、站点、WebAPI等系统，支持.Net Framework 2.0+，.Net Core 2.1+，天然支持分布式，内置微服务【注册中心、网关、客户端】三合一。【开源：https://github.com/cyq1162/Taurus.MVC】</Description>
+	  <Company>路过秋天 （2024-01-20）</Company>
+	  <Authors>路过秋天</Authors>
+	  <Copyright>Copyright ©  路过秋天 2016-2096</Copyright>
+	  <Version>3.3.0.1</Version>
+	  <Product>Taurus.RegistryCenter .NET Core 版本</Product>
+	  <PackageProjectUrl>https://github.com/cyq1162/Taurus.MVC</PackageProjectUrl>
+	  <AssemblyTitle>Taurus.RegistryCenter 微服务注册中心</AssemblyTitle>
+	  <AssemblyVersion>3.3.0.1</AssemblyVersion>
+	  <FileVersion>3.3.0.1</FileVersion>
   </PropertyGroup>
 
   <ItemGroup>
-    <ProjectReference Include="..\..\..\src\Taurus.Core\Taurus.Core_NetCore.csproj" />
-  </ItemGroup>
-
-  <ItemGroup>
-    <Reference Include="CYQ.Data">
-      <HintPath>..\..\..\Packages\netcoreapp2.1\CYQ.Data.dll</HintPath>
-    </Reference>
+    <PackageReference Include="Taurus.MVC" Version="3.3.0.1" />
   </ItemGroup>
 
 </Project>

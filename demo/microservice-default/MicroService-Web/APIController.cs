@@ -19,7 +19,7 @@ namespace Taurus.Controllers
             {
                 Write("From : " + Request.UrlReferrer.ToString() + "<br/>");
             }
-            Write("MicroService : " + MvcConfig.RunUrl + Request.Url.LocalPath + " : Hello ： " + MsConfig.Server.Name);
+            Write("Hello , MicroService : " + MvcConfig.RunUrl + Request.Url.LocalPath);
         }
     }
 }
