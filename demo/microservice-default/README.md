@@ -1,32 +1,17 @@
-# Taurus.MVC.MicroService.Demo
-Taurus.MVC 微服务框架示例Demo。
+# Taurus microservice demo.
+<h3>【 <a href='./README.md'>中文</a> | <a href='./README_en.md'>English</a>】</h3>
+<hr />
+<h4>Taurus 微服务框架运行示例，文件夹说明：</h4>
+<pre><code>
+<p>MicroService-Gateway 微服务网关</p>
 
-RunExe 目录下是可运行程序（编绎在.NET6）
+<p>MicroService-RegCenter 微服务注册中心（主）</p>
 
-运行测试案例1：
+<p>MicroService-RegCenterOfSlave 微服务注册中心（从）</p>
 
-1、运行注册中心：MicroService-RegCenter.exe （单开，监听8000端口）
+<p>MicroService-Web 微服务客户端</p>
 
-2、运行WebAPI：MicroService-Web.exe （可重复运行多次）
+<p>RunExe 打包编绎好的可运行程序，里面的程序可直接运行（编绎在.NET6）。</p>
+</code></pre>
 
-打开浏览器，访问：http://localhost:8000 （多次刷新可以看到请求被负载均衡了）
-
-
-
-运行测试案例2：
-
-3、运行网关：MicroService-Gateway.exe （默认可以多开，这里运行1次就好，控制台可以查看监听的端口）
-
-打开浏览器，访问：http://localhost:那个监听的端口号 （多次刷新可以看到请求被负载均衡了）
-
-
-运行测试案例3：
-
-4、运行注册中心（从）：MicroService-RegCenterOfSlave.exe （单开，默认7000端口）
-
-打开浏览器，访问：http://localhost:7000 （发现它也是可兼网关功能的）
-
-A、关闭（主）注册中心  - 观察请求都转移到（从），同时不影响网关的访问。
-
-B、重新启动（主）注册中心 - 观察请求都恢复转移到（主），同时不影响网关的访问。
 
