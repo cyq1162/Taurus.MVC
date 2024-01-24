@@ -64,13 +64,6 @@ Taurus.MVC 的Demo，企业站示例（Demo for Taurus.MVC)
 <p><img src="http://images2015.cnblogs.com/blog/17408/201608/17408-20160815222335109-1346588678.jpg" alt="" /></p>
 <p><span style="vertical-align: inherit;"><span style="vertical-align: inherit;">Finally, a beautiful home page came out:</span></span></p>
 <p><img src="http://images2015.cnblogs.com/blog/17408/201608/17408-20160815222739859-1422879440.jpg" alt="" /></p>
-<h1><span style="vertical-align: inherit;"><span style="vertical-align: inherit;">After finishing the work:</span></span></h1>
-<p><span style="vertical-align: inherit;"><span style="vertical-align: inherit;">The following pages, including article list, article details, product center, and background management, will be introduced in the next article.</span></span></p>
-<p><span style="vertical-align: inherit;"><span style="vertical-align: inherit;">In the past, the whole project was finished and then the article was written. Now the project is written in half, and the article is supplemented with one article. </span><span style="vertical-align: inherit;">. </span><span style="vertical-align: inherit;">.</span></span></p>
-<p><span style="vertical-align: inherit;"><span style="vertical-align: inherit;">Source code:</span></span></p>
-<p><span style="vertical-align: inherit;"><span style="vertical-align: inherit;">The URL opens: </span></span><a href="http://code.taobao.org/p/cyqopen/src/trunk/Taurus.MVC.GettingStarted/" target="_blank"><span style="vertical-align: inherit;"><span style="vertical-align: inherit;">http://code.taobao.org/p/cyqopen/src/trunk/Taurus.MVC.GettingStarted/</span></span></a></p>
-<p><span style="vertical-align: inherit;"><span style="vertical-align: inherit;">Svn checkout: http://code.taobao.org/svn/cyqopen/trunk/Taurus.MVC.GettingStarted</span></span></p>
-<p><span style="vertical-align: inherit;"><span style="vertical-align: inherit;">Thank you for your support! </span><span style="vertical-align: inherit;">! </span><span style="vertical-align: inherit;">!</span></span></p>
 
 -----------------------------------------------
 
@@ -113,10 +106,6 @@ Taurus.MVC 的Demo，企业站示例（Demo for Taurus.MVC)
 <p><img src="http://images2015.cnblogs.com/blog/17408/201608/17408-20160816205203062-1435658490.jpg" alt="" /></p>
 <p><span style="vertical-align: inherit;"><span style="vertical-align: inherit;">Click on the image to enlarge the effect:</span></span></p>
 <p><img src="http://images2015.cnblogs.com/blog/17408/201608/17408-20160816205307437-1151069736.jpg" alt="" /></p>
-<h1><span style="vertical-align: inherit;"><span style="vertical-align: inherit;">Source address:</span></span></h1>
-<p><span style="vertical-align: inherit;"><span style="vertical-align: inherit;">The URL opens: </span></span><a href="http://code.taobao.org/p/cyqopen/src/trunk/Taurus.MVC.GettingStarted/" target="_blank"><span style="vertical-align: inherit;"><span style="vertical-align: inherit;">http://code.taobao.org/p/cyqopen/src/trunk/Taurus.MVC.GettingStarted/</span></span></a></p>
-<p><span style="vertical-align: inherit;"><span style="vertical-align: inherit;">SVN CheckOut: http://code.taobao.org/svn/cyqopen/trunk/Taurus.MVC.GettingStarted</span></span></p>
-<p><span style="vertical-align: inherit;"><span style="vertical-align: inherit;">Before the first half of the previous section, the direct SVN update is fine.</span></span></p>
 <h1><span style="vertical-align: inherit;"><span style="vertical-align: inherit;">to sum up:</span></span></h1>
 <p><span style="vertical-align: inherit;"><span style="vertical-align: inherit;">At this point, a business station will be finished two or three times, but the user backstage? </span><span style="vertical-align: inherit;">? </span><span style="vertical-align: inherit;">?</span></span></p>
 <p><span style="vertical-align: inherit;"><span style="vertical-align: inherit;">The user backstage, temporarily no plans to get it, everyone should configure a few links with the Aries framework should be fine.</span></span></p>
