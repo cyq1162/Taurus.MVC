@@ -282,7 +282,7 @@ CYQ.Data升级到V5.8.4.9
 5、说明：MicroService.Server.Name 变更为：MicroService.Server.Type。（2024-01-21）
 6、说明：微服务注册中心名称：RegCenter 变更为：RegistryCenter。（2024-01-21）
 7、修复：V3.2.0.4 优化的内部IP获取，在Docker容器不支持的异常。（2024-01-21）【V3.3.0.1】
-
+8、优化：兼容与ASP.Net MVC 或 ASP.Net Core MVC 共存。（2024-01-24）【V3.3.0.2】
 
 新增保护目录配置
 数据库参数。

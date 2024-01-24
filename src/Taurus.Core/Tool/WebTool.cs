@@ -118,9 +118,24 @@ namespace Taurus.Mvc
         internal static bool IsMvcSuffix(string localPath)
         {
             string suffix = MvcConfig.Suffix;
-            if (suffix != "" && localPath.EndsWith(suffix))
+            if (!string.IsNullOrEmpty(suffix))
             {
-                return true;
+                string[] items = suffix.Split(',');
+                foreach (var item in items)
+                {
+                    if (string.IsNullOrEmpty(item))
+                    {
+                        if(localPath.IndexOf('.') == -1)
+                        {
+                             return true;
+                        }
+                    }
+                    else if (localPath.EndsWith(item))
+                    {
+                        return true;
+                    }
+                }
+                return false;
             }
             return localPath.IndexOf('.') == -1;
         }

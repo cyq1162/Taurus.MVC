@@ -78,7 +78,7 @@ namespace Taurus.Mvc
                     }
                     break;
             }
-            _MethodName = methodName;
+            _MethodName = methodName.Split('.')[0];//去后缀。
             if (string.IsNullOrEmpty(_MethodName))
             {
                 _MethodName = ReflectConst.Default;
@@ -377,6 +377,7 @@ namespace Taurus.Mvc
                     _View.KeyValue.Add("controller", ControllerName);
                     _View.KeyValue.Add("action", MethodName.ToLower());
                     _View.KeyValue.Add("para", Para.ToLower());
+                    _View.KeyValue.Add("suffix", Path.GetExtension(Request.Url.LocalPath));
                     _View.KeyValue.Add("httphost", Request.Url.AbsoluteUri.Substring(0, Request.Url.AbsoluteUri.Length - Request.Url.PathAndQuery.Length));
                 }
             }

@@ -240,7 +240,11 @@ namespace Taurus.Core
             HttpContext cont = ((HttpApplication)sender).Context;
             if (cont != null && !WebTool.IsRunToEnd(cont) && WebTool.IsMvcSuffix(cont.Request.Url))// && WebTool.IsCallMvc(cont.Request.Url)
             {
-                cont.Handler = SessionHandler.Instance;//注册Session
+                if (cont.Handler == null || cont.Handler.ToString() == "System.Web.DefaultHttpHandler")
+                {
+                    //如果要兼容ASP.NET MVC，不能修改Handler，否则ASP.NET MVC不执行。
+                    cont.Handler = SessionHandler.Instance;//注册Session
+                }
             }
         }
         void context_AcquireRequestState(object sender, EventArgs e)
@@ -299,8 +303,9 @@ namespace Taurus.Core
             //}
             if (t == null)
             {
-                context.Response.StatusCode = 404;
-                context.Response.Write("404 - Not Found.");
+                //do nothing , next module to deal.
+                //context.Response.StatusCode = 404;
+                //context.Response.Write("404 - Not Found.");
                 // WriteError("You need a " + className + " controller for coding!", context);
             }
             else
@@ -320,8 +325,10 @@ namespace Taurus.Core
                 {
                     WriteError(err.Message, context);
                 }
+
+                context.Handler = null;//禁止其它模块执行。
             }
-            //context.Response.End();
+            
         }
         private void WriteError(string tip, HttpContext context)
         {
