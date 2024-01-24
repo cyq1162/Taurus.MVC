@@ -19,6 +19,8 @@
     <IISExpressAnonymousAuthentication />
     <IISExpressWindowsAuthentication />
     <IISExpressUseClassicPipelineMode />
+    <Use64BitIISExpress />
+    <UseGlobalApplicationHostFile />
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
     <DebugSymbols>true</DebugSymbols>
@@ -38,23 +40,23 @@
     <WarningLevel>4</WarningLevel>
   </PropertyGroup>
   <ItemGroup>
+    <Reference Include="CYQ.Data, Version=5.9.0.5, Culture=neutral, processorArchitecture=MSIL">
+      <HintPath>..\packages\cyqdata.5.9.0.5\lib\net40\CYQ.Data.dll</HintPath>
+    </Reference>
+    <Reference Include="DotNetZip, Version=1.12.0.0, Culture=neutral, PublicKeyToken=6583c7c814667745, processorArchitecture=MSIL">
+      <HintPath>..\packages\DotNetZip.1.12.0\lib\net20\DotNetZip.dll</HintPath>
+    </Reference>
     <Reference Include="Microsoft.CSharp" />
-    <Reference Include="System.Web.DynamicData" />
-    <Reference Include="System.Web.Entity" />
-    <Reference Include="System.Web.ApplicationServices" />
-    <Reference Include="System.ComponentModel.DataAnnotations" />
     <Reference Include="System" />
     <Reference Include="System.Data" />
     <Reference Include="System.Core" />
-    <Reference Include="System.Data.DataSetExtensions" />
-    <Reference Include="System.Web.Extensions" />
-    <Reference Include="System.Xml.Linq" />
     <Reference Include="System.Drawing" />
     <Reference Include="System.Web" />
     <Reference Include="System.Xml" />
     <Reference Include="System.Configuration" />
-    <Reference Include="System.Web.Services" />
-    <Reference Include="System.EnterpriseServices" />
+    <Reference Include="Taurus.Core, Version=3.3.0.1, Culture=neutral, processorArchitecture=MSIL">
+      <HintPath>..\packages\Taurus.MVC.3.3.0.1\lib\net40\Taurus.Core.dll</HintPath>
+    </Reference>
   </ItemGroup>
   <ItemGroup>
     <Content Include="App_Data\db\Article.txt" />
@@ -88,14 +90,25 @@
     <Content Include="style\logo.png" />
     <Content Include="style\skin.css" />
     <Content Include="style\style.css" />
-    <Content Include="Views\Default\articledetail.html" />
-    <Content Include="Views\Default\articlelist.html" />
-    <Content Include="Views\Default\default.html" />
-    <Content Include="Views\Default\photolist.html" />
+    <Content Include="Views\Global\articledetail.html" />
+    <Content Include="Views\Global\articlelist.html" />
+    <Content Include="Views\Global\default.html" />
+    <Content Include="Views\Global\photolist.html" />
     <Content Include="Views\Shared\master.html" />
-    <Content Include="Web.config" />
+    <Content Include="Web.config">
+      <SubType>Designer</SubType>
+    </Content>
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="Controller\GlobalController.cs" />
+    <Compile Include="Logic\GlobalLogic.cs" />
+    <Compile Include="Logic\Tables\Article.cs" />
+    <Compile Include="Logic\Tables\ArticleBody.cs" />
+    <Compile Include="Logic\Tables\ArticleClass.cs" />
+    <Compile Include="Logic\Tables\HomePhoto.cs" />
+    <Compile Include="Logic\Tables\Menu.cs" />
+    <Compile Include="Logic\Tables\Photo.cs" />
+    <Compile Include="Logic\Tables\PhotoClass.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>
   <ItemGroup>
@@ -105,6 +118,7 @@
     <Content Include="App_Data\db\body\5.body" />
     <Content Include="App_Data\db\body\6.body" />
     <Content Include="style\lightbox\images\Thumbs.db" />
+    <None Include="packages.config" />
     <None Include="Web.Debug.config">
       <DependentUpon>Web.config</DependentUpon>
     </None>
@@ -113,12 +127,6 @@
     </None>
   </ItemGroup>
   <ItemGroup />
-  <ItemGroup>
-    <ProjectReference Include="..\Taurus.Controllers\Taurus.Controllers.csproj">
-      <Project>{de216ee2-441f-4668-bee0-9da7eebce666}</Project>
-      <Name>Taurus.Controllers</Name>
-    </ProjectReference>
-  </ItemGroup>
   <PropertyGroup>
     <VisualStudioVersion Condition="'$(VisualStudioVersion)' == ''">10.0</VisualStudioVersion>
     <VSToolsPath Condition="'$(VSToolsPath)' == ''">$(MSBuildExtensionsPath32)\Microsoft\VisualStudio\v$(VisualStudioVersion)</VSToolsPath>
