@@ -282,10 +282,12 @@ CYQ.Data升级到V5.8.4.9
 5、说明：MicroService.Server.Name 变更为：MicroService.Server.Type。（2024-01-21）
 6、说明：微服务注册中心名称：RegCenter 变更为：RegistryCenter。（2024-01-21）
 7、修复：V3.2.0.4 优化的内部IP获取，在Docker容器不支持的异常。（2024-01-21）【V3.3.0.1】
-8、优化：兼容与ASP.Net MVC 或 ASP.Net Core MVC 共存。（2024-01-24）【V3.3.0.2】
+-----V3.3.1----------------
+8、优化：兼容与ASP.Net MVC 或 ASP.Net Core MVC 共存。（2024-01-24）
+9、优化：更新CYQ.Data 到 V5.9.0.4 提升 html加载性能。（2024-01-27）
+10、其它：新上线两个外部插件 Taurus.Distributed（分布式锁）和 Taurus.Idempotent（幂等性锁）（2024-01-27）
 
-新增保护目录配置
-数据库参数。
+
 
 待处理
 
@@ -294,11 +296,9 @@ CYQ.Data升级到V5.8.4.9
 
 XHtml 预编绎：生成IDKey、IDName。
 
-
-
 待处理------------------------
 网关：手动添加转发地址（如其它静态站：www.xxx.com）
 网关：转发静态资源不发送referer，避免被防盗限制。
 文档：添加帮助文档链接。
 
-分布式锁（增加数据库支持模式）
+

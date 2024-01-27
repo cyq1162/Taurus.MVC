@@ -1,11 +1,11 @@
 ﻿<Project Sdk="Microsoft.NET.Sdk">
 
   <PropertyGroup>
-    <TargetFramework>netcoreapp2.1</TargetFramework>
+    <TargetFramework>net8.0</TargetFramework>
     <AssemblyName>Taurus.Core</AssemblyName>
     <RootNamespace>Taurus.Mvc</RootNamespace>
-    <Description>Taurus.Mvc is a high-performance mvc and webapi framework for asp.net or asp.net core（适合场景：对性能和并发有较高要求的电商、站点、WebAPI等系统，支持.Net Framework 2.0+，.Net Core 2.1+，天然支持分布式，内置微服务【注册中心、网关、客户端】三合一。【开源：https://github.com/cyq1162/Taurus.MVC】</Description>
-    <Company>路过秋天 （2024-01-24）</Company>
+    <Description>Taurus.Mvc is a mvc and webapi for asp.net or asp.net core（适合场景：对性能和并发有较高要求的电商、站点、WebAPI等系统，支持.Net 和 .Net Core 所有系列，内置【注册中心、网关、客户端】，【开源：https://github.com/cyq1162/Taurus.MVC】</Description>
+    <Company>路过秋天 （2024-01-27）</Company>
     <Authors>路过秋天</Authors>
     <Copyright>Copyright ©  路过秋天 2016-2096</Copyright>
     <Version>2.3.4</Version>
@@ -16,8 +16,8 @@
     <GeneratePackageOnBuild>False</GeneratePackageOnBuild>
     <PackageReleaseNotes></PackageReleaseNotes>
     <PackageTags>Taurus.MVC Core ASP.NET aspnetcore webapi</PackageTags>
-    <AssemblyVersion>3.3.0.2</AssemblyVersion>
-    <FileVersion>3.3.0.2</FileVersion>
+    <AssemblyVersion>3.3.1</AssemblyVersion>
+    <FileVersion>3.3.1</FileVersion>
   </PropertyGroup>
 
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|AnyCPU'">

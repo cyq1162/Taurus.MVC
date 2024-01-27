@@ -34,8 +34,8 @@ namespace Taurus.Plugin.Admin
                 Sets(dt, "DB.PrintSql", AppConfig.DB.PrintSql + " (ms)", "Write sql to log file when sql exe time > value (value must>=0).");
                 dt.NewRow(true);
                 Sets(dt, "Aop", AppConfig.Aop, "Aop config :【Aop-Class-FullName,DllName】");
-                Sets(dt, "EncryptKey", AppConfig.EncryptKey, "Encrypt key for EncryptHelper tool.");
-                Sets(dt, "DefaultCacheTime", AppConfig.DefaultCacheTime + " (m)", "Default cache time (minute).");
+                Sets(dt, "Tool.EncryptKey", AppConfig.Tool.EncryptKey, "Encrypt key for EncryptHelper tool.");
+                Sets(dt, "Cache.DefaultMinutes", AppConfig.Cache.DefaultMinutes + " (m)", "Default cache time (minute).");
             }
             else if (type == "cyq.data-log")
             {
@@ -115,6 +115,11 @@ namespace Taurus.Plugin.Admin
                 dt.NewRow(true);
 
                 Sets(dt, "DB.IsPostgreLower", AppConfig.DB.IsPostgreLower, "Postgres is in lowercase mode.");
+                Sets(dt, "DB.IsKingBaseESLower", AppConfig.DB.IsKingBaseESLower, "IsKingBaseES is in lowercase mode.");
+                Sets(dt, "DB.IsOracleUpper", AppConfig.DB.IsOracleUpper, "Oracle is in uppercase mode.");
+                Sets(dt, "DB.IsDaMengUpper", AppConfig.DB.IsDaMengUpper, "DaMeng is in uppercase mode.");
+                Sets(dt, "DB.IsDB2Upper", AppConfig.DB.IsDB2Upper, "DB2 is in uppercase mode.");
+                Sets(dt, "DB.IsFireBirdUpper", AppConfig.DB.IsFireBirdUpper, "FireBird is in uppercase mode.");
                 Sets(dt, "DB.IsTxtReadOnly", AppConfig.DB.IsTxtReadOnly, "Txt database is read-only (used for demo purposes to prevent demo accounts or data from being deleted).");
                 dt.NewRow(true);
                 Sets(dt, "DB.AutoID", AppConfig.DB.AutoID, "The sequence id config for oracle.");
