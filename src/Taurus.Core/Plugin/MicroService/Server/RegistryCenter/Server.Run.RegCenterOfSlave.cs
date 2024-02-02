@@ -13,9 +13,9 @@ namespace Taurus.Plugin.MicroService
     /// <summary>
     /// 运行中心
     /// </summary>
-    internal partial class MsRun
+    internal partial class RegistryCenterOfSlave
     {
-        public class RegistryCenterOfSlave
+        public class Run
         {
             private static bool IsAllowToRun
             {
@@ -39,8 +39,8 @@ namespace Taurus.Plugin.MicroService
                         MsLog.WriteDebugLine("MicroService Type ：RegistryCenter of Slave");
                         MsLog.WriteDebugLine("RegistryCenter Url：" + MsConfig.Server.RcUrl);
                         MsLog.WriteDebugLine("--------------------------------------------------");
-                        InitThreads();
-                        ThreadPool.QueueUserWorkItem(new WaitCallback(RunLoopRegistryCenterOfSlave), null);
+                        //持续时间长、不占用线程队列。
+                        new Thread(new ThreadStart(RunLoopRegistryCenterOfSlave)).Start();
                     }
                 }
             }
@@ -48,8 +48,7 @@ namespace Taurus.Plugin.MicroService
             /// <summary>
             /// 注册中心 从 - 运行
             /// </summary>
-            /// <param name="threadID"></param>
-            private static void RunLoopRegistryCenterOfSlave(object threadID)
+            private static void RunLoopRegistryCenterOfSlave()
             {
                 InitRegistryCenterOfSlaveHostList();
                 bool isFirstRun = true;
@@ -86,7 +85,7 @@ namespace Taurus.Plugin.MicroService
                                     }
                                 }
                             }
-                            CheckAndClearExpireHost(false);
+                            RegistryCenterOfMaster.CheckAndClearExpireHost(false);
                         }
                         else
                         {
@@ -109,8 +108,8 @@ namespace Taurus.Plugin.MicroService
                 if (!string.IsNullOrEmpty(hostListJson))
                 {
                     var dic = JsonHelper.ToEntity<MDictionary<string, List<HostInfo>>>(hostListJson);
-                    PreConnection(dic);
-                    Server.Gateway.HostList = dic;
+                    Gateway.PreConnection(dic);
+                    Gateway.Server.HostList = dic;
                     if (MsConfig.IsRegistryCenterOfSlave)
                     {
                         //做为一名 从 注册中心，要时刻把自己放在随时接替主的位置。
@@ -174,7 +173,7 @@ namespace Taurus.Plugin.MicroService
                 {
                     long tick = JsonHelper.GetValue<long>(result, "tick");
                     long ipTick = JsonHelper.GetValue<long>(result, "iptick");
-                    SyncIPList(ipTick);
+                    Gateway.Run.SyncIPList(ipTick);
                     if (tick != Server.Tick)
                     {
                         if (Server.Tick > tick)//主机重启了。
@@ -232,8 +231,8 @@ namespace Taurus.Plugin.MicroService
                     if (!string.IsNullOrEmpty(json))
                     {
                         var keyValues = JsonHelper.ToEntity<MDictionary<string, List<HostInfo>>>(json);
-                        PreConnection(keyValues);
-                        Server.Gateway.HostList = keyValues;
+                        Gateway.PreConnection(keyValues);
+                        Gateway.Server.HostList = keyValues;
                         //做为一名 从 注册中心，要时刻把自己放在随时接替主的位置。
                         Server.RegistryCenter.HostList = keyValues;
                         Server.RegistryCenter.HostListJson = json;

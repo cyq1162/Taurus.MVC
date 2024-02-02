@@ -7,6 +7,7 @@ using Taurus.Mvc.Attr;
 using Taurus.Plugin.Admin;
 using Taurus.Plugin.Limit;
 using CYQ.Data.Json;
+using CYQ.Data;
 
 namespace Taurus.Plugin.MicroService
 {
@@ -17,9 +18,10 @@ namespace Taurus.Plugin.MicroService
     {
         private void WriteLine(string msg)
         {
-#if DEBUG
-            Console.WriteLine(msg);
-#endif
+            if (AppConfig.IsDebugMode)
+            {
+                Console.WriteLine(msg);
+            }
         }
 
         public override bool CheckMicroService(string msKey)
@@ -45,17 +47,6 @@ namespace Taurus.Plugin.MicroService
             }
         }
 
-        public override void EndInvoke()
-        {
-            if (string.IsNullOrEmpty(MvcConfig.RunUrl))
-            {
-                Uri uri = Context.Request.Url;
-                string urlAbs = uri.AbsoluteUri;
-                string urlPath = uri.PathAndQuery;
-                string host = urlAbs.Substring(0, urlAbs.Length - urlPath.Length);
-                MvcConfig.RunUrl = host;
-            }
-        }
         /// <summary>
         /// 注册中心 - 注册服务。
         /// </summary>
@@ -67,13 +58,13 @@ namespace Taurus.Plugin.MicroService
         /// <param name="pid">进程ID</param>
         [HttpPost]
         [MicroService]
-        [Require("name,host")]
+        [Require("name,host,domain")]
         public void Reg(string name, string host, string domain, int version, bool isVirtual, int pid)
         {
-            WriteLine(Environment.NewLine);
+            host = host.Trim(' ', '/', '\r', '\n').ToLower();
+            name = name.Trim() + "," + domain.Trim();
+            WriteLine(DateTime.Now.ToString("HH:mm:ss") + string.Format(" : Receive From : {0} Port : {1} Name : {2}", host, Request.ServerVariables["REMOTE_PORT"], name));
             WriteLine("--------------------------------------");
-            WriteLine(DateTime.Now.ToString("HH:mm:ss") + string.Format(" : Reg Host From : {0} Name : {1}", host, name));
-
             #region 注册中心【从】检测到【主】恢复后，推送host，让后续的请求转回【主】
             if (Server.IsLiveOfMasterRC)// && !MsConfig.IsRegCenterOfMaster
             {
@@ -85,8 +76,7 @@ namespace Taurus.Plugin.MicroService
             var kvTable = Server.RegistryCenter.HostList;
 
             StringBuilder sb = new StringBuilder();
-            host = host.Trim(' ', '/', '\r', '\n').ToLower();
-            name = name + "," + domain;
+
             #region 注册名字[版本号检测]
             if (name.Contains("."))//包含域名
             {
@@ -258,8 +248,8 @@ namespace Taurus.Plugin.MicroService
                 Write(result);
             }
 
-            WriteLine(Environment.NewLine + "--------------------------------------");
-            WriteLine(DateTime.Now.ToString("HH:mm:ss") + " : GetList : From :" + Request.UrlReferrer);
+            WriteLine(DateTime.Now.ToString("HH:mm:ss") + " : GetList : From :" + Request.UrlReferrer + " Port : " + Request.ServerVariables["REMOTE_PORT"]);
+            WriteLine("--------------------------------------");
         }
 
         /// <summary>
@@ -277,8 +267,8 @@ namespace Taurus.Plugin.MicroService
             string result = JsonHelper.OutResult(true, "", "tick", Server.Tick, "iptick", Server.SyncIPTime.Ticks);
             Write(result);
 
-            WriteLine(Environment.NewLine + "--------------------------------------");
-            WriteLine(DateTime.Now.ToString("HH:mm:ss") + " : Reg Host2 :" + host);
+            WriteLine(DateTime.Now.ToString("HH:mm:ss") + " : Reg Host2 :" + host + " Port : " + Request.ServerVariables["REMOTE_PORT"]);
+            WriteLine("--------------------------------------");
         }
 
         /// <summary>
@@ -299,8 +289,9 @@ namespace Taurus.Plugin.MicroService
             }
             Write("", true);
 
-            WriteLine(Environment.NewLine + "--------------------------------------");
+            
             WriteLine(DateTime.Now.ToString("HH:mm:ss") + " : Server.API.Call.SyncList : Tick :" + tick);
+            WriteLine("--------------------------------------");
         }
 
     }
@@ -320,8 +311,9 @@ namespace Taurus.Plugin.MicroService
             string ipList = IO.Read(AdminConst.IPSyncPath);
             Write(JsonHelper.OutResult(true, ipList));
 
-            WriteLine(Environment.NewLine + "--------------------------------------");
+            
             WriteLine(DateTime.Now.ToString("HH:mm:ss") + " : GetIPList From :" + Request.UrlReferrer);
+            WriteLine("--------------------------------------");
         }
 
         /// <summary>
@@ -334,8 +326,9 @@ namespace Taurus.Plugin.MicroService
             string configList = IO.Read(AdminConst.ConfigSyncPath);
             Write(JsonHelper.OutResult(true, configList));
 
-            WriteLine(Environment.NewLine + "--------------------------------------");
+            
             WriteLine(DateTime.Now.ToString("HH:mm:ss") + " : GetConfigList From :" + Request.UrlReferrer);
+            WriteLine("--------------------------------------");
         }
     }
 }

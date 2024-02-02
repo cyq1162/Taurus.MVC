@@ -10,9 +10,9 @@ namespace Taurus.Plugin.MicroService
     /// <summary>
     /// 运行中心
     /// </summary>
-    internal partial class MsRun
+    internal partial class RegistryCenterOfMaster
     {
-        public class RegistryCenterOfMaster
+        public class Run
         {
             private static bool IsAllowToRun
             {
@@ -35,8 +35,8 @@ namespace Taurus.Plugin.MicroService
                         MsLog.WriteDebugLine("Start Time        ：" + DateTime.Now.ToString("yyyy-MM-dd HH:mm:ss"));
                         MsLog.WriteDebugLine("MicroService Type ：RegistryCenter of Master");
                         MsLog.WriteDebugLine("--------------------------------------------------");
-                        InitThreads();
-                        ThreadPool.QueueUserWorkItem(new WaitCallback(RunLoopRegistryCenterOfMaster), null);
+                        //持续时间长、不占用线程队列。
+                        new Thread(new ThreadStart(RunLoopRegistryCenterOfMaster)).Start();
                     }
                 }
             }
@@ -44,7 +44,7 @@ namespace Taurus.Plugin.MicroService
             /// 注册中心 主 - 运行
             /// </summary>
             /// <param name="threadID"></param>
-            private static void RunLoopRegistryCenterOfMaster(object threadID)
+            private static void RunLoopRegistryCenterOfMaster()
             {
                 InitRegistryCenterHostList();
                 bool isFirstRun = true;
@@ -81,8 +81,8 @@ namespace Taurus.Plugin.MicroService
                                 }
                             }
                         }
-                        PreConnection(dic);
-                        Server.Gateway.HostList = dic;
+                        Gateway.PreConnection(dic);
+                        Gateway.Server.HostList = dic;
                         Server.RegistryCenter.HostList = dic;
                         Server.RegistryCenter.HostListJson = hostListJson;
 
@@ -142,9 +142,9 @@ namespace Taurus.Plugin.MicroService
                     Server.Tick = DateTime.Now.Ticks;
                     Server.RegistryCenter.HostList = kvForRegistryCenter;
                     var json = JsonHelper.ToJson(kvForRegistryCenter);
-                    Server.Gateway.HostList = kvForGateway;
+                    Gateway.Server.HostList = kvForGateway;
                     Server.RegistryCenter.HostListJson = json;
-                    PreConnection(kvForGateway);
+                    Gateway.PreConnection(kvForGateway);
                     if (MsConfig.IsRegistryCenterOfMaster)
                     {
                         IO.Write(MsConst.ServerRegistryCenterJsonPath, json);//存（主）注册中心数据到硬盘文件中。
@@ -156,9 +156,9 @@ namespace Taurus.Plugin.MicroService
                 }
                 else
                 {
-                    if (Server.Gateway.HostList == null)
+                    if (Gateway.Server.HostList == null)
                     {
-                        Server.Gateway.HostList = kvForGateway;
+                        Gateway.Server.HostList = kvForGateway;
                     }
                     else
                     {

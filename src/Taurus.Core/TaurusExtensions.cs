@@ -16,6 +16,7 @@ using Microsoft.AspNetCore.HostFiltering;
 using System.Collections.Generic;
 using Microsoft.Extensions.Options;
 using Taurus.Mvc.Reflect;
+//using Yarp.ReverseProxy.Forwarder;
 
 namespace Microsoft.AspNetCore.Http
 {
@@ -23,13 +24,14 @@ namespace Microsoft.AspNetCore.Http
     {
         static KestrelServerOptions kestrelServerOptions;
         static HostFilteringOptions hostFilteringOptions;
-       // static IISServerOptions iisServerOptions;
+        // static IISServerOptions iisServerOptions;
         /// <summary>
         /// 默认配置：HttpContext、FormOptions、KestrelServerOptions。
         /// </summary>
         /// <param name="services"></param>
         public static void AddTaurusMvc(this IServiceCollection services)
         {
+            //services.AddHttpForwarder();
             services.AddHttpContext();
             //开放表单不限制长度。
             services.Configure<FormOptions>(options => options.MultipartBodyLengthLimit = MvcConfig.Kestrel.Limits.MaxRequestBodySize);
@@ -81,7 +83,7 @@ namespace Microsoft.AspNetCore.Http
                     });
                     #endregion
 
-                    
+
                 }
 
             });
@@ -94,9 +96,10 @@ namespace Microsoft.AspNetCore.Http
 
         public static IApplicationBuilder UseTaurusMvc(this IApplicationBuilder builder)
         {
+            //Gateway.httpForwarder = builder.ApplicationServices.GetRequiredService<IHttpForwarder>();
             builder.UseHttpContext();
 
-            Thread thread = new Thread(new ParameterizedThreadStart(StartMicroService));
+            Thread thread = new Thread(new ParameterizedThreadStart(OnStart));
             thread.Start(builder);
             //执行一次，用于注册事件
             UrlRewrite url = new UrlRewrite();
@@ -104,11 +107,12 @@ namespace Microsoft.AspNetCore.Http
             return builder.UseMiddleware<TaurusMiddleware>();
         }
 
-        private static void StartMicroService(object builderObj)
+        private static void OnStart(object builderObj)
         {
             Thread.Sleep(1000);//线程延时，待监听后，再获取监听端口号。
             SetAppRunUrl(builderObj as IApplicationBuilder);
-            MsRun.Start(MvcConfig.RunUrl);
+            MsRun.Start();
+            MvcRun.Start();
         }
 
         private static bool SetAppRunUrl(string host)

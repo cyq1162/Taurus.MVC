@@ -77,7 +77,7 @@ namespace Taurus.Core
             #endregion
 
             #region 1、微服务启动检测
-            MsRun.Start(uri);
+            MsRun.ASPNET_Start(uri);
             #endregion
 
             #region 主机 IP 地址访问限制
@@ -168,7 +168,7 @@ namespace Taurus.Core
                 if (MsConfig.Server.IsEnable)
                 {
                     #region 4、网关代理请求检测与转发
-                    if (Rpc.Gateway.Proxy(context))
+                    if (Gateway.Proxy(context))
                     {
                         context.Response.End();
                         return;
@@ -293,7 +293,7 @@ namespace Taurus.Core
             {
                 className = items.Length > 1 ? items[0] + "." + items[1] : items[0];
             }
-            Type t = ControllerCollector.GetController(className);
+            TypeEntity entity = ControllerCollector.GetController(className);
             //if (t == null || t.Name == ReflectConst.DefaultController)
             //{
             //    if (Rpc.Gateway.Proxy(context, false))//客户端禁用做为网关，避免死循环。
@@ -301,8 +301,9 @@ namespace Taurus.Core
             //        return;
             //    }
             //}
-            if (t == null)
+            if (entity == null)
             {
+                return;
                 //do nothing , next module to deal.
                 //context.Response.StatusCode = 404;
                 //context.Response.Write("404 - Not Found.");
@@ -312,8 +313,10 @@ namespace Taurus.Core
             {
                 try
                 {
-                    Controller o = (Controller)Activator.CreateInstance(t);//实例化
+                    //Controller o = (Controller)Activator.CreateInstance(t);//实例化
+                    Controller o = entity.Delegate.CreateController();
                     o.ProcessRequest(context);
+                    //entity.Controller.ProcessRequest(context);
                 }
 
                 catch (ThreadAbortException e)

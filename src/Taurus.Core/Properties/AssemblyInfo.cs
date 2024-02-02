@@ -8,7 +8,7 @@ using System.Runtime.InteropServices;
 [assembly: AssemblyTitle("Taurus.Core .NET 版本")]
 [assembly: AssemblyDescription("Taurus.Mvc is a mvc and webapi framework for asp.net or asp.net core（适合场景：对性能和并发有较高要求的电商、站点、WebAPI等系统，支持.Net 和.Net Core 所有系列，内置【注册中心、网关、客户端】，【开源：https://github.com/cyq1162/Taurus.MVC】")]
 [assembly: AssemblyConfiguration("")]
-[assembly: AssemblyCompany("路过秋天 （2024-01-27）")]
+[assembly: AssemblyCompany("路过秋天 （2024-02-02）")]
 [assembly: AssemblyProduct("Taurus.Mvc")]
 [assembly: AssemblyCopyright("Copyright ©  路过秋天 2016-2116")]
 [assembly: AssemblyTrademark("Taurus.Mvc")]
@@ -31,5 +31,5 @@ using System.Runtime.InteropServices;
 //
 // 可以指定所有这些值，也可以使用“修订号”和“内部版本号”的默认值，
 // 方法是按如下所示使用“*”:
-[assembly: AssemblyVersion("3.3.1.0")]
-[assembly: AssemblyFileVersion("3.3.1.0")]
+[assembly: AssemblyVersion("3.4.0.0")]
+[assembly: AssemblyFileVersion("3.4.0.0")]

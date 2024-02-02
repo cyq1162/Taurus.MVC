@@ -22,11 +22,11 @@ namespace Taurus.Mvc.Reflect
         /// <summary>
         /// 存档一级名称的控制器[Controller]
         /// </summary>
-        private static Dictionary<string, Type> _Lv1Controllers = new Dictionary<string, Type>(StringComparer.OrdinalIgnoreCase);
+        private static Dictionary<string, TypeEntity> _Lv1Controllers = new Dictionary<string, TypeEntity>(StringComparer.OrdinalIgnoreCase);
         /// <summary>
         /// 存档二级名称的控制器[Module.Controller]
         /// </summary>
-        private static Dictionary<string, Type> _Lv2Controllers = new Dictionary<string, Type>(StringComparer.OrdinalIgnoreCase);
+        private static Dictionary<string, TypeEntity> _Lv2Controllers = new Dictionary<string, TypeEntity>(StringComparer.OrdinalIgnoreCase);
         private static readonly object objLock = new object();
         internal static bool InitControllers()
         {
@@ -57,23 +57,27 @@ namespace Taurus.Mvc.Reflect
                                          ))
                                     {
                                         isControllerAssembly = true;
+                                        TypeEntity entity = null;
                                         string lv1Name = GetLevelName(type.FullName, 1);
                                         string lv2Name = GetLevelName(type.FullName, 2);
                                         if (!_Lv1Controllers.ContainsKey(lv1Name))
                                         {
-                                            _Lv1Controllers.Add(lv1Name, type);
+                                            entity = new TypeEntity(type);
+                                            _Lv1Controllers.Add(lv1Name, entity);
                                         }
                                         else
                                         {
-                                            int value = string.Compare(lv2Name, GetLevelName(_Lv1Controllers[lv1Name].FullName, 2), true);
+                                            int value = string.Compare(lv2Name, GetLevelName(_Lv1Controllers[lv1Name].Type.FullName, 2), true);
                                             if (value == -1)
                                             {
-                                                _Lv1Controllers[lv1Name] = type;//值小的优化。
+                                                entity = new TypeEntity(type);
+                                                _Lv1Controllers[lv1Name] = entity;//值小的优化。
                                             }
                                         }
                                         if (!_Lv2Controllers.ContainsKey(lv2Name))
                                         {
-                                            _Lv2Controllers.Add(lv2Name, type);
+                                            entity = new TypeEntity(type);
+                                            _Lv2Controllers.Add(lv2Name, entity);
                                         }
                                         MethodCollector.InitMethodInfo(type);
                                     }
@@ -89,18 +93,20 @@ namespace Taurus.Mvc.Reflect
 
                         #region Admin（优化，内部有初始化配置功能）、Doc、 插件
                         Type adminType = typeof(AdminController);
+                        TypeEntity adminEntity = new TypeEntity(adminType);
                         string path = AdminConfig.Path.Trim('/', '\\');
                         if (!_Lv1Controllers.ContainsKey(path))
                         {
-                            _Lv1Controllers.Add(path, adminType);//用path，允许调整路径
+                            _Lv1Controllers.Add(path, adminEntity);//用path，允许调整路径
                         }
                         MethodCollector.InitMethodInfo(adminType);
 
                         Type docType = typeof(DocController);
+                        TypeEntity docEntity = new TypeEntity(docType);
                         path = DocConfig.Path.Trim('/', '\\');
                         if (!_Lv1Controllers.ContainsKey(path))
                         {
-                            _Lv1Controllers.Add(path, docType);
+                            _Lv1Controllers.Add(path, docEntity);
                         }
                         MethodCollector.InitMethodInfo(docType);
 
@@ -108,19 +114,19 @@ namespace Taurus.Mvc.Reflect
                         #endregion
 
                         Type msType = typeof(MicroServiceController);
-
+                        TypeEntity msEntity = new TypeEntity(msType);
                         path = MsConfig.Server.RcPath.Trim('/', '\\');
                         //微服务API
                         if (!_Lv1Controllers.ContainsKey(path))
                         {
-                            _Lv1Controllers.Add(path, msType);
+                            _Lv1Controllers.Add(path, msEntity);
                         }
 
                         path = MsConfig.Client.RcPath.Trim('/', '\\');
                         //微服务API
                         if (!_Lv1Controllers.ContainsKey(path))
                         {
-                            _Lv1Controllers.Add(path, msType);
+                            _Lv1Controllers.Add(path, msEntity);
                         }
 
                         MethodCollector.InitMethodInfo(msType);
@@ -133,7 +139,7 @@ namespace Taurus.Mvc.Reflect
         /// 获取所有Mvc控制器
         /// <param name="level">1、以ControllerName为key；2、以NameSpace.ControllerName为Key</param>
         /// </summary>
-        public static Dictionary<string, Type> GetControllers(int level)
+        public static Dictionary<string, TypeEntity> GetControllers(int level)
         {
             InitControllers();
             return level == 1 ? _Lv1Controllers : _Lv2Controllers;
@@ -157,13 +163,13 @@ namespace Taurus.Mvc.Reflect
         /// 通过className类名获得对应的Controller类
         /// </summary>
         /// <returns></returns>
-        public static Type GetController(string className)
+        public static TypeEntity GetController(string className)
         {
             if (string.IsNullOrEmpty(className) || !IsModuleEnable(className))
             {
                 className = ReflectConst.Global;
             }
-            Dictionary<string, Type> controllers = GetControllers(1);
+            Dictionary<string, TypeEntity> controllers = GetControllers(1);
             string[] names = className.Split('.');//home/index
             if (MvcConfig.RouteMode == 1 || names.Length == 1)
             {
@@ -178,7 +184,7 @@ namespace Taurus.Mvc.Reflect
             }
             else if (MvcConfig.RouteMode == 2)
             {
-                Dictionary<string, Type> controllers2 = GetControllers(2);
+                Dictionary<string, TypeEntity> controllers2 = GetControllers(2);
                 if (controllers2.ContainsKey(className))
                 {
                     return controllers2[className];

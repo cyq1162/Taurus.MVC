@@ -114,7 +114,9 @@ namespace Taurus.Mvc
                     MethodEntity globalDefault = MethodCollector.GlobalDefault;
                     if (globalDefault != null)
                     {
-                        Controller o = (Controller)Activator.CreateInstance(globalDefault.Method.DeclaringType);//实例化
+                        //globalDefault.TypeEntity.Controller.ProcessRequest(context);
+                        //Controller o = (Controller)Activator.CreateInstance(globalDefault.Method.DeclaringType);//实例化
+                        Controller o = globalDefault.Delegate.CreateController();
                         o.ProcessRequest(context);
                     }
                     else
@@ -194,14 +196,15 @@ namespace Taurus.Mvc
                 MethodEntity checkAck = MethodCollector.GetMethod(_ControllerType, ReflectConst.CheckAck, false);
                 if (checkAck != null)
                 {
-                    isGoOn = Convert.ToBoolean(checkAck.Method.Invoke(this, new object[] { Query<string>("ack") }));
+                    //checkAck.MethodDelegate.DynamicInvoke(null, null);
+                    isGoOn = Convert.ToBoolean(checkAck.Delegate.Invoke(this, new object[] { Query<string>("ack") }));
                 }
                 else if (!attrEntity.HasIgnoreGlobalController)
                 {
                     checkAck = MethodCollector.GlobalCheckAck;
                     if (checkAck != null)
                     {
-                        isGoOn = Convert.ToBoolean(checkAck.Method.Invoke(null, new object[] { this, Query<string>("ack") }));
+                        isGoOn = Convert.ToBoolean(checkAck.Delegate.Invoke(null, new object[] { this, Query<string>("ack") }));
                     }
                 }
                 if (!isGoOn)
@@ -220,14 +223,14 @@ namespace Taurus.Mvc
                 MethodEntity checkToken = MethodCollector.GetMethod(_ControllerType, ReflectConst.CheckToken, false);
                 if (checkToken != null)
                 {
-                    isGoOn = Convert.ToBoolean(checkToken.Method.Invoke(this, new object[] { Query<string>("token") }));
+                    isGoOn = Convert.ToBoolean(checkToken.Delegate.Invoke(this, new object[] { Query<string>("token") }));
                 }
                 else if (!attrEntity.HasIgnoreGlobalController)
                 {
                     checkToken = MethodCollector.GlobalCheckToken;
                     if (checkToken != null)
                     {
-                        isGoOn = Convert.ToBoolean(checkToken.Method.Invoke(null, new object[] { this, Query<string>("token") }));
+                        isGoOn = Convert.ToBoolean(checkToken.Delegate.Invoke(null, new object[] { this, Query<string>("token") }));
                     }
                 }
                 if (!isGoOn)
@@ -249,7 +252,7 @@ namespace Taurus.Mvc
                     checkMicroService = MethodCollector.GlobalCheckMicroService;
                     if (checkMicroService != null)
                     {
-                        isGoOn = Convert.ToBoolean(checkMicroService.Method.Invoke(null, new object[] { this, Query<string>(MsConst.HeaderKey) }));
+                        isGoOn = Convert.ToBoolean(checkMicroService.Delegate.Invoke(null, new object[] { this, Query<string>(MsConst.HeaderKey) }));
                     }
                 }
                 if (isGoOn && checkMicroService == null)
@@ -257,7 +260,7 @@ namespace Taurus.Mvc
                     checkMicroService = MethodCollector.GetMethod(_ControllerType, ReflectConst.CheckMicroService, false);
                     if (checkMicroService != null)
                     {
-                        isGoOn = Convert.ToBoolean(checkMicroService.Method.Invoke(this, new object[] { Query<string>(MsConst.HeaderKey) }));
+                        isGoOn = Convert.ToBoolean(checkMicroService.Delegate.Invoke(this, new object[] { Query<string>(MsConst.HeaderKey) }));
                     }
                 }
                 if (!isGoOn)
@@ -334,7 +337,7 @@ namespace Taurus.Mvc
                 beforeInvoke = MethodCollector.GlobalBeforeInvoke;
                 if (beforeInvoke != null)//先调用全局
                 {
-                    isGoOn = Convert.ToBoolean(beforeInvoke.Method.Invoke(null, new object[] { this }));
+                    isGoOn = Convert.ToBoolean(beforeInvoke.Delegate.Invoke(null, new object[] { this }));
                 }
             }
             if (isGoOn)
@@ -342,7 +345,7 @@ namespace Taurus.Mvc
                 beforeInvoke = MethodCollector.GetMethod(_ControllerType, ReflectConst.BeforeInvoke, false);
                 if (beforeInvoke != null)
                 {
-                    isGoOn = Convert.ToBoolean(beforeInvoke.Method.Invoke(this, null));
+                    isGoOn = Convert.ToBoolean(beforeInvoke.Delegate.Invoke(this, null));
                 }
             }
             return isGoOn;
@@ -353,14 +356,14 @@ namespace Taurus.Mvc
             MethodEntity endInvoke = MethodCollector.GetMethod(_ControllerType, ReflectConst.EndInvoke, false);
             if (endInvoke != null)
             {
-                endInvoke.Method.Invoke(this, null);
+                endInvoke.Delegate.Invoke(this, null);
             }
             if (!isIgnoreGlobal)
             {
                 endInvoke = MethodCollector.GlobalEndInvoke;
                 if (endInvoke != null)
                 {
-                    endInvoke.Method.Invoke(null, new object[] { this });
+                    endInvoke.Delegate.Invoke(null, new object[] { this });
                 }
             }
             #endregion
@@ -390,7 +393,7 @@ namespace Taurus.Mvc
                 return false;
             }
 
-            methodEntity.Method.Invoke(this, paras);
+            methodEntity.Delegate.Invoke(this, paras);
             if (IsHttpPost && _View != null && !string.IsNullOrEmpty(BtnName))
             {
                 #region Button Invoke
@@ -401,7 +404,7 @@ namespace Taurus.Mvc
                     {
                         return false;
                     }
-                    postBtnMethod.Method.Invoke(this, paras);
+                    postBtnMethod.Delegate.Invoke(this, paras);
                 }
                 #endregion
             }
@@ -635,149 +638,7 @@ namespace Taurus.Mvc
             #endregion
             return true;
         }
-        //private bool GetInvokeParas(MethodInfo method, out object[] paras)
-        //{
-        //    paras = null;
-        //    #region 增加处理参数支持
-        //    ParameterInfo[] piList = method.GetParameters();
-        //    object[] validateList = method.GetCustomAttributes(typeof(RequireAttribute), true);
-        //    if (piList != null && piList.Length > 0)
-        //    {
-        //        paras = new object[piList.Length];
-        //        for (int i = 0; i < piList.Length; i++)
-        //        {
-        //            ParameterInfo pi = piList[i];
-        //            Type t = pi.ParameterType;
-        //            if (t.Name == "HttpFileCollection")
-        //            {
-        //                paras[i] = Request.Files;
-        //                if (!ValidateParas(validateList, pi.Name, (Request.Files != null && Request.Files.Count > 0) ? "1" : null))
-        //                {
-        //                    return false;
-        //                }
-        //                continue;
-        //            }
-        //            object value = Query<object>(pi.Name, null);
-        //            if (value == null)
-        //            {
-        //                if (t.IsValueType && t.IsGenericType && t.FullName.StartsWith("System.Nullable"))
-        //                {
-        //                    continue;
-        //                }
-        //                if (t.Name == "HttpPostedFile")
-        //                {
-        //                    if (Request.Files != null && Request.Files.Count == 1)
-        //                    {
-        //                        value = Request.Files[0];
-        //                    }
-        //                }
-
-        //                else if (piList.Length == 1 && ReflectTool.GetSystemType(ref t) != SysType.Base)//基础值类型
-        //                {
-        //                    value = GetJson();
-        //                }
-        //            }
-        //            //检测是否允许为空，是否满足正则格式。
-        //            if (!ValidateParas(validateList, pi.Name, Convert.ToString(value)))
-        //            {
-        //                return false;
-        //            }
-        //            try
-        //            {
-        //                //特殊值处理
-        //                if (t.Name == "HttpPostedFile" && value is string && Convert.ToString(value) == DocSettings.DocDefaultImg.ToLower())
-        //                {
-        //                    string path = DocSettings.DefaultImg;
-        //                    if (!string.IsNullOrEmpty(path))
-        //                    {
-        //                        paras[i] = HttpPostedFileExtend.Create(path);
-        //                    }
-        //                }
-        //                else
-        //                {
-        //                    paras[i] = QueryTool.ChangeType(value, t);//类型转换（基础或实体）
-        //                }
-        //            }
-        //            catch (Exception err)
-        //            {
-        //                string typeName = t.Name;
-        //                if (typeName.StartsWith("Nullable"))
-        //                {
-        //                    typeName = Nullable.GetUnderlyingType(t).Name;
-        //                }
-        //                string outMsg = string.Format("[{0} {1} = {2}]  [Error : {3}]", typeName, pi.Name, value, err.Message);
-        //                WriteLog(outMsg);
-        //                Write(outMsg, false);
-        //                return false;
-        //            }
-
-        //        }
-        //    }
-        //    //对未验证过的参数，再进行一次验证。
-        //    foreach (object item in validateList)
-        //    {
-        //        RequireAttribute valid = item as RequireAttribute;
-        //        if (!valid.isValidated)
-        //        {
-        //            if (valid.paraName.IndexOf(',') > -1)
-        //            {
-        //                foreach (string name in valid.paraName.Split(','))
-        //                {
-        //                    if (string.IsNullOrEmpty(Query<string>(name)))
-        //                    {
-        //                        Write(string.Format(valid.emptyTip, name), false);
-        //                        return false;
-        //                    }
-        //                }
-        //            }
-        //            else if (!ValidateParas(validateList, valid.paraName, Query<string>(valid.paraName)))
-        //            {
-        //                return false;
-        //            }
-        //        }
-        //    }
-        //    validateList = null;
-        //    #endregion
-        //    return true;
-        //}
-        //private bool ValidateParas(object[] validateList, string paraName, string paraValue)
-        //{
-        //    if (validateList != null)
-        //    {
-        //        foreach (object item in validateList)
-        //        {
-        //            RequireAttribute valid = item as RequireAttribute;
-        //            if (!valid.isValidated && (valid.paraName == paraName || valid.paraName.StartsWith(paraName + ".")))
-        //            {
-        //                valid.isValidated = true;//设置已经验证过此参数，后续可以跳过。
-        //                if (valid.paraName.StartsWith(paraName + ".") && !string.IsNullOrEmpty(paraValue))//json字集
-        //                {
-        //                    paraValue = JsonHelper.GetValue(paraValue, valid.paraName.Substring(paraName.Length + 1));
-        //                }
-        //                if (valid.isRequired && string.IsNullOrEmpty(paraValue))
-        //                {
-        //                    Write(valid.emptyTip, false);
-        //                    return false;
-        //                }
-        //                else if (!string.IsNullOrEmpty(valid.regex) && !string.IsNullOrEmpty(paraValue))
-        //                {
-        //                    if (paraValue.IndexOf('%') > -1)
-        //                    {
-        //                        paraValue = HttpUtility.UrlDecode(paraValue);
-        //                    }
-        //                    if (!Regex.IsMatch(paraValue, valid.regex))//如果格式错误
-        //                    {
-        //                        Write(valid.regexTip, false);
-        //                        return false;
-        //                    }
-        //                }
-        //            }
-        //        }
-
-        //    }
-
-        //    return true;
-        //}
+      
     }
     public abstract partial class Controller
     {

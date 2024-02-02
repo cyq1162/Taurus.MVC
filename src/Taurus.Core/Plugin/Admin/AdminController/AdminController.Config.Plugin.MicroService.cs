@@ -41,7 +41,7 @@ namespace Taurus.Plugin.Admin
                     if (MsConfig.IsGateway)
                     {
                         Sets(dt, "MicroService.Server.GatewayTimeout", MsConfig.Server.GatewayTimeout + " (s)", "Gateway timeout (second) for request forward.");
-                        Sets(dt, "MicroService Gateway Proxy LastTime", Rpc.Gateway.LastProxyTime.ToString("yyyy-MM-dd HH:mm:ss"), "The last time the proxy forwarded the request【Read Only】.");
+                        Sets(dt, "MicroService Gateway Proxy LastTime", Gateway.LastProxyTime.ToString("yyyy-MM-dd HH:mm:ss"), "The last time the proxy forwarded the request【Read Only】.");
                     }
                     Sets(dt, "MicroService.Server.RcUrl - 2", Server.Host2, "Registry center backup url【Read Only】.");
                 }

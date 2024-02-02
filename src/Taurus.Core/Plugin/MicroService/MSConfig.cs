@@ -11,10 +11,7 @@ namespace Taurus.Plugin.MicroService
         internal static void OnChange(string key, string value)
         {
             //Start 方法内都有判断条件。
-            MsRun.ClientRun.Start();
-            MsRun.Gateway.Start();
-            MsRun.RegistryCenterOfMaster.Start();
-            MsRun.RegistryCenterOfSlave.Start();
+            MsRun.ReStart();
         }
 
         #region 只读属性

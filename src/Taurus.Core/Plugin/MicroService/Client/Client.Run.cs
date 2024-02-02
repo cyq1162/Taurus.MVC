@@ -13,9 +13,9 @@ namespace Taurus.Plugin.MicroService
     /// <summary>
     /// 运行中心 - 客户端
     /// </summary>
-    internal partial class MsRun
+    internal partial class Client
     {
-        public class ClientRun
+        public static partial class Run
         {
             private static bool IsAllowToRun
             {
@@ -44,7 +44,8 @@ namespace Taurus.Plugin.MicroService
                             MsLog.WriteDebugLine("MicroService Domin：" + MsConfig.Client.Domain);
                         }
                         MsLog.WriteDebugLine("--------------------------------------------------");
-                        ThreadPool.QueueUserWorkItem(new WaitCallback(RunLoopOfClient), null);
+                        //持续时间长、不占用线程队列。
+                        new Thread(new ThreadStart(RunLoopOfClient)).Start();
                     }
                 }
             }
@@ -52,7 +53,7 @@ namespace Taurus.Plugin.MicroService
             /// <summary>
             /// 微服务模块运行时。
             /// </summary>
-            private static void RunLoopOfClient(object threadID)
+            private static void RunLoopOfClient()
             {
                 //初始化文件配置
                 InitClientHostList();
@@ -90,8 +91,8 @@ namespace Taurus.Plugin.MicroService
                 if (!string.IsNullOrEmpty(hostListJson))
                 {
                     var dic = JsonHelper.ToEntity<MDictionary<string, List<HostInfo>>>(hostListJson);
-                    PreConnection(dic);
-                    Client.Gateway.HostList = dic;
+                    Gateway.PreConnection(dic);
+                    Gateway.Client.HostList = dic;
                 }
             }
             #region 服务注册
@@ -215,8 +216,8 @@ namespace Taurus.Plugin.MicroService
                     if (!string.IsNullOrEmpty(json))
                     {
                         var dic = JsonHelper.ToEntity<MDictionary<string, List<HostInfo>>>(json);
-                        PreConnection(dic);
-                        Client.Gateway.HostList = dic;
+                        Gateway.PreConnection(dic);
+                        Gateway.Client.HostList = dic;
                         IO.Write(MsConst.ClientGatewayJsonPath, json);
                     }
                 }

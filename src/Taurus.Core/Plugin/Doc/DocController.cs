@@ -132,31 +132,39 @@ namespace Taurus.Plugin.Doc
                 ControllerTable.Columns.Add("Type", SqlDbType.Variant);
 
                 //搜集参数
-                Dictionary<string, Type> cType = ControllerCollector.GetControllers(2);
-                foreach (KeyValuePair<string, Type> item in cType)
+                Dictionary<string, TypeEntity> cType = ControllerCollector.GetControllers(2);
+                foreach (KeyValuePair<string, TypeEntity> item in cType)
                 {
-                    string fullName = item.Value.FullName;
-                    //过滤插件控制器，插件只有一级，不用过滤。
-                    if (fullName.EndsWith(ReflectConst.GlobalController))
+                    try
                     {
-                        continue;
+                        Type type = item.Value.Type;
+                        string fullName = type.FullName;
+                        //过滤插件控制器，插件只有一级，不用过滤。
+                        if (fullName.EndsWith(ReflectConst.GlobalController))
+                        {
+                            continue;
+                        }
+                        // || fullName.EndsWith(ReflectConst.DocController) || fullName.EndsWith(ReflectConst.LogController)
+                        //else if (fullName.EndsWith(ReflectConst.MicroServiceController) && !MicroService.MsConfig.IsServer)
+                        //{
+                        //    continue;
+                        //}
+                        var xmlList = GetXml();
+                        string desc = GetDescription(xmlList, type.FullName, "T:").Trim();
+                        if (!string.IsNullOrEmpty(desc))
+                        {
+                            ControllerTable.NewRow(true)
+                              .Set(0, type.FullName)
+                              .Set(1, desc)
+                              .Set(2, type.GetCustomAttributes(typeof(TokenAttribute), false).Length)
+                              .Set(3, type);
+                        }
                     }
-                    // || fullName.EndsWith(ReflectConst.DocController) || fullName.EndsWith(ReflectConst.LogController)
-                    //else if (fullName.EndsWith(ReflectConst.MicroServiceController) && !MicroService.MsConfig.IsServer)
-                    //{
-                    //    continue;
-                    //}
-                    var xmlList = GetXml();
-                    string desc = GetDescription(xmlList, item.Value.FullName, "T:").Trim();
-                    if (!string.IsNullOrEmpty(desc))
+                    catch (Exception err)
                     {
-                        ControllerTable.NewRow(true)
-                          .Set(0, item.Value.FullName)
-                          .Set(1, desc)
-                          .Set(2, item.Value.GetCustomAttributes(typeof(TokenAttribute), false).Length)
-                          .Set(3, item.Value);
+
+                        
                     }
-                   
                 }
             }
         }

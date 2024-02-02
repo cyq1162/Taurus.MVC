@@ -21,11 +21,11 @@ namespace Taurus.Plugin.Admin
                 {
                     if (MsConfig.IsServer)
                     {
-                        _HostList = Server.Gateway.HostList;
+                        _HostList = Gateway.Server.HostList;
                     }
                     else if (MsConfig.IsClient)
                     {
-                        _HostList = Client.Gateway.HostList;
+                        _HostList = Gateway.Client.HostList;
                     }
                 }
                 return _HostList;
@@ -36,9 +36,9 @@ namespace Taurus.Plugin.Admin
         {
             if (MsConfig.IsServer)
             {
-                return Server.Gateway.GetHostList(name, withStar);
+                return Gateway.Server.GetHostList(name, withStar);
             }
-            return Client.Gateway.GetHostList(name, withStar);
+            return Gateway.Client.GetHostList(name, withStar);
         }
 
 

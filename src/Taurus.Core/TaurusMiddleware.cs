@@ -48,7 +48,8 @@ namespace Microsoft.AspNetCore.Http
                     //Controller.cs GetJson 方法 1098行上下
                     context.Request.EnableBuffering();
                 }
-                System.Web.HttpApplication.GetInstance("Taurus").ExecuteEventHandler();
+                var app = System.Web.HttpApplication.GetInstance("Taurus");
+                app.ExecuteEventHandler();
                 if (System.Web.HttpContext.Current.Response.HasStarted)  // || Body是只写流  (context.Response.Body != null && context.Response.Body.CanRead
                 {
                     if (context.Response.StatusCode == 204 || context.Response.StatusCode.ToString().StartsWith("30"))

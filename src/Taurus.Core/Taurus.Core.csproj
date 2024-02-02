@@ -10,7 +10,7 @@
     <AppDesignerFolder>Properties</AppDesignerFolder>
     <RootNamespace>Taurus.Mvc</RootNamespace>
     <AssemblyName>Taurus.Core</AssemblyName>
-    <TargetFrameworkVersion>v4.0</TargetFrameworkVersion>
+    <TargetFrameworkVersion>v2.0</TargetFrameworkVersion>
     <FileUpgradeFlags>
     </FileUpgradeFlags>
     <UpgradeBackupLocation>
@@ -53,6 +53,9 @@
     <DocumentationFile>bin\Release\Taurus.Core.xml</DocumentationFile>
   </PropertyGroup>
   <ItemGroup>
+    <Reference Include="CYQ.Data, Version=5.9.1.0, Culture=neutral, processorArchitecture=MSIL">
+      <HintPath>..\..\demo\default\packages\cyqdata.5.9.1\lib\net20\CYQ.Data.dll</HintPath>
+    </Reference>
     <Reference Include="DotNetZip">
       <HintPath>..\..\Packages\DotNetZip.dll</HintPath>
     </Reference>
@@ -80,8 +83,14 @@
     <Compile Include="MVC\MvcRun.cs" />
     <Compile Include="MVC\Reflect\AssemblyCollector.cs" />
     <Compile Include="MVC\Reflect\ControllerCollector.cs" />
+    <Compile Include="MVC\Reflect\Delegate\C#2.0\Func.cs" />
+    <Compile Include="MVC\Reflect\Delegate\C#2.0\Action.cs" />
+    <Compile Include="MVC\Reflect\Delegate\DelegateEmit.cs" />
+    <Compile Include="MVC\Reflect\Delegate\DelegateInvoke.cs" />
+    <Compile Include="MVC\Reflect\Delegate\DelegateType.cs" />
     <Compile Include="MVC\Reflect\Entity\AttributeEntity.cs" />
     <Compile Include="MVC\Reflect\Entity\MethodEntity.cs" />
+    <Compile Include="MVC\Reflect\Entity\TypeEntity.cs" />
     <Compile Include="MVC\Reflect\MethodCollector.cs" />
     <Compile Include="MVC\Reflect\ReflectConst.cs" />
     <Compile Include="MVC\Controller.cs" />
@@ -124,40 +133,43 @@
     <Compile Include="Plugin\Metric\MetricRun.cs" />
     <Compile Include="Plugin\MicroService\Client\Client.Config.cs" />
     <Compile Include="Plugin\MicroService\Client\Client.cs" />
-    <Compile Include="Plugin\MicroService\Client\Client.Gateway.cs" />
+    <Compile Include="Plugin\MicroService\Gateway\Gateway.Client.cs" />
     <Compile Include="Plugin\MicroService\Client\Client.MicroServiceController.cs" />
     <Compile Include="Plugin\MicroService\Client\Client.Run.cs" />
     <Compile Include="Plugin\MicroService\Client\Client.Run.Sync.cs" />
+    <Compile Include="Plugin\MicroService\Gateway\Gateway.Info.cs" />
+    <Compile Include="Plugin\MicroService\Gateway\Gateway.PreConnection.cs" />
+    <Compile Include="Plugin\MicroService\Gateway\Gateway.Proxy.cs" />
     <Compile Include="Plugin\MicroService\HostInfo.cs" />
     <Compile Include="Plugin\MicroService\IO.cs" />
     <Compile Include="Plugin\MicroService\MSConfig.cs" />
     <Compile Include="Plugin\MicroService\MSConst.cs" />
     <Compile Include="Plugin\MicroService\MSLog.cs" />
     <Compile Include="Plugin\MicroService\MSRun.cs" />
-    <Compile Include="Plugin\MicroService\RPC\Call\Gateway.cs" />
-    <Compile Include="Plugin\MicroService\RPC\Call\Rest.cs" />
-    <Compile Include="Plugin\MicroService\RPC\Rpc.cs" />
-    <Compile Include="Plugin\MicroService\RPC\RpcClient\MyWebClient.cs">
+    <Compile Include="Plugin\MicroService\Gateway\Gateway.cs" />
+    <Compile Include="Plugin\RPC\HttpClient\WebClient\HttpWebClient.cs">
       <SubType>Component</SubType>
     </Compile>
-    <Compile Include="Plugin\MicroService\RPC\RpcClient\Net\RpcClient.cs">
-      <SubType>Component</SubType>
-    </Compile>
-    <Compile Include="Plugin\MicroService\RPC\RpcClient\RpcClientPool.cs" />
-    <Compile Include="Plugin\MicroService\RPC\Task\Net\RpcTask.cs" />
-    <Compile Include="Plugin\MicroService\RPC\Task\Net\RpcTaskWorker.cs" />
-    <Compile Include="Plugin\MicroService\RPC\Task\RpcTaskRequest.cs" />
-    <Compile Include="Plugin\MicroService\RPC\Task\RpcTaskResult.cs" />
-    <Compile Include="Plugin\MicroService\RPC\Task\RpcTaskState.cs" />
-    <Compile Include="Plugin\MicroService\Server\Gateway\Server.Gateway.cs" />
-    <Compile Include="Plugin\MicroService\Server\Gateway\Server.Run.Gateway.cs" />
+    <Compile Include="Plugin\RPC\HttpClient\HttpClient.cs" />
+    <Compile Include="Plugin\RPC\Rest.Async.cs" />
+    <Compile Include="Plugin\RPC\Rest.Sync.cs" />
+    <Compile Include="Plugin\RPC\RpcClient\HttpClientFactory.cs" />
+    <Compile Include="Plugin\RPC\HttpClient\HttpClientHandler.cs" />
+    <Compile Include="Plugin\RPC\Task\Net\RpcTaskWorker.Sync.cs" />
+    <Compile Include="Plugin\RPC\Task\Net\RpcTask.cs" />
+    <Compile Include="Plugin\RPC\Task\Net\RpcTaskWorker.cs" />
+    <Compile Include="Plugin\RPC\Task\RpcTaskRequest.cs" />
+    <Compile Include="Plugin\RPC\Task\RpcTaskResult.cs" />
+    <Compile Include="Plugin\RPC\Task\RpcTaskState.cs" />
+    <Compile Include="Plugin\MicroService\Gateway\Gateway.Server.cs" />
+    <Compile Include="Plugin\MicroService\Gateway\Gateway.Run.cs" />
     <Compile Include="Plugin\MicroService\Server\RegistryCenter\Server.RegCenter.cs" />
     <Compile Include="Plugin\MicroService\Server\RegistryCenter\Server.RegCenter.MicroServiceController.cs" />
     <Compile Include="Plugin\MicroService\Server\RegistryCenter\Server.Run.RegCenter.cs" />
     <Compile Include="Plugin\MicroService\Server\RegistryCenter\Server.Run.RegCenterOfSlave.cs" />
     <Compile Include="Plugin\MicroService\Server\Server.Config.cs" />
     <Compile Include="Plugin\MicroService\Server\Server.cs" />
-    <Compile Include="Plugin\MicroService\Server\Server.Run.Sync.cs" />
+    <Compile Include="Plugin\MicroService\Gateway\Gateway.Run.Sync.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="Properties\Resources.Designer.cs">
       <AutoGen>True</AutoGen>
@@ -186,16 +198,12 @@
     </EmbeddedResource>
   </ItemGroup>
   <ItemGroup>
-    <ProjectReference Include="..\..\..\..\cyqdata.git\cyqdata\src\CYQ.Data.csproj">
-      <Project>{bd5ccc87-278f-4feb-ad23-157fcba9ffa1}</Project>
-      <Name>CYQ.Data</Name>
-    </ProjectReference>
-  </ItemGroup>
-  <ItemGroup>
+    <None Include="packages.config" />
     <None Include="Resources\Admin.zip" />
     <None Include="Resources\Doc.zip" />
     <None Include="Resources\styles.zip" />
   </ItemGroup>
+  <ItemGroup />
   <Import Project="$(MSBuildBinPath)\Microsoft.CSharp.targets" />
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 
        Other similar extension points exist, see Microsoft.Common.targets.

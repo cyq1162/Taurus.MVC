@@ -1,23 +1,23 @@
 ﻿<Project Sdk="Microsoft.NET.Sdk">
 
   <PropertyGroup>
-    <TargetFramework>net8.0</TargetFramework>
+    <TargetFramework>netcoreapp2.1</TargetFramework>
     <AssemblyName>Taurus.Core</AssemblyName>
     <RootNamespace>Taurus.Mvc</RootNamespace>
     <Description>Taurus.Mvc is a mvc and webapi for asp.net or asp.net core（适合场景：对性能和并发有较高要求的电商、站点、WebAPI等系统，支持.Net 和 .Net Core 所有系列，内置【注册中心、网关、客户端】，【开源：https://github.com/cyq1162/Taurus.MVC】</Description>
-    <Company>路过秋天 （2024-01-27）</Company>
+    <Company>路过秋天 （2024-02-02）</Company>
     <Authors>路过秋天</Authors>
     <Copyright>Copyright ©  路过秋天 2016-2096</Copyright>
     <Version>2.3.4</Version>
     <Product>Taurus.Core .NET Core 版本</Product>
     <PackageProjectUrl>https://github.com/cyq1162/Taurus.MVC</PackageProjectUrl>
     <PackageId>Taurus.Mvc.Core</PackageId>
-	<AssemblyTitle>Taurus.Mvc 微服务框架：内置微服务网关与注册中心</AssemblyTitle>
+	<AssemblyTitle>Taurus.Core ：含 Mvc、WebAPI、Plugins。</AssemblyTitle>
     <GeneratePackageOnBuild>False</GeneratePackageOnBuild>
     <PackageReleaseNotes></PackageReleaseNotes>
     <PackageTags>Taurus.MVC Core ASP.NET aspnetcore webapi</PackageTags>
-    <AssemblyVersion>3.3.1</AssemblyVersion>
-    <FileVersion>3.3.1</FileVersion>
+    <AssemblyVersion>3.4.0</AssemblyVersion>
+    <FileVersion>3.4.0</FileVersion>
   </PropertyGroup>
 
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|AnyCPU'">
@@ -31,21 +31,24 @@
   <ItemGroup>
     <Compile Remove="Plugin\Admin\AdminController\DotNet\**" />
     <Compile Remove="Plugin\DistributedTransaction\**" />
-    <Compile Remove="Plugin\MicroService\RPC\RpcClient\Net\**" />
-    <Compile Remove="Plugin\MicroService\RPC\Task\Net\**" />
-    <Compile Remove="Plugin\MicroService\RPC\RpcClient\Net\**" />
+    <Compile Remove="Plugin\RPC\HttpClient\**" />
+    <Compile Remove="Plugin\RPC\Pool\**" />
+    <Compile Remove="Plugin\RPC\RpcClient\Net\**" />
+    <Compile Remove="Plugin\RPC\Task\Net\**" />
     <Compile Remove="WebSocket\**" />
     <EmbeddedResource Remove="Plugin\Admin\AdminController\DotNet\**" />
     <EmbeddedResource Remove="Plugin\DistributedTransaction\**" />
-    <EmbeddedResource Remove="Plugin\MicroService\RPC\RpcClient\Net\**" />
-    <EmbeddedResource Remove="Plugin\MicroService\RPC\Task\Net\**" />
-    <EmbeddedResource Remove="Plugin\MicroService\RPC\RpcClient\Net\**" />
+    <EmbeddedResource Remove="Plugin\RPC\HttpClient\**" />
+    <EmbeddedResource Remove="Plugin\RPC\Pool\**" />
+    <EmbeddedResource Remove="Plugin\RPC\RpcClient\Net\**" />
+    <EmbeddedResource Remove="Plugin\RPC\Task\Net\**" />
     <EmbeddedResource Remove="WebSocket\**" />
     <None Remove="Plugin\Admin\AdminController\DotNet\**" />
     <None Remove="Plugin\DistributedTransaction\**" />
-    <None Remove="Plugin\MicroService\RPC\RpcClient\Net\**" />
-    <None Remove="Plugin\MicroService\RPC\Task\Net\**" />
-    <None Remove="Plugin\MicroService\RPC\RpcClient\Net\**" />
+    <None Remove="Plugin\RPC\HttpClient\**" />
+    <None Remove="Plugin\RPC\Pool\**" />
+    <None Remove="Plugin\RPC\RpcClient\Net\**" />
+    <None Remove="Plugin\RPC\Task\Net\**" />
     <None Remove="WebSocket\**" />
   </ItemGroup>
 
@@ -53,9 +56,10 @@
     <Compile Remove="MVC\ViewEngin.InitStyles.cs" />
     <Compile Remove="MVC\ViewEngine.InitStyles.cs" />
     <Compile Remove="MVC\ViewEngine.Zip.cs" />
-    <Compile Remove="Plugin\MicroService\RPC\RpcClient\RpcClient.cs" />
-    <Compile Remove="Plugin\MicroService\RPC\Task\RpcTask.cs" />
-    <Compile Remove="Plugin\MicroService\RPC\Task\RpcTaskWorker.cs" />
+    <Compile Remove="Plugin\MicroService\Gateway\Gateway.YARP.cs" />
+    <Compile Remove="Plugin\RPC\RpcClient\MyWebClient.cs" />
+    <Compile Remove="Plugin\RPC\RpcClient\RpcClient.cs" />
+    <Compile Remove="Plugin\RPC\RpcClient\RpcClientPool2.cs" />
     <Compile Remove="Properties\AssemblyInfo.cs" />
   </ItemGroup>
 
@@ -66,12 +70,11 @@
   </ItemGroup>
 
   <ItemGroup>
-    <Folder Include="Plugin\MicroService\RPC\Task\Net\" />
     <Folder Include="Properties\" />
   </ItemGroup>
 
   <ItemGroup>
-    <ProjectReference Include="..\..\..\..\cyqdata.git\cyqdata\src\CYQ.Data_NetCore.csproj" />
+    <PackageReference Include="cyqdata" Version="5.9.1" />
   </ItemGroup>
 
 </Project>

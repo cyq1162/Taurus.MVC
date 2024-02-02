@@ -300,10 +300,10 @@ namespace Taurus.Mvc.Reflect
     {
         private static MethodEntity GetGlobalMethod(String name)
         {
-            Type t = ControllerCollector.GetController(ReflectConst.Global);
-            if (t != null)
+            TypeEntity entity = ControllerCollector.GetController(ReflectConst.Global);
+            if (entity != null)
             {
-                return GetMethod(t, "Static." + name, false);
+                return GetMethod(entity.Type, "Static." + name, false);
             }
             return null;
         }

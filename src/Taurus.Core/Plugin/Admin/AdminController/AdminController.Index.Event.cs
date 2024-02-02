@@ -1,5 +1,6 @@
 ﻿using System.Collections.Generic;
 using Taurus.Plugin.MicroService;
+using Taurus.Plugin.Rpc;
 
 namespace Taurus.Plugin.Admin
 {
@@ -14,7 +15,7 @@ namespace Taurus.Plugin.Admin
         public void StopClientMicroService(string host)
         {
             string url = host + MsConfig.Server.RcPath + "/stop?mskey=" + MsConfig.Server.RcKey;
-            RpcTask task = Rpc.StartGetAsync(url);
+            RpcTask task = Rest.GetAsync(url);
             Write(task.Result.ResultText);
         }
 
@@ -24,7 +25,7 @@ namespace Taurus.Plugin.Admin
         public void ExitClientAppliction(string host)
         {
             string url = host + MsConfig.Server.RcPath + "/exit?mskey=" + MsConfig.Server.RcKey;
-            RpcTask task = Rpc.StartGetAsync(url);
+            RpcTask task = Rest.GetAsync(url);
             Write(task.Result.ResultText);
         }
 
@@ -56,7 +57,7 @@ namespace Taurus.Plugin.Admin
             }
             if (hostInfo != null)
             {
-                Rpc.Gateway.PreConnection(hostInfo);
+                Gateway.PreConnection(hostInfo);
                 Write("Host address detection has been successfully initiated.", true);
             }
             else

@@ -1,5 +1,6 @@
 ﻿using CYQ.Data;
 using System;
+using System.Collections;
 using System.Collections.Generic;
 using System.Diagnostics;
 using System.Text;
@@ -11,9 +12,22 @@ namespace Taurus.Mvc
 {
     class MvcRun
     {
+        static bool hasStartThread = false;
+        /// <summary>
+        /// ASP.NET 启动。
+        /// </summary>
+        public static void ASPNET_Start()
+        {
+            if (!hasStartThread)
+            {
+                hasStartThread = true;
+                new Thread(new ThreadStart(Start), 512).Start();
+            }
+        }
+
         static bool hasStart = false;
         /// <summary>
-        /// 启用后仅启运行1次。
+        ///  ASP.NET Core 启动。
         /// </summary>
         public static void Start()
         {
@@ -26,14 +40,9 @@ namespace Taurus.Mvc
                 WriteDebugLine("Current Taurus Version    ：" + MvcConst.Version);
                 WriteDebugLine("Current CYQ.Data Version  ：" + AppConfig.Version);
                 WriteDebugLine("--------------------------------------------------");
-                ThreadPool.QueueUserWorkItem(new WaitCallback(ThreadStart), null);
+                ControllerCollector.InitControllers();
+                ViewEngine.InitStyles();
             }
-        }
-
-        private static void ThreadStart(object p)
-        {
-            ControllerCollector.InitControllers();
-            ViewEngine.InitStyles();
         }
         private static void WriteDebugLine(string msg)
         {
