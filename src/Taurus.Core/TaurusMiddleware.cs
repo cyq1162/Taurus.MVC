@@ -58,7 +58,7 @@ namespace Microsoft.AspNetCore.Http
                     }
                     else
                     {
-                        await context.Response.WriteAsync("");
+                         
                     }
                 }
                 //处理信息

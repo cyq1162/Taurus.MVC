@@ -114,20 +114,13 @@ namespace Taurus.Mvc
                     MethodEntity globalDefault = MethodCollector.GlobalDefault;
                     if (globalDefault != null)
                     {
-                        //globalDefault.TypeEntity.Controller.ProcessRequest(context);
-                        //Controller o = (Controller)Activator.CreateInstance(globalDefault.Method.DeclaringType);//实例化
-                        Controller o = globalDefault.Delegate.CreateController();
-                        o.ProcessRequest(context);
-                    }
-                    else
-                    {
-                        Response.StatusCode = 404;
-                        Response.Write("404 Not Found.");
-                        context.Response.End();
-                        //WriteExeResult();
+                        Controller o = globalDefault.TypeEntity.Delegate.CreateController();
+                        if (o != null)
+                        {
+                            o.ProcessRequest(context);
+                        }
                     }
                     return;
-
                 }
                 else
                 {
@@ -392,8 +385,13 @@ namespace Taurus.Mvc
             {
                 return false;
             }
-
-            methodEntity.Delegate.Invoke(this, paras);
+            //执行页面方法
+            object result = methodEntity.Delegate.Invoke(this, paras);
+            if (result != null && apiResult.Length == 0)
+            {
+                if (result is string) { Write(result.ToString()); }
+                else { Write(result); }
+            }
             if (IsHttpPost && _View != null && !string.IsNullOrEmpty(BtnName))
             {
                 #region Button Invoke
@@ -404,7 +402,13 @@ namespace Taurus.Mvc
                     {
                         return false;
                     }
-                    postBtnMethod.Delegate.Invoke(this, paras);
+                    //执行页面控制点击事件
+                    result = postBtnMethod.Delegate.Invoke(this, paras);
+                    if (result != null && apiResult.Length == 0)
+                    {
+                        if (result is string) { Write(result.ToString()); }
+                        else { Write(result); }
+                    }
                 }
                 #endregion
             }
@@ -549,6 +553,7 @@ namespace Taurus.Mvc
         }
         private string GetBtnName()
         {
+            if (context == null || context.Request == null) { return string.Empty; }
             var queryString = context.Request.QueryString;
             foreach (string name in queryString)
             {
@@ -638,7 +643,7 @@ namespace Taurus.Mvc
             #endregion
             return true;
         }
-      
+
     }
     public abstract partial class Controller
     {
@@ -718,6 +723,7 @@ namespace Taurus.Mvc
         {
             get
             {
+                if (ParaItems == null || ParaItems.Length == 0) { return string.Empty; }
                 return ParaItems[0];
             }
         }
@@ -808,6 +814,7 @@ namespace Taurus.Mvc
             {
                 return WebTool.ChangeValueType<T>(queryCache[key], defaultValue, false);
             }
+            if (context == null || context.Request == null) { return defaultValue; }
             var files = context.Request.Files;
             var headers = context.Request.Headers;
             T value = default(T);

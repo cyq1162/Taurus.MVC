@@ -11,6 +11,10 @@ namespace Taurus.Mvc.Reflect
     public class MethodEntity
     {
         /// <summary>
+        /// 方法的实体属性
+        /// </summary>
+        public TypeEntity TypeEntity { get; set; }
+        /// <summary>
         /// 反射方法，Invoke调用
         /// </summary>
         public MethodInfo Method { get; set; }
@@ -28,12 +32,13 @@ namespace Taurus.Mvc.Reflect
         /// </summary>
         public DelegateInvoke Delegate { get; set; }
 
-        internal MethodEntity(MethodInfo method, AttributeEntity attributeEntity)
+        internal MethodEntity(TypeEntity typeEntity, MethodInfo method, AttributeEntity attributeEntity)
         {
-            Method = method;
-            Parameters = method.GetParameters();
-            AttrEntity = attributeEntity;
-            Delegate = new DelegateInvoke(method);
+            this.TypeEntity = typeEntity;
+            this.Method = method;
+            this.Parameters = method.GetParameters();
+            this.AttrEntity = attributeEntity;
+            this.Delegate = new DelegateInvoke(method);
         }
     }
 

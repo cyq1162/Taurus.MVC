@@ -5,7 +5,7 @@
     <AssemblyName>Taurus.Core</AssemblyName>
     <RootNamespace>Taurus.Mvc</RootNamespace>
     <Description>Taurus.Mvc is a mvc and webapi for asp.net or asp.net core（适合场景：对性能和并发有较高要求的电商、站点、WebAPI等系统，支持.Net 和 .Net Core 所有系列，内置【注册中心、网关、客户端】，【开源：https://github.com/cyq1162/Taurus.MVC】</Description>
-    <Company>路过秋天 （2024-02-02）</Company>
+    <Company>路过秋天 （2024-02-04）</Company>
     <Authors>路过秋天</Authors>
     <Copyright>Copyright ©  路过秋天 2016-2096</Copyright>
     <Version>2.3.4</Version>
@@ -16,8 +16,8 @@
     <GeneratePackageOnBuild>False</GeneratePackageOnBuild>
     <PackageReleaseNotes></PackageReleaseNotes>
     <PackageTags>Taurus.MVC Core ASP.NET aspnetcore webapi</PackageTags>
-    <AssemblyVersion>3.4.0</AssemblyVersion>
-    <FileVersion>3.4.0</FileVersion>
+    <AssemblyVersion>3.4.1</AssemblyVersion>
+    <FileVersion>3.4.1</FileVersion>
   </PropertyGroup>
 
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|AnyCPU'">
@@ -29,6 +29,7 @@
   </PropertyGroup>
 
   <ItemGroup>
+    <Compile Remove="MVC\Reflect\Delegate\C#2.0\**" />
     <Compile Remove="Plugin\Admin\AdminController\DotNet\**" />
     <Compile Remove="Plugin\DistributedTransaction\**" />
     <Compile Remove="Plugin\RPC\HttpClient\**" />
@@ -36,6 +37,7 @@
     <Compile Remove="Plugin\RPC\RpcClient\Net\**" />
     <Compile Remove="Plugin\RPC\Task\Net\**" />
     <Compile Remove="WebSocket\**" />
+    <EmbeddedResource Remove="MVC\Reflect\Delegate\C#2.0\**" />
     <EmbeddedResource Remove="Plugin\Admin\AdminController\DotNet\**" />
     <EmbeddedResource Remove="Plugin\DistributedTransaction\**" />
     <EmbeddedResource Remove="Plugin\RPC\HttpClient\**" />
@@ -43,6 +45,7 @@
     <EmbeddedResource Remove="Plugin\RPC\RpcClient\Net\**" />
     <EmbeddedResource Remove="Plugin\RPC\Task\Net\**" />
     <EmbeddedResource Remove="WebSocket\**" />
+    <None Remove="MVC\Reflect\Delegate\C#2.0\**" />
     <None Remove="Plugin\Admin\AdminController\DotNet\**" />
     <None Remove="Plugin\DistributedTransaction\**" />
     <None Remove="Plugin\RPC\HttpClient\**" />
@@ -74,7 +77,7 @@
   </ItemGroup>
 
   <ItemGroup>
-    <PackageReference Include="cyqdata" Version="5.9.1" />
+    <PackageReference Include="cyqdata" Version="5.9.1.1" />
   </ItemGroup>
 
 </Project>

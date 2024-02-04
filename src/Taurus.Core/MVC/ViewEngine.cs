@@ -113,7 +113,11 @@ namespace Taurus.Mvc
             {
                 // System.Web.HttpContext.Current.Response.Write("load ok");
                 //处理Shared目录下的节点替换。
-                ReplaceItemRef(view, view.GetList("*", "itemref"), false, 0);
+                if (!view.IsLoadFromCache)
+                {
+                    ReplaceItemRef(view, view.GetList("*", "itemref"), false, 0);
+                    view.RefleshCache();
+                }
             }
             return view;
         }

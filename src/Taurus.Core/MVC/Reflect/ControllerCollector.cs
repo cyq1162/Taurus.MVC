@@ -16,8 +16,6 @@ namespace Taurus.Mvc.Reflect
     public static class ControllerCollector
     {
 
-
-
         #region GetControllers
         /// <summary>
         /// 存档一级名称的控制器[Controller]
@@ -57,12 +55,11 @@ namespace Taurus.Mvc.Reflect
                                          ))
                                     {
                                         isControllerAssembly = true;
-                                        TypeEntity entity = null;
+                                        TypeEntity entity = new TypeEntity(type);
                                         string lv1Name = GetLevelName(type.FullName, 1);
                                         string lv2Name = GetLevelName(type.FullName, 2);
                                         if (!_Lv1Controllers.ContainsKey(lv1Name))
                                         {
-                                            entity = new TypeEntity(type);
                                             _Lv1Controllers.Add(lv1Name, entity);
                                         }
                                         else
@@ -70,16 +67,14 @@ namespace Taurus.Mvc.Reflect
                                             int value = string.Compare(lv2Name, GetLevelName(_Lv1Controllers[lv1Name].Type.FullName, 2), true);
                                             if (value == -1)
                                             {
-                                                entity = new TypeEntity(type);
                                                 _Lv1Controllers[lv1Name] = entity;//值小的优化。
                                             }
                                         }
                                         if (!_Lv2Controllers.ContainsKey(lv2Name))
                                         {
-                                            entity = new TypeEntity(type);
                                             _Lv2Controllers.Add(lv2Name, entity);
                                         }
-                                        MethodCollector.InitMethodInfo(type);
+                                        MethodCollector.InitMethodInfo(entity);
                                     }
 
                                 }
@@ -99,7 +94,7 @@ namespace Taurus.Mvc.Reflect
                         {
                             _Lv1Controllers.Add(path, adminEntity);//用path，允许调整路径
                         }
-                        MethodCollector.InitMethodInfo(adminType);
+                        MethodCollector.InitMethodInfo(adminEntity);
 
                         Type docType = typeof(DocController);
                         TypeEntity docEntity = new TypeEntity(docType);
@@ -108,7 +103,7 @@ namespace Taurus.Mvc.Reflect
                         {
                             _Lv1Controllers.Add(path, docEntity);
                         }
-                        MethodCollector.InitMethodInfo(docType);
+                        MethodCollector.InitMethodInfo(docEntity);
 
 
                         #endregion
@@ -129,7 +124,7 @@ namespace Taurus.Mvc.Reflect
                             _Lv1Controllers.Add(path, msEntity);
                         }
 
-                        MethodCollector.InitMethodInfo(msType);
+                        MethodCollector.InitMethodInfo(msEntity);
                     }
                 }
             }

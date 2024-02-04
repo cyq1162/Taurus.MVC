@@ -46,6 +46,39 @@ namespace Taurus.Mvc
             }
             return null;
         }
+
+        /// <summary>
+        /// 存档禁用控制器Url
+        /// </summary>
+        private static Dictionary<string, bool> denyUrl = new Dictionary<string, bool>(StringComparer.OrdinalIgnoreCase);
+
+        /// <summary>
+        /// 是否禁用的控制器Url
+        /// </summary>
+        /// <param name="localUrl"></param>
+        /// <returns></returns>
+        public static bool IsDenyUrl(string localUrl)
+        {
+            return denyUrl.ContainsKey(localUrl);
+        }
+        /// <summary>
+        /// 手工添加方法（禁止请求）映射地址。
+        /// </summary>
+        /// <param name="localUrl">禁止访问相对路径</param>
+        /// <returns></returns>
+        public static bool AddDenyUrl(string localUrl)
+        {
+            if (!string.IsNullOrEmpty(localUrl))
+            {
+                if (!denyUrl.ContainsKey(localUrl))
+                {
+                    denyUrl.Add(localUrl, true);
+                    return true;
+                }
+            }
+            return false;
+        }
+
         /*
         /// <summary>
         /// 手工添加控制器（For Class）模块名称映射地址。

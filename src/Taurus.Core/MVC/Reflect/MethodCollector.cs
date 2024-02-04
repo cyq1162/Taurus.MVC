@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Reflection;
+using System.Security.Cryptography;
 using Taurus.Mvc.Attr;
 
 namespace Taurus.Mvc.Reflect
@@ -131,20 +132,15 @@ namespace Taurus.Mvc.Reflect
         /// <returns></returns>
         public static Dictionary<string, MethodEntity> GetMethods(Type t)
         {
-            if (!typeMethods.ContainsKey(t.FullName))
+            if (typeMethods.ContainsKey(t.FullName))
             {
-                lock (t.FullName)
-                {
-                    if (!typeMethods.ContainsKey(t.FullName))
-                    {
-                        InitMethodInfo(t);
-                    }
-                }
+                return typeMethods[t.FullName];
             }
-            return typeMethods[t.FullName];
+            return null;
         }
-        internal static void InitMethodInfo(Type t)
+        internal static void InitMethodInfo(TypeEntity entity)
         {
+            Type t = entity.Type;
             #region 处理 Controller RoutePrefix 属性映射。
             RoutePrefixAttribute[] rpas = t.GetCustomAttributes(typeof(RoutePrefixAttribute), true) as RoutePrefixAttribute[];
             string moduleName = GetLevelName(t.FullName, MvcConfig.RouteMode);
@@ -196,7 +192,7 @@ namespace Taurus.Mvc.Reflect
                     attributeEntity.HasRequire = true;
                     attributeEntity.RequireAttributes = objects as RequireAttribute[];
                 }
-                dic.Add(name, new MethodEntity(method, attributeEntity));
+                dic.Add(name, new MethodEntity(entity, method, attributeEntity));
 
                 #region 处理 Method Route 属性映射。
                 objects = method.GetCustomAttributes(typeof(RouteAttribute), true);
@@ -215,6 +211,7 @@ namespace Taurus.Mvc.Reflect
                                 string fromUrl = "/" + rpa.PrefixName.Trim('/') + "/" + ra.LocalPath.Trim('/');
                                 string toUrl = moduleName + name;
                                 RouteEngine.Add(fromUrl, toUrl);
+                                RouteEngine.AddDenyUrl(toUrl);
                             }
                         }
                         else
@@ -222,17 +219,19 @@ namespace Taurus.Mvc.Reflect
                             string fromUrl = "/" + ra.LocalPath.Trim('/');
                             string toUrl = moduleName + name;
                             RouteEngine.Add(fromUrl, toUrl);
+                            RouteEngine.AddDenyUrl(toUrl);
                         }
                     }
                 }
                 else if (rpas != null && rpas.Length > 0)
                 {
-                    //未配置的
+                    //未配置，但配置了 RoutePrefixAttribute
                     foreach (RoutePrefixAttribute rpa in rpas)
                     {
                         string fromUrl = "/" + rpa.PrefixName.Trim('/') + "/" + name;
                         string toUrl = moduleName + name;
                         RouteEngine.Add(fromUrl, toUrl);
+                        RouteEngine.AddDenyUrl(toUrl);
                     }
                 }
                 #endregion
@@ -262,16 +261,19 @@ namespace Taurus.Mvc.Reflect
         public static MethodEntity GetMethod(Type t, String methodName, Boolean isReturnDefault)
         {
             Dictionary<String, MethodEntity> methods = GetMethods(t);
-            if (!string.IsNullOrEmpty(methodName))
+            if (methods != null)
             {
-                if (methods.ContainsKey(methodName))
+                if (!string.IsNullOrEmpty(methodName))
                 {
-                    return methods[methodName];
+                    if (methods.ContainsKey(methodName))
+                    {
+                        return methods[methodName];
+                    }
                 }
-            }
-            if (isReturnDefault && methods.ContainsKey(ReflectConst.Default))
-            {
-                return methods[ReflectConst.Default];
+                if (isReturnDefault && methods.ContainsKey(ReflectConst.Default))
+                {
+                    return methods[ReflectConst.Default];
+                }
             }
             return null;
         }
@@ -315,7 +317,12 @@ namespace Taurus.Mvc.Reflect
         {
             get
             {
-                return GetGlobalMethod(ReflectConst.Default);
+                TypeEntity entity = ControllerCollector.GetController(ReflectConst.Global);
+                if (entity != null)
+                {
+                    return GetMethod(entity.Type, ReflectConst.Default, false);
+                }
+                return null;
             }
         }
 

@@ -1,6 +1,8 @@
 ﻿using CYQ.Data;
 using System;
 using System.Net.Http;
+using System.Runtime.CompilerServices;
+using System.Threading;
 using System.Threading.Tasks;
 
 namespace Taurus.Plugin.Rpc
@@ -10,10 +12,6 @@ namespace Taurus.Plugin.Rpc
     /// </summary>
     public partial class RpcTask
     {
-        internal RpcTask()
-        {
-
-        }
         internal Task<HttpResponseMessage> task;
         /// <summary>
         /// 等待请求【默认30秒超时】
@@ -73,6 +71,8 @@ namespace Taurus.Plugin.Rpc
         public RpcTaskRequest Request { get; set; }
 
         private RpcTaskResult _Result;
+
+
         /// <summary>
         /// RPC 任务 执行后返回的结果
         /// </summary>
@@ -123,6 +123,41 @@ namespace Taurus.Plugin.Rpc
                 _Result.IsSuccess = false;
                 _Result.Error = err;
             }
+        }
+
+        private RpcTaskAwaiter _awaiter = null;
+
+        public RpcTaskAwaiter GetAwaiter()
+        {
+            _awaiter = new RpcTaskAwaiter(Result);
+            return _awaiter;
+        }
+    }
+    public class RpcTaskAwaiter : INotifyCompletion
+    {
+        public RpcTaskResult Result { get; set; }
+        public RpcTaskAwaiter(RpcTaskResult result)
+        {
+            this.Result = result;
+        }
+        public bool IsCompleted { get; private set; }
+
+        public void OnCompleted(Action continuation)
+        {
+            IsCompleted = true;
+            if (continuation != null)
+            {
+                ThreadPool.QueueUserWorkItem(_ =>
+                {
+                    continuation?.Invoke();
+                });
+            }
+
+        }
+
+        public RpcTaskResult GetResult()
+        {
+            return this.Result;
         }
     }
 }

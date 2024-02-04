@@ -192,7 +192,11 @@ namespace Taurus.Mvc.Reflect
         /// <returns></returns>
         public Controller CreateController()
         {
-            return this.ControllerDelegate();
+            if(this.ControllerDelegate!=null)
+            {
+                return this.ControllerDelegate();
+            }
+            return null;
         }
 
     }

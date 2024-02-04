@@ -10,7 +10,7 @@
     <AppDesignerFolder>Properties</AppDesignerFolder>
     <RootNamespace>Taurus.Mvc</RootNamespace>
     <AssemblyName>Taurus.Core</AssemblyName>
-    <TargetFrameworkVersion>v2.0</TargetFrameworkVersion>
+    <TargetFrameworkVersion>v4.0</TargetFrameworkVersion>
     <FileUpgradeFlags>
     </FileUpgradeFlags>
     <UpgradeBackupLocation>
@@ -53,8 +53,8 @@
     <DocumentationFile>bin\Release\Taurus.Core.xml</DocumentationFile>
   </PropertyGroup>
   <ItemGroup>
-    <Reference Include="CYQ.Data, Version=5.9.1.0, Culture=neutral, processorArchitecture=MSIL">
-      <HintPath>..\..\demo\default\packages\cyqdata.5.9.1\lib\net20\CYQ.Data.dll</HintPath>
+    <Reference Include="CYQ.Data, Version=5.9.1.1, Culture=neutral, processorArchitecture=MSIL">
+      <HintPath>..\..\demo\default\packages\cyqdata.5.9.1.1\lib\net20\CYQ.Data.dll</HintPath>
     </Reference>
     <Reference Include="DotNetZip">
       <HintPath>..\..\Packages\DotNetZip.dll</HintPath>

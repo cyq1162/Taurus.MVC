@@ -293,9 +293,14 @@ CYQ.Data升级到V5.8.4.9
 4、优化：Rpc 独立名称空间：Taurus.Plugin.Rpc，使用 Rest 发起任务请求。（2024-02-01）
 5、新增：Taurus.Plugin.MicroService 下 Gateway 类，用于获取负载均衡的主机。（2024-02-01）
 6、优化：CYQ.Data 升级到V5.9.1版本（优化XHtmlAction，第2点优化）
-
+-----V3.4.1----------------
+1、优化：Route 或 RoutePrefix 属性映射的路径，禁止原路径的直接访问。（2024-02-3）
+2、优化：允许方法通过 Return 来返回输出的信息。（2024-02-3）
+3、优化：ViewEngine 加载缓存（2024-02-4）
+4、优化：CYQ.Data 升级到V5.9.1.1 版本（优化 XHtmlAction）（2024-02-4）
 
 ------------------------------------
+
 个别接口限流
 XHtml 预编绎：生成IDKey、IDName。
 

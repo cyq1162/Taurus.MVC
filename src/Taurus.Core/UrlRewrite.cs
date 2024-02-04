@@ -200,6 +200,7 @@ namespace Taurus.Core
             #endregion
 
             #region 7、Mvc模块运行
+
             if (context.Request.Url.LocalPath == "/")//设置默认首页
             {
                 string defaultUrl = MvcConfig.DefaultUrl;
@@ -211,11 +212,25 @@ namespace Taurus.Core
             }
             else
             {
+
                 string mapUrl = RouteEngine.Get(uri.LocalPath);
                 if (!string.IsNullOrEmpty(mapUrl))
                 {
                     context.Items.Add("Uri", uri);
                     context.RewritePath(mapUrl);
+                    return;
+                }
+                else if (RouteEngine.IsDenyUrl(uri.LocalPath))
+                {
+                    MethodEntity globalDefaultInvoke = MethodCollector.GlobalDefault;
+                    if (globalDefaultInvoke != null)
+                    {
+                        context.RewritePath(ReflectConst.Global + "/" + ReflectConst.Default);
+                    }
+                    else
+                    {
+                        context.Response.End();
+                    }
                     return;
                 }
             }
@@ -331,7 +346,7 @@ namespace Taurus.Core
 
                 context.Handler = null;//禁止其它模块执行。
             }
-            
+
         }
         private void WriteError(string tip, HttpContext context)
         {
