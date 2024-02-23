@@ -54,9 +54,9 @@ namespace Taurus.Plugin.Admin
             }
             if (View != null)
             {
-                View.KeyValue.Set("Version", MvcConst.Version);
-                View.KeyValue.Set("MsType", GetMsTypeText());
-                View.KeyValue.Set("Target", (Query<int>("t") == 3 && MsConfig.IsServer) ? "_blank" : "_self");
+                View.KeyValue.Add("Version", MvcConst.Version);
+                View.KeyValue.Add("MsType", GetMsTypeText());
+                View.KeyValue.Add("Target", (Query<int>("t") == 3 && MsConfig.IsServer) ? "_blank" : "_self");
 
                 if (HostList != null && HostList.Count > 0)
                 {

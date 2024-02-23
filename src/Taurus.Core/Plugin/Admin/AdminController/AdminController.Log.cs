@@ -18,7 +18,7 @@ namespace Taurus.Plugin.Admin
         /// </summary>
         public void Log()
         {
-            View.KeyValue.Set("yyyyMM", DateTime.Now.ToString("yyyyMM"));
+            View.KeyValue.Add("yyyyMM", DateTime.Now.ToString("yyyyMM"));
             string logPath = AppConfig.WebRootPath + AppConfig.Log.Path.Trim('/', '\\');
             if (Directory.Exists(logPath))
             {
@@ -47,7 +47,7 @@ namespace Taurus.Plugin.Admin
                     string logDetail = IOHelper.ReadAllText(files[0]);
                     logDetail = System.Web.HttpUtility.HtmlEncode(logDetail);
                     logDetail = logDetail.Replace("\n", "<br/>").Replace("&lt;hr /&gt;", "<hr />");
-                    View.KeyValue.Set("detail", logDetail);
+                    View.KeyValue.Add("detail", logDetail);
                 }
             }
         }

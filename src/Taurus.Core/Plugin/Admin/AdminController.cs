@@ -59,7 +59,7 @@ namespace Taurus.Plugin.Admin
                     }
                     if (View != null)
                     {
-                        View.KeyValue.Set("LoginName", LoginName);
+                        View.KeyValue.Add("LoginName", LoginName);
                     }
                     break;
             }

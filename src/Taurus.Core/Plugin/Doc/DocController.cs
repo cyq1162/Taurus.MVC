@@ -447,7 +447,7 @@ namespace Taurus.Plugin.Doc
                 }
                 if (dicReturn.Count > 0)
                 {
-                    View.LoadData(dicReturn, "");
+                    View.LoadData(dicReturn);
                 }
                 if (dt.Rows.Count > 0)
                 {

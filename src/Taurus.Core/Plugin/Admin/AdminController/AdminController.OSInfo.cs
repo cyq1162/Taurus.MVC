@@ -35,10 +35,10 @@ namespace Taurus.Plugin.Admin
                     taurusCount++;
                 }
             }
-            View.KeyValue.Set("Count", assList.Length.ToString());
-            View.KeyValue.Set("Count-Taurus", taurusCount.ToString());
-            View.KeyValue.Set("Count-Microsoft", microsoftCount.ToString());
-            View.KeyValue.Set("Count-System", systemCount.ToString());
+            View.KeyValue.Add("Count", assList.Length.ToString());
+            View.KeyValue.Add("Count-Taurus", taurusCount.ToString());
+            View.KeyValue.Add("Count-Microsoft", microsoftCount.ToString());
+            View.KeyValue.Add("Count-System", systemCount.ToString());
         }
 
         /// <summary>

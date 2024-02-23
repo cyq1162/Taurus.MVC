@@ -45,8 +45,8 @@ namespace Taurus.Plugin.Admin
         private void InitMenu()
         {
             // API
-            View.KeyValue.Set("Today", DateTime.Now.ToString("yyyyMMdd"));
-            View.KeyValue.Set("Yesterday", DateTime.Now.AddDays(-1).ToString("yyyyMMdd"));
+            View.KeyValue.Add("Today", DateTime.Now.ToString("yyyyMMdd"));
+            View.KeyValue.Add("Yesterday", DateTime.Now.AddDays(-1).ToString("yyyyMMdd"));
             //Redis
             if (string.IsNullOrEmpty(AppConfig.Redis.Servers))
             {
@@ -86,8 +86,8 @@ namespace Taurus.Plugin.Admin
                     row.Set(i + 1, value[i]);
                 }
             }
-            View.KeyValue.Set("KeyCount", list.Count.ToString());
-            View.KeyValue.Set("Total", total.ToString());
+            View.KeyValue.Add("KeyCount", list.Count.ToString());
+            View.KeyValue.Add("Total", total.ToString());
             string sort = Query<string>("s", "LocalPath");
             bool isDesc = Query<bool>("desc");
             dtTaurus.Rows.Sort(sort + (isDesc ? " desc" : " asc"));

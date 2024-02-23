@@ -19,27 +19,11 @@ namespace Taurus.Mvc.Reflect
         /// <summary>
         /// 方法委托
         /// </summary>
-        private Delegate MethodDelegate { get; set; }
+        private CreateMethodDelegate MethodDelegate { get; set; }
         internal DelegateInvoke(MethodInfo method)
         {
-            var returnType = method.ReturnType;
-            isVoid = returnType.Name == "Void";
             isStatic = method.IsStatic;
-            if (!isVoid)
-            {
-                isReturnBool = returnType == typeof(bool);
-                isReturnString = !isReturnBool && returnType == typeof(string);
-            }
-            //创建方法委托
-            var dType = DelegateType.Get(method);
-            if (method.IsStatic)
-            {
-                this.MethodDelegate = System.Delegate.CreateDelegate(dType, method);
-            }
-            else
-            {
-                this.MethodDelegate = DelegateEmit.CreateDelegate(dType, method);
-            }
+            this.MethodDelegate = DelegateEmit.GetCreateMethodDelegate(method);
         }
 
         /// <summary>
@@ -63,114 +47,12 @@ namespace Taurus.Mvc.Reflect
                         objects[i + 1] = parameters[i];
                     }
                 }
-                parameters = objects;
+                return this.MethodDelegate(objects);
             }
-            if (isVoid)
-            {
-                InvokeAction(parameters);
-                return null;
-            }
-            else
-            {
-                return InvokeFunc(parameters);
-            }
+
+            return this.MethodDelegate(parameters);
         }
 
-        private void InvokeAction(params object[] parameters)
-        {
-            var d = this.MethodDelegate;
-            //Default
-            if (d is Action)
-            {
-                ((Action)d)();
-                return;
-            }
-            //EndInvoke，无参数
-            if (d is Action<Controller>)
-            {
-                ((Action<Controller>)d)(parameters[0] as Controller);
-                return;
-            }
-
-            if (d is Action<Controller,string>)
-            {
-                ((Action<Controller, string>)d)(parameters[0] as Controller,parameters[1] as string);
-                return;
-            }
-            if (d is Action<Controller, string, string>)
-            {
-                ((Action<Controller, string, string>)d)(parameters[0] as Controller, parameters[1] as string, parameters[2] as string);
-                return;
-            }
-            if (d is Action<Controller, string, string, string>)
-            {
-                ((Action<Controller, string, string, string>)d)(parameters[0] as Controller, parameters[1] as string, parameters[2] as string, parameters[3] as string);
-                return;
-            }
-            if (d is Action<Controller, int>)
-            {
-                ((Action<Controller, int>)d)(parameters[0] as Controller, Convert.ToInt32(parameters[1]));
-                return;
-            }
-            if (d is Action<Controller, int, int>)
-            {
-                ((Action<Controller, int, int>)d)(parameters[0] as Controller, Convert.ToInt32(parameters[1]), Convert.ToInt32(parameters[2]));
-                return;
-            }
-            if (d is Action<Controller, int, int, int>)
-            {
-                ((Action<Controller, int, int, int>)d)(parameters[0] as Controller, Convert.ToInt32(parameters[1]), Convert.ToInt32(parameters[2]), Convert.ToInt32(parameters[3]));
-                return;
-            }
-
-            //其它的用动态调用处理。
-            d.DynamicInvoke(parameters);
-        }
-
-        private object InvokeFunc(params object[] parameters)
-        {
-            var d = this.MethodDelegate;
-
-            //先处理系统定义的
-            if (isReturnBool)
-            {
-                //Static： BeforeInvoke
-                if (d is Func<Controller, bool>)
-                {
-                    var fun = (Func<Controller, bool>)d;
-                    return fun(parameters[0] as Controller);
-                }
-                //Static：CheckAck、CheckToken、CheckMicroService
-                if (d is Func<Controller, string, bool>)
-                {
-                    var fun = (Func<Controller, string, bool>)d;
-                    return fun(parameters[0] as Controller, parameters[1] as string);
-                }
-                //BeforeInvoke
-                if (d is Func<bool>)
-                {
-                    var fun = (Func<bool>)d;
-                    return fun();
-                }
-                //CheckAck、CheckToken、CheckMicroService
-                if (d is Func<string, bool>)
-                {
-                    var fun = (Func<string, bool>)d;
-                    return fun(parameters[0] as string);
-                }
-
-            }
-            if (isReturnString)
-            {
-                //RouteMapInvoke
-                if (d is Func<HttpRequest, string>)
-                {
-                    var fun = (Func<HttpRequest, string>)d;
-                    return fun(parameters[0] as HttpRequest);
-                }
-            }
-            return d.DynamicInvoke(parameters);
-        }
     }
 
     /// <summary>
@@ -181,7 +63,7 @@ namespace Taurus.Mvc.Reflect
         /// <summary>
         /// Controller 实例创建委托
         /// </summary>
-        private DelegateEmit.CreateControllerDelegate ControllerDelegate { get; set; }
+        private CreateControllerDelegate ControllerDelegate { get; set; }
         internal DelegateInvoke(Type type)
         {
             this.ControllerDelegate = DelegateEmit.GetCreateControllerDelegate(type);
@@ -192,7 +74,7 @@ namespace Taurus.Mvc.Reflect
         /// <returns></returns>
         public Controller CreateController()
         {
-            if(this.ControllerDelegate!=null)
+            if (this.ControllerDelegate != null)
             {
                 return this.ControllerDelegate();
             }

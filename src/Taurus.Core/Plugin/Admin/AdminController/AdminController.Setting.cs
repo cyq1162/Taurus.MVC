@@ -28,7 +28,7 @@ namespace Taurus.Plugin.Admin
             {
                 string[] items = IO.Read(AdminConst.AccountPath).Split(',');
                 string name = items.Length == 2 ? items[0] : "user";
-                View.KeyValue.Set("UserName", name);
+                View.KeyValue.Add("UserName", name);
             }
         }
 

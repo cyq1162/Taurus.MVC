@@ -26,8 +26,8 @@ namespace Taurus.Plugin.Admin
             {
                 View.Set("kestrelNode", CYQ.Data.Xml.SetType.ClearFlag, "1");
             }
-            View.KeyValue.Set("IsNetCore", AppConfig.IsNetCore.ToString().ToLower());
-            View.KeyValue.Set("Version", MvcConst.Version);
+            View.KeyValue.Add("IsNetCore", AppConfig.IsNetCore.ToString().ToLower());
+            View.KeyValue.Add("Version", MvcConst.Version);
             string type = Query<string>("t", "mvc").ToLower();
             if (type.StartsWith("kestrel"))
             {

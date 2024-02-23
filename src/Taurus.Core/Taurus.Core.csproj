@@ -10,7 +10,7 @@
     <AppDesignerFolder>Properties</AppDesignerFolder>
     <RootNamespace>Taurus.Mvc</RootNamespace>
     <AssemblyName>Taurus.Core</AssemblyName>
-    <TargetFrameworkVersion>v4.0</TargetFrameworkVersion>
+    <TargetFrameworkVersion>v2.0</TargetFrameworkVersion>
     <FileUpgradeFlags>
     </FileUpgradeFlags>
     <UpgradeBackupLocation>
@@ -53,8 +53,8 @@
     <DocumentationFile>bin\Release\Taurus.Core.xml</DocumentationFile>
   </PropertyGroup>
   <ItemGroup>
-    <Reference Include="CYQ.Data, Version=5.9.1.1, Culture=neutral, processorArchitecture=MSIL">
-      <HintPath>..\..\demo\default\packages\cyqdata.5.9.1.1\lib\net20\CYQ.Data.dll</HintPath>
+    <Reference Include="CYQ.Data, Version=5.9.2.1, Culture=neutral, processorArchitecture=MSIL">
+      <HintPath>..\..\demo\default\packages\cyqdata.5.9.2.1\lib\net20\CYQ.Data.dll</HintPath>
     </Reference>
     <Reference Include="DotNetZip">
       <HintPath>..\..\Packages\DotNetZip.dll</HintPath>
@@ -83,11 +83,8 @@
     <Compile Include="MVC\MvcRun.cs" />
     <Compile Include="MVC\Reflect\AssemblyCollector.cs" />
     <Compile Include="MVC\Reflect\ControllerCollector.cs" />
-    <Compile Include="MVC\Reflect\Delegate\C#2.0\Func.cs" />
-    <Compile Include="MVC\Reflect\Delegate\C#2.0\Action.cs" />
     <Compile Include="MVC\Reflect\Delegate\DelegateEmit.cs" />
     <Compile Include="MVC\Reflect\Delegate\DelegateInvoke.cs" />
-    <Compile Include="MVC\Reflect\Delegate\DelegateType.cs" />
     <Compile Include="MVC\Reflect\Entity\AttributeEntity.cs" />
     <Compile Include="MVC\Reflect\Entity\MethodEntity.cs" />
     <Compile Include="MVC\Reflect\Entity\TypeEntity.cs" />
