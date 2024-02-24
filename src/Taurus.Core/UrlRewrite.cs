@@ -142,20 +142,23 @@ namespace Taurus.Core
 
             #region 4、网关代理请求检测与转发【接口调用次数统计】 - 5、纯网关检测 - 6、Mvc模块禁用检测
             bool isPluginUrl = WebTool.IsPluginUrl(uri, context.Request.UrlReferrer);
-
+            bool isMvcSuffix = WebTool.IsMvcSuffix(uri);
             if (!isPluginUrl || !MetricConfig.IsIgnorePluginUrl)
             {
                 #region 接口调用次数统计，包含统计其它后缀。
                 if (MetricConfig.IsEnable)
                 {
-                    MetricRun.Start(uri);
+                    if (isMvcSuffix || !MetricConfig.IsMvcOnly)
+                    {
+                        MetricRun.Start(uri);
+                    }
                 }
                 #endregion
             }
 
             if (!isPluginUrl)
             {
-                if (WebTool.IsMvcSuffix(uri))
+                if (isMvcSuffix)
                 {
                     #region 打印请求日志
                     if (MvcConfig.IsPrintRequestLog)

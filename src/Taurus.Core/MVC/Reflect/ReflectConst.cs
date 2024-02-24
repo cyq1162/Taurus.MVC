@@ -16,7 +16,7 @@ namespace Taurus.Mvc.Reflect
         internal const string RouteMapInvoke = "RouteMapInvoke";
         internal const string BeforeInvoke = "BeforeInvoke";
         internal const string EndInvoke = "EndInvoke";
-        internal const string Record = "Record";
+        internal const string OnError = "OnError";
 
         internal const string TokenAttribute = "TokenAttribute";
         internal const string AckAttribute = "AckAttribute";

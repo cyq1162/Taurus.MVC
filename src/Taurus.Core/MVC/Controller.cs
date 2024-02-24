@@ -144,8 +144,21 @@ namespace Taurus.Mvc
             }
             catch (Exception err)
             {
-                context.Response.Write(err.Message);
+                string outErr = err.Message;
                 WebTool.PrintRequestLog(context, err);
+                MethodEntity onError = MethodCollector.GlobalOnError;
+                if (onError != null)
+                {
+                    object result = onError.Method.Invoke(null, new object[] { context, err });
+                    if (result != null && result is string)
+                    {
+                        outErr = result.ToString();
+                    }
+                }
+                if (!string.IsNullOrEmpty(outErr))
+                {
+                    context.Response.Write(outErr);
+                }
             }
             finally
             {

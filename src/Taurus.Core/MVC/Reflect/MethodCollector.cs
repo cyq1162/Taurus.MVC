@@ -388,6 +388,17 @@ namespace Taurus.Mvc.Reflect
             }
         }
 
+        /// <summary>
+        ///  全局GlobalOnError方法
+        /// </summary>
+        public static MethodEntity GlobalOnError
+        {
+            get
+            {
+                return GetGlobalMethod(ReflectConst.OnError);
+            }
+        }
+
         //private static MethodInfo _AuthCheckToken = null;
         ///// <summary>
         ///// 默认AuthController.CheckToken方法

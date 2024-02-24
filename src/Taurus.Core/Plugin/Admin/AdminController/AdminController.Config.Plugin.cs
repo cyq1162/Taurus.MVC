@@ -104,6 +104,7 @@ namespace Taurus.Plugin.Admin
             else if (type == "plugin-metric")
             {
                 Sets(dt, "Metric.IsEnable", MetricConfig.IsEnable, "Metric plugin : API metric plugin.");
+                Sets(dt, "Metric.IsMvcOnly", MetricConfig.IsMvcOnly, "Metric : Ignoring requests outside of MVC.");
                 Sets(dt, "Metric.IsIgnorePluginUrl", MetricConfig.IsIgnorePluginUrl, "Metric : Ignore plugin url.");
                 Sets(dt, "Metric.IsDurable", MetricConfig.IsDurable, "Durable : Metric write to file.");
                 Sets(dt, "Metric.DurableInterval", MetricConfig.DurableInterval+" (s)", "Durable: Interval period (second).");

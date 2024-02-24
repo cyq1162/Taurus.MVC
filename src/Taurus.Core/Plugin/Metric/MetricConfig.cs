@@ -25,6 +25,21 @@ namespace Taurus.Plugin.Metric
         }
 
         /// <summary>
+        /// 配置是否 仅统计Mvc接口 
+        /// 如 Metric.IsMvcOnly ：true
+        /// </summary>
+        public static bool IsMvcOnly
+        {
+            get
+            {
+                return AppConfig.GetAppBool("Metric.IsMvcOnly", true);
+            }
+            set
+            {
+                AppConfig.SetApp("Metric.IsMvcOnly", value.ToString());
+            }
+        }
+        /// <summary>
         /// 配置是否 忽略统计内部插件Url数据  
         /// 如 Metric.IsIgnorePluginUrl ：true
         /// </summary>
