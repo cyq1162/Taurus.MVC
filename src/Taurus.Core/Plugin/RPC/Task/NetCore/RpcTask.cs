@@ -133,6 +133,27 @@ namespace Taurus.Plugin.Rpc
             return _awaiter;
         }
     }
+
+    public partial class RpcTask : IDisposable
+    {
+        /// <summary>
+        /// 关闭请求资源
+        /// </summary>
+        public void Dispose()
+        {
+            if (Request != null)
+            {
+                HttpClient client = HttpClientFactory.Get(Request.Uri, Request.Timeout);
+                if (client != null)
+                {
+                    client.Dispose();
+                    HttpClientFactory.Remove(Request.Uri, Request.Timeout);
+                }
+            }
+        }
+    }
+
+
     public class RpcTaskAwaiter : INotifyCompletion
     {
         public RpcTaskResult Result { get; set; }

@@ -23,6 +23,21 @@ namespace Taurus.Mvc
                 AppConfig.SetApp("Mvc.IsEnable", value.ToString());
             }
         }
+        ///// <summary>
+        ///// 配置是否启用Mvc预热功能 
+        ///// 如 Mvc.IsEnable ：true
+        ///// </summary>
+        //public static bool IsPreheat
+        //{
+        //    get
+        //    {
+        //        return AppConfig.GetAppBool("Mvc.IsEnable", true);
+        //    }
+        //    set
+        //    {
+        //        AppConfig.SetApp("Mvc.IsEnable", value.ToString());
+        //    }
+        //}
         /// <summary>
         /// 配置是否 Mvc 允许 通过IP访问
         /// 如 Mvc.IsAllowIPHost ：true， 默认值：true

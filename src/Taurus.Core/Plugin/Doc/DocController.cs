@@ -19,6 +19,10 @@ namespace Taurus.Plugin.Doc
     /// </summary>
     internal partial class DocController : Controller
     {
+        public DocController()
+        {
+            Init();
+        }
         protected override string HtmlFolderName
         {
             get
@@ -26,11 +30,7 @@ namespace Taurus.Plugin.Doc
                 return DocConfig.HtmlFolderName;
             }
         }
-        public override bool BeforeInvoke()
-        {
-            Init();
-            return true;
-        }
+
         public override void Default()
         {
             BindController();
@@ -41,270 +41,9 @@ namespace Taurus.Plugin.Doc
             BindController();
             BindDetail();
         }
-    }
-    internal partial class DocController
-    {
-        List<XHtmlAction> actions = null;
-        private List<XHtmlAction> GetXml()
-        {
-            if (actions == null)
-            {
-                actions = new List<XHtmlAction>();
-                List<Assembly> assList = AssemblyCollector.ControllerAssemblyList;
-                foreach (Assembly ass in assList)
-                {
-                    string dllName = ass.GetName().Name;
-                    string xmlPath = string.Empty;
-                    if (dllName.Contains(".dll"))
-                    {
-                        xmlPath = dllName.Replace(".dll", ".xml");
-                    }
-                    else
-                    {
-                        xmlPath = dllName + ".xml";
-                    }
-                    if (xmlPath[0] != '/' && !xmlPath.Contains(":")) //非 linux 或 window 完整路径
-                    {
-                        xmlPath = AppConfig.AssemblyPath + xmlPath;
-                    }
-                    if (File.Exists(xmlPath))
-                    {
-                        XHtmlAction action = new XHtmlAction(false, true);
-                        if (action.Load(xmlPath))
-                        {
-                            actions.Add(action);
-                        }
-                        else
-                        {
-                            action.Dispose();
-                        }
-                    }
-                }
-            }
-            return actions;
-        }
-        private string GetDescription(List<XHtmlAction> actions, string name, string type)
-        {
-            XmlNode node = GetDescriptionNode(actions, name, type);
-            if (node != null && node.ChildNodes.Count > 0)
-            {
-                return node.ChildNodes[0].InnerText.Trim();
-            }
-            return "";
-        }
-        private XmlNode GetDescriptionNode(List<XHtmlAction> actions, string name, string type)
-        {
-            if (actions.Count > 0)
-            {
-                foreach (XHtmlAction action in actions)
-                {
-                    XmlNode node = action.Get(type + name);
-                    if (node != null && node.ChildNodes.Count > 0)
-                    {
-                        return node.ChildNodes[0];
-                    }
-                    else
-                    {
-                        XmlNodeList list = action.GetList("member", "name");
-                        if (list != null)
-                        {
-                            foreach (XmlNode item in list)
-                            {
-                                if (item.Attributes["name"].Value.StartsWith(type + name.Split('(')[0] + "("))
-                                {
-                                    return item;
-                                }
-                            }
-                        }
-                    }
-                }
-            }
-            return null;
-        }
 
-
-        private void InitController()
-        {
-            if (ControllerTable == null)
-            {
-                ControllerTable = new MDataTable("Controller");
-                ControllerTable.Columns.Add("CName,CDesc,TokenFlag");
-                ControllerTable.Columns.Add("Type", SqlDbType.Variant);
-
-                //搜集参数
-                Dictionary<string, TypeEntity> cType = ControllerCollector.GetControllers(2);
-                foreach (KeyValuePair<string, TypeEntity> item in cType)
-                {
-                    try
-                    {
-                        Type type = item.Value.Type;
-                        string fullName = type.FullName;
-                        //过滤插件控制器，插件只有一级，不用过滤。
-                        if (fullName.EndsWith(ReflectConst.GlobalController))
-                        {
-                            continue;
-                        }
-                        // || fullName.EndsWith(ReflectConst.DocController) || fullName.EndsWith(ReflectConst.LogController)
-                        //else if (fullName.EndsWith(ReflectConst.MicroServiceController) && !MicroService.MsConfig.IsServer)
-                        //{
-                        //    continue;
-                        //}
-                        var xmlList = GetXml();
-                        string desc = GetDescription(xmlList, type.FullName, "T:").Trim();
-                        if (!string.IsNullOrEmpty(desc))
-                        {
-                            ControllerTable.NewRow(true)
-                              .Set(0, type.FullName)
-                              .Set(1, desc)
-                              .Set(2, type.GetCustomAttributes(typeof(TokenAttribute), false).Length)
-                              .Set(3, type);
-                        }
-                    }
-                    catch (Exception err)
-                    {
-
-                        
-                    }
-                }
-            }
-        }
-        private void InitAction()
-        {
-            if (ActionTable == null)
-            {
-                ActionTable = new MDataTable("Action");
-                ActionTable.Columns.Add("CName,AName,Attr,Url,ADesc");
-                for (int i = 0; i < ControllerTable.Rows.Count; i++)
-                {
-                    MDataRow row = ControllerTable.Rows[i];
-
-                    Type type = row.Get<Type>("Type");
-
-                    MethodInfo[] methods = type.GetMethods(BindingFlags.Instance | BindingFlags.Public | BindingFlags.DeclaredOnly);
-                    bool hasMehtod = false;
-                    #region 处理
-                    foreach (MethodInfo method in methods)
-                    {
-                        switch (method.Name)
-                        {
-                            case ReflectConst.BeforeInvoke:
-                            case ReflectConst.EndInvoke:
-                            case ReflectConst.CheckToken:
-                            case ReflectConst.Default:
-                                continue;
-                        }
-                        hasMehtod = true;
-                        string attrText = "";
-                        #region 属性处理
-
-                        object[] attrs = method.GetCustomAttributes(true);
-                        bool methodHasToken = false, methodHasAck = false, methodHasMicroService = false;
-                        foreach (object attr in attrs)
-                        {
-                            string attrName = attr.GetType().Name;
-                            if (attrName.StartsWith("Http"))
-                            {
-                                attrText += "[" + attrName.Replace("Attribute", "] ").Replace("Http", "").ToLower();
-                            }
-                            else if (attrName == ReflectConst.TokenAttribute)
-                            {
-                                methodHasToken = true;
-                            }
-                            else if (attrName == ReflectConst.AckAttribute)
-                            {
-                                methodHasAck = true;
-                            }
-                            else if (attrName == ReflectConst.MicroServiceAttribute)
-                            {
-                                methodHasMicroService = true;
-                            }
-                        }
-                        if (string.IsNullOrEmpty(attrText))
-                        {
-                            attrText = "[get] ";
-                        }
-                        if (methodHasToken || row.Get<bool>("TokenFlag"))
-                        {
-                            attrText += "[token]";
-                        }
-                        if (methodHasAck)
-                        {
-                            attrText += "[ack]";
-                        }
-                        if (methodHasMicroService)
-                        {
-                            attrText += "[microservice]";
-                        }
-                        #endregion
-
-                        string url = "";
-                        #region Url
-                        url = "/" + type.Name.Replace("Controller", "").ToLower() + "/" + method.Name.ToLower();
-                        if (MvcConfig.RouteMode == 2)
-                        {
-                            string[] items = type.FullName.Split('.');
-                            string module = items[items.Length - 2];
-                            url = "/" + module.ToLower() + url;
-                        }
-                        #endregion
-                        string desc = "";
-                        #region 描述
-                        string name = type.FullName + "." + method.Name;
-                        ParameterInfo[] paras = method.GetParameters();
-                        if (paras.Length > 0)
-                        {
-                            name += "(";
-                            foreach (ParameterInfo para in paras)
-                            {
-                                name += para.ParameterType.FullName + ",";
-                            }
-                            name = name.TrimEnd(',') + ")";
-                        }
-                        desc = GetDescription(actions, name, "M:");
-                        #endregion
-                        if (!string.IsNullOrEmpty(desc))
-                        {
-                            ActionTable.NewRow(true)
-                            .Set(0, row.Get<string>("CName"))
-                            .Set(1, method.Name)
-                            .Set(2, attrText)
-                            .Set(3, url)
-                            .Set(4, desc);
-                        }
-                    }
-                    #endregion
-                    if (!hasMehtod)
-                    {
-                        //remove 
-                        ControllerTable.Rows.RemoveAt(i);
-                        i--;
-                        continue;
-                    }
-                }
-            }
-        }
-
-
-        #region 处理数据
-        static MDataTable ControllerTable, ActionTable;
-        static readonly object o = new object();
-        void Init()
-        {
-            if (ControllerTable == null)
-            {
-                lock (o)
-                {
-                    if (ControllerTable == null)
-                    {
-                        InitController();
-                        InitAction();
-                    }
-                }
-            }
-        }
-        #endregion
-
-        #region 处理绑定UI
+        #region 绑定方法：BindController、BindDetail
+       
         private void BindController()
         {
             ControllerTable.Bind(View);
@@ -467,6 +206,282 @@ namespace Taurus.Plugin.Doc
             }
             return defaultValue;
         }
+       
+        #endregion
+
+    }
+    internal partial class DocController
+    {
+        #region 对外提供调用Init方法
+        static MDataTable ControllerTable, ActionTable;
+        static readonly object o = new object();
+        /// <summary>
+        /// 初始化全局：ControllerTable、ActionTable
+        /// </summary>
+        internal void Init()
+        {
+            if (ControllerTable == null)
+            {
+                lock (o)
+                {
+                    if (ControllerTable == null)
+                    {
+                        InitController();
+                        InitAction();
+                    }
+                }
+            }
+        }
+        #endregion
+
+        #region 全局：初始化
+
+
+        List<XHtmlAction> actions = null;
+        private List<XHtmlAction> GetXml()
+        {
+            if (actions == null)
+            {
+                actions = new List<XHtmlAction>();
+                List<Assembly> assList = AssemblyCollector.ControllerAssemblyList;
+                foreach (Assembly ass in assList)
+                {
+                    string dllName = ass.GetName().Name;
+                    string xmlPath = string.Empty;
+                    if (dllName.Contains(".dll"))
+                    {
+                        xmlPath = dllName.Replace(".dll", ".xml");
+                    }
+                    else
+                    {
+                        xmlPath = dllName + ".xml";
+                    }
+                    if (xmlPath[0] != '/' && !xmlPath.Contains(":")) //非 linux 或 window 完整路径
+                    {
+                        xmlPath = AppConfig.AssemblyPath + xmlPath;
+                    }
+                    if (File.Exists(xmlPath))
+                    {
+                        XHtmlAction action = new XHtmlAction(false, true);
+                        if (action.Load(xmlPath))
+                        {
+                            actions.Add(action);
+                        }
+                        else
+                        {
+                            action.Dispose();
+                        }
+                    }
+                }
+            }
+            return actions;
+        }
+        private string GetDescription(List<XHtmlAction> actions, string name, string type)
+        {
+            XmlNode node = GetDescriptionNode(actions, name, type);
+            if (node != null && node.ChildNodes.Count > 0)
+            {
+                return node.ChildNodes[0].InnerText.Trim();
+            }
+            return "";
+        }
+        private XmlNode GetDescriptionNode(List<XHtmlAction> actions, string name, string type)
+        {
+            if (actions.Count > 0)
+            {
+                foreach (XHtmlAction action in actions)
+                {
+                    XmlNode node = action.Get(type + name);
+                    if (node != null && node.ChildNodes.Count > 0)
+                    {
+                        return node.ChildNodes[0];
+                    }
+                    else
+                    {
+                        XmlNodeList list = action.GetList("member", "name");
+                        if (list != null)
+                        {
+                            foreach (XmlNode item in list)
+                            {
+                                if (item.Attributes["name"].Value.StartsWith(type + name.Split('(')[0] + "("))
+                                {
+                                    return item;
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+            return null;
+        }
+
+
+        private void InitController()
+        {
+            if (ControllerTable == null)
+            {
+                ControllerTable = new MDataTable("Controller");
+                ControllerTable.Columns.Add("CName,CDesc,TokenFlag");
+                ControllerTable.Columns.Add("Type", SqlDbType.Variant);
+
+                //搜集参数
+                Dictionary<string, TypeEntity> cType = ControllerCollector.GetControllers(2);
+                foreach (KeyValuePair<string, TypeEntity> item in cType)
+                {
+                    try
+                    {
+                        Type type = item.Value.Type;
+                        string fullName = type.FullName;
+                        //过滤插件控制器，插件只有一级，不用过滤。
+                        if (fullName.EndsWith(ReflectConst.GlobalController))
+                        {
+                            continue;
+                        }
+                        // || fullName.EndsWith(ReflectConst.DocController) || fullName.EndsWith(ReflectConst.LogController)
+                        //else if (fullName.EndsWith(ReflectConst.MicroServiceController) && !MicroService.MsConfig.IsServer)
+                        //{
+                        //    continue;
+                        //}
+                        var xmlList = GetXml();
+                        string desc = GetDescription(xmlList, type.FullName, "T:").Trim();
+                        if (!string.IsNullOrEmpty(desc))
+                        {
+                            ControllerTable.NewRow(true)
+                              .Set(0, type.FullName)
+                              .Set(1, desc)
+                              .Set(2, type.GetCustomAttributes(typeof(TokenAttribute), false).Length)
+                              .Set(3, type);
+                        }
+                    }
+                    catch (Exception err)
+                    {
+
+
+                    }
+                }
+            }
+        }
+        private void InitAction()
+        {
+            if (ActionTable == null)
+            {
+                ActionTable = new MDataTable("Action");
+                ActionTable.Columns.Add("CName,AName,Attr,Url,ADesc");
+                for (int i = 0; i < ControllerTable.Rows.Count; i++)
+                {
+                    MDataRow row = ControllerTable.Rows[i];
+
+                    Type type = row.Get<Type>("Type");
+
+                    MethodInfo[] methods = type.GetMethods(BindingFlags.Instance | BindingFlags.Public | BindingFlags.DeclaredOnly);
+                    bool hasMehtod = false;
+                    #region 处理
+                    foreach (MethodInfo method in methods)
+                    {
+                        switch (method.Name)
+                        {
+                            case ReflectConst.BeforeInvoke:
+                            case ReflectConst.EndInvoke:
+                            case ReflectConst.CheckToken:
+                            case ReflectConst.Default:
+                                continue;
+                        }
+                        hasMehtod = true;
+                        string attrText = "";
+                        #region 属性处理
+
+                        object[] attrs = method.GetCustomAttributes(true);
+                        bool methodHasToken = false, methodHasAck = false, methodHasMicroService = false;
+                        foreach (object attr in attrs)
+                        {
+                            string attrName = attr.GetType().Name;
+                            if (attrName.StartsWith("Http"))
+                            {
+                                attrText += "[" + attrName.Replace("Attribute", "] ").Replace("Http", "").ToLower();
+                            }
+                            else if (attrName == ReflectConst.TokenAttribute)
+                            {
+                                methodHasToken = true;
+                            }
+                            else if (attrName == ReflectConst.AckAttribute)
+                            {
+                                methodHasAck = true;
+                            }
+                            else if (attrName == ReflectConst.MicroServiceAttribute)
+                            {
+                                methodHasMicroService = true;
+                            }
+                        }
+                        if (string.IsNullOrEmpty(attrText))
+                        {
+                            attrText = "[get] ";
+                        }
+                        if (methodHasToken || row.Get<bool>("TokenFlag"))
+                        {
+                            attrText += "[token]";
+                        }
+                        if (methodHasAck)
+                        {
+                            attrText += "[ack]";
+                        }
+                        if (methodHasMicroService)
+                        {
+                            attrText += "[microservice]";
+                        }
+                        #endregion
+
+                        string url = "";
+                        #region Url
+                        url = "/" + type.Name.Replace("Controller", "").ToLower() + "/" + method.Name.ToLower();
+                        if (MvcConfig.RouteMode == 2)
+                        {
+                            string[] items = type.FullName.Split('.');
+                            string module = items[items.Length - 2];
+                            url = "/" + module.ToLower() + url;
+                        }
+                        #endregion
+                        string desc = "";
+                        #region 描述
+                        string name = type.FullName + "." + method.Name;
+                        ParameterInfo[] paras = method.GetParameters();
+                        if (paras.Length > 0)
+                        {
+                            name += "(";
+                            foreach (ParameterInfo para in paras)
+                            {
+                                name += para.ParameterType.FullName + ",";
+                            }
+                            name = name.TrimEnd(',') + ")";
+                        }
+                        desc = GetDescription(actions, name, "M:");
+                        #endregion
+                        if (!string.IsNullOrEmpty(desc))
+                        {
+                            ActionTable.NewRow(true)
+                            .Set(0, row.Get<string>("CName"))
+                            .Set(1, method.Name)
+                            .Set(2, attrText)
+                            .Set(3, url)
+                            .Set(4, desc);
+                        }
+                    }
+                    #endregion
+                    if (!hasMehtod)
+                    {
+                        //remove 
+                        ControllerTable.Rows.RemoveAt(i);
+                        i--;
+                        continue;
+                    }
+                }
+            }
+        }
+
+
+        
+
+
+
         #endregion
     }
 

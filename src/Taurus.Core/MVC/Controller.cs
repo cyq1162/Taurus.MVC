@@ -447,17 +447,16 @@ namespace Taurus.Mvc
                 }
                 if (context.Response.ContentType.StartsWith("text/html"))
                 {
-                    if (apiResult[0] == '{' && apiResult[apiResult.Length - 1] == '}')
+                    if (outResult.StartsWith("{") && outResult.EndsWith("}") || (outResult.StartsWith("[") && outResult.EndsWith("]")))
                     {
                         context.Response.ContentType = "application/json;charset=" + context.Response.Charset;
                     }
-                    else if (outResult.StartsWith("<?xml") && apiResult[apiResult.Length - 1] == '>')
+                    else if (outResult.StartsWith("<?xml") && outResult.EndsWith(">"))
                     {
                         context.Response.ContentType = "application/xml;charset=" + context.Response.Charset;
                     }
                 }
                 context.Response.Write(outResult);
-                apiResult.Length = 0;
             }
         }
         #endregion
@@ -592,51 +591,57 @@ namespace Taurus.Mvc
             ParameterInfo[] piList = methodEntity.Parameters;
             if (piList != null && piList.Length > 0)
             {
-                var files = Request.Files;
+
+
                 paras = new object[piList.Length];
                 for (int i = 0; i < piList.Length; i++)
                 {
                     ParameterInfo pi = piList[i];
                     Type t = pi.ParameterType;
-                    if (t.Name == "HttpFileCollection")
-                    {
-                        paras[i] = files;
-                        continue;
-                    }
-                    object value = Query<object>(pi.Name, null);
-                    if (value == null)
-                    {
-                        if (t.IsValueType && t.IsGenericType && t.FullName.StartsWith("System.Nullable"))
-                        {
-                            continue;
-                        }
-                        if (t.Name == "HttpPostedFile")
-                        {
-                            if (files != null && files.Count == 1)
-                            {
-                                value = files[0];
-                            }
-                        }
-
-                        else if (piList.Length == 1 && ReflectTool.GetSystemType(ref t) != SysType.Base)//基础值类型
-                        {
-                            value = GetJson();
-                        }
-                    }
+                    string value = null; ;
                     try
                     {
-                        //特殊值处理
-                        if (t.Name == "HttpPostedFile" && value is string)
+                        #region 参数获取
+
+                        if (t.IsValueType)
                         {
-                            if (!string.IsNullOrEmpty(DocConfig.DefaultImg) && Convert.ToString(value) == DocConfig.DefaultImg.ToLower())
-                            {
-                                paras[i] = DocConfig.DefaultImgHttpPostedFile;
-                            }
+                            value = Query<string>(pi.Name);
+                            paras[i] = ConvertTool.ChangeType(value, t);
+                        }
+                        else if (t.Name == "String")
+                        {
+                            paras[i] = Query<string>(pi.Name);
                         }
                         else
                         {
-                            paras[i] = ConvertTool.ChangeType(value, t);//类型转换（基础或实体）
+                            switch (t.Name)
+                            {
+                                case "HttpFileCollection":
+                                    paras[i] = Request.Files;
+                                    break; ;
+                                case "HttpPostedFile":
+                                    if (Request.Files != null)
+                                    {
+                                        if (Request.Files.Count > 0)
+                                        {
+                                            paras[i] = Request.Files[0];
+                                        }
+                                        else
+                                        {
+                                            var name = Query<string>(pi.Name);
+                                            if (!string.IsNullOrEmpty(name) && name == DocConfig.DefaultImg)
+                                            {
+                                                paras[i] = DocConfig.DefaultImgHttpPostedFile;
+                                            }
+                                        }
+                                    }
+                                    break;
+                                default:
+                                    paras[i] = ConvertTool.ChangeType(Query<string>(pi.Name), t);//类型转换（基础或实体）
+                                    break;
+                            }
                         }
+                        #endregion
                     }
                     catch (Exception err)
                     {
@@ -650,6 +655,53 @@ namespace Taurus.Mvc
                         Write(outMsg, false);
                         return false;
                     }
+                    //object value = Query<object>(pi.Name, null);
+                    //if (value == null)
+                    //{
+                    //    if (t.IsValueType && t.IsGenericType && t.FullName.StartsWith("System.Nullable"))
+                    //    {
+                    //        continue;
+                    //    }
+                    //    if (t.Name == "HttpPostedFile")
+                    //    {
+                    //        if (files != null && files.Count == 1)
+                    //        {
+                    //            value = files[0];
+                    //        }
+                    //    }
+
+                    //    else if (piList.Length == 1 && ReflectTool.GetSystemType(ref t) != SysType.Base)//基础值类型
+                    //    {
+                    //        value = GetJson();
+                    //    }
+                    //}
+                    //try
+                    //{
+                    //    //特殊值处理
+                    //    if (t.Name == "HttpPostedFile" && value is string)
+                    //    {
+                    //        if (!string.IsNullOrEmpty(DocConfig.DefaultImg) && Convert.ToString(value) == DocConfig.DefaultImg.ToLower())
+                    //        {
+                    //            paras[i] = DocConfig.DefaultImgHttpPostedFile;
+                    //        }
+                    //    }
+                    //    else
+                    //    {
+                    //        paras[i] = ConvertTool.ChangeType(value, t);//类型转换（基础或实体）
+                    //    }
+                    //}
+                    //catch (Exception err)
+                    //{
+                    //    string typeName = t.Name;
+                    //    if (typeName.StartsWith("Nullable"))
+                    //    {
+                    //        typeName = Nullable.GetUnderlyingType(t).Name;
+                    //    }
+                    //    string outMsg = string.Format("[{0} {1} = {2}]  [Error : {3}]", typeName, pi.Name, value, err.Message);
+                    //    Log.Write(outMsg, LogType.Taurus);
+                    //    Write(outMsg, false);
+                    //    return false;
+                    //}
 
                 }
             }
@@ -805,78 +857,13 @@ namespace Taurus.Mvc
             get { return Context.Request.HttpMethod == "DELETE"; }
         }
         #endregion
+
+        #region SetQuery、Query
+
         /// <summary>
         /// 缓存参数值，内部字典（Query方法可查。）
         /// </summary>
         private MDictionary<string, string> queryCache = new MDictionary<string, string>(StringComparer.OrdinalIgnoreCase);
-        static string[] autoPrefixs = (string.IsNullOrEmpty(AppConfig.UI.AutoPrefixs) ? "" : ("," + AppConfig.UI.AutoPrefixs)).Split(',');
-        /// <summary>
-        /// Get Request value
-        /// </summary>
-        public T Query<T>(Enum key)
-        {
-            return Query<T>(key.ToString(), default(T));
-        }
-        public T Query<T>(string key)
-        {
-            return Query<T>(key, default(T));
-        }
-        public T Query<T>(string key, T defaultValue)
-        {
-            if (queryCache.ContainsKey(key))
-            {
-                return WebTool.ChangeValueType<T>(queryCache[key], defaultValue, false);
-            }
-            if (context == null || context.Request == null) { return defaultValue; }
-            var files = context.Request.Files;
-            var headers = context.Request.Headers;
-            T value = default(T);
-            foreach (string pre in autoPrefixs)
-            {
-                string newKey = pre + key;
-                if (context.Request[newKey] == null && (files == null || files[newKey] == null))
-                {
-                    //尝试从Json中获取
-                    string result = JsonHelper.GetValue(GetJson(), newKey);
-                    if (!string.IsNullOrEmpty(result))
-                    {
-                        value = WebTool.ChangeValueType<T>(result, defaultValue, false);
-                        break;
-                    }
-                    else if (headers[newKey] != null)
-                    {
-                        value = WebTool.ChangeValueType<T>(headers[newKey], defaultValue, false);
-                        break;
-                    }
-                    else
-                    {
-                        value = defaultValue;
-                    }
-                }
-                else
-                {
-                    value = WebTool.Query<T>(newKey, defaultValue, false);//这里不设置默认值(值类型除外）
-                    break;
-                }
-
-            }
-            return value;
-        }
-
-
-        public T Query<T>(int paraIndex)
-        {
-            return Query<T>(paraIndex, default(T));
-
-        }
-        public T Query<T>(int paraIndex, T defaultValue)
-        {
-            if (ParaItems.Length > paraIndex)
-            {
-                return WebTool.ChangeValueType<T>(ParaItems[paraIndex], defaultValue, false);
-            }
-            return defaultValue;
-        }
         /// <summary>
         /// 自己构造请求参数(Query方法可查，优先级最高）
         /// </summary>
@@ -893,6 +880,64 @@ namespace Taurus.Mvc
                 queryCache.Add(name, value);
             }
         }
+
+        public T Query<T>(string key)
+        {
+            return Query<T>(key, default(T));
+        }
+        public T Query<T>(string key, T defaultValue)
+        {
+            if (queryCache.ContainsKey(key))
+            {
+                return ConvertTool.ChangeType<T>(queryCache[key]);
+            }
+            T value = WebTool.Query<T>(key, defaultValue);
+            if (value != null)
+            {
+                string str=value.ToString();
+                if (str.Length > 0)
+                {
+                    SetQuery(key, str);
+                }
+            }
+            return value;
+
+            //if (context == null || context.Request == null) { return defaultValue; }
+            //var files = context.Request.Files;
+            //var headers = context.Request.Headers;
+            //T value = default(T);
+            //foreach (string pre in autoPrefixs)
+            //{
+            //    string newKey = pre + key;
+            //    if (context.Request[newKey] == null && (files == null || files[newKey] == null))
+            //    {
+            //        //尝试从Json中获取
+            //        string result = JsonHelper.GetValue(GetJson(), newKey);
+            //        if (!string.IsNullOrEmpty(result))
+            //        {
+            //            value = WebTool.ChangeValueType<T>(result, defaultValue, false);
+            //            break;
+            //        }
+            //        else if (headers[newKey] != null)
+            //        {
+            //            value = WebTool.ChangeValueType<T>(headers[newKey], defaultValue, false);
+            //            break;
+            //        }
+            //        else
+            //        {
+            //            value = defaultValue;
+            //        }
+            //    }
+            //    else
+            //    {
+            //        value = WebTool.Query<T>(newKey, defaultValue);//这里不设置默认值(值类型除外）
+            //        break;
+            //    }
+
+            //}
+            //return value;
+        }
+        #endregion
         /// <summary>
         /// Write String result
         /// <para> 输出原始msg的数据</para>

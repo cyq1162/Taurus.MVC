@@ -28,7 +28,8 @@ namespace Microsoft.AspNetCore.Http
                 //    // 输出特性类型和实例信息
                 //    Console.WriteLine($"Feature type: {feature.Key}, instance: {feature.Value}");
                 //}
-
+                //await context.Response.WriteAsync("Test First Request.");
+                //return;
                 if (!context.Request.Host.HasValue)
                 {
                     context.Response.StatusCode = 400;
@@ -58,7 +59,7 @@ namespace Microsoft.AspNetCore.Http
                     }
                     else
                     {
-                         
+                        return;
                     }
                 }
                 //处理信息

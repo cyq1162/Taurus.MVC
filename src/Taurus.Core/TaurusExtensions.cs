@@ -16,6 +16,7 @@ using Microsoft.AspNetCore.HostFiltering;
 using System.Collections.Generic;
 using Microsoft.Extensions.Options;
 using Taurus.Mvc.Reflect;
+using Taurus.Plugin.Rpc;
 //using Yarp.ReverseProxy.Forwarder;
 
 namespace Microsoft.AspNetCore.Http
@@ -98,9 +99,7 @@ namespace Microsoft.AspNetCore.Http
         {
             //Gateway.httpForwarder = builder.ApplicationServices.GetRequiredService<IHttpForwarder>();
             builder.UseHttpContext();
-
-            Thread thread = new Thread(new ParameterizedThreadStart(OnStart));
-            thread.Start(builder);
+            new Thread(new ParameterizedThreadStart(OnStart)).Start(builder);
             //执行一次，用于注册事件
             UrlRewrite url = new UrlRewrite();
             url.Init(System.Web.HttpApplication.GetInstance("Taurus"));
@@ -109,10 +108,14 @@ namespace Microsoft.AspNetCore.Http
 
         private static void OnStart(object builderObj)
         {
-            Thread.Sleep(1000);//线程延时，待监听后，再获取监听端口号。
+            MvcRun.Start();
+            Thread.Sleep(100);//线程延时，待监听后，再获取监听端口号。
             SetAppRunUrl(builderObj as IApplicationBuilder);
             MsRun.Start();
-            MvcRun.Start();
+            using (var task = Rest.HeadAsync(MvcConfig.RunUrl))
+            {
+                task.Wait();
+            }
         }
 
         private static bool SetAppRunUrl(string host)

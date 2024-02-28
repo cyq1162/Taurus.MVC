@@ -46,6 +46,11 @@ namespace Taurus.Plugin.Rpc
             }
             return clientDic[key];
         }
-
+        public static void Remove(Uri uri, int timeout)
+        {
+            if (uri == null) { return; }
+            string key = uri.Authority + "-" + timeout;
+            clientDic.Remove(key);
+        }
     }
 }

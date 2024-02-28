@@ -9,6 +9,8 @@ using Taurus.Plugin.Admin;
 using System.Runtime.Versioning;
 using System.IO.Compression;
 using Taurus.Plugin.Doc;
+using System.Collections.Generic;
+using System.Reflection;
 
 namespace Taurus.Mvc
 {
@@ -56,20 +58,25 @@ namespace Taurus.Mvc
             }
 
         }
+
+        private static Dictionary<string, string> keyPath = new Dictionary<string, string>(StringComparer.OrdinalIgnoreCase);
         /// <summary>
         /// 创建视图对象
         /// </summary>
         public static XHtmlAction Create(string controlName, string actionName)
         {
-
-            string cName = controlName.Replace(ReflectConst.Controller, "");
+            string key = controlName + "-" + actionName;
+            if (keyPath.ContainsKey(key))
+            {
+                return Create(keyPath[key]);
+            }
             if (Directory.Exists(ViewsPath))
             {
                 string[] folders = Directory.GetDirectories(ViewsPath, "*", SearchOption.TopDirectoryOnly);
                 foreach (string folder in folders)
                 {
                     string foName = Path.GetFileNameWithoutExtension(folder);
-                    if (string.Equals(cName, foName, StringComparison.OrdinalIgnoreCase))
+                    if (string.Equals(controlName, foName, StringComparison.OrdinalIgnoreCase))
                     {
                         string[] files = Directory.GetFiles(folder, "*.html", SearchOption.TopDirectoryOnly);
                         foreach (string file in files)
@@ -77,6 +84,10 @@ namespace Taurus.Mvc
                             string fiName = Path.GetFileNameWithoutExtension(file);
                             if (string.Equals(actionName, fiName, StringComparison.OrdinalIgnoreCase))
                             {
+                                if (!keyPath.ContainsKey(fiName))
+                                {
+                                    keyPath.Add(key, file);
+                                }
                                 return Create(file);
                             }
                         }
@@ -109,7 +120,7 @@ namespace Taurus.Mvc
         public static XHtmlAction Create(string fullPath)
         {
             XHtmlAction view = new XHtmlAction(true, false);
-            if (view.Load(fullPath, XmlCacheLevel.Hour, true))
+            if (view.Load(fullPath, XmlCacheLevel.Day, true))
             {
                 // System.Web.HttpContext.Current.Response.Write("load ok");
                 //处理Shared目录下的节点替换。
@@ -230,10 +241,11 @@ namespace Taurus.Mvc
 
     public static partial class ViewEngine
     {
-        internal static void InitStyles()
+        /// <summary>
+        /// 解压 Admin、Doc Views 相关文件。
+        /// </summary>
+        private static void ZipViews()
         {
-            if (!Directory.Exists(ViewsPath)) { return; }
-
             try
             {
                 string adminPath = ViewsPath + "/" + AdminConfig.HtmlFolderName;
@@ -259,6 +271,45 @@ namespace Taurus.Mvc
 
             }
 
+        }
+
+        /// <summary>
+        /// 预加载所有 Html 文件。
+        /// </summary>
+        internal static void InitViews()
+        {
+            if (!Directory.Exists(ViewsPath)) { return; }
+            ZipViews();
+            string[] folders = Directory.GetDirectories(ViewsPath, "*", SearchOption.TopDirectoryOnly);
+            if (folders.Length == 0) { return; }
+            var ctls = ControllerCollector.GetControllers(1);
+            if (ctls == null || ctls.Count == 0) { return; }
+            #region 加载 html 页面文件
+            foreach (var ctl in ctls)
+            {
+                string cName = ctl.Key;
+                foreach (string folder in folders)
+                {
+                    string foName = Path.GetFileNameWithoutExtension(folder);
+                    if (string.Equals(cName, foName, StringComparison.OrdinalIgnoreCase))
+                    {
+                       
+                        string[] files = Directory.GetFiles(folder, "*.html", SearchOption.TopDirectoryOnly);
+                        foreach (string file in files)
+                        {
+                            //只加载有对应方法的，无方法的可能是部分视图，不能单独加载，可能itemref会把自身内容给替换掉。
+                            //预加载所有文件
+                            string fiName = Path.GetFileNameWithoutExtension(file);
+                            if (MethodCollector.GetMethod(ctl.Value.Type, fiName) != null)
+                            {
+                                Create(ctl.Key, fiName);//走这个方法，让其入缓存。
+                            }
+                        }
+                        break;
+                    }
+                }
+            }
+            #endregion
         }
     }
 }

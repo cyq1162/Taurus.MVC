@@ -125,9 +125,9 @@ namespace Taurus.Mvc
                 {
                     if (string.IsNullOrEmpty(item))
                     {
-                        if(localPath.IndexOf('.') == -1)
+                        if (localPath.IndexOf('.') == -1)
                         {
-                             return true;
+                            return true;
                         }
                     }
                     else if (localPath.EndsWith(item))
@@ -139,7 +139,7 @@ namespace Taurus.Mvc
             }
             return localPath.IndexOf('.') == -1;
         }
-        #endregion
+
         /// <summary>
         /// 是否使用子目录部署网站
         /// </summary>
@@ -154,156 +154,82 @@ namespace Taurus.Mvc
             }
             return false;
         }
-
-
-
-        /// <summary>
-        /// 过滤一般的字符串
-        /// </summary>
-        /// <param name="strFilter"></param>
-        /// <returns></returns>
-        internal static string FilterValue(string strFilter)
-        {
-            if (strFilter == null)
-                return "";
-            string returnValue = strFilter;
-            string[] filterChar = new string[] { "\'", ",", "(", ")", ";", "\"" };// ">", "<", "=",
-            for (int i = 0; i < filterChar.Length; i++)
-            {
-                returnValue = returnValue.Replace(filterChar[i], "");
-            }
-            return returnValue.Trim(' ');
-        }
-        private static char[] startingChars = new char[2] { '<', '&' };
-
-        /// <summary>
-        /// 安全检测（防脚本注入）
-        /// </summary>
-        /// <param name="s">被检测的字符串</param>
-        /// <returns></returns>
-        public static bool IsDangerousString(string s, out int matchIndex)
-        {
-            matchIndex = 0;
-            int startIndex = 0;
-            while (true)
-            {
-                int num = s.IndexOfAny(startingChars, startIndex);
-                if (num < 0)
-                {
-                    return false;
-                }
-                if (num == s.Length - 1)
-                {
-                    break;
-                }
-                matchIndex = num;
-                switch (s[num])
-                {
-                    case '<':
-                        if (IsAtoZ(s[num + 1]) || s[num + 1] == '!' || s[num + 1] == '/' || s[num + 1] == '?')
-                        {
-                            return true;
-                        }
-                        break;
-                    case '&':
-                        if (s[num + 1] == '#')
-                        {
-                            return true;
-                        }
-                        break;
-                }
-                startIndex = num + 1;
-            }
-            return false;
-        }
-        private static bool IsAtoZ(char c)
-        {
-            if (c < 'a' || c > 'z')
-            {
-                if (c >= 'A')
-                {
-                    return c <= 'Z';
-                }
-                return false;
-            }
-            return true;
-        }
+        #endregion
     }
 
 
     public static partial class WebTool
     {
         /// <summary>
+        /// 只处理字符串类型。
+        /// </summary>
+        /// <param name="key"></param>
+        /// <returns></returns>
+        public static string Query(string key)
+        {
+            var context = HttpContext.Current;
+            if (context != null)
+            {
+                var request = HttpContext.Current.Request;
+                var result = request[key] ?? (request.QueryString[key] ?? request.Headers[key]);
+                if (result == null)
+                {
+                    string json = GetJson(context);
+                    if (!string.IsNullOrEmpty(json) && json.Length > key.Length)
+                    {
+                        return JsonHelper.GetValue(json, key);
+                    }
+                }
+                return result;
+            }
+            return null;
+        }
+
+
+        /// <summary>
         /// 获取 Web 请求参数
         /// </summary>
         public static T Query<T>(string key)
         {
-            return Query<T>(key, default(T), false);
+            return Query<T>(key, default(T));
         }
         /// <summary>
         /// 获取 Web 请求参数
         /// </summary>
-        public static T Query<T>(string key, T defaultValue, bool filter)
+        public static T Query<T>(string key, T defaultValue)
         {
-            var request = HttpContext.Current.Request;
-            string value = request[key] ?? request.QueryString[key] ?? request.Headers[key];
-            if (value == null)
+            string result = Query(key);
+            if (result == null) { return defaultValue; }
+            var type = typeof(T);
+            object value = result;
+            if (result == string.Empty)
             {
-                var files = request.Files;
-                if (files != null && files[key] != null)
+                if (type.Name == "String")
                 {
-                    object file = files[key];
-                    if (typeof(T) == typeof(string))
+                    if (defaultValue != null)
                     {
-                        file = ((HttpPostedFile)file).FileName;
+                        return defaultValue;
                     }
-                    return (T)file;
-                }
-                return defaultValue;
-            }
-            return ChangeValueType<T>(value, defaultValue, filter);
-        }
-        internal static T ChangeValueType<T>(string value, T defaultValue, bool filter)
-        {
-            if (value == null) { return defaultValue; }
-            value = value.Trim();
-            object result = null;
-            Type t = typeof(T);
-            if (t.Name == "String")
-            {
-                if (filter)
-                {
-                    result = FilterValue(value);
+                    return (T)value;
                 }
                 else
                 {
-                    if (value.IndexOf('+') > -1)
-                    {
-                        string reKey = "[#{@!}#]";
-                        string text = value.Replace("+", reKey);//
-                        result = HttpContext.Current.Server.UrlDecode(text).Replace(reKey, "+");
-                    }
-                    else
-                    {
-                        result = HttpContext.Current.Server.UrlDecode(value);
-                    }
-
-                }
-            }
-            else
-            {
-                try
-                {
-                    result = ConvertTool.ChangeType(value, t);
-                }
-                catch
-                {
                     return defaultValue;
                 }
-
             }
-            return (T)result;
+            if (type.Name == "String")
+            {
+                return (T)value;
+            }
+            value = ConvertTool.ChangeType(value, type);
+            if (result != null)
+            {
+                return (T)value;
+            }
+
+            return defaultValue;
         }
+
     }
 
     public static partial class WebTool

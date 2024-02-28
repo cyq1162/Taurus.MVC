@@ -9,7 +9,6 @@ namespace Taurus.Plugin.Doc
     /// </summary>
     public static class DocConfig
     {
-
         /// <summary>
         /// 配置是否启用WebAPI文档自动生成功能 
         /// 如 Doc.IsEnable ：true， 默认值：纯网关：false，其它：true
