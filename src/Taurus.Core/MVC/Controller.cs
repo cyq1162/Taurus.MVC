@@ -637,7 +637,12 @@ namespace Taurus.Mvc
                                     }
                                     break;
                                 default:
-                                    paras[i] = ConvertTool.ChangeType(Query<string>(pi.Name), t);//类型转换（基础或实体）
+                                    value = Query<string>(pi.Name);
+                                    if (value == null && piList.Length == 1)
+                                    {
+                                        value = GetJson();
+                                    }
+                                    paras[i] = ConvertTool.ChangeType(value, t);//类型转换（基础或实体）
                                     break;
                             }
                         }
@@ -894,7 +899,7 @@ namespace Taurus.Mvc
             T value = WebTool.Query<T>(key, defaultValue);
             if (value != null)
             {
-                string str=value.ToString();
+                string str = value.ToString();
                 if (str.Length > 0)
                 {
                     SetQuery(key, str);

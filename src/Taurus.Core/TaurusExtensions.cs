@@ -109,12 +109,15 @@ namespace Microsoft.AspNetCore.Http
         private static void OnStart(object builderObj)
         {
             MvcRun.Start();
-            Thread.Sleep(100);//线程延时，待监听后，再获取监听端口号。
+            Thread.Sleep(200);//线程延时，待监听后，再获取监听端口号。
             SetAppRunUrl(builderObj as IApplicationBuilder);
             MsRun.Start();
-            using (var task = Rest.HeadAsync(MvcConfig.RunUrl))
+            if (!string.IsNullOrEmpty(MvcConfig.RunUrl))
             {
-                task.Wait();
+                using (var task = Rest.HeadAsync(MvcConfig.RunUrl))
+                {
+                    task.Wait();
+                }
             }
         }
 

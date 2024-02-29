@@ -204,21 +204,30 @@ namespace Taurus.Mvc.Reflect
                     attributeEntity.RouteAttributes = ras;
                     foreach (RouteAttribute ra in ras)
                     {
-                        if (ra.LocalPath[0] != '/' && rpas != null && rpas.Length > 0)
+                        if (ra.MapPath[0] != '/' && rpas != null && rpas.Length > 0)
                         {
+                            //可能配置了多个【RoutePrefixAttribute】
                             foreach (RoutePrefixAttribute rpa in rpas)
                             {
-                                string fromUrl = "/" + rpa.PrefixName.Trim('/') + "/" + ra.LocalPath.Trim('/');
+                                string fromUrl = "/" + rpa.MapName.Trim('/') + "/" + ra.MapPath.Trim('/');
                                 string toUrl = moduleName + name;
                                 RouteEngine.Add(fromUrl, toUrl);
+                                if (rpa.IsKeepOriginalPath || rpa.IsKeepOriginalPath)
+                                {
+                                    continue;
+                                }
                                 RouteEngine.AddDenyUrl(toUrl);
                             }
                         }
                         else
                         {
-                            string fromUrl = "/" + ra.LocalPath.Trim('/');
+                            string fromUrl = "/" + ra.MapPath.Trim('/');
                             string toUrl = moduleName + name;
                             RouteEngine.Add(fromUrl, toUrl);
+                            if (ra.IsKeepOriginalPath)
+                            {
+                                continue;
+                            }
                             RouteEngine.AddDenyUrl(toUrl);
                         }
                     }
@@ -228,9 +237,13 @@ namespace Taurus.Mvc.Reflect
                     //未配置，但配置了 RoutePrefixAttribute
                     foreach (RoutePrefixAttribute rpa in rpas)
                     {
-                        string fromUrl = "/" + rpa.PrefixName.Trim('/') + "/" + name;
+                        string fromUrl = "/" + rpa.MapName.Trim('/') + "/" + name;
                         string toUrl = moduleName + name;
                         RouteEngine.Add(fromUrl, toUrl);
+                        if (rpa.IsKeepOriginalPath)
+                        {
+                            continue;
+                        }
                         RouteEngine.AddDenyUrl(toUrl);
                     }
                 }

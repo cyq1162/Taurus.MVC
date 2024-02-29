@@ -45,7 +45,7 @@ namespace Taurus.Plugin.Admin
         /// </summary>
         internal static void Init()
         {
-            string folder = AppConfig.WebRootPath;// + "App_Data/admin";
+            string folder = AppConst.WebRootPath;// + "App_Data/admin";
             if (!Directory.Exists(folder))
             {
                 Directory.CreateDirectory(folder);

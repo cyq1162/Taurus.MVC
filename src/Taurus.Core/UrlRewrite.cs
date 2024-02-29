@@ -28,7 +28,7 @@ namespace Taurus.Core
             context.BeginRequest += context_BeginRequest;
             context.AcquireRequestState += context_AcquireRequestState;
             context.Error += context_Error;
-            if (!AppConfig.IsNetCore)
+            if (!AppConst.IsNetCore)
             {
                 context.PostMapRequestHandler += context_PostMapRequestHandler;
 #if DEBUG

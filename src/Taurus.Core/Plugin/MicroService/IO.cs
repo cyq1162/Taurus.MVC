@@ -30,7 +30,7 @@ namespace Taurus.Plugin.MicroService
         /// <returns></returns>
         public static string Path(string path)
         {
-            return AppConfig.WebRootPath + "App_Data" + path;
+            return AppConst.WebRootPath + "App_Data" + path;
         }
         /// <summary>
         /// 写入内容
@@ -38,7 +38,7 @@ namespace Taurus.Plugin.MicroService
         /// <param name="path">相对路径，以"/" 开头</param>
         public static void Write(string path, string text)
         {
-            path = AppConfig.WebRootPath + "App_Data" + path;
+            path = AppConst.WebRootPath + "App_Data" + path;
             IOHelper.Write(path, text);
         }
         /// <summary>
@@ -48,7 +48,7 @@ namespace Taurus.Plugin.MicroService
         /// <returns></returns>
         public static string Read(string path)
         {
-            path = AppConfig.WebRootPath + "App_Data" + path;
+            path = AppConst.WebRootPath + "App_Data" + path;
             return IOHelper.ReadAllText(path);
         }
         /// <summary>
@@ -57,7 +57,7 @@ namespace Taurus.Plugin.MicroService
         /// <param name="path">相对路径，以"/" 开头</param>
         public static void Delete(string path)
         {
-            path = AppConfig.WebRootPath + "App_Data" + path;
+            path = AppConst.WebRootPath + "App_Data" + path;
             IOHelper.Delete(path);
         }
 

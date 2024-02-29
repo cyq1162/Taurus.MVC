@@ -258,7 +258,7 @@ namespace Taurus.Plugin.Doc
                     }
                     if (xmlPath[0] != '/' && !xmlPath.Contains(":")) //非 linux 或 window 完整路径
                     {
-                        xmlPath = AppConfig.AssemblyPath + xmlPath;
+                        xmlPath = AppConst.AssemblyPath + xmlPath;
                     }
                     if (File.Exists(xmlPath))
                     {

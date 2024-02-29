@@ -18,7 +18,7 @@ namespace Taurus.Plugin.MicroService
     {
         private void WriteLine(string msg)
         {
-            if (AppConfig.IsDebugMode)
+            if (AppConst.IsDebugMode)
             {
                 Console.WriteLine(msg);
             }

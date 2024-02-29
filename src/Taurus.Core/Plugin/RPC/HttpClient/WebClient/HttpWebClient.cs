@@ -212,7 +212,7 @@ namespace System.Net.Http
             try
             {
                 WebRequest webRequest = null;
-                if (AppConfig.IsNetCore)
+                if (AppConst.IsNetCore)
                 {
                     webRequest = base.GetWebRequest(address);
                 }

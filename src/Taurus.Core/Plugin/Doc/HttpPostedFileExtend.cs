@@ -20,7 +20,7 @@ namespace Taurus.Plugin.Doc
                 path = HttpContext.Current.Server.MapPath(path);
             }
 
-            if (AppConfig.IsNetCore)
+            if (AppConst.IsNetCore)
             {
                 return NetCoreCreate(path);
             }

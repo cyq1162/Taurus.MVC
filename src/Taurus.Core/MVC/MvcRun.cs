@@ -26,7 +26,7 @@ namespace Taurus.Mvc
                 WriteDebugLine("Current App Start Time    ：" + DateTime.Now.ToString("yyyy-MM-dd HH:mm:ss"));
                 WriteDebugLine("Current App Process ID    ：" + MvcConst.ProcessID);
                 WriteDebugLine("Current Taurus Version    ：" + MvcConst.Version);
-                WriteDebugLine("Current CYQ.Data Version  ：" + AppConfig.Version);
+                WriteDebugLine("Current CYQ.Data Version  ：" + AppConst.Version);
                 WriteDebugLine("--------------------------------------------------");
                 new Thread(new ThreadStart(OnInit)).Start();
             }

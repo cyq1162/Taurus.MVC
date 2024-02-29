@@ -14,7 +14,7 @@ namespace Taurus.Plugin.Metric
     {
         static MetricRun()
         {
-            string folder = AppConfig.WebRootPath + MetricConfig.DurablePath.TrimStart('/');
+            string folder = AppConst.WebRootPath + MetricConfig.DurablePath.TrimStart('/');
             if (!Directory.Exists(folder))
             {
                 Directory.CreateDirectory(folder);
@@ -47,7 +47,7 @@ namespace Taurus.Plugin.Metric
                 {
                     if (MetricConfig.IsDurable && todayMetric.Count > 0)
                     {
-                        string file = AppConfig.WebRootPath + MetricConfig.DurablePath.TrimStart('/') + "/" + DateTime.Now.ToString("yyyyMMdd") + ".json";
+                        string file = AppConst.WebRootPath + MetricConfig.DurablePath.TrimStart('/') + "/" + DateTime.Now.ToString("yyyyMMdd") + ".json";
                         string json = JsonHelper.ToJson(todayMetric);
                         IOHelper.Write(file, json);
                     }
@@ -93,7 +93,7 @@ namespace Taurus.Plugin.Metric
             {
                 return todayMetric;
             }
-            string file = AppConfig.WebRootPath + MetricConfig.DurablePath.TrimStart('/') + "/" + dayString + ".json";
+            string file = AppConst.WebRootPath + MetricConfig.DurablePath.TrimStart('/') + "/" + dayString + ".json";
             if (File.Exists(file))
             {
                 string json = IOHelper.ReadAllText(file);

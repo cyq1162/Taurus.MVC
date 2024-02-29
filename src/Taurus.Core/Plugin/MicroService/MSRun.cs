@@ -24,7 +24,7 @@ namespace Taurus.Plugin.MicroService
             StartTime = DateTime.Now;
             if (MsConfig.IsServer || MsConfig.IsClient)
             {
-                string folder = AppConfig.WebRootPath + "App_Data/microservice";
+                string folder = AppConst.WebRootPath + "App_Data/microservice";
                 if (!Directory.Exists(folder))
                 {
                     Directory.CreateDirectory(folder);

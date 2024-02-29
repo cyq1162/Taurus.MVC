@@ -22,11 +22,11 @@ namespace Taurus.Plugin.Admin
         /// </summary>
         public void Config()
         {
-            if (!AppConfig.IsNetCore)
+            if (!AppConst.IsNetCore)
             {
                 View.Set("kestrelNode", CYQ.Data.Xml.SetType.ClearFlag, "1");
             }
-            View.KeyValue.Add("IsNetCore", AppConfig.IsNetCore.ToString().ToLower());
+            View.KeyValue.Add("IsNetCore", AppConst.IsNetCore.ToString().ToLower());
             View.KeyValue.Add("Version", MvcConst.Version);
             string type = Query<string>("t", "mvc").ToLower();
             if (type.StartsWith("kestrel"))

@@ -175,7 +175,7 @@ namespace Taurus.Mvc
             {
                 get
                 {
-                    string sslFolder = AppConfig.WebRootPath + SslPath.TrimStart('/', '\\');
+                    string sslFolder = AppConst.WebRootPath + SslPath.TrimStart('/', '\\');
                     if (Directory.Exists(sslFolder))
                     {
                         string[] files = Directory.GetFiles(sslFolder, "*.pfx", SearchOption.TopDirectoryOnly);

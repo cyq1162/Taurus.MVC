@@ -26,10 +26,10 @@ namespace Taurus.Mvc
             {
                 if (string.IsNullOrEmpty(_ViewPath))
                 {
-                    _ViewPath = AppConfig.WebRootPath + MvcConfig.Views;
+                    _ViewPath = AppConst.WebRootPath + MvcConfig.Views;
                     if (!Directory.Exists(_ViewPath))
                     {
-                        _ViewPath = AppConfig.WebRootPath + MvcConfig.Views.ToLower();//兼容Linux 文件夹小写
+                        _ViewPath = AppConst.WebRootPath + MvcConfig.Views.ToLower();//兼容Linux 文件夹小写
                     }
                 }
                 return _ViewPath;

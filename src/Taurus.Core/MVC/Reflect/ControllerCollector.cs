@@ -34,26 +34,20 @@ namespace Taurus.Mvc.Reflect
                 {
                     if (_Lv1Controllers.Count == 0)
                     {
-                        List<Assembly> assList = AssemblyCollector.ControllerAssemblyList;
+                        List<Assembly> assList = AssemblyCollector.GetRefAssemblyList();
                         if (assList != null && assList.Count > 0)
                         {
-                            for (int i = 0; i < assList.Count; i++)
+                            foreach (var ass in assList)
                             {
-                                Assembly ass = assList[i];
                                 bool isControllerAssembly = false;
                                 Type[] typeList = ass.GetExportedTypes();
                                 foreach (Type type in typeList)
                                 {
-
-                                    //三层继承判断，应该够用了。
-                                    if (type.BaseType != null && (type.BaseType.FullName == ReflectConst.TaurusMvcController
-                                        || (type.BaseType.BaseType != null && (type.BaseType.BaseType.FullName == ReflectConst.TaurusMvcController
-                                        || (type.BaseType.BaseType.BaseType != null && (type.BaseType.BaseType.BaseType.FullName == ReflectConst.TaurusMvcController
-                                        || (type.BaseType.BaseType.BaseType.BaseType != null && type.BaseType.BaseType.BaseType.BaseType.FullName == ReflectConst.TaurusMvcController)
-                                        ))
-                                         ))
-                                         ))
+                                    int mvcOrModel = GetMvcOrModel(type);
+                                    if (mvcOrModel == 1)
                                     {
+                                        #region Mvc
+
                                         isControllerAssembly = true;
                                         TypeEntity entity = new TypeEntity(type);
                                         string lv1Name = GetLevelName(type.FullName, 1);
@@ -75,18 +69,22 @@ namespace Taurus.Mvc.Reflect
                                             _Lv2Controllers.Add(lv2Name, entity);
                                         }
                                         MethodCollector.InitMethodInfo(entity);
+                                        #endregion
                                     }
-
+                                    else if (mvcOrModel == 2)
+                                    {
+                                        EntityPreheat.InitDelegate(type);
+                                        EntityPreheat.InitType(type, null);
+                                    }
                                 }
-                                if (!isControllerAssembly)
+                                if (isControllerAssembly)
                                 {
-                                    assList.RemoveAt(i);
-                                    i--;
+                                    AssemblyCollector.ControllerAssemblyList.Add(ass);
                                 }
                             }
                         }
 
-                        #region Admin（优化，内部有初始化配置功能）、Doc、 插件
+                        #region Admin、Doc、 MicroService
                         Type adminType = typeof(AdminController);
                         TypeEntity adminEntity = new TypeEntity(adminType);
                         string path = AdminConfig.Path.Trim('/', '\\');
@@ -105,9 +103,6 @@ namespace Taurus.Mvc.Reflect
                         }
                         MethodCollector.InitMethodInfo(docEntity);
 
-
-                        #endregion
-
                         Type msType = typeof(MicroServiceController);
                         TypeEntity msEntity = new TypeEntity(msType);
                         path = MsConfig.Server.RcPath.Trim('/', '\\');
@@ -125,6 +120,8 @@ namespace Taurus.Mvc.Reflect
                         }
 
                         MethodCollector.InitMethodInfo(msEntity);
+
+                        #endregion
                     }
                 }
             }
@@ -240,6 +237,27 @@ namespace Taurus.Mvc.Reflect
                 return true;
             }
             return false;
+        }
+
+        #endregion
+
+        #region 检测 Type 是否 Mvc 控制器 或 ORM Model
+
+        /// <summary>
+        /// 返回：0 两者都不是；1：控制器；2：Model
+        /// </summary>
+        /// <param name="type"></param>
+        /// <returns></returns>
+        private static int GetMvcOrModel(Type type)
+        {
+            if (type.BaseType == null || type.BaseType.FullName == null) { return 0; }
+            var name = type.BaseType.FullName;
+            if (name == ReflectConst.TaurusMvcController) { return 1; }
+            else if (name.StartsWith("CYQ.Data.Orm")) { return 2; }
+            else
+            {
+                return GetMvcOrModel(type.BaseType);
+            }
         }
 
         #endregion

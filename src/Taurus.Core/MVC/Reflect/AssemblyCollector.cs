@@ -98,34 +98,38 @@ namespace Taurus.Mvc.Reflect
     /// </summary>
     internal partial class AssemblyCollector
     {
-        private static readonly object lockObj = new object();
-        private static List<Assembly> _ControllerAssemblyList;
-        public static List<Assembly> ControllerAssemblyList
-        {
-            get
-            {
-                if (_ControllerAssemblyList == null)
-                {
-                    lock (lockObj)
-                    {
-                        if (_ControllerAssemblyList == null)
-                        {
-                            _ControllerAssemblyList = GetRefAssemblyList();
-                        }
-                    }
-                }
-                return _ControllerAssemblyList;
-            }
-        }
+        //private static readonly object lockObj = new object();
+        //private static List<Assembly> _ControllerAssemblyList;
+        //public static List<Assembly> ControllerAssemblyList
+        //{
+        //    get
+        //    {
+        //        if (_ControllerAssemblyList == null)
+        //        {
+        //            lock (lockObj)
+        //            {
+        //                if (_ControllerAssemblyList == null)
+        //                {
+        //                    _ControllerAssemblyList = GetRefAssemblyList();
+        //                }
+        //            }
+        //        }
+        //        return _ControllerAssemblyList;
+        //    }
+        //}
+        /// <summary>
+        /// 存储 控制器 的程序集列表。
+        /// </summary>
+        internal static List<Assembly> ControllerAssemblyList = new List<Assembly>();
         /// <summary>
         /// 获取引用自身的程序集列表
         /// </summary>
-        private static List<Assembly> GetRefAssemblyList()
+        internal static List<Assembly> GetRefAssemblyList()
         {
             string current = Assembly.GetExecutingAssembly().GetName().Name;
             //获取所有程序集，netcore 有些可能后期有动态加载情况，比如项目运行就丢失了控制器程序集
             Assembly[] assList = AppDomain.CurrentDomain.GetAssemblies();
-            string[] files = Directory.GetFiles(AppConfig.AssemblyPath, "*.dll", SearchOption.TopDirectoryOnly);//搜索所有的dll。
+            string[] files = Directory.GetFiles(AppConst.AssemblyPath, "*.dll", SearchOption.TopDirectoryOnly);//搜索所有的dll。
             List<string> dllFileList = new List<string>(files);
             List<Assembly> refAssemblyList = new List<Assembly>();
             foreach (Assembly assembly in assList)
@@ -142,16 +146,30 @@ namespace Taurus.Mvc.Reflect
                 }
                 else
                 {
-                    //搜索引用自身的程序集
-                    foreach (AssemblyName item in assembly.GetReferencedAssemblies())
+                    switch (assembly.GetName().Name)
                     {
-                        if (current == item.Name)
-                        {
-                            //引用了自身
-                            refAssemblyList.Add(assembly);
-                            break;
-                        }
+                        case "sni":
+                        case "Newtonsoft.Json":
+                        case "DynamicExpresso.Core":
+                        case "Confluent.Kafka":
+                        case "RabbitMQ.Client":
+                        case "CYQ.Data":
+                        case "Taurus.View":
+                        case "Taurus.Core":
+                            continue;
+
                     }
+                    refAssemblyList.Add(assembly);
+                    ////搜索引用自身的程序集，不启用这个，因为可能中间隔一个 Logic 层
+                    //foreach (AssemblyName item in assembly.GetReferencedAssemblies())
+                    //{
+                    //    if (current == item.Name)
+                    //    {
+                    //        //引用了自身
+                    //        refAssemblyList.Add(assembly);
+                    //        break;
+                    //    }
+                    //}
                 }
             }
 
@@ -180,7 +198,7 @@ namespace Taurus.Mvc.Reflect
                     try
                     {
                         Assembly ass = null;
-                        if (AppConfig.IsNetCore && dll.IndexOfAny(new char[] { '\\', '/' }) > 0 && dll[0] != '/')
+                        if (AppConst.IsNetCore && dll.IndexOfAny(new char[] { '\\', '/' }) > 0 && dll[0] != '/')
                         {
                             //1、NetCore 程序 部署在Linux 环境，有些无理要求此方式才能正常加载。
                             //2、NetCore 程序 部署在Window IIS，反正会被W3wp.exe 锁定，因此用此法也无啥影响。
@@ -193,15 +211,16 @@ namespace Taurus.Mvc.Reflect
                         }
                         if (ass != null)
                         {
-                            foreach (AssemblyName item in ass.GetReferencedAssemblies())
-                            {
-                                if (current == item.Name)
-                                {
-                                    //引用了自身
-                                    refAssemblyList.Add(ass);
-                                    break;
-                                }
-                            }
+                            refAssemblyList.Add(ass);
+                            //foreach (AssemblyName item in ass.GetReferencedAssemblies())
+                            //{
+                            //    if (current == item.Name)
+                            //    {
+                            //        //引用了自身
+                            //        refAssemblyList.Add(ass);
+                            //        break;
+                            //    }
+                            //}
                         }
                     }
                     catch (Exception err)
@@ -212,5 +231,6 @@ namespace Taurus.Mvc.Reflect
             }
             return refAssemblyList;
         }
+       
     }
 }

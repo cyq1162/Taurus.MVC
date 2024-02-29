@@ -23,7 +23,7 @@ namespace System.Net.Http
             {
                 if (_Timeout.TotalSeconds == 0)
                 {
-                    _Timeout = TimeSpan.FromSeconds(AppConfig.IsDebugMode ? 120 : 10);
+                    _Timeout = TimeSpan.FromSeconds(AppConst.IsDebugMode ? 120 : 10);
                 }
                 return _Timeout;
             }

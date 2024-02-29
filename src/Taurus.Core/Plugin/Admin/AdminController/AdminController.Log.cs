@@ -19,7 +19,7 @@ namespace Taurus.Plugin.Admin
         public void Log()
         {
             View.KeyValue.Add("yyyyMM", DateTime.Now.ToString("yyyyMM"));
-            string logPath = AppConfig.WebRootPath + AppConfig.Log.Path.Trim('/', '\\');
+            string logPath = AppConst.WebRootPath + AppConfig.Log.Path.Trim('/', '\\');
             if (Directory.Exists(logPath))
             {
                 string key = Query<string>("k", DateTime.Now.ToString("*yyyyMM"));
@@ -40,7 +40,7 @@ namespace Taurus.Plugin.Admin
             string fileName = Query<string>("filename");
             if (!string.IsNullOrEmpty(fileName))
             {
-                string logPath = AppConfig.WebRootPath + AppConfig.Log.Path.Trim('/', '\\');
+                string logPath = AppConst.WebRootPath + AppConfig.Log.Path.Trim('/', '\\');
                 string[] files = Directory.GetFiles(logPath, fileName, SearchOption.TopDirectoryOnly);
                 if (files != null && files.Length > 0)
                 {
@@ -56,7 +56,7 @@ namespace Taurus.Plugin.Admin
             string fileName = Query<string>("filename");
             if (!string.IsNullOrEmpty(fileName))
             {
-                string logPath = AppConfig.WebRootPath + AppConfig.Log.Path.Trim('/', '\\') + "/" + fileName;
+                string logPath = AppConst.WebRootPath + AppConfig.Log.Path.Trim('/', '\\') + "/" + fileName;
                 if (File.Exists(logPath))
                 {
                     IOHelper.Delete(logPath);

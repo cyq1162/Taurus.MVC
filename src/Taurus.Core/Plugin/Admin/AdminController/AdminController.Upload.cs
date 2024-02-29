@@ -25,7 +25,7 @@ namespace Taurus.Plugin.Admin
         public void UploadSSL(HttpPostedFile file)
         {
             if (file == null || Path.GetExtension(file.FileName) != ".zip") { Write("you should uplad a zip file.", false); return; }
-            string sslPath = AppConfig.WebRootPath + MvcConfig.Kestrel.SslPath.TrimStart(new char[] { '/', '\\' });
+            string sslPath = AppConst.WebRootPath + MvcConfig.Kestrel.SslPath.TrimStart(new char[] { '/', '\\' });
             byte[] bytes = new byte[file.InputStream.Length];
             file.InputStream.Read(bytes, 0, (int)file.InputStream.Length);
             if (ViewEngine.ZipTo(sslPath, bytes))

@@ -10,17 +10,33 @@ namespace Taurus.Mvc.Attr
     public class RouteAttribute : Attribute
     {
         /// <summary>
-        /// 获取设置的相对路径。
+        /// 路由映射路径
         /// </summary>
-        public string LocalPath { get; set; }
+        public string MapPath { get; set; }
+
+        /// <summary>
+        /// 是否保留原始路径
+        /// </summary>
+        public bool IsKeepOriginalPath { get; set; }
 
         /// <summary>
         /// 用于路由映射(for method)，允许多条。
         /// </summary>
-        /// <param name="localPath">相对路径：以"/"开头为独立匹配，否则叠加RoutePrefix头（若类中已配置该属性）。</param>
-        public RouteAttribute(string localPath)
+        /// <param name="mapPath">相对路径：以"/"开头为独立匹配，否则叠加RoutePrefix头（若类中已配置该属性）。</param>
+        public RouteAttribute(string mapPath)
         {
-            this.LocalPath = localPath;
+            this.MapPath = mapPath;
+        }
+
+        /// <summary>
+        /// 用于路由映射(for method)，允许多条。
+        /// </summary>
+        /// <param name="mapPath">相对路径：以"/"开头为独立匹配，否则叠加RoutePrefix头（若类中已配置该属性）。</param>
+        /// <param name="isKeepOriginalPath">是否保留原始路径</param>
+        public RouteAttribute(string mapPath,bool isKeepOriginalPath)
+        {
+            this.MapPath = mapPath;
+            this.IsKeepOriginalPath = isKeepOriginalPath;
         }
     }
 

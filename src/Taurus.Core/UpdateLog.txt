@@ -304,13 +304,18 @@ CYQ.Data升级到V5.8.4.9
 -----V3.4.2.1----------------
 1、新增：Taurus.Plugin.Metric 增加 IsMvcOnly 配置项，允许设置是否仅统计Mvc请求。（2024-02-24）
 2、新增：GlobalController OnError 全局方法，用于自定义处理异常。（2024-02-24）
------V3.4.3----------------
+-----V3.4.3.1----------------
 1、优化：初始化控制器参数类型。（2024-02-27）
 2、优化：控制器 Query 方法。（2024-02-27）
 3、优化：程序启动时：对 Views 进行预加载。（2024-02-28）
 4、优化：程序启动时：进行 HEAD 预请求（NET Core）。 （2024-02-28）
 5、升级：CYQ.Data 升级到V5.9.2.3 版本（优化 Json、提升性能）（2024-02-23）
+6、新增：IsKeepOriginalPath 属性（在 RoutePrefixAttribute、RouteAttribute 中）【V3.4.3.2】
 
+-----V3.4.4----------------
+1、升级：CYQ.Data 升级到 V5.9.2.4 版本（版本兼容、提升 读数据库转 Model 性能）
+2、优化：AssemblyCollector、ControllerCollector。
+3、优化：程序启动时：对 继承 CYQ.Data.Orm 实体进行预加载。（2024-02-28）
 
 个别接口限流
 XHtml 预编绎：生成IDKey、IDName。
@@ -322,5 +327,4 @@ XHtml 预编绎：生成IDKey、IDName。
 
 -------------
 doc 处理 路由映射【屏蔽原始路径】的问题。
-预热：加载视图文件。
 

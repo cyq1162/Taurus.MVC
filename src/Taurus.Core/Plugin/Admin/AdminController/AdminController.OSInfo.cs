@@ -61,7 +61,7 @@ namespace Taurus.Plugin.Admin
                     dtTaurus.NewRow(true).Sets(0, "Server-IP-Public", ips[0].ToString(), "Server public ip.");
                 }
                 dtTaurus.NewRow(true).Sets(0, "Server-IP-Internal", MvcConst.HostIP, "Server internal ip.");
-                dtTaurus.NewRow(true).Sets(0, "Runtime-Version", (AppConfig.IsNetCore ? ".Net Core - " : ".Net Framework - ") + Environment.Version, "Version of the common language runtime.");
+                dtTaurus.NewRow(true).Sets(0, "Runtime-Version", (AppConst.IsNetCore ? ".Net Core - " : ".Net Framework - ") + Environment.Version, "Version of the common language runtime.");
                 dtTaurus.NewRow(true).Sets(0, "OS-Version", Environment.OSVersion, "Operating system.");
                 dtTaurus.NewRow(true).Sets(0, "ProcessID", MvcConst.ProcessID, "Process id.");
                 dtTaurus.NewRow(true).Sets(0, "ThreadID", Thread.CurrentThread.ManagedThreadId, "Identifier for the managed thread.");
@@ -73,7 +73,7 @@ namespace Taurus.Plugin.Admin
                 dtTaurus.NewRow(true).Sets(0, "MachineName", Environment.MachineName, "Name of computer.");
                 dtTaurus.NewRow(true).Sets(0, "UserName", Environment.UserName, "Name of the person who is logged on to Windows.");
                 dtTaurus.NewRow(true).Sets(0, "WorkingSet", Environment.WorkingSet / 1024 / 1024 + "MB", "Physical memory mapped to the process context.");
-                dtTaurus.NewRow(true).Sets(0, "CurrentDirectory", AppConfig.RunPath, "Web application path of the working directory.");
+                dtTaurus.NewRow(true).Sets(0, "CurrentDirectory", AppConst.RunPath, "Web application path of the working directory.");
             }
             else if (type.StartsWith("ass"))
             {

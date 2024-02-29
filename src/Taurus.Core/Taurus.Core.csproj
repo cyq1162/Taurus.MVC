@@ -53,8 +53,8 @@
     <DocumentationFile>bin\Release\Taurus.Core.xml</DocumentationFile>
   </PropertyGroup>
   <ItemGroup>
-    <Reference Include="CYQ.Data, Version=5.9.2.3, Culture=neutral, processorArchitecture=MSIL">
-      <HintPath>..\..\demo\default\packages\cyqdata.5.9.2.3\lib\net20\CYQ.Data.dll</HintPath>
+    <Reference Include="CYQ.Data, Version=5.9.2.4, Culture=neutral, processorArchitecture=MSIL">
+      <HintPath>..\..\demo\default\packages\cyqdata.5.9.2.4\lib\net20\CYQ.Data.dll</HintPath>
     </Reference>
     <Reference Include="DotNetZip">
       <HintPath>..\..\Packages\DotNetZip.dll</HintPath>
@@ -86,6 +86,7 @@
     <Compile Include="MVC\Reflect\Delegate\DelegateEmit.cs" />
     <Compile Include="MVC\Reflect\Delegate\DelegateInvoke.cs" />
     <Compile Include="MVC\Reflect\Entity\AttributeEntity.cs" />
+    <Compile Include="MVC\Reflect\Entity\EntityPreheat.cs" />
     <Compile Include="MVC\Reflect\Entity\MethodEntity.cs" />
     <Compile Include="MVC\Reflect\Entity\TypeEntity.cs" />
     <Compile Include="MVC\Reflect\MethodCollector.cs" />
