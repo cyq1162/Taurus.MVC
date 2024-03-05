@@ -10,13 +10,13 @@ namespace Taurus.Plugin.Metric
     {
         /// <summary>
         /// 配置是否启用 接口访问统计 功能 
-        /// 如 Metric.IsEnable ：true
+        /// 如 Metric.IsEnable ：false
         /// </summary>
         public static bool IsEnable
         {
             get
             {
-                return AppConfig.GetAppBool("Metric.IsEnable", !MsConfig.IsClient);
+                return AppConfig.GetAppBool("Metric.IsEnable", false);
             }
             set
             {
@@ -62,7 +62,7 @@ namespace Taurus.Plugin.Metric
         {
             get
             {
-                return AppConfig.GetAppBool("Metric.IsDurable", MsConfig.IsServer);
+                return AppConfig.GetAppBool("Metric.IsDurable", false);
             }
             set
             {

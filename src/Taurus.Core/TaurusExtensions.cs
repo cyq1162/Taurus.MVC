@@ -109,15 +109,22 @@ namespace Microsoft.AspNetCore.Http
         private static void OnStart(object builderObj)
         {
             MvcRun.Start();
-            Thread.Sleep(200);//线程延时，待监听后，再获取监听端口号。
+            Thread.Sleep(500);//线程延时，待监听后，再获取监听端口号。
             SetAppRunUrl(builderObj as IApplicationBuilder);
             MsRun.Start();
             if (!string.IsNullOrEmpty(MvcConfig.RunUrl))
             {
-                using (var task = Rest.HeadAsync(MvcConfig.RunUrl))
-                {
-                    task.Wait();
-                }
+                Rest.HeadAsync(MvcConfig.RunUrl);
+                //disponse 会影响后续的 HttpClient？
+                //using (var task = Rest.HeadAsync(MvcConfig.RunUrl))
+                //{
+                //    task.Wait();
+                //}
+                //var result = Rest.Get("http://www.cyqdata.com");
+                //using (var task = Rest.HeadAsync(MvcConfig.RunUrl))
+                //{
+                //    task.Wait();
+                //}
             }
         }
 

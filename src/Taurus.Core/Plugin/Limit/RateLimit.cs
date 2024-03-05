@@ -1,6 +1,7 @@
 ﻿using CYQ.Data;
 using CYQ.Data.Tool;
 using System;
+using System.Web;
 using System.Collections.Generic;
 using System.Threading;
 using Taurus.Mvc;
@@ -86,23 +87,23 @@ namespace Taurus.Plugin.Limit
         /// <summary>
         /// 是否有效、合法。
         /// </summary>
-        internal static bool IsValid()
+        internal static bool IsValid(HttpContext context)
         {
             if (IsOver())
             {
                 return false;
             }
-            System.Web.HttpRequest request = System.Web.HttpContext.Current.Request;
+            var request = context.Request;
             string ip = string.Empty;
             if (LimitConfig.Rate.Key.ToUpper() != "IP")
             {
-                ip = WebTool.Query<string>(LimitConfig.Rate.Key);
+                ip = WebTool.Query(LimitConfig.Rate.Key, context);
             }
             if (string.IsNullOrEmpty(ip))
             {
                 if (LimitConfig.IsUseXRealIP)
                 {
-                    ip = request.Headers["X-Real-IP"];
+                    ip = request.GetHeader("X-Real-IP");
                 }
                 if (string.IsNullOrEmpty(ip))
                 {

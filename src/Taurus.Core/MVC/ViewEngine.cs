@@ -60,6 +60,7 @@ namespace Taurus.Mvc
         }
 
         private static Dictionary<string, string> keyPath = new Dictionary<string, string>(StringComparer.OrdinalIgnoreCase);
+        private static Dictionary<string, bool>  apiPath = new Dictionary<string, bool>(StringComparer.OrdinalIgnoreCase);
         /// <summary>
         /// 创建视图对象
         /// </summary>
@@ -70,14 +71,20 @@ namespace Taurus.Mvc
             {
                 return Create(keyPath[key]);
             }
+            if (apiPath.ContainsKey(controlName)) 
+            {
+                return null; 
+            }
             if (Directory.Exists(ViewsPath))
             {
                 string[] folders = Directory.GetDirectories(ViewsPath, "*", SearchOption.TopDirectoryOnly);
+                bool hasFolder = false;
                 foreach (string folder in folders)
                 {
                     string foName = Path.GetFileNameWithoutExtension(folder);
                     if (string.Equals(controlName, foName, StringComparison.OrdinalIgnoreCase))
                     {
+                        hasFolder = true;
                         string[] files = Directory.GetFiles(folder, "*.html", SearchOption.TopDirectoryOnly);
                         foreach (string file in files)
                         {
@@ -86,12 +93,34 @@ namespace Taurus.Mvc
                             {
                                 if (!keyPath.ContainsKey(fiName))
                                 {
-                                    keyPath.Add(key, file);
+                                    try
+                                    {
+                                        keyPath.Add(key, file);
+                                    }
+                                    catch
+                                    {
+
+                                    }
+
                                 }
                                 return Create(file);
                             }
                         }
                         break;
+                    }
+                }
+                if (!hasFolder)
+                {
+                    if (!apiPath.ContainsKey(controlName))
+                    {
+                        try
+                        {
+                            apiPath.Add(controlName, true);
+                        }
+                        catch
+                        {
+
+                        }
                     }
                 }
             }
@@ -293,7 +322,7 @@ namespace Taurus.Mvc
                     string foName = Path.GetFileNameWithoutExtension(folder);
                     if (string.Equals(cName, foName, StringComparison.OrdinalIgnoreCase))
                     {
-                       
+
                         string[] files = Directory.GetFiles(folder, "*.html", SearchOption.TopDirectoryOnly);
                         foreach (string file in files)
                         {

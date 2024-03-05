@@ -18,7 +18,7 @@ namespace Taurus.Plugin.Rpc
             UseProxy = false,
             UseCookies = false,
             AllowAutoRedirect = false,
-            MaxConnectionsPerServer = 2048
+            MaxConnectionsPerServer = Environment.ProcessorCount * 4
         };
 
         private static readonly object lockObj = new object();

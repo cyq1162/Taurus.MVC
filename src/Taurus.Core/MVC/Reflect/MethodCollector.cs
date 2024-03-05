@@ -323,6 +323,8 @@ namespace Taurus.Mvc.Reflect
             return null;
         }
         #region 4个全局方法
+        private static MethodEntity _GlobalDefault;
+        private static bool hasSetGlobalDefault = false;
         /// <summary>
         /// 全局Default方法
         /// </summary>
@@ -330,15 +332,20 @@ namespace Taurus.Mvc.Reflect
         {
             get
             {
+                if (hasSetGlobalDefault) { return _GlobalDefault; }
+
                 TypeEntity entity = ControllerCollector.GetController(ReflectConst.Global);
                 if (entity != null)
                 {
-                    return GetMethod(entity.Type, ReflectConst.Default, false);
+                    _GlobalDefault = GetMethod(entity.Type, ReflectConst.Default, false);
+                    hasSetGlobalDefault = true;
                 }
-                return null;
+                return _GlobalDefault;
             }
         }
 
+        private static MethodEntity _GlobalCheckAck;
+        private static bool hasSetGlobalCheckAck = false;
         /// <summary>
         /// 全局DefaultCheckAck方法
         /// </summary>
@@ -346,9 +353,15 @@ namespace Taurus.Mvc.Reflect
         {
             get
             {
-                return GetGlobalMethod(ReflectConst.CheckAck);
+                if (hasSetGlobalCheckAck) { return _GlobalCheckAck; }
+                _GlobalCheckAck = GetGlobalMethod(ReflectConst.CheckAck);
+                hasSetGlobalCheckAck = true;
+                return _GlobalCheckAck;
             }
         }
+
+        private static MethodEntity _GlobalCheckMicroService;
+        private static bool hasSetGlobalCheckMicroService = false;
         /// <summary>
         /// 全局DefaultCheckMicroService方法
         /// </summary>
@@ -356,10 +369,15 @@ namespace Taurus.Mvc.Reflect
         {
             get
             {
-                return GetGlobalMethod(ReflectConst.CheckMicroService);
+                if (hasSetGlobalCheckMicroService) { return _GlobalCheckMicroService; }
+                _GlobalCheckMicroService = GetGlobalMethod(ReflectConst.CheckMicroService);
+                hasSetGlobalCheckMicroService = true;
+                return _GlobalCheckMicroService;
             }
         }
 
+        private static MethodEntity _GlobalCheckToken;
+        private static bool hasSetGlobalCheckToken = false;
         /// <summary>
         /// 全局CheckToken方法
         /// </summary>
@@ -367,9 +385,15 @@ namespace Taurus.Mvc.Reflect
         {
             get
             {
-                return GetGlobalMethod(ReflectConst.CheckToken);
+                if (hasSetGlobalCheckToken) { return _GlobalCheckToken; }
+                _GlobalCheckToken = GetGlobalMethod(ReflectConst.CheckToken);
+                hasSetGlobalCheckToken = true;
+                return _GlobalCheckToken;
             }
         }
+
+        private static MethodEntity _GlobalBeforeInvoke;
+        private static bool hasSetGlobalBeforeInvoke = false;
         /// <summary>
         ///  全局BeforeInvoke方法
         /// </summary>
@@ -377,9 +401,16 @@ namespace Taurus.Mvc.Reflect
         {
             get
             {
-                return GetGlobalMethod(ReflectConst.BeforeInvoke);
+                if (hasSetGlobalBeforeInvoke) { return _GlobalBeforeInvoke; }
+
+                _GlobalBeforeInvoke = GetGlobalMethod(ReflectConst.BeforeInvoke);
+                hasSetGlobalBeforeInvoke = true;
+                return _GlobalBeforeInvoke;
             }
         }
+
+        private static MethodEntity _GlobalRouteMapInvoke;
+        private static bool hasSetGlobalRouteMapInvoke = false;
         /// <summary>
         ///  全局RouteMapInvoke方法
         /// </summary>
@@ -387,9 +418,16 @@ namespace Taurus.Mvc.Reflect
         {
             get
             {
-                return GetGlobalMethod(ReflectConst.RouteMapInvoke);
+                if (hasSetGlobalRouteMapInvoke) { return _GlobalRouteMapInvoke; }
+
+                _GlobalRouteMapInvoke = GetGlobalMethod(ReflectConst.RouteMapInvoke);
+                hasSetGlobalRouteMapInvoke = true;
+                return _GlobalRouteMapInvoke;
             }
         }
+
+        private static MethodEntity _GlobalEndInvoke;
+        private static bool hasSetGlobalEndInvoke = false;
         /// <summary>
         ///  全局EndInvokeMethod方法
         /// </summary>
@@ -397,10 +435,17 @@ namespace Taurus.Mvc.Reflect
         {
             get
             {
-                return GetGlobalMethod(ReflectConst.EndInvoke);
+                if (hasSetGlobalEndInvoke) { return _GlobalEndInvoke; }
+
+                _GlobalEndInvoke = GetGlobalMethod(ReflectConst.EndInvoke);
+                hasSetGlobalEndInvoke = true;
+                return _GlobalEndInvoke;
             }
         }
 
+
+        private static MethodEntity _GlobalOnError;
+        private static bool hasSetGlobalOnError = false;
         /// <summary>
         ///  全局GlobalOnError方法
         /// </summary>
@@ -408,7 +453,11 @@ namespace Taurus.Mvc.Reflect
         {
             get
             {
-                return GetGlobalMethod(ReflectConst.OnError);
+                if (hasSetGlobalOnError) { return _GlobalOnError; }
+
+                _GlobalOnError = GetGlobalMethod(ReflectConst.OnError);
+                hasSetGlobalOnError = true;
+                return _GlobalOnError;
             }
         }
 

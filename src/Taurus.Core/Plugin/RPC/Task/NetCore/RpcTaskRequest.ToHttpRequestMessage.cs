@@ -20,16 +20,37 @@ namespace Taurus.Plugin.Rpc
         {
             HttpMethod method = new HttpMethod(HttpMethod);
             HttpRequestMessage request = new HttpRequestMessage(method, Uri.AbsoluteUri);
+            var ct = string.Empty;
+            var cl = string.Empty;
             if (Headers.Count > 0)
             {
                 foreach (string item in Headers.Keys)
                 {
-                    request.Headers.Add(item, Headers[item]);
+                    switch (item.ToLower())
+                    {
+                        case "content-type":
+                            ct = Headers[item];
+                            continue;
+                        case "content-length":
+                            cl = Headers[item];
+                            continue;
+                        default:
+                            request.Headers.Add(item, Headers[item]);
+                            break;
+                    }
                 }
             }
             if (Data != null && Data.Length > 0)
             {
                 request.Content = new StreamContent(new MemoryStream(Data)) { };
+                if (!string.IsNullOrEmpty(ct))
+                {
+                    request.Content.Headers.TryAddWithoutValidation("Content-Type", ct);
+                }
+                if (!string.IsNullOrEmpty(cl))
+                {
+                    request.Content.Headers.TryAddWithoutValidation("Content-Length", ct);
+                }
             }
             return request;
         }

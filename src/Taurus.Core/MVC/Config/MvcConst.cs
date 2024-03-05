@@ -45,7 +45,7 @@ namespace Taurus.Mvc
             }
         }
 
-        private static int _ProcessID;
+        //private static int _ProcessID;
         /// <summary>
         /// 当前进程ID
         /// </summary>
@@ -53,7 +53,7 @@ namespace Taurus.Mvc
         {
             get
             {
-                return Proc.Id;
+                return AppConst.ProcessID;
             }
         }
 
@@ -65,45 +65,46 @@ namespace Taurus.Mvc
         {
             get
             {
-                if (string.IsNullOrEmpty(_HostIP))
-                {
-                    bool isSupportDADS = true;
-                    var nets = NetworkInterface.GetAllNetworkInterfaces();
-                    foreach (var item in nets)
-                    {
-                        // 跳过虚拟机网卡
-                        if (item.Description.StartsWith("VirtualBox ") || item.Description.StartsWith("Hyper-V") || item.Description.StartsWith("VMware ") || item.Description.StartsWith("Bluetooth "))
-                        {
-                            continue;
-                        }
-                        var ips = item.GetIPProperties().UnicastAddresses;
-                        foreach (var ip in ips)
-                        {
-                            if (ip.Address.AddressFamily == AddressFamily.InterNetwork && !IPAddress.IsLoopback(ip.Address))
-                            {
-                                try
-                                {
-                                    if (isSupportDADS && ip.DuplicateAddressDetectionState != DuplicateAddressDetectionState.Preferred)
-                                    {
-                                        continue;
-                                    }
-                                }
-                                catch (PlatformNotSupportedException err)
-                                {
-                                    isSupportDADS = false;
-                                }
-                                string ipAddr = ip.Address.ToString();
-                                if (ipAddr.EndsWith(".1") || ipAddr.Contains(":")) // 忽略路由和网卡地址。
-                                {
-                                    continue;
-                                }
-                                _HostIP = ipAddr;
-                                return _HostIP;
-                            }
-                        }
-                    }
-                }
-                return _HostIP ?? "127.0.0.1";
+                return AppConst.HostIP;
+                //if (string.IsNullOrEmpty(_HostIP))
+                //{
+                //    bool isSupportDADS = true;
+                //    var nets = NetworkInterface.GetAllNetworkInterfaces();
+                //    foreach (var item in nets)
+                //    {
+                //        // 跳过虚拟机网卡
+                //        if (item.Description.StartsWith("VirtualBox ") || item.Description.StartsWith("Hyper-V") || item.Description.StartsWith("VMware ") || item.Description.StartsWith("Bluetooth "))
+                //        {
+                //            continue;
+                //        }
+                //        var ips = item.GetIPProperties().UnicastAddresses;
+                //        foreach (var ip in ips)
+                //        {
+                //            if (ip.Address.AddressFamily == AddressFamily.InterNetwork && !IPAddress.IsLoopback(ip.Address))
+                //            {
+                //                try
+                //                {
+                //                    if (isSupportDADS && ip.DuplicateAddressDetectionState != DuplicateAddressDetectionState.Preferred)
+                //                    {
+                //                        continue;
+                //                    }
+                //                }
+                //                catch (PlatformNotSupportedException err)
+                //                {
+                //                    isSupportDADS = false;
+                //                }
+                //                string ipAddr = ip.Address.ToString();
+                //                if (ipAddr.EndsWith(".1") || ipAddr.Contains(":")) // 忽略路由和网卡地址。
+                //                {
+                //                    continue;
+                //                }
+                //                _HostIP = ipAddr;
+                //                return _HostIP;
+                //            }
+                //        }
+                //    }
+                //}
+                //return _HostIP ?? "127.0.0.1";
             }
         }
     }

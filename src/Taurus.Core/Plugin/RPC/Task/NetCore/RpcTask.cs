@@ -113,7 +113,7 @@ namespace Taurus.Plugin.Rpc
                 }
                 else
                 {
-                    _Result = RpcTaskWorker.GetRpcTaskResult(task).Result;
+                    _Result = RpcTaskWorker.GetRpcTaskResult(task).GetAwaiter().GetResult();
                 }
             }
             catch (Exception err)

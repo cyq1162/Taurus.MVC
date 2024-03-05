@@ -1,5 +1,7 @@
 ﻿using CYQ.Data;
 using System;
+using System.Web;
+using System.Diagnostics;
 using System.Threading.Tasks;
 using Taurus.Mvc;
 using Taurus.Plugin.MicroService;
@@ -11,11 +13,13 @@ namespace Microsoft.AspNetCore.Http
     /// </summary>
     internal class TaurusMiddleware
     {
+        private static HttpApplication app;
         private readonly RequestDelegate next;
 
         public TaurusMiddleware(RequestDelegate next)
         {
             this.next = next;
+            app = HttpApplication.GetInstance("Taurus");
         }
 
         public async Task Invoke(HttpContext context)
@@ -28,39 +32,46 @@ namespace Microsoft.AspNetCore.Http
                 //    // 输出特性类型和实例信息
                 //    Console.WriteLine($"Feature type: {feature.Key}, instance: {feature.Value}");
                 //}
-                //await context.Response.WriteAsync("Test First Request.");
+                //await context.Response.Body.FlushAsync();
                 //return;
-                if (!context.Request.Host.HasValue)
+
+                var request = context.Request;
+                var response = context.Response;
+                if (!request.Host.HasValue)
                 {
-                    context.Response.StatusCode = 400;
-                    await context.Response.WriteAsync("400 Invalid hostname.");
+                    response.StatusCode = 400;
+                    await response.WriteAsync("400 Invalid hostname.");
                     return;
                 }
-                if (context.Request.Path.Value.IndexOf("/App_Data/", StringComparison.OrdinalIgnoreCase) > -1)//兼容受保护的目录
+                if (request.Path.Value.IndexOf("/App_Data/", StringComparison.OrdinalIgnoreCase) > -1)//兼容受保护的目录
                 {
-                    context.Response.StatusCode = 403;
-                    await context.Response.WriteAsync("403 Forbidden");
+                    response.StatusCode = 403;
+                    await response.WriteAsync("403 Forbidden");
                     return;
                 }
 
-                if ((context.Request.Method == "POST" || context.Request.Method == "PUT") && context.Request.ContentLength.HasValue && context.Request.ContentLength.Value > 0)
-                {
-                    // 使用处：对应Rpc.Gateway.cs 代码：Proxy 方法 149行上下。
-                    //Controller.cs GetJson 方法 1098行上下
-                    context.Request.EnableBuffering();
-                }
-                var app = System.Web.HttpApplication.GetInstance("Taurus");
+                //if (request.HasFormContentType && request.ContentLength.HasValue && request.ContentLength.Value > 0)
+                //{
+                //    // 使用处：对应Rpc.Gateway.cs 代码：Proxy 方法 149行上下。
+                //    //Controller.cs GetJson 方法 1098行上下
+                //    request.EnableBuffering();
+                //}
+                
+                //Stopwatch sw = Stopwatch.StartNew();
                 app.ExecuteEventHandler();
+                //sw.Stop();
+                //Console.WriteLine("ElapsedTicks Total: "+sw.ElapsedTicks); 
                 if (System.Web.HttpContext.Current.Response.HasStarted)  // || Body是只写流  (context.Response.Body != null && context.Response.Body.CanRead
                 {
-                    if (context.Response.StatusCode == 204 || context.Response.StatusCode.ToString().StartsWith("30"))
-                    {
-                        await context.Response.Body.FlushAsync();
-                    }
-                    else
-                    {
-                        return;
-                    }
+                    await response.Body.FlushAsync();
+                    //if (response.StatusCode == 204 || response.StatusCode.ToString().StartsWith("30"))
+                    //{
+                    //    await response.Body.FlushAsync();
+                    //}
+                    //else
+                    //{
+                    //    return;
+                    //}
                 }
                 //处理信息
                 else

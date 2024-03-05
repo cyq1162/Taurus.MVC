@@ -161,6 +161,10 @@ namespace Taurus.Plugin.Admin
             {
                 MsConfig.OnChange(key, value);
             }
+            else if (key.StartsWith("Mvc."))
+            {
+                MvcConfig.OnChange(key, value);
+            }
             #endregion
 
             Write("Save success.", true);

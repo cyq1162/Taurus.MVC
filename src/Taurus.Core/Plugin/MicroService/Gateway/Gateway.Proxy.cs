@@ -136,28 +136,34 @@ namespace Taurus.Plugin.MicroService
                 if (httpRequest.HttpMethod != "GET" && httpRequest.ContentLength > 0)
                 {
                     #region 处理接收文件上传
+                    data = httpRequest.ReadBytes(false);
+
+
                     //Synchronous operations are disallowed. Call ReadAsync or set AllowSynchronousIO to true instead.”
-                    data = new byte[(int)httpRequest.ContentLength];
-                    httpRequest.InputStream.Position = 0;// 需要启用：context.Request.EnableBuffering();
-                    httpRequest.InputStream.Read(data, 0, data.Length);
-                    if (httpRequest.InputStream.Position < httpRequest.ContentLength)
-                    {
-                        //Linux CentOS-8 大文件下读不全，会延时，导致：Unexpected end of Stream, the content may have already been read by another component.
-                        int max = 0;
-                        int timeout = MsConfig.Server.GatewayTimeout * 1000;
-                        while (httpRequest.InputStream.Position < httpRequest.ContentLength)
-                        {
-                            max++;
-                            if (max > timeout)//60秒超时
-                            {
-                                context.Response.StatusCode = 413;
-                                context.Response.Write("Timeout : Unexpected end of Stream , request entity too large");
-                                return true;
-                            }
-                            Thread.Sleep(1);
-                            httpRequest.InputStream.Read(data, (int)httpRequest.InputStream.Position, data.Length - (int)httpRequest.InputStream.Position);
-                        }
-                    }
+                    //data = new byte[(int)httpRequest.ContentLength];
+                    //httpRequest.InputStream.Position = 0;// 需要启用：context.Request.EnableBuffering();
+                    //httpRequest.InputStream.Read(data, 0, data.Length);
+                    //if (httpRequest.InputStream.Position < httpRequest.ContentLength)
+                    //{
+                    //    //Linux CentOS-8 大文件下读不全，会延时，导致：Unexpected end of Stream, the content may have already been read by another component.
+                    //    int max = -100;
+                    //    int timeout = MsConfig.Server.GatewayTimeout * 1000;
+                    //    while (httpRequest.InputStream.Position < httpRequest.ContentLength)
+                    //    {
+                    //        max++;
+                    //        if (max > timeout)//60秒超时
+                    //        {
+                    //            context.Response.StatusCode = 413;
+                    //            context.Response.Write("Timeout : Unexpected end of Stream , request entity too large");
+                    //            return true;
+                    //        }
+                    //        httpRequest.InputStream.Read(data, (int)httpRequest.InputStream.Position, data.Length - (int)httpRequest.InputStream.Position);
+                    //        if (max > 0)
+                    //        {
+                    //            Thread.Sleep(1);
+                    //        }
+                    //    }
+                    //}
                     #endregion
                 }
 
@@ -167,7 +173,8 @@ namespace Taurus.Plugin.MicroService
                 rpcRequest.Data = data;
                 rpcRequest.Headers.Add(MsConst.HeaderKey, MsConfig.Server.RcKey);
                 Uri uri = new Uri(url);
-                foreach (string key in httpRequest.Headers.Keys)
+                var httpHeaders = httpRequest.Headers;
+                foreach (string key in httpHeaders.Keys)
                 {
                     if (key.StartsWith(":"))//chrome 新出来的 :method等
                     {
@@ -189,7 +196,7 @@ namespace Taurus.Plugin.MicroService
                             }
                             break;
                         default:
-                            rpcRequest.Headers.Add(key, httpRequest.Headers[key]);
+                            rpcRequest.Headers.Add(key, httpHeaders[key]);
                             break;
                     }
                 }

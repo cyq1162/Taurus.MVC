@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Web;
 using System.Collections.Generic;
 using System.IO;
 using Taurus.Plugin.MicroService;
@@ -72,15 +73,15 @@ namespace Taurus.Plugin.Limit
         /// 检测ip是否有效。
         /// </summary>
         /// <returns></returns>
-        public static bool IsValid()
+        public static bool IsValid(HttpContext context)
         {
             if (ipBlackDic.Count > 0 || ipBlackList.Count > 0)
             {
-                System.Web.HttpRequest request = System.Web.HttpContext.Current.Request;
+                var request = context.Request;
                 string ip = null;
                 if (LimitConfig.IsUseXRealIP)
                 {
-                    ip = request.Headers["X-Real-IP"];
+                    ip = request.GetHeader("X-Real-IP");
                 }
                 if (string.IsNullOrEmpty(ip))
                 {

@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Web;
 using Taurus.Mvc;
 
 namespace Taurus.Plugin.Limit
@@ -22,7 +23,7 @@ namespace Taurus.Plugin.Limit
             {
                 return true;
             }
-            if (LimitConfig.IsIgnoreDoc && WebTool.IsCallDoc(uri,referrerUri))
+            if (LimitConfig.IsIgnoreDoc && WebTool.IsCallDoc(uri, referrerUri))
             {
                 return true;
             }
@@ -33,11 +34,11 @@ namespace Taurus.Plugin.Limit
         /// 限制策略启动检测：IP黑名单检测
         /// </summary>
         /// <returns></returns>
-        public static bool CheckIP()
+        public static bool CheckIP(HttpContext context)
         {
             if (LimitConfig.IP.IsEnable)
             {
-                return IPLimit.IsValid();
+                return IPLimit.IsValid(context);
             }
             return true;
         }
@@ -45,11 +46,11 @@ namespace Taurus.Plugin.Limit
         /// 限制策略启动检测：Ack检测
         /// </summary>
         /// <returns></returns>
-        public static bool CheckAck()
+        public static bool CheckAck(HttpContext context)
         {
             if (LimitConfig.Ack.IsEnable)
             {
-                return AckLimit.IsValid(WebTool.Query<string>("ack"));
+                return AckLimit.IsValid(WebTool.Query("ack", context));
             }
             return true;
         }
@@ -58,11 +59,11 @@ namespace Taurus.Plugin.Limit
         /// 限制策略启动检测：限制请求频率
         /// </summary>
         /// <returns></returns>
-        public static bool CheckRate()
+        public static bool CheckRate(HttpContext context)
         {
             if (LimitConfig.Rate.IsEnable)
             {
-                return RateLimit.IsValid();
+                return RateLimit.IsValid(context);
             }
             return true;
         }

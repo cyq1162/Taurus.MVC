@@ -28,7 +28,7 @@ namespace Taurus.Plugin.Rpc
                 //分布式请求追踪ID。
                 request.Headers.Add("X-Request-ID", HttpContext.Current.GetTraceID());
             }
-            return SendAsync(request, rpcRequest.Timeout).Result;
+            return SendAsync(request, rpcRequest.Timeout).GetAwaiter().GetResult();
         }
 
         private static async Task<RpcTaskResult> SendAsync(HttpRequestMessage request, int timeout)

@@ -16,7 +16,7 @@ namespace Taurus.Mvc
     /// <summary>
     /// 对外提供基本的参数获取功能。
     /// </summary>
-    public static partial class WebTool
+    internal static partial class WebTool
     {
         #region 增加扩展后缀支持
         /// <summary>
@@ -145,10 +145,10 @@ namespace Taurus.Mvc
         /// </summary>
         internal static bool IsSubAppSite(Uri uri)
         {
-            string ui = MvcConfig.SubAppName.ToLower();
+            string ui = MvcConfig.SubAppName;
             if (ui != string.Empty)
             {
-                ui = ui.Trim('/');
+                ui = ui.Trim('/').ToLower();
                 string localPath = uri.LocalPath.Trim('/').ToLower();
                 return localPath == ui || localPath.StartsWith(ui + "/");
             }
@@ -158,47 +158,40 @@ namespace Taurus.Mvc
     }
 
 
-    public static partial class WebTool
+    internal static partial class WebTool
     {
         /// <summary>
         /// 只处理字符串类型。
         /// </summary>
         /// <param name="key"></param>
         /// <returns></returns>
-        public static string Query(string key)
+        public static string Query(string key, HttpContext context)
         {
-            var context = HttpContext.Current;
-            if (context != null)
+            var request = HttpContext.Current.Request;
+            var result = request[key] ?? request.GetHeader(key);
+            if (result == null)
             {
-                var request = HttpContext.Current.Request;
-                var result = request[key] ?? (request.QueryString[key] ?? request.Headers[key]);
-                if (result == null)
+                var file = request.GetFile(key);
+                if (file != null)
                 {
-                    string json = GetJson(context);
-                    if (!string.IsNullOrEmpty(json) && json.Length > key.Length)
-                    {
-                        return JsonHelper.GetValue(json, key);
-                    }
+                    return file.FileName;
                 }
-                return result;
+                string json = GetJson(context);
+                if (!string.IsNullOrEmpty(json) && json.Length > key.Length)
+                {
+                    return JsonHelper.GetValue(json, key);
+                }
             }
-            return null;
-        }
+            return result;
 
+        }
 
         /// <summary>
         /// 获取 Web 请求参数
         /// </summary>
-        public static T Query<T>(string key)
+        public static T Query<T>(string key, T defaultValue, HttpContext context)
         {
-            return Query<T>(key, default(T));
-        }
-        /// <summary>
-        /// 获取 Web 请求参数
-        /// </summary>
-        public static T Query<T>(string key, T defaultValue)
-        {
-            string result = Query(key);
+            string result = Query(key, context);
             if (result == null) { return defaultValue; }
             var type = typeof(T);
             object value = result;
@@ -232,7 +225,7 @@ namespace Taurus.Mvc
 
     }
 
-    public static partial class WebTool
+    internal static partial class WebTool
     {
         internal static void PrintRequestLog(HttpContext context, Exception err)
         {
@@ -283,10 +276,21 @@ namespace Taurus.Mvc
             }
             string json = string.Empty;
             HttpRequest request = context.Request;
-            if (request.HttpMethod == "POST")
+            if (request.HttpMethod == "GET")
+            {
+                string para = request.Url.Query.TrimStart('?');
+                if (!string.IsNullOrEmpty(para))
+                {
+                    if (para.IndexOf("%") > -1)
+                    {
+                        para = HttpUtility.UrlDecode(para);
+                    }
+                    json = JsonHelper.ToJson(para);
+                }
+            }
+            else if (request.GetIsFormContentType())
             {
                 var form = request.Form;
-                var files = request.Files;
                 if (form.Count > 0)
                 {
                     if (form.Count == 1 && form.Keys[0] == null)
@@ -298,58 +302,59 @@ namespace Taurus.Mvc
                         json = JsonHelper.ToJson(form);
                     }
                 }
-                else if (files == null || files.Count == 0)//请求头忘了带Http Type
-                {
-                    Stream stream = request.InputStream;
-                    if (stream != null && stream.CanRead)
-                    {
-                        long len = (long)request.ContentLength;
-                        if (len > 0)
-                        {
-                            Byte[] bytes = new Byte[len];
-                            // ////NetCore 3.0 会抛异常，可配置可以同步请求读取流数据
-                            //services.Configure<KestrelServerOptions>(x => x.AllowSynchronousIO = true)
-                            //    .Configure<IISServerOptions>(x => x.AllowSynchronousIO = true);
-                            stream.Position = 0;// 需要启用：context.Request.EnableBuffering();开启用，不需要启用AllowSynchronousIO = true
-                            stream.Read(bytes, 0, bytes.Length);
-                            if (stream.Position < len)
-                            {
-                                //Linux CentOS-8 大文件下读不全，会延时，导致：Unexpected end of Stream, the content may have already been read by another component.
-                                int max = 0;
-                                int timeout = MsConfig.Server.GatewayTimeout * 1000;
-                                while (stream.Position < len)
-                                {
-                                    max++;
-                                    if (max > timeout)//60秒超时
-                                    {
-                                        break;
-                                    }
-                                    Thread.Sleep(1);
-                                    stream.Read(bytes, (int)stream.Position, (int)(len - stream.Position));
-                                }
-                            }
-                            stream.Position = 0;//重置，允许重复使用。
-                            string data = Encoding.UTF8.GetString(bytes);
-                            if (data.IndexOf("%") > -1)
-                            {
-                                data = HttpUtility.UrlDecode(data);
-                            }
-                            json = JsonHelper.ToJson(data);
-                        }
-                    }
-                }
             }
-            else if (request.HttpMethod == "GET")
+            else //请求头忘了带Http Type
             {
-                string para = request.Url.Query.TrimStart('?');
-                if (!string.IsNullOrEmpty(para))
+                //int id = System.Threading.Thread.CurrentThread.ManagedThreadId;
+                byte[] bytes = request.ReadBytes(true);
+                //int id2 = System.Threading.Thread.CurrentThread.ManagedThreadId;
+                if (bytes != null && bytes.Length > 0)
                 {
-                    if (para.IndexOf("%") > -1)
+                    string data = Encoding.UTF8.GetString(bytes);
+                    if (data.IndexOf("%") > -1)
                     {
-                        para = HttpUtility.UrlDecode(para);
+                        data = HttpUtility.UrlDecode(data);
                     }
-                    json = JsonHelper.ToJson(para);
+                    json = JsonHelper.ToJson(data);
                 }
+
+                //Stream stream = request.InputStream;
+                //if (stream != null && stream.CanRead)
+                //{
+                //    long len = (long)request.ContentLength;
+                //    if (len > 0)
+                //    {
+                //        Byte[] bytes = new Byte[len];
+                //        // ////NetCore 3.0 会抛异常，可配置可以同步请求读取流数据
+                //        //services.Configure<KestrelServerOptions>(x => x.AllowSynchronousIO = true)
+                //        //    .Configure<IISServerOptions>(x => x.AllowSynchronousIO = true);
+                //        stream.Position = 0;// 需要启用：context.Request.EnableBuffering();开启用，不需要启用AllowSynchronousIO = true
+                //        stream.Read(bytes, 0, bytes.Length);
+                //        if (stream.Position < len)
+                //        {
+                //            //Linux CentOS-8 大文件下读不全，会延时，导致：Unexpected end of Stream, the content may have already been read by another component.
+                //            int max = 0;
+                //            int timeout = MsConfig.Server.GatewayTimeout * 1000;
+                //            while (stream.Position < len)
+                //            {
+                //                max++;
+                //                if (max > timeout)//60秒超时
+                //                {
+                //                    break;
+                //                }
+                //                Thread.Sleep(1);
+                //                stream.Read(bytes, (int)stream.Position, (int)(len - stream.Position));
+                //            }
+                //        }
+                //        stream.Position = 0;//重置，允许重复使用。
+                //        string data = Encoding.UTF8.GetString(bytes);
+                //        if (data.IndexOf("%") > -1)
+                //        {
+                //            data = HttpUtility.UrlDecode(data);
+                //        }
+                //        json = JsonHelper.ToJson(data);
+                //    }
+                //}
             }
             if (string.IsNullOrEmpty(json))
             {

@@ -13,6 +13,8 @@ using System.Threading;
 using Taurus.Plugin.MicroService;
 using Taurus.Mvc.Reflect;
 using CYQ.Data.Json;
+using System.Diagnostics;
+using System.Collections.Generic;
 
 namespace Taurus.Mvc
 {
@@ -107,7 +109,9 @@ namespace Taurus.Mvc
                 }
 
                 InitNameFromUrl();
+
                 MethodEntity methodEntity = MethodCollector.GetMethod(_ControllerType, MethodName);
+
                 if (methodEntity == null)
                 {
                     //检测全局Default方法
@@ -124,18 +128,33 @@ namespace Taurus.Mvc
                 }
                 else
                 {
+                    //Stopwatch sw = Stopwatch.StartNew();
                     if (CheckMethodAttributeLimit(methodEntity))
                     {
+                        //sw.Stop();
+                        //Console.WriteLine("CheckMethodAttributeLimit : " + sw.ElapsedTicks);
+                        //sw.Restart();
                         LoadHtmlView();
+                        //sw.Stop();
+                        //Console.WriteLine("LoadHtmlView : " + sw.ElapsedTicks);
+                        //sw.Restart();
                         if (ExeBeforeInvoke(methodEntity.AttrEntity.HasIgnoreGlobalController))
                         {
+                            //sw.Stop();
+                            //Console.WriteLine("ExeBeforeInvoke : " + sw.ElapsedTicks);
+                            //sw.Restart();
                             if (ExeMethodInvoke(methodEntity))
                             {
+                                //sw.Stop();
+                                //Console.WriteLine("ExeMethodInvoke : " + sw.ElapsedTicks);
                                 ExeEndInvoke(methodEntity.AttrEntity.HasIgnoreGlobalController);
                             }
                         }
                     }
+                    //sw.Restart();
                     WriteExeResult();
+                    //sw.Stop();
+                    //Console.WriteLine("WriteExeResult Total : " + sw.ElapsedTicks);
                 }
             }
             catch (System.Threading.ThreadAbortException)
@@ -182,10 +201,13 @@ namespace Taurus.Mvc
             AttributeEntity attrEntity = methodEntity.AttrEntity;
             if (!attrEntity.HasWebSocket)
             {
-                if (Request.Headers["Connection"] == "Upgrade" && Request.Headers["Upgrade"] == "websocket")
+                if (Request.GetHeader("Upgrade") == "websocket")
                 {
-                    Write("Current method not support WebSocket.", false);
-                    return false;
+                    if (Request.GetHeader("Connection") == "Upgrade")
+                    {
+                        Write("Current method not support WebSocket.", false);
+                        return false;
+                    }
                 }
             }
             bool isGoOn = true;
@@ -386,8 +408,9 @@ namespace Taurus.Mvc
                     _View.KeyValue.Add("controller", ControllerName);
                     _View.KeyValue.Add("action", MethodName.ToLower());
                     _View.KeyValue.Add("para", Para.ToLower());
-                    _View.KeyValue.Add("suffix", Path.GetExtension(Request.Url.LocalPath));
-                    _View.KeyValue.Add("httphost", Request.Url.AbsoluteUri.Substring(0, Request.Url.AbsoluteUri.Length - Request.Url.PathAndQuery.Length));
+                    var url = Request.Url;
+                    _View.KeyValue.Add("suffix", Path.GetExtension(url.LocalPath));
+                    _View.KeyValue.Add("httphost", url.AbsoluteUri.Substring(0, url.AbsoluteUri.Length - url.PathAndQuery.Length));
                 }
             }
         }
@@ -402,8 +425,21 @@ namespace Taurus.Mvc
             object result = methodEntity.Delegate.Invoke(this, paras);
             if (result != null && apiResult.Length == 0)
             {
-                if (result is string) { Write(result.ToString()); }
-                else { Write(result); }
+                var str = result.ToString();
+                if (result is string)
+                {
+                    Write(str);
+                }
+                else
+                {
+                    bool isTask = str.StartsWith("System.Threading.") || str.StartsWith("System.Runtime.");
+                    //跳过异步方法。
+                    if (!isTask)
+                    {
+                        Write(result);
+                    }
+
+                }
             }
             if (IsHttpPost && _View != null && !string.IsNullOrEmpty(BtnName))
             {
@@ -419,8 +455,18 @@ namespace Taurus.Mvc
                     result = postBtnMethod.Delegate.Invoke(this, paras);
                     if (result != null && apiResult.Length == 0)
                     {
-                        if (result is string) { Write(result.ToString()); }
-                        else { Write(result); }
+                        var str = result.ToString();
+                        if (result is string) { Write(str); }
+                        else
+                        {
+                            bool isTask = str.StartsWith("System.Threading.") || str.StartsWith("System.Runtime.");
+                            //跳过异步方法。
+                            if (!isTask)
+                            {
+                                Write(result);
+                            }
+
+                        }
                     }
                 }
                 #endregion
@@ -429,35 +475,63 @@ namespace Taurus.Mvc
         }
         private void WriteExeResult()
         {
-            if (string.IsNullOrEmpty(context.Response.Charset))
-            {
-                context.Response.Charset = "utf-8";
-            }
+
+            //if (string.IsNullOrEmpty(context.Response.Charset))
+            //{
+            //    context.Response.Charset = "utf-8";
+            //}
+
             if (View != null)
             {
-                context.Response.Write(View.OutXml);
+                if (string.IsNullOrEmpty(Response.ContentType))
+                {
+                    Response.ContentType = "text/html; charset=utf-8";
+                }
+                //Stopwatch sw = Stopwatch.StartNew();
+                var html = View.OutXml;
+                //sw.Stop();
+                //Console.WriteLine("Get Html : " + sw.ElapsedTicks);
+                Response.Write(html);
+                //context.Response.Write(View.OutXml);
                 View = null;
+
             }
-            else if (apiResult.Length > 0)
+            else
             {
                 string outResult = APIResult;
-                if (string.IsNullOrEmpty(context.Response.ContentType))
+                if (outResult.Length > 0)
                 {
-                    context.Response.ContentType = "text/html;charset=" + context.Response.Charset;
-                }
-                if (context.Response.ContentType.StartsWith("text/html"))
-                {
-                    if (outResult.StartsWith("{") && outResult.EndsWith("}") || (outResult.StartsWith("[") && outResult.EndsWith("]")))
+                    var ct = Response.ContentType;
+                    if (string.IsNullOrEmpty(ct))
                     {
-                        context.Response.ContentType = "application/json;charset=" + context.Response.Charset;
+                        var charset = Response.Charset;
+                        if ((outResult[0] == '{' && outResult.EndsWith("}")) || (outResult[0] == '[' && outResult.EndsWith("]")))
+                        {
+                            Response.ContentType = "application/json; charset=" + charset;
+                        }
+                        else if (outResult.StartsWith("<?xml") && outResult.EndsWith(">"))
+                        {
+                            Response.ContentType = "application/xml; charset=" + charset;
+                        }
+                        else
+                        {
+                            Response.ContentType = "text/html; charset=" + charset;
+                        }
                     }
-                    else if (outResult.StartsWith("<?xml") && outResult.EndsWith(">"))
-                    {
-                        context.Response.ContentType = "application/xml;charset=" + context.Response.Charset;
-                    }
+                    //Stopwatch sw = Stopwatch.StartNew();
+                    Response.Write(outResult);
+                    //sw.Stop();
+                    //Console.WriteLine("Response Write : " + sw.ElapsedTicks);
                 }
-                context.Response.Write(outResult);
+
             }
+            //else if (context.Response.Body.Length > 0)
+            //{
+            //    if (string.IsNullOrEmpty(context.Response.ContentType))
+            //    {
+            //        context.Response.ContentType = "application/octet-stream;charset=" + context.Response.Charset;
+            //    }
+            //}
         }
         #endregion
         public virtual bool BeforeInvoke()
@@ -620,11 +694,20 @@ namespace Taurus.Mvc
                                     paras[i] = Request.Files;
                                     break; ;
                                 case "HttpPostedFile":
-                                    if (Request.Files != null)
+                                    var files = Request.Files;
+                                    if (files != null)
                                     {
-                                        if (Request.Files.Count > 0)
+                                        if (files.Count > 0)
                                         {
-                                            paras[i] = Request.Files[0];
+                                            if (files.Count == 1)
+                                            {
+                                                paras[i] = files[0];
+                                            }
+                                            else
+                                            {
+                                                paras[i] = files[pi.Name];
+                                            }
+
                                         }
                                         else
                                         {
@@ -868,7 +951,7 @@ namespace Taurus.Mvc
         /// <summary>
         /// 缓存参数值，内部字典（Query方法可查。）
         /// </summary>
-        private MDictionary<string, string> queryCache = new MDictionary<string, string>(StringComparer.OrdinalIgnoreCase);
+        private Dictionary<string, string> queryCache = new Dictionary<string, string>(StringComparer.OrdinalIgnoreCase);
         /// <summary>
         /// 自己构造请求参数(Query方法可查，优先级最高）
         /// </summary>
@@ -882,7 +965,15 @@ namespace Taurus.Mvc
             }
             else
             {
-                queryCache.Add(name, value);
+                try
+                {
+                    queryCache.Add(name, value);
+                }
+                catch
+                {
+
+                }
+
             }
         }
 
@@ -896,7 +987,7 @@ namespace Taurus.Mvc
             {
                 return ConvertTool.ChangeType<T>(queryCache[key]);
             }
-            T value = WebTool.Query<T>(key, defaultValue);
+            T value = WebTool.Query<T>(key, defaultValue, context);
             if (value != null)
             {
                 string str = value.ToString();
@@ -968,6 +1059,7 @@ namespace Taurus.Mvc
         /// <param name="obj">any obj is ok<para>对象或支持IEnumerable接口的对象列表</para></param>
         public void Write(object obj)
         {
+            if (obj == null) { return; }
             if (obj is byte[])
             {
                 context.Response.BinaryWrite(obj as byte[]);
@@ -980,7 +1072,8 @@ namespace Taurus.Mvc
 
         public void Write(object obj, bool isSuccess)
         {
-            Write(JsonHelper.ToJson(obj), isSuccess);
+            string json = obj == null ? "" : JsonHelper.ToJson(obj);
+            Write(json, isSuccess);
         }
 
         /// <summary>

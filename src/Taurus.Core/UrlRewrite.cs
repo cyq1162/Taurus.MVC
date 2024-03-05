@@ -10,6 +10,7 @@ using Taurus.Plugin.CORS;
 using Taurus.Plugin.Metric;
 using Taurus.Mvc.Reflect;
 using CYQ.Data.Json;
+using System.Diagnostics;
 
 namespace Taurus.Core
 {
@@ -62,9 +63,14 @@ namespace Taurus.Core
         }
         void context_BeginRequest(object sender, EventArgs e)
         {
+            //Stopwatch sw = Stopwatch.StartNew();
+            //try
+            //{
+
             HttpApplication app = (HttpApplication)sender;
             HttpContext context = app.Context;
             Uri uri = context.Request.Url;
+            bool isMvcSuffix = WebTool.IsMvcSuffix(uri);
 
             #region 0、请求头设置
             if (MvcConfig.IsAddTaurusHeader)
@@ -100,7 +106,7 @@ namespace Taurus.Core
             #region 2、网关安全限制策略检测 - Admin管理后台和微服务不处理。
             if (!LimitRun.IsIgnoreUrl(uri, context.Request.UrlReferrer))
             {
-                if (!LimitRun.CheckIP())
+                if (!LimitRun.CheckIP(context))
                 {
                     //网关请求限制，直接返回
                     context.Response.StatusCode = 403;
@@ -108,9 +114,9 @@ namespace Taurus.Core
                     context.Response.End();
                     return;
                 }
-                if (WebTool.IsMvcSuffix(uri.LocalPath))
+                if (isMvcSuffix)
                 {
-                    if (!LimitRun.CheckRate())
+                    if (!LimitRun.CheckRate(context))
                     {
                         //网关请求限制，直接返回
                         context.Response.StatusCode = 403;
@@ -118,7 +124,7 @@ namespace Taurus.Core
                         context.Response.End();
                         return;
                     }
-                    if (!LimitRun.CheckAck())
+                    if (!LimitRun.CheckAck(context))
                     {
                         //网关请求限制，直接返回
                         context.Response.StatusCode = 412;
@@ -142,7 +148,7 @@ namespace Taurus.Core
 
             #region 4、网关代理请求检测与转发【接口调用次数统计】 - 5、纯网关检测 - 6、Mvc模块禁用检测
             bool isPluginUrl = WebTool.IsPluginUrl(uri, context.Request.UrlReferrer);
-            bool isMvcSuffix = WebTool.IsMvcSuffix(uri);
+
             if (!isPluginUrl || !MetricConfig.IsIgnorePluginUrl)
             {
                 #region 接口调用次数统计，包含统计其它后缀。
@@ -237,7 +243,7 @@ namespace Taurus.Core
                     return;
                 }
             }
-            if (WebTool.IsMvcSuffix(uri))
+            if (isMvcSuffix)
             {
                 MethodEntity routeMapInvoke = MethodCollector.GlobalRouteMapInvoke;
                 if (routeMapInvoke != null)
@@ -251,6 +257,14 @@ namespace Taurus.Core
                 }
             }
             #endregion
+
+            //}
+            //    finally
+            //    {
+            //        sw.Stop();
+            //        Console.WriteLine("ElapsedTicks 1 : " + sw.ElapsedTicks);
+            //    }
+
         }
 
         void context_PostMapRequestHandler(object sender, EventArgs e)
@@ -267,12 +281,15 @@ namespace Taurus.Core
         }
         void context_AcquireRequestState(object sender, EventArgs e)
         {
+            //Stopwatch sw = Stopwatch.StartNew();
             HttpContext cont = ((HttpApplication)sender).Context;
             if (cont != null && !WebTool.IsRunToEnd(cont) && WebTool.IsMvcSuffix(cont.Request.Url))// && WebTool.IsCallMvc(cont.Request.Url)
             {
                 ReplaceOutput(cont);
                 InvokeClass(cont);
             }
+            //sw.Stop();
+            //Console.WriteLine("ElapsedTicks 2 : " + sw.ElapsedTicks);
         }
 
         void context_Error(object sender, EventArgs e)
@@ -312,6 +329,9 @@ namespace Taurus.Core
                 className = items.Length > 1 ? items[0] + "." + items[1] : items[0];
             }
             TypeEntity entity = ControllerCollector.GetController(className);
+
+
+
             //if (t == null || t.Name == ReflectConst.DefaultController)
             //{
             //    if (Rpc.Gateway.Proxy(context, false))//客户端禁用做为网关，避免死循环。
@@ -331,9 +351,13 @@ namespace Taurus.Core
             {
                 try
                 {
+                    //Stopwatch sw = Stopwatch.StartNew();
                     //Controller o = (Controller)Activator.CreateInstance(t);//实例化
                     Controller o = entity.Delegate.CreateController();
+                    //sw.Stop();
+                    //Console.WriteLine("ElapsedTicks 3 : " + sw.ElapsedTicks);
                     o.ProcessRequest(context);
+
                     //entity.Controller.ProcessRequest(context);
                 }
 
