@@ -60,7 +60,7 @@ namespace Taurus.Plugin.Doc
             {
                 if (!string.IsNullOrEmpty(DefaultImg))
                 {
-                    return HttpPostedFileExtend.Create(DefaultImg);
+                    return HttpPostedFileCreator.Create(DefaultImg);
                 }
                 return null;
             }

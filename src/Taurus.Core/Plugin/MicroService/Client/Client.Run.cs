@@ -87,7 +87,7 @@ namespace Taurus.Plugin.MicroService
             {
                 if (hasInit) { return; }
                 hasInit = true;
-                string hostListJson = IO.Read(MsConst.ClientGatewayJsonPath);
+                string hostListJson = AppDataIO.Read(MsConst.ClientGatewayJsonPath);
                 if (!string.IsNullOrEmpty(hostListJson))
                 {
                     var dic = JsonHelper.ToEntity<MDictionary<string, List<HostInfo>>>(hostListJson);
@@ -218,7 +218,7 @@ namespace Taurus.Plugin.MicroService
                         var dic = JsonHelper.ToEntity<MDictionary<string, List<HostInfo>>>(json);
                         Gateway.PreConnection(dic);
                         Gateway.Client.HostList = dic;
-                        IO.Write(MsConst.ClientGatewayJsonPath, json);
+                        AppDataIO.Write(MsConst.ClientGatewayJsonPath, json);
                     }
                 }
             }

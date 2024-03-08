@@ -53,8 +53,8 @@
     <DocumentationFile>bin\Release\Taurus.Core.xml</DocumentationFile>
   </PropertyGroup>
   <ItemGroup>
-    <Reference Include="CYQ.Data, Version=5.9.2.6, Culture=neutral, processorArchitecture=MSIL">
-      <HintPath>..\..\demo\default\packages\cyqdata.5.9.2.6\lib\net20\CYQ.Data.dll</HintPath>
+    <Reference Include="CYQ.Data, Version=5.9.2.7, Culture=neutral, processorArchitecture=MSIL">
+      <HintPath>..\..\demo\default\packages\cyqdata.5.9.2.7\lib\net20\CYQ.Data.dll</HintPath>
     </Reference>
     <Reference Include="DotNetZip">
       <HintPath>..\..\Packages\DotNetZip.dll</HintPath>
@@ -121,7 +121,6 @@
     <Compile Include="Plugin\CORS\CORSRun.cs" />
     <Compile Include="Plugin\Doc\DocConfig.cs" />
     <Compile Include="Plugin\Doc\DocController.cs" />
-    <Compile Include="Plugin\Doc\HttpPostedFileExtend.cs" />
     <Compile Include="Plugin\Limit\AckLimit.cs" />
     <Compile Include="Plugin\Limit\IPLimit.cs" />
     <Compile Include="Plugin\Limit\LimitConfig.cs" />
@@ -131,6 +130,7 @@
     <Compile Include="Plugin\Metric\MetricRun.cs" />
     <Compile Include="Plugin\MicroService\Client\Client.Config.cs" />
     <Compile Include="Plugin\MicroService\Client\Client.cs" />
+    <Compile Include="Plugin\MicroService\Client\Proxy\RestProxy.cs" />
     <Compile Include="Plugin\MicroService\Gateway\Gateway.Client.cs" />
     <Compile Include="Plugin\MicroService\Client\Client.MicroServiceController.cs" />
     <Compile Include="Plugin\MicroService\Client\Client.Run.cs" />
@@ -139,20 +139,23 @@
     <Compile Include="Plugin\MicroService\Gateway\Gateway.PreConnection.cs" />
     <Compile Include="Plugin\MicroService\Gateway\Gateway.Proxy.cs" />
     <Compile Include="Plugin\MicroService\HostInfo.cs" />
-    <Compile Include="Plugin\MicroService\IO.cs" />
+    <Compile Include="MVC\Tool\AppDataIO.cs" />
     <Compile Include="Plugin\MicroService\MSConfig.cs" />
     <Compile Include="Plugin\MicroService\MSConst.cs" />
     <Compile Include="Plugin\MicroService\MSLog.cs" />
     <Compile Include="Plugin\MicroService\MSRun.cs" />
     <Compile Include="Plugin\MicroService\Gateway\Gateway.cs" />
-    <Compile Include="Plugin\RPC\HttpClient\WebClient\HttpWebClient.cs">
+    <Compile Include="Plugin\RPC\HttpClient\DotNet\WebClient\HttpWebClient.cs">
       <SubType>Component</SubType>
     </Compile>
-    <Compile Include="Plugin\RPC\HttpClient\HttpClient.cs" />
+    <Compile Include="Plugin\RPC\HttpClient\DotNet\HttpClient.cs" />
     <Compile Include="Plugin\RPC\Rest.Async.cs" />
     <Compile Include="Plugin\RPC\Rest.Sync.cs" />
-    <Compile Include="Plugin\RPC\RpcClient\HttpClientFactory.cs" />
-    <Compile Include="Plugin\RPC\HttpClient\HttpClientHandler.cs" />
+    <Compile Include="Plugin\RPC\HttpClient\HttpClientFactory.cs" />
+    <Compile Include="Plugin\RPC\HttpClient\DotNet\HttpClientHandler.cs" />
+    <Compile Include="Plugin\MicroService\Client\Proxy\DotNet\RestProxyCreator.cs" />
+    <Compile Include="Plugin\MicroService\Client\Proxy\RestProxyCoder.cs" />
+    <Compile Include="Plugin\MicroService\Client\Proxy\RestPara.cs" />
     <Compile Include="Plugin\RPC\Task\Net\RpcTaskWorker.Sync.cs" />
     <Compile Include="Plugin\RPC\Task\Net\RpcTask.cs" />
     <Compile Include="Plugin\RPC\Task\Net\RpcTaskWorker.cs" />
@@ -174,7 +177,7 @@
       <DesignTime>True</DesignTime>
       <DependentUpon>Resources.resx</DependentUpon>
     </Compile>
-    <Compile Include="Tool\WebTool.cs" />
+    <Compile Include="MVC\Tool\WebTool.cs" />
     <Compile Include="UrlRewrite.cs" />
   </ItemGroup>
   <ItemGroup>

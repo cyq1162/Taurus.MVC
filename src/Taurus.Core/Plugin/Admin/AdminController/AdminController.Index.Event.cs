@@ -15,8 +15,9 @@ namespace Taurus.Plugin.Admin
         public void StopClientMicroService(string host)
         {
             string url = host + MsConfig.Server.RcPath + "/stop?mskey=" + MsConfig.Server.RcKey;
-            RpcTask task = Rest.GetAsync(url);
-            Write(task.Result.ResultText);
+            Gateway.Proxy(Context, url);
+            //RpcTask task = Rest.GetAsync(url);
+            //Write(task.Result.Text);
         }
 
         /// <summary>
@@ -25,8 +26,9 @@ namespace Taurus.Plugin.Admin
         public void ExitClientAppliction(string host)
         {
             string url = host + MsConfig.Server.RcPath + "/exit?mskey=" + MsConfig.Server.RcKey;
-            RpcTask task = Rest.GetAsync(url);
-            Write(task.Result.ResultText);
+            Gateway.Proxy(Context, url);
+            //RpcTask task = Rest.GetAsync(url);
+            //Write(task.Result.Text);
         }
 
         /// <summary>
@@ -40,7 +42,7 @@ namespace Taurus.Plugin.Admin
             HostInfo hostInfo = null;
             foreach (var item in hostList)
             {
-                string lowerKey=item.Key.ToLower();
+                string lowerKey = item.Key.ToLower();
                 if (lowerKey == MsConst.RegistryCenter || lowerKey == MsConst.RegistryCenterOfSlave || lowerKey == MsConst.Gateway || lowerKey.Contains("."))
                 {
                     continue;
@@ -64,6 +66,17 @@ namespace Taurus.Plugin.Admin
             {
                 Write("Unable to find information for this host", false);
             }
+        }
+
+        public void DownRpcProxy(string host, string name)
+        {
+            string url = host + MsConfig.Server.RcPath + "/downrpcproxy?mskey=" + MsConfig.Server.RcKey;
+            Gateway.Proxy(Context, url);
+        }
+        public void ViewRpcProxy(string host, string name)
+        {
+            string url = host + MsConfig.Server.RcPath + "/viewrpcproxy?mskey=" + MsConfig.Server.RcKey;
+            Gateway.Proxy(Context, url);
         }
     }
 }

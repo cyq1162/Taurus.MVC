@@ -66,7 +66,7 @@ namespace Taurus.Plugin.MicroService
                 hasInit = true;
                 try
                 {
-                    string hostListJson = IO.Read(MsConst.ServerRegistryCenterJsonPath);
+                    string hostListJson = AppDataIO.Read(MsConst.ServerRegistryCenterJsonPath);
                     if (!string.IsNullOrEmpty(hostListJson))
                     {
                         var dic = JsonHelper.ToEntity<MDictionary<string, List<HostInfo>>>(hostListJson);
@@ -147,11 +147,11 @@ namespace Taurus.Plugin.MicroService
                     Gateway.PreConnection(kvForGateway);
                     if (MsConfig.IsRegistryCenterOfMaster)
                     {
-                        IO.Write(MsConst.ServerRegistryCenterJsonPath, json);//存（主）注册中心数据到硬盘文件中。
+                        AppDataIO.Write(MsConst.ServerRegistryCenterJsonPath, json);//存（主）注册中心数据到硬盘文件中。
                     }
                     else
                     {
-                        IO.Write(MsConst.ServerRegistryCenterOfSlaveJsonPath, json);//存（从）注册中心数据到硬盘文件中。
+                        AppDataIO.Write(MsConst.ServerRegistryCenterOfSlaveJsonPath, json);//存（从）注册中心数据到硬盘文件中。
                     }
                 }
                 else

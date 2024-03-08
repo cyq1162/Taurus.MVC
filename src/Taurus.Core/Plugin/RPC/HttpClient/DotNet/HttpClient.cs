@@ -43,7 +43,7 @@ namespace System.Net.Http
                 switch (method)
                 {
                     case "GET":
-                        result.ResultByte = httpClient.DownloadData(url);
+                        result.Bytes = httpClient.DownloadData(url);
                         break;
                     case "HEAD":
                         httpClient.Head(url);
@@ -54,7 +54,7 @@ namespace System.Net.Http
                         {
                             data = new byte[0];
                         }
-                        result.ResultByte = httpClient.UploadData(url, method, data);
+                        result.Bytes = httpClient.UploadData(url, method, data);
                         break;
                 }
                 result.IsSuccess = true;

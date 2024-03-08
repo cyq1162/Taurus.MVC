@@ -28,38 +28,5 @@ namespace Taurus.Mvc.Reflect
         /// 所有属性值
         /// </summary>
         public object[] Attributes { get; set; }
-        /// <summary>
-        /// 是否允许指定的HttpMethod请求
-        /// </summary>
-        /// <param name="httpMethod">get、post、head、put、delete</param>
-        /// <returns></returns>
-        public bool IsAllowHttpMethod(string httpMethod)
-        {
-            // internal static string[] HttpMethods = new string[] { "GET", "POST", "HEAD", "PUT", "DELETE" };
-            if (string.IsNullOrEmpty(httpMethod)) { return false; }
-
-            if (!HasGet && !HasPost && !HasHead && !HasPut && !HasDelete)//无配置，则都可以。
-            {
-                return true;
-            }
-            else
-            {
-                switch (httpMethod.ToLower())
-                {
-                    case "get":
-                        return HasGet;
-                    case "post":
-                        return HasPost;
-                    case "head":
-                        return HasHead;
-                    case "put":
-                        return HasPut;
-                    case "delete":
-                        return HasDelete;
-                }
-            }
-            return false;
-
-        }
     }
 }

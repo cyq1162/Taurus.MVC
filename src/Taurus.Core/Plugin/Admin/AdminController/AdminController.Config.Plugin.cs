@@ -85,7 +85,7 @@ namespace Taurus.Plugin.Admin
                 Sets(dt, "Admin.UserName", AdminConfig.UserName + GetOnlineText(true), "Admin account.");
                 Sets(dt, "Admin.Password", string.IsNullOrEmpty(AdminConfig.Password) ? "" : "******", "Admin password.");
 
-                string[] items = IO.Read(AdminConst.AccountPath).Split(',');
+                string[] items = AppDataIO.Read(AdminConst.AccountPath).Split(',');
                 if (items.Length == 2)
                 {
                     dt.NewRow(true);

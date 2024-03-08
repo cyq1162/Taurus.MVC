@@ -18,7 +18,10 @@ namespace Taurus.Mvc
         {
 
         }
-
+        public void SetQuery(string name, string value)
+        {
+            Controller.SetQuery(name, value);
+        }
         public T Query<T>(string key)
         {
             return Controller.Query<T>(key);
@@ -28,7 +31,7 @@ namespace Taurus.Mvc
         {
             return Controller.Query<T>(key, defaultValue);
         }
-       
+
         public HttpContext Context
         {
             get
@@ -114,10 +117,13 @@ namespace Taurus.Mvc
         {
             Controller.Write(obj);
         }
-
         public void Write(object obj, bool isSuccess)
         {
             Controller.Write(obj, isSuccess);
+        }
+        public void WriteFile(string filePath)
+        {
+            Controller.WriteFile(filePath);
         }
     }
 }

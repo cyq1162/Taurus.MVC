@@ -6,6 +6,7 @@ using Taurus.Plugin.Limit;
 using System.Xml;
 using System;
 using CYQ.Data.Xml;
+using Taurus.Mvc;
 
 namespace Taurus.Plugin.Admin
 {
@@ -26,7 +27,7 @@ namespace Taurus.Plugin.Admin
         {
             if (!IsHttpPost)
             {
-                string[] items = IO.Read(AdminConst.AccountPath).Split(',');
+                string[] items = AppDataIO.Read(AdminConst.AccountPath).Split(',');
                 string name = items.Length == 2 ? items[0] : "user";
                 View.KeyValue.Add("UserName", name);
             }
@@ -36,7 +37,7 @@ namespace Taurus.Plugin.Admin
         {
             if (!IsHttpPost)
             {
-                string menuList = IO.Read(AdminConst.MenuPath);
+                string menuList = AppDataIO.Read(AdminConst.MenuPath);
                 View.KeyValue.Add("MenuList", menuList);
             }
         }
@@ -50,7 +51,7 @@ namespace Taurus.Plugin.Admin
             {
                 if (MsConfig.IsRegistryCenterOfMaster)
                 {
-                    string hostList = IO.Read(AdminConst.HostSyncPath);
+                    string hostList = AppDataIO.Read(AdminConst.HostSyncPath);
                     View.KeyValue.Add("HostList", hostList);
                 }
                 else
@@ -71,7 +72,7 @@ namespace Taurus.Plugin.Admin
             {
                 if (LimitConfig.IP.IsEnable)
                 {
-                    string ipList = IO.Read(AdminConst.IPSyncPath);
+                    string ipList = AppDataIO.Read(AdminConst.IPSyncPath);
                     View.KeyValue.Add("IPList", ipList);
                 }
                 else
@@ -91,7 +92,7 @@ namespace Taurus.Plugin.Admin
         {
             if (!IsHttpPost)
             {
-                string configList = IO.Read(AdminConst.ConfigSyncPath);
+                string configList = AppDataIO.Read(AdminConst.ConfigSyncPath);
                 View.Set("isDurable", SetType.Checked, configList.StartsWith("#durable\n").ToString());
                 if (MsConfig.IsRegistryCenterOfMaster)
                 {
@@ -138,7 +139,7 @@ namespace Taurus.Plugin.Admin
             }
             else
             {
-                IO.Write(AdminConst.AccountPath, uid + "," + pwd);
+                AppDataIO.Write(AdminConst.AccountPath, uid + "," + pwd);
                 View.Set("msg", "Save success.");
             }
 
@@ -149,7 +150,7 @@ namespace Taurus.Plugin.Admin
         /// </summary>
         public void btnDeleteAccount()
         {
-            IO.Delete(AdminConst.AccountPath);
+            AppDataIO.Delete(AdminConst.AccountPath);
             View.Set("msg", "Delete success.");
         }
 
@@ -159,7 +160,7 @@ namespace Taurus.Plugin.Admin
         public void BtnAddMenu()
         {
             string menuList = Query<string>("menuList");
-            IO.Write(AdminConst.MenuPath, menuList);
+            AppDataIO.Write(AdminConst.MenuPath, menuList);
             View.KeyValue.Add("MenuList", menuList);
             View.Set("msg", "Save success.");
         }
@@ -178,7 +179,7 @@ namespace Taurus.Plugin.Admin
 
             string hostList = Query<string>("hostList");
             Server.RegistryCenter.AddHostByAdmin(hostList);
-            IO.Write(AdminConst.HostSyncPath, hostList);
+            AppDataIO.Write(AdminConst.HostSyncPath, hostList);
             View.KeyValue.Add("HostList", hostList);
             View.Set("msg", "Save success.");
         }
@@ -215,7 +216,7 @@ namespace Taurus.Plugin.Admin
             string configList = Query<string>("configList");
 
             Server.SyncConfigTime = DateTime.Now;
-            IO.Write(AdminConst.ConfigSyncPath, (isDurable ? "#durable\n" : "") + configList);
+            AppDataIO.Write(AdminConst.ConfigSyncPath, (isDurable ? "#durable\n" : "") + configList);
             View.KeyValue.Add("ConfigList", configList);
             View.Set("isDurable", SetType.Checked, isDurable.ToString());
             View.Set("msg", "Save success.");

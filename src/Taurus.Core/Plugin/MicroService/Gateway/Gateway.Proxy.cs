@@ -7,6 +7,7 @@ using System.Threading;
 using CYQ.Data.Tool;
 using System.Net;
 using Taurus.Plugin.Rpc;
+using CYQ.Data.Json;
 
 namespace Taurus.Plugin.MicroService
 {
@@ -252,9 +253,9 @@ namespace Taurus.Plugin.MicroService
                     }
                     finally
                     {
-                        if (rpcResult.ResultByte != null && rpcResult.ResultByte.Length > 0)
+                        if (rpcResult.Bytes != null && rpcResult.Bytes.Length > 0)
                         {
-                            context.Response.BinaryWrite(rpcResult.ResultByte);
+                            context.Response.BinaryWrite(rpcResult.Bytes);
                         }
                     }
                     return true;

@@ -67,18 +67,21 @@ namespace Taurus.Plugin.Rpc
             foreach (var item in responseMessage.Headers)
             {
                 string value = string.Join(" ", item.Value);
-                //string value = string.Empty;
-                //foreach (var v in item.Value)
-                //{
-                //    value = v;
-                //    break;
-                //}
                 result.Headers.Add(item.Key, value);
             }
             byte[] bytes = await responseMessage.Content.ReadAsByteArrayAsync();
+            var contentHeader=responseMessage.Content.Headers;
+            if(contentHeader != null)
+            {
+                foreach (var item in contentHeader)
+                {
+                    string value = string.Join(" ", item.Value);
+                    result.Headers.Add(item.Key, value);
+                }
+            }
             if (bytes != null && bytes.Length > 0)
             {
-                result.ResultByte = bytes;
+                result.Bytes = bytes;
             }
             return result;
         }

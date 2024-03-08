@@ -104,7 +104,7 @@ namespace Taurus.Plugin.MicroService
             {
                 if (hasInit) { return; }
                 hasInit = true;
-                string hostListJson = IO.Read(MsConst.ServerRegistryCenterOfSlaveJsonPath);
+                string hostListJson = AppDataIO.Read(MsConst.ServerRegistryCenterOfSlaveJsonPath);
                 if (!string.IsNullOrEmpty(hostListJson))
                 {
                     var dic = JsonHelper.ToEntity<MDictionary<string, List<HostInfo>>>(hostListJson);
@@ -237,7 +237,7 @@ namespace Taurus.Plugin.MicroService
                         Server.RegistryCenter.HostList = keyValues;
                         Server.RegistryCenter.HostListJson = json;
 
-                        IO.Write(MsConst.ServerRegistryCenterOfSlaveJsonPath, json);
+                        AppDataIO.Write(MsConst.ServerRegistryCenterOfSlaveJsonPath, json);
                     }
                 }
             }

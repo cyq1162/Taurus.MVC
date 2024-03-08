@@ -107,5 +107,21 @@ namespace Taurus.Mvc
                 //return _HostIP ?? "127.0.0.1";
             }
         }
+
+        private static string _AppDataPath;
+        /// <summary>
+        /// 获取当前 App_Data 路径，不以"/" 或"\"结尾。
+        /// </summary>
+        public static string AppDataPath
+        {
+            get
+            {
+                if (_AppDataPath == null)
+                {
+                    _AppDataPath = AppConst.WebRootPath + "App_Data";
+                }
+                return _AppDataPath;
+            }
+        }
     }
 }

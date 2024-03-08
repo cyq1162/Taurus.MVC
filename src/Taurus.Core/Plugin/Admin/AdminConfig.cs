@@ -3,6 +3,7 @@ using CYQ.Data.Json;
 using CYQ.Data.Tool;
 using System.Collections.Generic;
 using System.IO;
+using Taurus.Mvc;
 using Taurus.Plugin.MicroService;
 
 namespace Taurus.Plugin.Admin
@@ -14,7 +15,7 @@ namespace Taurus.Plugin.Admin
     {
         static AdminConfig()
         {
-            string config = IO.Read(AdminConst.ConfigPath);
+            string config = AppDataIO.Read(AdminConst.ConfigPath);
             if (!string.IsNullOrEmpty(config))
             {
                 var dic = JsonHelper.Split(config);
@@ -35,9 +36,9 @@ namespace Taurus.Plugin.Admin
                 }
             }
 
-            if (!string.IsNullOrEmpty(IO.Read(AdminConst.ConfigSyncPath)))
+            if (!string.IsNullOrEmpty(AppDataIO.Read(AdminConst.ConfigSyncPath)))
             {
-                Server.SyncConfigTime = IO.Info(AdminConst.ConfigSyncPath).LastWriteTime;
+                Server.SyncConfigTime = AppDataIO.Info(AdminConst.ConfigSyncPath).LastWriteTime;
             }
         }
         /// <summary>

@@ -4,6 +4,7 @@ using System.Collections.Generic;
 using System.IO;
 using Taurus.Plugin.MicroService;
 using Taurus.Plugin.Admin;
+using Taurus.Mvc;
 
 namespace Taurus.Plugin.Limit
 {
@@ -24,7 +25,7 @@ namespace Taurus.Plugin.Limit
         {
             if (isSaveToFile)
             {
-                IO.Write(AdminConst.IPSyncPath, ipList);
+                AppDataIO.Write(AdminConst.IPSyncPath, ipList);
             }
             Dictionary<string, byte> dic = new Dictionary<string, byte>();
             List<string> list = new List<string>();
@@ -110,10 +111,10 @@ namespace Taurus.Plugin.Limit
         {
             if (ipBlackDic.Count == 0 && ipBlackList.Count == 0)
             {
-                string ipList = IO.Read(AdminConst.IPSyncPath);
+                string ipList = AppDataIO.Read(AdminConst.IPSyncPath);
                 if (!string.IsNullOrEmpty(ipList))
                 {
-                    Server.SyncIPTime = IO.Info(AdminConst.IPSyncPath).LastWriteTime;
+                    Server.SyncIPTime = AppDataIO.Info(AdminConst.IPSyncPath).LastWriteTime;
                     ResetIPList(ipList, false);
                 }
             }

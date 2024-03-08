@@ -62,7 +62,7 @@ namespace Taurus.Plugin.Admin
                 }
                 if (isSaveToFile)
                 {
-                    IO.Write(AdminConst.ConfigPath, JsonHelper.ToJson(durableConfig));
+                    AppDataIO.Write(AdminConst.ConfigPath, JsonHelper.ToJson(durableConfig));
                 }
             }
 
@@ -84,7 +84,7 @@ namespace Taurus.Plugin.Admin
                 {
                     if (value == null) { value = durableConfig[key]; }
                     durableConfig.Remove(key);
-                    IO.Write(AdminConst.ConfigPath, JsonHelper.ToJson(durableConfig));
+                    AppDataIO.Write(AdminConst.ConfigPath, JsonHelper.ToJson(durableConfig));
                 }
                 if (!tempConfig.ContainsKey(key) && value != null)
                 {
@@ -155,7 +155,7 @@ namespace Taurus.Plugin.Admin
 
                 if (!isOK)
                 {
-                    string[] items = IO.Read(AdminConst.AccountPath).Split(',');
+                    string[] items = AppDataIO.Read(AdminConst.AccountPath).Split(',');
                     isOK = items.Length == 2 && items[0] == uid && items[1] == pwd;
                     if (isOK)
                     {

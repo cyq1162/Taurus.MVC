@@ -35,6 +35,8 @@ namespace Taurus.Plugin.Admin
                 case "logdelete":
                 case "stopclientmicroservice":
                 case "exitclientappliction":
+                case "downrpcproxy":
+                case "viewrpcproxy":
                 case "checkurl":
                 case "uploadssl":
                     isNoViewEvent = true;

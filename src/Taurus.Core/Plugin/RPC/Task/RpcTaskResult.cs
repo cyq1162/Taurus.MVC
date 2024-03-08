@@ -26,19 +26,19 @@ namespace Taurus.Plugin.Rpc
         /// <summary>
         /// 调用返回的数据
         /// </summary>
-        public byte[] ResultByte { get; set; }
+        public byte[] Bytes { get; set; }
         /// <summary>
         /// 调用返回的文本（由Result UTF8转码）
         /// </summary>
-        public string ResultText
+        public string Text
         {
             get
             {
-                if (ResultByte == null || ResultByte.Length == 0)
+                if (Bytes == null || Bytes.Length == 0)
                 {
                     return "";
                 }
-                return Encoding.UTF8.GetString(ResultByte);
+                return Encoding.UTF8.GetString(Bytes);
             }
         }
         private WebHeaderCollection _Headers = new WebHeaderCollection();
@@ -51,24 +51,5 @@ namespace Taurus.Plugin.Rpc
         /// 调用异常时信息
         /// </summary>
         public Exception Error { get; set; }
-
-        /// <summary>
-        /// 异常信息
-        /// </summary>
-        public string ErrorText
-        {
-            get
-            {
-                if (Error != null)
-                {
-                    return Error.Message;
-                }
-                return string.Empty;
-            }
-            set
-            {
-                Error=new Exception(value);
-            }
-        }
     }
 }

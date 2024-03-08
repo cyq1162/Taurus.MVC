@@ -212,7 +212,7 @@ namespace Taurus.Mvc
             }
             bool isGoOn = true;
 
-            if (!attrEntity.IsAllowHttpMethod(Request.HttpMethod))
+            if (!methodEntity.IsAllowHttpMethod(Request.HttpMethod))
             {
                 Write("Http method not support " + Request.HttpMethod, false);
                 return false;
@@ -438,7 +438,6 @@ namespace Taurus.Mvc
                     {
                         Write(result);
                     }
-
                 }
             }
             if (IsHttpPost && _View != null && !string.IsNullOrEmpty(BtnName))
@@ -452,22 +451,7 @@ namespace Taurus.Mvc
                         return false;
                     }
                     //执行页面控制点击事件
-                    result = postBtnMethod.Delegate.Invoke(this, paras);
-                    if (result != null && apiResult.Length == 0)
-                    {
-                        var str = result.ToString();
-                        if (result is string) { Write(str); }
-                        else
-                        {
-                            bool isTask = str.StartsWith("System.Threading.") || str.StartsWith("System.Runtime.");
-                            //跳过异步方法。
-                            if (!isTask)
-                            {
-                                Write(result);
-                            }
-
-                        }
-                    }
+                    postBtnMethod.Delegate.Invoke(this, paras);
                 }
                 #endregion
             }
@@ -1075,6 +1059,29 @@ namespace Taurus.Mvc
             string json = obj == null ? "" : JsonHelper.ToJson(obj);
             Write(json, isSuccess);
         }
+
+        /// <summary>
+        /// 响应输出文件
+        /// </summary>
+        /// <param name="filePath">文件路径</param>
+        public void WriteFile(string filePath)
+        {
+            if (string.IsNullOrEmpty(filePath)) { return; }
+            if (!filePath.StartsWith(AppConst.WebRootPath))
+            {
+                filePath = AppConst.WebRootPath + filePath;
+            }
+
+            var bytes = IOHelper.ReadAllBytes(filePath);
+            if (bytes == null || bytes.Length == 0) { return; }
+            Response.AppendHeader("Content-Disposition", "attachment;filename=" + Path.GetFileName(filePath));
+            Response.AppendHeader("Content-Length", bytes.Length.ToString());
+            Response.AppendHeader("Content-Transfer-Encoding", "binary");
+            Response.ContentType = "application/octet-stream;charset=" + Response.Charset;
+            Response.BinaryWrite(bytes);
+            Response.End();
+        }
+
 
         /// <summary>
         /// Get entity from post form

@@ -54,10 +54,20 @@ namespace Taurus.Plugin.Admin
             }
             if (View != null)
             {
+                int type = Query<int>("t");
                 View.KeyValue.Add("Version", MvcConst.Version);
                 View.KeyValue.Add("MsType", GetMsTypeText());
-                View.KeyValue.Add("Target", (Query<int>("t") == 3 && MsConfig.IsServer) ? "_blank" : "_self");
+                View.KeyValue.Add("Target", (type == 3 && MsConfig.IsServer) ? "_blank" : "_self");
 
+                //对微服务客户端设置权限
+                if (type == 2 || type == 4 || type == 5)
+                {
+                    if (type == 2)
+                    {
+                        View.KeyValue.Add("IsRCAdmin", (MsConfig.IsRegistryCenter && IsAdmin) ? "yes" : "");
+                    }
+                    View.KeyValue.Add("IsRC", (MsConfig.IsRegistryCenter) ? "yes" : "");
+                }
                 if (HostList != null && HostList.Count > 0)
                 {
                     BindNamesView();
@@ -296,7 +306,7 @@ namespace Taurus.Plugin.Admin
                 dt.Bind(View);
             }
         }
-        private string View_OnForeach(string text, MDictionary<string, string> values, int rowIndex)
+        private string View_OnForeach(string text, Dictionary<string, string> values, int rowIndex)
         {
             DateTime dt;
             if (DateTime.TryParse(values["RegTime"], out dt))

@@ -1,5 +1,6 @@
 ﻿
 using System;
+using Taurus.Mvc;
 
 namespace Taurus.Plugin.MicroService
 {
@@ -31,7 +32,7 @@ namespace Taurus.Plugin.MicroService
             {
                 if (_Host2 == null)
                 {
-                    _Host2 = IO.Read(MsConst.ClientHost2Path);//首次读取，以便于恢复。
+                    _Host2 = AppDataIO.Read(MsConst.ClientHost2Path);//首次读取，以便于恢复。
                 }
                 return _Host2;
             }
@@ -41,7 +42,7 @@ namespace Taurus.Plugin.MicroService
                 if (value != _RcUrl)
                 {
                     //【不存和初始配置一致的链接】
-                    IO.Write(MsConst.ClientHost2Path, value);
+                    AppDataIO.Write(MsConst.ClientHost2Path, value);
                 }
 
 

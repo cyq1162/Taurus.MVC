@@ -20,7 +20,7 @@ namespace Taurus.Plugin.Rpc
             if (request == null || request.Uri == null)
             {
                 task.State = RpcTaskState.Complete;
-                task.Result = new RpcTaskResult() { ErrorText = "Uri is null." };
+                task.Result = new RpcTaskResult() { Error = new Exception("Uri is null.") };
                 return task;
             }
 

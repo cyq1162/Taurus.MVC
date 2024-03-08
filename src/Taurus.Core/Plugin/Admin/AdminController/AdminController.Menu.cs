@@ -5,6 +5,7 @@ using Taurus.Plugin.MicroService;
 using Taurus.Plugin.Limit;
 using System.Xml;
 using System;
+using Taurus.Mvc;
 
 namespace Taurus.Plugin.Admin
 {
@@ -51,7 +52,7 @@ namespace Taurus.Plugin.Admin
             #endregion
 
             #region 加载自定义菜单 - 来自配置 - 持久化
-            string menuText = IO.Read(AdminConst.MenuPath);
+            string menuText = AppDataIO.Read(AdminConst.MenuPath);
             if (!string.IsNullOrEmpty(menuText))
             {
                 string[] items = menuText.Split('\n');
@@ -75,7 +76,7 @@ namespace Taurus.Plugin.Admin
             dtGroup.Bind(View, "menuList");
         }
 
-        private string View_OnForeach_Menu(string text, MDictionary<string, string> values, int rowIndex)
+        private string View_OnForeach_Menu(string text, Dictionary<string, string> values, int rowIndex)
         {
             string menu = values["MenuName"];
             if (!string.IsNullOrEmpty(menu))

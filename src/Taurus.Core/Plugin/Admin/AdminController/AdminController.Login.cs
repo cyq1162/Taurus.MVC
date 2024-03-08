@@ -27,7 +27,7 @@ namespace Taurus.Plugin.Admin
 
             if (!IsHttpPost)
             {
-                string[] items = IO.Read(AdminConst.AccountPath).Split(',');
+                string[] items = AppDataIO.Read(AdminConst.AccountPath).Split(',');
                 string name = items.Length == 2 ? items[0] : AdminConfig.UserName;
                 View.Set("uid", name);
             }

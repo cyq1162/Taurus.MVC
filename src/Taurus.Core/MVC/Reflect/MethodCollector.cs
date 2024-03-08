@@ -192,8 +192,8 @@ namespace Taurus.Mvc.Reflect
                     attributeEntity.HasRequire = true;
                     attributeEntity.RequireAttributes = objects as RequireAttribute[];
                 }
-                dic.Add(name, new MethodEntity(entity, method, attributeEntity));
 
+                string routeUrl = null;
                 #region 处理 Method Route 属性映射。
                 objects = method.GetCustomAttributes(typeof(RouteAttribute), true);
                 if (objects != null && objects.Length > 0)
@@ -210,6 +210,7 @@ namespace Taurus.Mvc.Reflect
                             foreach (RoutePrefixAttribute rpa in rpas)
                             {
                                 string fromUrl = "/" + rpa.MapName.Trim('/') + "/" + ra.MapPath.Trim('/');
+                                routeUrl = fromUrl;
                                 string toUrl = moduleName + name;
                                 RouteEngine.Add(fromUrl, toUrl);
                                 if (rpa.IsKeepOriginalPath || rpa.IsKeepOriginalPath)
@@ -222,6 +223,7 @@ namespace Taurus.Mvc.Reflect
                         else
                         {
                             string fromUrl = "/" + ra.MapPath.Trim('/');
+                            routeUrl = fromUrl;
                             string toUrl = moduleName + name;
                             RouteEngine.Add(fromUrl, toUrl);
                             if (ra.IsKeepOriginalPath)
@@ -238,6 +240,7 @@ namespace Taurus.Mvc.Reflect
                     foreach (RoutePrefixAttribute rpa in rpas)
                     {
                         string fromUrl = "/" + rpa.MapName.Trim('/') + "/" + name;
+                        routeUrl = fromUrl;
                         string toUrl = moduleName + name;
                         RouteEngine.Add(fromUrl, toUrl);
                         if (rpa.IsKeepOriginalPath)
@@ -247,7 +250,14 @@ namespace Taurus.Mvc.Reflect
                         RouteEngine.AddDenyUrl(toUrl);
                     }
                 }
+                else
+                {
+                    //都无配置
+                    routeUrl= moduleName + name;
+                }
                 #endregion
+
+                dic.Add(name, new MethodEntity(entity, method, attributeEntity, routeUrl));
             }
             if (!typeMethods.ContainsKey(t.FullName))//有概念会重复。
             {

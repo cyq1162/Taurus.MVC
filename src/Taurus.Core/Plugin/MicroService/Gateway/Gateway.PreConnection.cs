@@ -17,9 +17,9 @@ namespace Taurus.Plugin.MicroService
     public static partial class Gateway
     {
         /// <summary>
-        /// 已检测列表
+        /// 已检测列表【无遍历和移除，不用锁】
         /// </summary>
-        private static MDictionary<Uri, bool> preConnectionDic = new MDictionary<Uri, bool>();
+        private static Dictionary<Uri, bool> preConnectionDic = new Dictionary<Uri, bool>();
 
         internal static void PreConnection(MDictionary<string, List<HostInfo>> keyValues)
         {
@@ -67,7 +67,15 @@ namespace Taurus.Plugin.MicroService
             {
                 if (!preConnectionDic.ContainsKey(uri))
                 {
-                    preConnectionDic.Add(uri, true);
+                    try
+                    {
+                        preConnectionDic.Add(uri, true);
+                    }
+                    catch
+                    {
+
+                    }
+                    
                 }
                 else
                 {
@@ -87,7 +95,14 @@ namespace Taurus.Plugin.MicroService
                     }
                     else
                     {
-                        preConnectionDic.Add(uri, false);
+                        try
+                        {
+                            preConnectionDic.Add(uri, false);
+                        }
+                        catch
+                        {
+
+                        }
                     }
                 }
             }

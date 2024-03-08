@@ -1,4 +1,5 @@
 ﻿using System;
+using Taurus.Mvc;
 
 namespace Taurus.Plugin.MicroService
 {
@@ -60,7 +61,7 @@ namespace Taurus.Plugin.MicroService
                         if (MsConfig.IsGateway)
                         {
                             //仅网关读取配置文件。
-                            _Host2 = IO.Read(MsConst.ServerHost2Path);
+                            _Host2 = AppDataIO.Read(MsConst.ServerHost2Path);
                         }
                         else
                         {
@@ -79,7 +80,7 @@ namespace Taurus.Plugin.MicroService
                             if (value != _RcUrl)
                             {
                                 //仅网关写入配置文件【不存和初始配置一致的链接】
-                                IO.Write(MsConst.ServerHost2Path, value);
+                                AppDataIO.Write(MsConst.ServerHost2Path, value);
                             }
                         }
                     }

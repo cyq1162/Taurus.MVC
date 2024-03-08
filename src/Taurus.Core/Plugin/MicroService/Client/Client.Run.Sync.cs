@@ -60,7 +60,7 @@ namespace Taurus.Plugin.MicroService
             private static void SetConfigSync(string configList)
             {
                 Client.SyncConfigTime = DateTime.Now;
-                IO.Write(AdminConst.ConfigSyncPath, configList);
+                AppDataIO.Write(AdminConst.ConfigSyncPath, configList);
                 if (string.IsNullOrEmpty(configList) || !configList.Contains("="))
                 {
                     return;

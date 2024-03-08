@@ -5,7 +5,7 @@
     <AssemblyName>Taurus.Core</AssemblyName>
     <RootNamespace>Taurus.Mvc</RootNamespace>
     <Description>Taurus.Mvc is a mvc and webapi for asp.net or asp.net core（适合场景：对性能和并发有较高要求的电商、站点、WebAPI等系统，支持.Net 和 .Net Core 所有系列，内置【注册中心、网关、客户端】，【开源：https://github.com/cyq1162/Taurus.MVC】</Description>
-    <Company>路过秋天 （2024-03-05）</Company>
+    <Company>路过秋天 （2024-03-09）</Company>
     <Authors>路过秋天</Authors>
     <Copyright>Copyright ©  路过秋天 2016-2116</Copyright>
     <Product>Taurus.Core .NET Core 版本</Product>
@@ -15,8 +15,8 @@
     <GeneratePackageOnBuild>False</GeneratePackageOnBuild>
     <PackageReleaseNotes></PackageReleaseNotes>
     <PackageTags>Taurus.MVC Core ASP.NET aspnetcore webapi</PackageTags>
-    <AssemblyVersion>3.4.5</AssemblyVersion>
-    <FileVersion>3.4.5</FileVersion>
+    <AssemblyVersion>3.4.6</AssemblyVersion>
+    <FileVersion>3.4.6</FileVersion>
   </PropertyGroup>
 
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|AnyCPU'">
@@ -30,23 +30,26 @@
   <ItemGroup>
     <Compile Remove="Plugin\Admin\AdminController\DotNet\**" />
     <Compile Remove="Plugin\DistributedTransaction\**" />
-    <Compile Remove="Plugin\RPC\HttpClient\**" />
+    <Compile Remove="Plugin\MicroService\Client\Proxy\DotNet\**" />
+    <Compile Remove="Plugin\RPC\HttpClient\DotNet\**" />
     <Compile Remove="Plugin\RPC\Pool\**" />
-    <Compile Remove="Plugin\RPC\RpcClient\Net\**" />
+    <Compile Remove="Plugin\RPC\RpcProxy\**" />
     <Compile Remove="Plugin\RPC\Task\Net\**" />
     <Compile Remove="WebSocket\**" />
     <EmbeddedResource Remove="Plugin\Admin\AdminController\DotNet\**" />
     <EmbeddedResource Remove="Plugin\DistributedTransaction\**" />
-    <EmbeddedResource Remove="Plugin\RPC\HttpClient\**" />
+    <EmbeddedResource Remove="Plugin\MicroService\Client\Proxy\DotNet\**" />
+    <EmbeddedResource Remove="Plugin\RPC\HttpClient\DotNet\**" />
     <EmbeddedResource Remove="Plugin\RPC\Pool\**" />
-    <EmbeddedResource Remove="Plugin\RPC\RpcClient\Net\**" />
+    <EmbeddedResource Remove="Plugin\RPC\RpcProxy\**" />
     <EmbeddedResource Remove="Plugin\RPC\Task\Net\**" />
     <EmbeddedResource Remove="WebSocket\**" />
     <None Remove="Plugin\Admin\AdminController\DotNet\**" />
     <None Remove="Plugin\DistributedTransaction\**" />
-    <None Remove="Plugin\RPC\HttpClient\**" />
+    <None Remove="Plugin\MicroService\Client\Proxy\DotNet\**" />
+    <None Remove="Plugin\RPC\HttpClient\DotNet\**" />
     <None Remove="Plugin\RPC\Pool\**" />
-    <None Remove="Plugin\RPC\RpcClient\Net\**" />
+    <None Remove="Plugin\RPC\RpcProxy\**" />
     <None Remove="Plugin\RPC\Task\Net\**" />
     <None Remove="WebSocket\**" />
   </ItemGroup>
@@ -56,9 +59,6 @@
     <Compile Remove="MVC\ViewEngine.InitStyles.cs" />
     <Compile Remove="MVC\ViewEngine.Zip.cs" />
     <Compile Remove="Plugin\MicroService\Gateway\Gateway.YARP.cs" />
-    <Compile Remove="Plugin\RPC\RpcClient\MyWebClient.cs" />
-    <Compile Remove="Plugin\RPC\RpcClient\RpcClient.cs" />
-    <Compile Remove="Plugin\RPC\RpcClient\RpcClientPool2.cs" />
     <Compile Remove="Properties\AssemblyInfo.cs" />
   </ItemGroup>
 
@@ -73,7 +73,8 @@
   </ItemGroup>
 
   <ItemGroup>
-    <PackageReference Include="cyqdata" Version="5.9.2.6" />
+    <PackageReference Include="cyqdata" Version="5.9.2.7" />
+    <PackageReference Include="Microsoft.CodeAnalysis.CSharp" Version="4.1.0" />
   </ItemGroup>
 
 </Project>

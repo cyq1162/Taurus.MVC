@@ -1,6 +1,7 @@
 ﻿using CYQ.Data.Tool;
 using System;
 using System.Collections.Generic;
+using Taurus.Mvc;
 using Taurus.Plugin.Admin;
 
 namespace Taurus.Plugin.MicroService
@@ -19,7 +20,7 @@ namespace Taurus.Plugin.MicroService
             {
                 if (hostListByAdmin.Count == 0)
                 {
-                    string hostList = IO.Read(AdminConst.HostSyncPath);
+                    string hostList = AppDataIO.Read(AdminConst.HostSyncPath);
                     if (!string.IsNullOrEmpty(hostList))
                     {
                         AddHostByAdmin(hostList);

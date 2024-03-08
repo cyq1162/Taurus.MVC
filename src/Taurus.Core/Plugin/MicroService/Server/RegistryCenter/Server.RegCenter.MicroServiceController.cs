@@ -31,10 +31,12 @@ namespace Taurus.Plugin.MicroService
 
         public override bool BeforeInvoke()
         {
-            switch (MethodName)
+            switch (MethodName.ToLower())
             {
                 case "stop"://client
                 case "exit"://client
+                case "downrpcproxy":
+                case "viewrpcproxy":
                     return true;
                 default:
                     if (!MsConfig.IsRegistryCenter || !MsConfig.Server.IsEnable)
@@ -308,7 +310,7 @@ namespace Taurus.Plugin.MicroService
         [MicroService]
         public void GetIPSyncList()
         {
-            string ipList = IO.Read(AdminConst.IPSyncPath);
+            string ipList = AppDataIO.Read(AdminConst.IPSyncPath);
             Write(JsonHelper.OutResult(true, ipList));
 
             
@@ -323,7 +325,7 @@ namespace Taurus.Plugin.MicroService
         [MicroService]
         public void GetConfigSyncList()
         {
-            string configList = IO.Read(AdminConst.ConfigSyncPath);
+            string configList = AppDataIO.Read(AdminConst.ConfigSyncPath);
             Write(JsonHelper.OutResult(true, configList));
 
             
