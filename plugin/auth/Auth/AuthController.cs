@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Text;
 using System.Web;
 using CYQ.Data;
+using CYQ.Data.Json;
 using CYQ.Data.Table;
 using CYQ.Data.Tool;
 using Taurus.Mvc;

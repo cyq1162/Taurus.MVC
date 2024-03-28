@@ -3,6 +3,7 @@ using CYQ.Data;
 using CYQ.Data.Tool;
 using Taurus.Mvc;
 using System.Web;
+using CYQ.Data.Json;
 namespace Taurus.Plugin.Auth
 {
     /// <summary>
@@ -81,7 +82,7 @@ namespace Taurus.Plugin.Auth
                             string userID = action.Get<string>(action.Data.PrimaryCell.ColumnName);
                             string fullName = action.Get<string>(user.FullName, userName);
 
-                            if (!pwd.EndsWith("=2") && AppConfig.EncryptKey != "")
+                            if (!pwd.EndsWith("=2") && AppConfig.Tool.EncryptKey != "")
                             {
                                 action.Set(user.Password, EncryptHelper.Encrypt(password));//重新加密密码
                                 action.Update(where);//更新信息。
@@ -292,10 +293,11 @@ namespace Taurus.Plugin.Auth
         {
             get
             {
-                string token = WebTool.Query<string>("token");
+                var request = HttpContext.Current.Request;
+                string token = request.GetHeader("token") ?? request.GetForm("token") ?? request.GetQueryString("token");
                 if (string.IsNullOrEmpty(token))
                 {
-                    HttpCookie tokenCookie = HttpContext.Current.Request.Cookies[AuthConst.CookieTokenName];
+                    HttpCookie tokenCookie = request.Cookies[AuthConst.CookieTokenName];
                     if (tokenCookie != null)
                     {
                         token = tokenCookie.Value;
