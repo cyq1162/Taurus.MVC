@@ -17,6 +17,15 @@ namespace Taurus.Plugin.Admin
                 return AdminConfig.HtmlFolderName;
             }
         }
+        ///// <summary>
+        ///// 检测账号是否登陆
+        ///// </summary>
+        //public override bool CheckToken(string token)
+        //{
+            
+        //}
+
+
         /// <summary>
         /// 账号检测是否登陆状态
         /// </summary>

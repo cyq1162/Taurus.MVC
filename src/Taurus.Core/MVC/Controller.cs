@@ -398,9 +398,9 @@ namespace Taurus.Mvc
         }
         private void LoadHtmlView()
         {
-            if (!CancelLoadHtml)
+            if (IsLoadHtml)
             {
-                _View = ViewEngine.Create(HtmlFolderName, HtmlFileName);//这里ControllerName用原始大写，兼容Linux下大小写名称。
+                _View = ViewEngine.Create(HtmlFolderName, HtmlFileName, IsLoadHtmlWithReadOnly);//这里ControllerName用原始大写，兼容Linux下大小写名称。
                 if (_View != null)
                 {
                     //追加几个全局标签变量
@@ -531,16 +531,28 @@ namespace Taurus.Mvc
 
         }
         /// <summary>
-        /// to stop load view html
-        /// <para>是否取消加载Html文件</para>
+        /// is allow load html view
+        /// <para>是否加载Html文件</para>
         /// </summary>
-        protected virtual bool CancelLoadHtml
+        protected virtual bool IsLoadHtml
+        {
+            get
+            {
+                return true;
+            }
+        }
+        /// <summary>
+        /// is load html view with readonly
+        /// <para>是否加载只读 Html文件</para>
+        /// </summary>
+        protected virtual bool IsLoadHtmlWithReadOnly
         {
             get
             {
                 return false;
             }
         }
+
         /// <summary>
         /// 默认返回控制器名称，可通过重写重定向到自定义html目录名
         /// </summary>
@@ -784,6 +796,11 @@ namespace Taurus.Mvc
     }
     public abstract partial class Controller
     {
+        ///// <summary>
+        ///// 类型属性
+        ///// </summary>
+        //internal TypeEntity typeEntity;
+
         private XHtmlAction _View;
         /// <summary>
         /// the View Engine

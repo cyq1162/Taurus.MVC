@@ -17,12 +17,14 @@ using System.Collections.Generic;
 using Microsoft.Extensions.Options;
 using Taurus.Mvc.Reflect;
 using Taurus.Plugin.Rpc;
+using Microsoft.Extensions.Logging;
 //using Yarp.ReverseProxy.Forwarder;
 
 namespace Microsoft.AspNetCore.Http
 {
     public static partial class TaurusExtensions
     {
+       // static IServiceCollection appServices;
         static KestrelServerOptions kestrelServerOptions;
         static HostFilteringOptions hostFilteringOptions;
         // static IISServerOptions iisServerOptions;
@@ -32,7 +34,12 @@ namespace Microsoft.AspNetCore.Http
         /// <param name="services"></param>
         public static void AddTaurusMvc(this IServiceCollection services)
         {
+            //  appServices=services;
             //services.AddHttpForwarder();
+            //if (!AppConst.IsDebugMode)
+            //{
+            //    services.AddLogging(op => op.ClearProviders());
+            //}
             services.AddHttpContext();
             //开放表单不限制长度。
             services.Configure<FormOptions>(options => options.MultipartBodyLengthLimit = MvcConfig.Kestrel.Limits.MaxRequestBodySize);
@@ -126,6 +133,7 @@ namespace Microsoft.AspNetCore.Http
                 //    task.Wait();
                 //}
             }
+           // appServices.AddLogging(op => op.ClearProviders());
         }
 
         private static bool SetAppRunUrl(string host)

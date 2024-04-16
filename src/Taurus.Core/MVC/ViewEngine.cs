@@ -60,20 +60,20 @@ namespace Taurus.Mvc
         }
 
         private static Dictionary<string, string> keyPath = new Dictionary<string, string>(StringComparer.OrdinalIgnoreCase);
-        private static Dictionary<string, bool>  apiPath = new Dictionary<string, bool>(StringComparer.OrdinalIgnoreCase);
+        private static Dictionary<string, bool> apiPath = new Dictionary<string, bool>(StringComparer.OrdinalIgnoreCase);
         /// <summary>
         /// 创建视图对象
         /// </summary>
-        public static XHtmlAction Create(string controlName, string actionName)
+        public static XHtmlAction Create(string controlName, string actionName, bool isReadOnly)
         {
             string key = controlName + "-" + actionName;
             if (keyPath.ContainsKey(key))
             {
-                return Create(keyPath[key]);
+                return Create(keyPath[key], isReadOnly);
             }
-            if (apiPath.ContainsKey(controlName)) 
+            if (apiPath.ContainsKey(controlName))
             {
-                return null; 
+                return null;
             }
             if (Directory.Exists(ViewsPath))
             {
@@ -103,7 +103,7 @@ namespace Taurus.Mvc
                                     }
 
                                 }
-                                return Create(file);
+                                return Create(file, isReadOnly);
                             }
                         }
                         break;
@@ -146,9 +146,10 @@ namespace Taurus.Mvc
         /// 创建视图对象
         /// </summary>
         /// <param name="fullPath">相对路径，如：/abc/cyq/a.html</param>
-        public static XHtmlAction Create(string fullPath)
+        /// <param name="isReadOnly">页面内容是否只读</param>
+        public static XHtmlAction Create(string fullPath, bool isReadOnly)
         {
-            XHtmlAction view = new XHtmlAction(true, false);
+            XHtmlAction view = new XHtmlAction(true, isReadOnly);
             if (view.Load(fullPath, XmlCacheLevel.Day, true))
             {
                 // System.Web.HttpContext.Current.Response.Write("load ok");
@@ -331,7 +332,7 @@ namespace Taurus.Mvc
                             string fiName = Path.GetFileNameWithoutExtension(file);
                             if (MethodCollector.GetMethod(ctl.Value.Type, fiName) != null)
                             {
-                                Create(ctl.Key, fiName);//走这个方法，让其入缓存。
+                                Create(ctl.Key, fiName, false);//走这个方法，让其入缓存。
                             }
                         }
                         break;
