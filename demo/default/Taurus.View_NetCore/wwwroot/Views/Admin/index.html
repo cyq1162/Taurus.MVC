@@ -15,7 +15,7 @@
     </style>
 </head>
 <body itemref="common.body">
-    <div id="container" class="container">
+    <div id="container" class="container" style="width:100%">
         <div class="starter-template">
             <div>
                 <div>
@@ -28,13 +28,13 @@
                 </div>
                 <div style="clear:both; height:5px;">
                 </div>
-                <div style="float:left"><b>Client - Register - Host ：</b></div>
+                <div style="float:left"><b>Client - Host - Connect ：</b></div>
                 <div id="clientHostView" style="float:left" clearflag="1">
                     <a href="index?t=2&n=${Name}">${Name}（${Count}）</a>&nbsp;|&nbsp;
                 </div>
                 <div style="clear:both;height:5px;">
                 </div>
-                <div style="float:left"><b>Client - Register - Domain ：</b></div>
+                <div style="float:left"><b>Client - Domain - Mapping ：</b></div>
                 <div id="clientDomainView" style="float:left" clearflag="1">
                     <a href="index?t=3&n=${Name}">${Name}（${Count}）</a>&nbsp;|&nbsp;
                 </div>
@@ -51,29 +51,38 @@
                     <tr>
                         <td>Display Name</td>
                         <td>PID</td>
-                        <td>Host</td>
-                        <td>HostIP</td>
+                        <td title="internal host">Private Host Url</td>
+                        <td title="public ip">Public IP</td>
                         <td>State</td>
                         <td>IsVirtual</td>
                         <td>Version</td>
                         <td>LastActiveTime</td>
-                        <td>Remote【Client】</td>
+                        <td clearflag="${IsRC:1}" title="go to client /doc.">To Doc</td>
+                        <td clearflag="${IsRC:1}" title="go to client /admin.">To Admin</td>
+                        <td clearflag="${IsRC:1}" title="download client rpc proxy dll.">Download RpcProxy</td>
+                        <td clearflag="${IsRC:1}" title="view client rpc proxy code">View RpcProxy</td>
+                        <td clearflag="${IsRCAdmin:1}" title="stop client microservice.">Stop Microservice</td>
+                        <td clearflag="${IsRCAdmin:1}" title="exit client application.">Exit Application</td>
                     </tr>
                     <tbody id="defaultView" clearflag="1">
                         <tr>
-                            <td><a target="_blank" href="index?t=${t:1}&to=1&hostIP=${HostIP}&host=${Host}" title="go to doc">${Name}</a></td>
+                            <td>${Name}</td>
                             <td>${PID}</td>
                             <td><a href="index?t=5&n=${Host}">${Host}</a></td>
-                            <td><a href="index?t=${t:1}&to=2&hostIP=${HostIP}&host=${Host}" target="_blank" title="go to admin">${HostIP}</a></td>
+                            <td>${HostIP}</td>
                             <td><div ondblclick="checkUrl('${Host}',this)" title="double click to check host state again.">${State}</div></td>
                             <td>${IsVirtual}</td>
                             <td>${Version}</td>
                             <td>${RegTime}</td>
-                            <td>
-                                <div clearflag="${RemoteExit:1}">
-                                    <a onclick="stop('${Host}',this);" title="stop client microservice.">Stop</a>&nbsp;|&nbsp;
-                                    <a onclick="exit('${Host}',this);" title="exit client application.">Exit</a>
-                                </div>
+                            <td clearflag="${IsRC:1}"><a target="_blank" href="index?t=${t:1}&to=1&hostIP=${HostIP}&host=${Host}">ToDoc</a></td>
+                            <td clearflag="${IsRC:1}"><a href="index?t=${t:1}&to=2&hostIP=${HostIP}&host=${Host}" target="_blank">ToAdmin</a></td>
+                            <td clearflag="${IsRC:1}"><a onclick="downRpcProxy('${Host}',this);">Download</a></td>
+                            <td clearflag="${IsRC:1}"><a onclick="viewRpcProxy('${Host}',this);">ViewCode</a></td>
+                            <td clearflag="${IsRCAdmin:1}">
+                                <a onclick="stop('${Host}',this);">Stop</a>
+                            </td>
+                            <td clearflag="${IsRCAdmin:1}">
+                                <a onclick="exit('${Host}',this);">Exit</a>
                             </td>
                         </tr>
                     </tbody>
@@ -134,6 +143,22 @@
                                 }
                             });
                         }
+                    }
+                    function downRpcProxy(host, el) {
+                        var name = prompt("Input the api module name:", "RpcProxy");
+                        if (name == undefined) { return; }
+                        el.onclick = undefined;
+                        el.style = "text-decoration: none; cursor: default; opacity: 0.2";
+
+                        var url = "DownRpcProxy?host=" + host + "&name=" + name;
+                        window.open(url, '_blank');
+                    }
+                    function viewRpcProxy(host, el) {
+                        var name = prompt("Input the api module name:", "RpcProxy");
+                        el.onclick = undefined;
+                        el.style = "text-decoration: none; cursor: default; opacity: 0.2";
+                        var url = "ViewRpcProxy?host=" + host + "&name=" + name;
+                        window.open(url, '_blank');
                     }
                 </script>
                 ]]>
