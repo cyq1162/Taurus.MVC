@@ -43,7 +43,7 @@
                                                     <td width="60px">${type}</td>
                                                     <td>
                                                         <![CDATA[
-                                                        <input name="${0}" type="<%# '${type}'=='file'?'file':'text'%>" value="${4}" style="width:90%" rtype="${type}"  multiple="multiple" <%# ${required}?"required='required'":"false"%> />
+                                                        <input name="${0}" type="${inputtype}" value="${4}" style="width:90%" rtype="${type}"  multiple="multiple" ${inputrequired} />
                                                         ]]>
                                                     </td>
 
