@@ -327,14 +327,14 @@ CYQ.Data升级到V5.8.4.9
 5、优化：Rpc 模块。
 6、优化：Doc 模块。
 7、移除：WebTool 工具类。
------V3.4.6.1----------------
-1、升级：CYQ.Data 升级到 V5.9.3.1 版本（性能优化）（2024-04-14） 
+-----V3.4.6.1、V3.4.6.2----------------
+1、升级：CYQ.Data 升级到 V5.9.3.2 版本（性能优化）（2024-04-24） 
 2、移除：Controller CancelLoadHtml 属性。（2024-04-14） 
 3、新增：Controller IsLoadHtml 属性（默认true）、IsLoadHtmlWithReadOnly(默认false) 属性。（2024-04-14） 
-
-
-
-
+-----V3.4.6.3----------------
+1、优化：HttpClientFactory （2024-04-25） 
+2、修复：.NET 版本输出默认请求头。（2024-05-12） 
+3、升级：CYQ.Data 升级到 V5.9.3.4 版本。（2024-05-12） 
 
 
 
@@ -358,3 +358,5 @@ doc 处理 路由映射【屏蔽原始路径】的问题。
 日志级别，默认info
 静态只读界面
 HttpGet(OutPutCache,Durable,CacheType)
+LoadHtml 延后处理
+微服务客户端模块注册默认（为空时）由系统搜集所有模块进行自动注册。

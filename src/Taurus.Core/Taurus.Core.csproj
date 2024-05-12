@@ -53,8 +53,8 @@
     <DocumentationFile>bin\Release\Taurus.Core.xml</DocumentationFile>
   </PropertyGroup>
   <ItemGroup>
-    <Reference Include="CYQ.Data, Version=5.9.3.1, Culture=neutral, processorArchitecture=MSIL">
-      <HintPath>..\..\demo\default\packages\cyqdata.5.9.3.1\lib\net20\CYQ.Data.dll</HintPath>
+    <Reference Include="CYQ.Data, Version=5.9.3.4, Culture=neutral, processorArchitecture=MSIL">
+      <HintPath>..\..\demo\default\packages\cyqdata.5.9.3.4\lib\net20\CYQ.Data.dll</HintPath>
     </Reference>
     <Reference Include="DotNetZip">
       <HintPath>..\..\Packages\DotNetZip.dll</HintPath>

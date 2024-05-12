@@ -11,7 +11,7 @@ namespace Taurus.Plugin.MicroService
         /// </summary>
         public static class Client
         {
-            /// <summary>
+            /// <summary>   
             /// 是否退出应用程序
             /// </summary>
             internal static bool IsExitApplication = false;

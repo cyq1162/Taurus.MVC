@@ -486,7 +486,7 @@ namespace Taurus.Mvc
                 if (outResult.Length > 0)
                 {
                     var ct = Response.ContentType;
-                    if (string.IsNullOrEmpty(ct))
+                    if (string.IsNullOrEmpty(ct) || ct == "text/html")
                     {
                         var charset = Response.Charset;
                         if ((outResult[0] == '{' && outResult.EndsWith("}")) || (outResult[0] == '[' && outResult.EndsWith("]")))

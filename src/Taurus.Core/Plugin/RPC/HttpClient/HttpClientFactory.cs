@@ -11,7 +11,7 @@ namespace Taurus.Plugin.Rpc
     /// </summary>
     internal class HttpClientFactory
     {
-        static MDictionary<string, HttpClient> clientDic = new MDictionary<string, HttpClient>();
+        static Dictionary<string, HttpClient> clientDic = new Dictionary<string, HttpClient>();
         static HttpClientHandler defaultConfig = new HttpClientHandler()
         {
             // 禁用系统代理
@@ -42,7 +42,6 @@ namespace Taurus.Plugin.Rpc
                     clientDic.Add(key, httpClient);
                     return httpClient;
                 }
-
             }
             return clientDic[key];
         }
@@ -50,7 +49,15 @@ namespace Taurus.Plugin.Rpc
         {
             if (uri == null) { return; }
             string key = uri.Authority + "-" + timeout;
-            clientDic.Remove(key);
+            try
+            {
+                clientDic.Remove(key);
+            }
+            catch
+            {
+
+            }
+            
         }
     }
 }
